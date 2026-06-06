@@ -3,6 +3,7 @@
 @attribute [Authorize]
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
 @using vodongha.Data.Models
 
 <div class="admin-shell">
@@ -41,41 +42,30 @@
         }
         else
         {
-            <div class="admin-table-wrap">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Subject</th>
-                            <th>Date</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (ContactMessage msg in Messages)
-                        {
-                            <tr class="@(!msg.IsRead ? "admin-table__row--unread" : "")">
-                                <td>
-                                    @if (!msg.IsRead)
-                                    {
-                                        <span class="admin-unread-dot" title="Unread"></span>
-                                    }
-                                </td>
-                                <td><strong>@msg.Name</strong></td>
-                                <td><a href="mailto:@msg.Email">@msg.Email</a></td>
-                                <td>@msg.Subject</td>
-                                <td><small>@msg.SentAt.ToString("yyyy-MM-dd HH:mm")</small></td>
-                                <td class="admin-table__actions">
-                                    <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenMessage(msg)" title="View"><i class="bi bi-eye"></i></button>
-                                    <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(msg.Id)" title="Delete"><i class="bi bi-trash"></i></button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            <div class="admin-toolbar">
+                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm tên, email, tiêu đề..." />
             </div>
+
+            <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
+                <TemplateColumn Title="" Sortable="false">
+                    @if (!context.IsRead) { <span class="admin-unread-dot" title="Unread"></span> }
+                </TemplateColumn>
+                <TemplateColumn Title="Name" Sortable="false">
+                    <strong>@context.Name</strong>
+                </TemplateColumn>
+                <TemplateColumn Title="Email" Sortable="false">
+                    <a href="mailto:@context.Email">@context.Email</a>
+                </TemplateColumn>
+                <PropertyColumn Property="m => m.Subject" Title="Subject" Sortable="true" />
+                <PropertyColumn Property="m => m.SentAt" Title="Date" Format="yyyy-MM-dd HH:mm" Sortable="true" />
+                <TemplateColumn Title="">
+                    <div class="admin-table__actions">
+                        <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenMessage(context)" title="View"><i class="bi bi-eye"></i></button>
+                        <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(context.Id)" title="Delete"><i class="bi bi-trash"></i></button>
+                    </div>
+                </TemplateColumn>
+            </QuickGrid>
+            <Paginator State="_pagination" />
         }
 
         @if (Selected is not null)

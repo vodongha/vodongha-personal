@@ -1,8 +1,9 @@
-﻿@page "/admin/education"
+@page "/admin/education"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
 @using vodongha.Data.Models
 @inject IDbContextFactory<AppDbContext> DbFactory
 @inject ToastService Toast
@@ -31,26 +32,25 @@
             <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
         </header>
 
-        <div class="admin-table-wrap">
-            <table class="admin-table">
-                <thead><tr><th>Trường</th><th>Bằng cấp</th><th>Ngành</th><th>Năm</th><th></th></tr></thead>
-                <tbody>
-                    @foreach (Education e in Items)
-                    {
-                        <tr>
-                            <td>@e.School</td>
-                            <td>@e.Degree</td>
-                            <td>@e.Field</td>
-                            <td>@e.StartYear – @(e.EndYear?.ToString() ?? "nay")</td>
-                            <td class="admin-table__actions">
-                                <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(e)"><i class="bi bi-pencil"></i></button>
-                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(e.Id)"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <div class="admin-toolbar">
+            <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm trường, ngành..." />
         </div>
+
+        <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
+            <PropertyColumn Property="e => e.School" Title="Trường" Sortable="true" />
+            <PropertyColumn Property="e => e.Degree" Title="Bằng cấp" Sortable="true" />
+            <PropertyColumn Property="e => e.Field" Title="Ngành" Sortable="true" />
+            <TemplateColumn Title="Năm" Sortable="false">
+                @context.StartYear – @(context.EndYear?.ToString() ?? "nay")
+            </TemplateColumn>
+            <TemplateColumn Title="">
+                <div class="admin-table__actions">
+                    <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(context)"><i class="bi bi-pencil"></i></button>
+                    <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(context.Id)"><i class="bi bi-trash"></i></button>
+                </div>
+            </TemplateColumn>
+        </QuickGrid>
+        <Paginator State="_pagination" />
 
         @if (ShowForm)
         {
@@ -106,16 +106,23 @@
 </div>
 
 @code {
-    private List<Education> Items = [];
+    private List<Education> _items = [];
     private Education Editing = new();
     private bool ShowForm;
+    private string _search = "";
+    private PaginationState _pagination = new() { ItemsPerPage = 10 };
+
+    private IQueryable<Education> Filtered => _items.AsQueryable()
+        .Where(e => string.IsNullOrEmpty(_search) ||
+                    e.School.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
+                    e.Field.Contains(_search, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync() => await LoadAsync();
 
     private async Task LoadAsync()
     {
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        Items = await db.Educations.OrderBy(e => e.Order).ToListAsync();
+        _items = await db.Educations.OrderBy(e => e.Order).ToListAsync();
     }
 
     private void OpenAdd() { Editing = new Education(); ShowForm = true; }
