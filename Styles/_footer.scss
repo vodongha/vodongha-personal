@@ -19,6 +19,12 @@
         span { color: $color-primary; }
     }
 
+    &__right {
+        display: flex;
+        align-items: center;
+        gap: $space-6;
+    }
+
     &__links {
         display: flex;
         gap: $space-6;

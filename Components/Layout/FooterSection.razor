@@ -5,19 +5,21 @@
         <p class="footer__copy">
             &copy; @DateTime.Now.Year <span>@S("Name")</span>. @Lang.T("footer.built")
         </p>
-        <ul class="footer__links">
-            @if (!string.IsNullOrEmpty(S("GitHub")))
-            {
-                <li><a href="@S("GitHub")" target="_blank" class="footer__link">GitHub</a></li>
-            }
-            @if (!string.IsNullOrEmpty(S("Email")))
-            {
-                <li><a href="mailto:@S("Email")" class="footer__link">Email</a></li>
-            }
-        </ul>
-        <span class="footer__visitors" title="@(Lang.IsVi ? "Khách truy cập độc lập" : "Unique visitors")">
-            <i class="bi bi-eye"></i>
-            @_visitorCount.ToString("N0")
-        </span>
+        <div class="footer__right">
+            <ul class="footer__links">
+                @if (!string.IsNullOrEmpty(S("GitHub")))
+                {
+                    <li><a href="@S("GitHub")" target="_blank" class="footer__link">GitHub</a></li>
+                }
+                @if (!string.IsNullOrEmpty(S("Email")))
+                {
+                    <li><a href="mailto:@S("Email")" class="footer__link">Email</a></li>
+                }
+            </ul>
+            <span class="footer__visitors" title="@(Lang.IsVi ? "Khách truy cập độc lập" : "Unique visitors")">
+                <i class="bi bi-eye"></i>
+                @_visitorCount.ToString("N0")
+            </span>
+        </div>
     </div>
 </footer>
