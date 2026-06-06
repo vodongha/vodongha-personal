@@ -1,10 +1,10 @@
-@page "/admin/education"
+﻿@page "/admin/education"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
 @using vodongha.Data.Models
-@inject IDbContextFactory<AppDbContext> DbFactory
 
 <div class="admin-shell">
     <aside class="admin-sidebar">
@@ -16,6 +16,8 @@
             <a href="/admin/education" class="admin-nav__item admin-nav__item--active"><i class="bi bi-mortarboard"></i> Education</a>
             <a href="/admin/experience" class="admin-nav__item"><i class="bi bi-briefcase"></i> Experience</a>
             <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+            <a href="/admin/contacts" class="admin-nav__item"><i class="bi bi-envelope"></i> Messages</a>
+            <a href="/admin/settings" class="admin-nav__item"><i class="bi bi-gear"></i> Thông tin</a>
         </nav>
         <form method="post" action="/admin/logout" class="admin-sidebar__logout">
             <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
@@ -28,26 +30,36 @@
             <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
         </header>
 
-        <div class="admin-table-wrap">
-            <table class="admin-table">
-                <thead><tr><th>Trường</th><th>Bằng cấp</th><th>Ngành</th><th>Năm</th><th></th></tr></thead>
-                <tbody>
-                    @foreach (Education e in Items)
-                    {
-                        <tr>
-                            <td>@e.School</td>
-                            <td>@e.Degree</td>
-                            <td>@e.Field</td>
-                            <td>@e.StartYear – @(e.EndYear?.ToString() ?? "nay")</td>
-                            <td class="admin-table__actions">
-                                <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(e)"><i class="bi bi-pencil"></i></button>
-                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(e.Id)"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <div class="admin-toolbar">
+            <div class="admin-select-wrap">
+                <select class="admin-page-size" @onchange="SetPageSize">
+                    <option value="5">5 / trang</option>
+                    <option value="10" selected>10 / trang</option>
+                    <option value="20">20 / trang</option>
+                    <option value="50">50 / trang</option>
+                </select>
+            </div>
+            <div class="admin-search-wrap">
+                <i class="bi bi-search admin-search-wrap__icon"></i>
+                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm trường, ngành..." />
+            </div>
         </div>
+
+        <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
+            <PropertyColumn Property="e => e.School" Title="Trường" Sortable="true" />
+            <PropertyColumn Property="e => e.Degree" Title="Bằng cấp" Sortable="true" />
+            <PropertyColumn Property="e => e.Field" Title="Ngành" Sortable="true" />
+            <TemplateColumn Title="Năm" Sortable="false">
+                @context.StartYear – @(context.EndYear?.ToString() ?? "nay")
+            </TemplateColumn>
+            <TemplateColumn Title="Hành động">
+                <div class="admin-table__actions">
+                    <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(context)"><i class="bi bi-pencil"></i></button>
+                    <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(context.Id)"><i class="bi bi-trash"></i></button>
+                </div>
+            </TemplateColumn>
+        </QuickGrid>
+        <Paginator State="_pagination" />
 
         @if (ShowForm)
         {
@@ -66,6 +78,10 @@
                         <label class="admin-form__label">Ngành</label>
                         <input class="admin-form__input" @bind="Editing.Field" />
                     </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Website URL</label>
+                        <input class="admin-form__input" @bind="Editing.WebsiteUrl" placeholder="https://..." />
+                    </div>
                     <div class="admin-form__row">
                         <div class="admin-form__group">
                             <label class="admin-form__label">Năm bắt đầu</label>
@@ -77,8 +93,12 @@
                         </div>
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Mô tả</label>
+                        <label class="admin-form__label">Mô tả 🇻🇳</label>
                         <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Description"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Description 🇬🇧</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.DescriptionEn"></textarea>
                     </div>
                     <div class="admin-form__group">
                         <label class="admin-form__label">Thứ tự</label>
@@ -91,41 +111,7 @@
                 </div>
             </div>
         }
+        <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
     </main>
 </div>
 
-@code {
-    private List<Education> Items = [];
-    private Education Editing = new();
-    private bool ShowForm;
-
-    protected override async Task OnInitializedAsync() => await LoadAsync();
-
-    private async Task LoadAsync()
-    {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        Items = await db.Educations.OrderBy(e => e.Order).ToListAsync();
-    }
-
-    private void OpenAdd() { Editing = new Education(); ShowForm = true; }
-    private void OpenEdit(Education e) { Editing = new Education { Id = e.Id, School = e.School, Degree = e.Degree, Field = e.Field, StartYear = e.StartYear, EndYear = e.EndYear, Description = e.Description, Order = e.Order }; ShowForm = true; }
-    private void CloseForm() { ShowForm = false; }
-
-    private async Task Save()
-    {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        if (Editing.Id == 0) { db.Educations.Add(Editing); }
-        else { db.Educations.Update(Editing); }
-        await db.SaveChangesAsync();
-        ShowForm = false;
-        await LoadAsync();
-    }
-
-    private async Task Delete(int id)
-    {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        Education? e = await db.Educations.FindAsync(id);
-        if (e != null) { db.Educations.Remove(e); await db.SaveChangesAsync(); }
-        await LoadAsync();
-    }
-}

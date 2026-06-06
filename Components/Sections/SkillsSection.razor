@@ -1,7 +1,3 @@
-@inject SkillService SkillSvc
-@inject LanguageService Lang
-@implements IDisposable
-
 <section class="section skills" id="skills">
     <div class="section__header">
         <span class="section__label">@Lang.T("skills.label")</span>
@@ -12,7 +8,7 @@
     @if (_grouped is not null)
     {
         <div class="skills__grid">
-            @foreach (KeyValuePair<string, List<Skill>> category in _grouped)
+            @foreach (KeyValuePair<string, List<Skill>> category in VisibleCategories)
             {
                 <div class="skills__category">
                     <h3 class="skills__category-title">@category.Key</h3>
@@ -22,7 +18,14 @@
                             <li class="skills__item">
                                 <div class="skills__item-header">
                                     <span class="skills__item-name">
-                                        <i class="@skill.Icon colored"></i>
+                                        @if (skill.Icon.StartsWith("bi "))
+                                        {
+                                            <i class="@skill.Icon"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="@skill.Icon colored"></i>
+                                        }
                                         @skill.Name
                                     </span>
                                     <span class="skills__item-pct">@skill.Proficiency%</span>
@@ -36,17 +39,21 @@
                 </div>
             }
         </div>
+
+        @if (_grouped.Count > InitialCount)
+        {
+            <div class="section__expand">
+                <button class="section__expand-btn" @onclick="Toggle">
+                    @if (_expanded)
+                    {
+                        <i class="bi bi-chevron-up"></i> @Lang.T("common.showless")
+                    }
+                    else
+                    {
+                        <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore")
+                    }
+                </button>
+            </div>
+        }
     }
 </section>
-
-@code {
-    private Dictionary<string, List<Skill>>? _grouped;
-
-    protected override async Task OnInitializedAsync()
-    {
-        _grouped = await SkillSvc.GetGroupedAsync();
-        Lang.OnChange += StateHasChanged;
-    }
-
-    public void Dispose() => Lang.OnChange -= StateHasChanged;
-}

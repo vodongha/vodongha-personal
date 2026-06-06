@@ -11,6 +11,8 @@ public class Experience
     public int? EndYear { get; set; }
     public int? EndMonth { get; set; }
     public bool IsCurrent { get; set; }
+    public string? WebsiteUrl { get; set; }
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
     public int Order { get; set; }
 }

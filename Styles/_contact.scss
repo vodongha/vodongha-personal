@@ -22,6 +22,21 @@
         display: flex;
         align-items: flex-start;
         gap: $space-4;
+
+        &--link {
+            text-decoration: none;
+            color: inherit;
+            border-radius: $radius-md;
+            padding: $space-2;
+            margin: -$space-2;
+            transition: background $transition-fast;
+
+            &:hover {
+                background: rgba($color-primary, 0.06);
+
+                .contact__info-value { color: $color-primary; }
+            }
+        }
     }
 
     &__info-icon {
