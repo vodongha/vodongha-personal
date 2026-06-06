@@ -561,24 +561,20 @@ tr.admin-row--dragover td {
 // ── Mobile responsive ────────────────────────────────────────────
 @media (max-width: 768px) {
 
-    // Shell stacks vertically: main on top, sidebar below
+    // Shell → block, kills flex layout entirely so sidebar can't reserve column space
     .admin-shell {
-        flex-direction: column;
+        display: block;
     }
 
     // Sidebar → fixed bottom navigation bar
     .admin-sidebar {
-        order: 99;
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
         width: 100%;
-        // Override desktop sizing
-        flex: 0 0 auto;
         min-height: unset;
         height: auto;
-        // Layout
         flex-direction: row;
         padding: 0;
         border-right: none;
