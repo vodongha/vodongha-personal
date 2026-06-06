@@ -97,4 +97,22 @@
         padding: $space-2 $space-4;
         font-size: $text-xs;
     }
+
+    &__avatar-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: $radius-full;
+        border: 1px solid $color-border;
+        color: $color-text-muted;
+        font-size: 1.2rem;
+        transition: border-color $transition-fast, color $transition-fast;
+
+        &:hover {
+            border-color: $color-primary;
+            color: $color-primary;
+        }
+    }
 }
