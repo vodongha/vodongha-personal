@@ -1,34 +1,28 @@
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
+using Resend;
 
 namespace vodongha.Services;
 
-public class EmailService(IConfiguration config, ILogger<EmailService> logger)
+public class EmailService(IResend resend, IConfiguration config, ILogger<EmailService> logger)
 {
     public async Task SendContactNotificationAsync(string senderName, string senderEmail, string subject, string message)
     {
-        string? host     = config["Email:SmtpHost"];
-        string? portStr  = config["Email:SmtpPort"];
-        string? user     = config["Email:SmtpUser"];
-        string? pass     = config["Email:SmtpPass"];
-        string? notifyTo = config["Email:NotifyTo"];
-
-        if (string.IsNullOrEmpty(host) || string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
+        string? apiKey = config["Email:ResendApiKey"];
+        if (string.IsNullOrEmpty(apiKey))
         {
-            logger.LogWarning("Email config missing — skipping notification.");
+            logger.LogWarning("Resend API key missing — skipping email notification.");
             return;
         }
 
         try
         {
-            MimeMessage email = new();
-            email.From.Add(new MailboxAddress("vodongha.id.vn", user));
-            email.To.Add(MailboxAddress.Parse(notifyTo ?? user));
-            email.Subject = $"[Contact] {subject}";
-            email.Body = new TextPart("plain")
+            string notifyTo = config["Email:NotifyTo"] ?? "vodongha@hotmail.com";
+
+            EmailMessage email = new()
             {
-                Text = $"""
+                From    = "vodongha.id.vn <onboarding@resend.dev>",
+                To      = [notifyTo],
+                Subject = $"[Contact] {subject}",
+                TextBody = $"""
                     Tin nhắn mới từ vodongha.id.vn
 
                     Người gửi : {senderName}
@@ -40,18 +34,12 @@ public class EmailService(IConfiguration config, ILogger<EmailService> logger)
                     """
             };
 
-            using SmtpClient smtp = new();
-            int port = int.TryParse(portStr, out int p) ? p : 587;
-            await smtp.ConnectAsync(host, port, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(user, pass);
-            await smtp.SendAsync(email);
-            await smtp.DisconnectAsync(true);
-
-            logger.LogInformation("Contact notification sent to {To}", notifyTo ?? user);
+            ResendResponse<Guid> response = await resend.EmailSendAsync(email);
+            logger.LogInformation("Contact notification sent. Id={Id}", response.Content);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to send contact notification email.");
+            logger.LogError(ex, "Failed to send contact notification via Resend.");
         }
     }
 }
