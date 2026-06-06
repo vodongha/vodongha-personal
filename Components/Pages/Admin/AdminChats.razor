@@ -69,7 +69,7 @@
                         <div class="chat-admin-messages" id="adminChatMessages">
                             @foreach (ChatMessage msg in _messages)
                             {
-                                <div class="chat-msg @(msg.IsFromUser ? "chat-msg--user" : "chat-msg--admin")">
+                                <div class="chat-msg @(msg.IsFromUser ? "chat-msg--admin" : "chat-msg--user")">
                                     <div class="chat-msg__bubble">@msg.Content</div>
                                     <div class="chat-msg__time">
                                         @(msg.IsFromUser ? "User" : "Admin") · @msg.SentAt.ToLocalTime().ToString("HH:mm")
