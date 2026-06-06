@@ -1,0 +1,47 @@
+@inject EducationService EduSvc
+@inject LanguageService Lang
+@implements IDisposable
+
+<section class="section education" id="education">
+    <div class="section__header">
+        <span class="section__label">@Lang.T("edu.label")</span>
+        <h2 class="section__title">@Lang.T("edu.title")</h2>
+    </div>
+
+    @if (_items is not null)
+    {
+        <div class="timeline">
+            @foreach (Education item in _items)
+            {
+                <div class="timeline__item">
+                    <div class="timeline__dot"></div>
+                    <div class="timeline__content">
+                        <div class="timeline__header">
+                            <h3 class="timeline__role">@item.School</h3>
+                            <span class="timeline__period">@item.StartYear — @(item.EndYear?.ToString() ?? "Present")</span>
+                        </div>
+                        <p class="timeline__company">
+                            <i class="bi bi-mortarboard"></i> @item.Degree · @item.Field
+                        </p>
+                        @if (!string.IsNullOrEmpty(item.Description))
+                        {
+                            <p class="timeline__desc">@item.Description</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private List<Education>? _items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _items = await EduSvc.GetAllAsync();
+        Lang.OnChange += StateHasChanged;
+    }
+
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
+}

@@ -1,0 +1,99 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.experience,
+.education {
+    .timeline {
+        position: relative;
+        padding-left: $space-8;
+        max-width: 800px;
+        margin: 0 auto;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, $color-primary, transparent);
+        }
+    }
+
+    .timeline__item {
+        position: relative;
+        margin-bottom: $space-8;
+
+        &:last-child { margin-bottom: 0; }
+    }
+
+    .timeline__dot {
+        position: absolute;
+        left: calc(-#{$space-8} - 5px);
+        top: 8px;
+        width: 12px;
+        height: 12px;
+        border-radius: $radius-full;
+        background: $color-primary;
+        border: 2px solid $color-bg;
+        box-shadow: 0 0 8px rgba(110, 231, 183, 0.5);
+    }
+
+    .timeline__content {
+        background: $color-bg-card;
+        border: 1px solid $color-border;
+        border-radius: $radius-md;
+        padding: $space-6;
+        transition: border-color $transition-fast, box-shadow $transition-fast;
+
+        &:hover {
+            border-color: rgba($color-primary, 0.3);
+            box-shadow: $shadow-glow-primary;
+        }
+    }
+
+    .timeline__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: $space-4;
+        margin-bottom: $space-2;
+        flex-wrap: wrap;
+    }
+
+    .timeline__role {
+        font-size: $text-base;
+        font-weight: 600;
+        color: $color-text;
+        margin: 0;
+    }
+
+    .timeline__period {
+        font-size: $text-xs;
+        font-family: $font-mono;
+        color: $color-primary;
+        white-space: nowrap;
+        background: rgba($color-primary, 0.1);
+        padding: 2px $space-3;
+        border-radius: $radius-full;
+    }
+
+    .timeline__company {
+        font-size: $text-sm;
+        color: $color-text-muted;
+        margin: 0 0 $space-3;
+
+        i { margin-right: $space-1; }
+    }
+
+    .timeline__location {
+        color: $color-text-dim;
+    }
+
+    .timeline__desc {
+        font-size: $text-sm;
+        color: $color-text-dim;
+        line-height: 1.6;
+        margin: 0;
+    }
+}
