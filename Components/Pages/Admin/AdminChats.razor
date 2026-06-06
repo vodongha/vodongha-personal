@@ -1,0 +1,115 @@
+@page "/admin/chats"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using vodongha.Data.Models
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__logo"><span>vdh</span><span class="dot">.</span><span>admin</span></div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav__item"><i class="bi bi-grid"></i> Dashboard</a>
+            <a href="/admin/skills" class="admin-nav__item"><i class="bi bi-bar-chart"></i> Skills</a>
+            <a href="/admin/projects" class="admin-nav__item"><i class="bi bi-folder2"></i> Projects</a>
+            <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
+            <a href="/admin/experience" class="admin-nav__item"><i class="bi bi-briefcase"></i> Experience</a>
+            <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+            <a href="/admin/contacts" class="admin-nav__item"><i class="bi bi-envelope"></i> Messages</a>
+            <a href="/admin/chats" class="admin-nav__item admin-nav__item--active"><i class="bi bi-chat-dots"></i> Chats</a>
+            <a href="/admin/settings" class="admin-nav__item"><i class="bi bi-gear"></i> Thông tin</a>
+        </nav>
+        <form method="post" action="/admin/logout" class="admin-sidebar__logout">
+            <button type="submit" class="admin-nav__item"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">Live Chats</h1>
+        </header>
+
+        @if (_sessions.Count == 0)
+        {
+            <div class="admin-empty">
+                <i class="bi bi-chat-dots" style="font-size:3rem;opacity:.3"></i>
+                <p style="margin-top:.75rem;opacity:.5">No chat sessions yet.</p>
+            </div>
+        }
+        else
+        {
+            <div style="display:grid;grid-template-columns:300px 1fr;gap:1.5rem;align-items:start">
+                <div class="chat-sessions">
+                    @foreach (ChatSession session in _sessions)
+                    {
+                        <div class="chat-session-card @(_selectedSessionId == session.Id ? "chat-session-card--active" : "")"
+                             @onclick="() => SelectSession(session.Id)">
+                            <div class="chat-session-card__info">
+                                <div class="chat-session-card__name">@session.Name</div>
+                                <div class="chat-session-card__meta">@session.Email · @session.Phone</div>
+                            </div>
+                            <div class="chat-session-card__time">@session.LastMessageAt.ToLocalTime().ToString("MM/dd HH:mm")</div>
+                        </div>
+                    }
+                </div>
+
+                @if (_selectedSessionId.HasValue)
+                {
+                    <div class="chat-admin-window">
+                        <div class="chat-header" style="flex-shrink:0;border-bottom:1px solid #2a2a2a;padding:.875rem 1rem;background:#141414">
+                            <div class="chat-header__info">
+                                <div class="chat-header__avatar"><i class="bi bi-person-circle"></i></div>
+                                <div>
+                                    <div class="chat-header__name">@_selectedSession?.Name</div>
+                                    <div style="font-size:.7rem;color:#6b7280">@_selectedSession?.Email · @_selectedSession?.Phone</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-admin-messages" id="adminChatMessages">
+                            @foreach (ChatMessage msg in _messages)
+                            {
+                                <div class="chat-msg @(msg.IsFromUser ? "chat-msg--user" : "chat-msg--admin")">
+                                    <div class="chat-msg__bubble">@msg.Content</div>
+                                    <div class="chat-msg__time">
+                                        @(msg.IsFromUser ? "User" : "Admin") · @msg.SentAt.ToLocalTime().ToString("HH:mm")
+                                    </div>
+                                </div>
+                            }
+
+                            @if (_messages.Count == 0)
+                            {
+                                <div style="text-align:center;color:#6b7280;font-size:.8rem;margin-top:1rem">No messages yet.</div>
+                            }
+                        </div>
+
+                        <div class="chat-admin-input">
+                            <textarea rows="2" placeholder="Nhập tin nhắn trả lời..."
+                                      @bind="_replyText" @bind:event="oninput"
+                                      @onkeydown="OnReplyKeyDown"></textarea>
+                            <button class="admin-btn admin-btn--primary"
+                                    @onclick="SendReply"
+                                    disabled="@(string.IsNullOrWhiteSpace(_replyText) || _sending)">
+                                @if (_sending)
+                                {
+                                    <i class="bi bi-arrow-clockwise admin-spin"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-send"></i>
+                                }
+                                <span>Gửi</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div style="display:flex;align-items:center;justify-content:center;height:480px;color:#6b7280;font-size:.875rem">
+                        Chọn một cuộc trò chuyện để xem
+                    </div>
+                }
+            </div>
+        }
+    </main>
+</div>
