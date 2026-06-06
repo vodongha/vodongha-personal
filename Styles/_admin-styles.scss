@@ -447,36 +447,47 @@ tr.admin-row--dragover td {
     tr:hover td { background: #1a1a1a; }
 
     // Hide empty placeholder rows QuickGrid adds to fill ItemsPerPage
-    tbody tr.empty-row { display: none; }
+    tbody tr.empty-row { display: none !important; }
 
     .admin-table__actions { display: flex; gap: 0.5rem; }
 }
 
-// QuickGrid Paginator component dark theme
+// QuickGrid Paginator dark theme — load after QuickGrid CSS so we win specificity
 .paginator {
-    display: flex;
-    align-items: center;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
     justify-content: flex-end;
     gap: 0.75rem;
     margin-top: 1rem;
     font-size: 0.8rem;
     color: $color-text-muted;
+    background: transparent !important;
 
-    nav { display: flex; gap: 0.25rem; }
+    nav {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 0.25rem;
+        align-items: center;
+    }
 
     button {
-        background: transparent;
-        border: 1px solid #2a2a2a;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        min-width: 2rem;
+        height: 2rem;
+        background: transparent !important;
+        border: 1px solid #2a2a2a !important;
         border-radius: 6px;
-        color: $color-text-muted;
-        padding: 0.25rem 0.55rem;
+        color: $color-text-muted !important;
+        font-size: 0.85rem;
         cursor: pointer;
         transition: border-color 150ms, color 150ms;
-        line-height: 1.4;
 
-        &:hover:not(:disabled) { border-color: $color-primary; color: $color-primary; }
+        &:hover:not(:disabled) { border-color: $color-primary !important; color: $color-primary !important; }
         &:disabled { opacity: 0.35; cursor: default; }
     }
 
-    .paginator-summary { opacity: 0.6; }
+    .paginator-summary { opacity: 0.6; white-space: nowrap; }
 }
