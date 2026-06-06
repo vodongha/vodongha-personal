@@ -2,7 +2,7 @@
 
 Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 
-**Live:** [https://vodongha.id.vn](https://vodongha.id.vn)
+**Live:** [https://vodongha.id.vn](https://vodongha.id.vn) | **Admin:** [https://vodongha.id.vn/admin/login](https://vodongha.id.vn/admin/login)
 
 ---
 
@@ -15,6 +15,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Contact form** — messages saved to DB + email notification via Resend
 - **Visitor counter** — unique visitors tracked by IP, displayed in the footer
 - **Admin panel** — manage Skills, Projects, Blog, Experience, Education, Contact Messages, and site settings
+- **Mobile responsive** — admin panel has bottom navigation bar on screens ≤ 768px
 
 ---
 
@@ -25,10 +26,10 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | Framework | Blazor Web App (.NET 10, Interactive Server) |
 | Database | PostgreSQL via [Neon](https://neon.tech) (Singapore) |
 | ORM | Entity Framework Core |
-| Styling | SCSS → `wwwroot/app.css` (public) + `wwwroot/admin.css` (admin) via `AspNetCore.SassCompiler` |
+| Styling | SCSS compiled by `AspNetCore.SassCompiler` — `Styles/app.scss` → public, `Styles/admin.scss` → admin |
 | Email | [Resend](https://resend.com) API |
 | Deploy | [Fly.io](https://fly.io), app `vodongha`, region Singapore |
-| CI/CD | Push to `master` → auto-deploy |
+| CI/CD | Merge PR to `master` → auto-deploy |
 
 ---
 
@@ -37,7 +38,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 ```
 vodongha-personal/
 ├── Components/
-│   ├── App.razor               # HTML root — SEO meta tags (OG, Twitter, canonical)
+│   ├── App.razor               # HTML root — SEO meta tags (OG, Twitter, canonical), scripts
 │   ├── Layout/                 # NavBar, MainLayout, FooterSection, AdminLayout
 │   ├── Pages/
 │   │   ├── Home.razor          # Landing page
@@ -60,6 +61,8 @@ vodongha-personal/
 │   ├── admin.scss              # Entry point for admin panel → wwwroot/admin.css
 │   ├── _admin-styles.scss      # All admin panel styles (imported by admin.scss)
 │   └── _*.scss                 # Public site partials (variables, base, nav, hero, ...)
+├── wwwroot/
+│   └── js/admin.js             # Event delegation for admin UI (select arrow toggle)
 ├── Migrations/                 # EF Core migrations
 ├── Dockerfile
 ├── fly.toml
@@ -102,21 +105,14 @@ EF Core migrations run automatically on startup. The app is available at `https:
 
 ### SCSS
 
-The project has two separate CSS pipelines:
+Two separate CSS pipelines:
 
 | Source | Output | Used by |
 |---|---|---|
 | `Styles/app.scss` | `wwwroot/app.css` | Public pages |
 | `Styles/admin.scss` | `wwwroot/admin.css` | Admin panel |
 
-`dotnet build` triggers `AspNetCore.SassCompiler` to compile both. Always commit the compiled `.css` files alongside their `.scss` source.
-
-If CSS appears stale after editing SCSS (Dart Sass skips recompile when the `.css` is newer), force recompile manually — find `dart.exe` under the SassCompiler NuGet tools path and run:
-
-```
-dart.exe sass.snapshot --style=expanded --no-source-map Styles\app.scss wwwroot\app.css
-dart.exe sass.snapshot --style=expanded --no-source-map Styles\admin.scss wwwroot\admin.css
-```
+Compiled CSS is **not committed** — listed in `.gitignore`. `dotnet build` compiles SCSS automatically via `AspNetCore.SassCompiler`. Docker also compiles from scratch (CSS excluded from `.dockerignore`).
 
 ---
 
@@ -137,33 +133,32 @@ URL: `/admin/login`
 
 ---
 
-## Visitor counter
+## Git workflow
 
-Unique visitors are tracked server-side by IP address using a middleware in `Program.cs`.
+All work is done on the `develop` branch. Changes are merged into `master` via Pull Request.
 
-- Reads the real IP from `X-Forwarded-For` (Fly.io proxy) or `RemoteIpAddress`
-- Each IP is stored once in `VisitorLogs` (unique index on `IpAddress`)
-- Localhost and private IPs (`::1`, `127.x`, `10.x`) are excluded
-- Count is displayed in the footer
+```bash
+# Always work on develop
+git checkout develop
 
----
+# Make changes, commit
+git add <files>
+git commit -m "describe the change"
+git push origin develop
 
-## i18n
+# Open a PR: develop → master
+gh pr create --title "PR title" --body "description" --base master --head develop
 
-Language toggle (VI / EN) via `LanguageService`. Default: **English**.
+# After merge, master deploys automatically to Fly.io
+```
 
-- UI strings: `Lang.T("key")` — keys defined in `LanguageService.cs`
-- Bilingual content: `Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description)`
+`master` is production — Fly.io deploys automatically on every merge to `master`.
 
 ---
 
 ## Deploy
 
-```bash
-git push origin master
-```
-
-Fly.io detects the push and deploys automatically (~2 minutes). Secrets are managed via `flyctl secrets set KEY=VALUE` — never committed to the repo.
+Merging a PR into `master` triggers Fly.io auto-deploy (~2 minutes). Secrets managed via `flyctl secrets set KEY=VALUE` — never committed.
 
 ### Fly.io secrets
 
@@ -173,6 +168,21 @@ Fly.io detects the push and deploys automatically (~2 minutes). Secrets are mana
 | `Admin__Username` | Admin panel username |
 | `Admin__Password` | Admin panel password |
 | `Email__ResendApiKey` | Resend API key |
+
+---
+
+## Visitor counter
+
+Unique visitors tracked server-side by IP via middleware in `Program.cs`. Each IP stored once in `VisitorLogs`. Localhost and private IPs excluded. Count displayed in footer.
+
+---
+
+## i18n
+
+Language toggle (VI / EN) via `LanguageService`. Default: **English**.
+
+- UI strings: `Lang.T("key")`
+- Bilingual content: `Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description)`
 
 ---
 

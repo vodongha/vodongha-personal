@@ -140,7 +140,7 @@
 
     &:hover:not(:disabled) { opacity: 0.85; }
     &:active:not(:disabled) { transform: scale(0.97); }
-    &:disabled { opacity: 0.35; cursor: not-allowed; }
+    &:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 
     &--primary { background: $color-primary; color: #0d0d0d; }
     &--ghost { background: transparent; color: #6b7280; border: 1px solid #2a2a2a; &:hover { color: $color-text; border-color: #4a4a4a; } }
@@ -588,7 +588,33 @@ tr.admin-row--dragover td {
         -webkit-overflow-scrolling: touch;
 
         &__logo   { display: none !important; }
-        &__logout { display: none !important; }
+        &__logout {
+            display: flex !important;
+            margin-top: 0 !important;
+            padding: 0 !important;
+            flex: 1;
+            min-width: 50px;
+
+            // Style the logout button like a nav item
+            button {
+                flex-direction: column !important;
+                gap: 0.15rem !important;
+                padding: 0.45rem 0.4rem 0.35rem !important;
+                font-size: 0.58rem !important;
+                border-radius: 0 !important;
+                border: none !important;
+                background: transparent !important;
+                color: #6b7280 !important;
+                width: 100%;
+                height: 100%;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                cursor: pointer;
+                i { font-size: 1.1rem !important; display: block; }
+                &:hover { color: #ef4444 !important; opacity: 1 !important; }
+            }
+        }
     }
 
     .admin-nav {
