@@ -592,36 +592,39 @@ tr.admin-row--dragover td {
             display: flex !important;
             margin-top: 0 !important;
             padding: 0 !important;
-            flex: 1;
+            flex: 1 !important;
             min-width: 50px;
+            max-width: 80px;
 
-            // Style the logout button like a nav item — icon only, text hidden
+            // Looks exactly like a nav item — icon only
             button {
+                display: flex !important;
                 flex-direction: column !important;
-                gap: 0 !important;
+                gap: 0.15rem !important;
                 padding: 0.45rem 0.4rem 0.35rem !important;
                 font-size: 0 !important;
                 border-radius: 0 !important;
                 border: none !important;
                 background: transparent !important;
                 color: #6b7280 !important;
-                width: 100%;
-                height: 100%;
-                justify-content: center;
-                align-items: center;
+                width: 100% !important;
+                height: 100% !important;
+                justify-content: center !important;
+                align-items: center !important;
                 text-align: center;
                 cursor: pointer;
-                i { font-size: 1.1rem !important; display: block; }
+                i { font-size: 1.1rem !important; display: block !important; }
                 &:hover { color: #ef4444 !important; opacity: 1 !important; }
             }
         }
     }
 
     .admin-nav {
+        flex: 1 !important;
         flex-direction: row !important;
         padding: 0 !important;
         gap: 0 !important;
-        width: 100% !important;
+        width: auto !important;
 
         &__item {
             flex-direction: column !important;
