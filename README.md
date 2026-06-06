@@ -14,8 +14,9 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Blog** — full posts with bilingual content, per-page Open Graph + Twitter Card meta tags
 - **Contact form** — messages saved to DB + email notification via Resend
 - **Visitor counter** — unique visitors tracked by IP, displayed in the footer
-- **Admin panel** — manage Skills, Projects, Blog, Experience, Education, Contact Messages, and site settings
+- **Admin panel** — manage Skills, Projects, Blog, Experience, Education, Contact Messages, Chat sessions, and site settings
 - **Mobile responsive** — admin panel has bottom navigation bar on screens ≤ 768px
+- **Live chat widget** — floating chat button on all public pages; visitors fill a contact form then chat in real-time; messages forwarded to a Telegram group (one topic per session); admin replies from Telegram or the admin panel
 
 ---
 
@@ -28,6 +29,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | ORM | Entity Framework Core |
 | Styling | SCSS compiled by `AspNetCore.SassCompiler` — `Styles/app.scss` → public, `Styles/admin.scss` → admin |
 | Email | [Resend](https://resend.com) API |
+| Chat | Telegram Bot API + SignalR — real-time two-way chat widget |
 | Deploy | [Fly.io](https://fly.io), app `vodongha`, region Singapore |
 | CI/CD | Merge PR to `master` → auto-deploy |
 
@@ -129,6 +131,7 @@ URL: `/admin/login`
 | Education | `/admin/education` | Manage education entries |
 | Experience | `/admin/experience` | Manage work experience entries |
 | Messages | `/admin/contacts` | View contact form submissions — unread badge, mark read, delete, reply |
+| Chats | `/admin/chats` | View live chat sessions, read conversation history, reply directly |
 | Settings | `/admin/settings` | Bio (VI/EN), social links (GitHub, LinkedIn, Facebook), avatar upload |
 
 ---
@@ -168,6 +171,9 @@ Merging a PR into `master` triggers Fly.io auto-deploy (~2 minutes). Secrets man
 | `Admin__Username` | Admin panel username |
 | `Admin__Password` | Admin panel password |
 | `Email__ResendApiKey` | Resend API key |
+| `Telegram__BotToken` | Telegram bot token (from @BotFather) |
+| `Telegram__ChatId` | Telegram group chat ID |
+| `Telegram__WebhookSecret` | Secret token to verify webhook calls |
 
 ---
 

@@ -19,6 +19,7 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 | ORM | Entity Framework Core — no raw SQL in application code |
 | SCSS | Two entry points compiled by `AspNetCore.SassCompiler` on `dotnet build`: `Styles/app.scss` → `wwwroot/app.css` (public), `Styles/admin.scss` → `wwwroot/admin.css` (admin). Compiled CSS is **gitignored** — never commit `wwwroot/app.css` or `wwwroot/admin.css`. |
 | Email | Resend API (`Email__ResendApiKey`). Sender: `no-reply@vodongha.id.vn`, recipient: `vodongha@hotmail.com` |
+| Chat | Telegram Bot API + SignalR (`Microsoft.AspNetCore.SignalR.Client`). Secrets: `Telegram__BotToken`, `Telegram__ChatId`, `Telegram__WebhookSecret` |
 | Deploy | Fly.io, app `vodongha`, region `sin`. Merge PR to `master` → auto-deploy (~2 min) |
 | Migrations | EF Core, applied automatically on startup via `MigrateAsync()` in `Program.cs` |
 
@@ -243,6 +244,51 @@ On screens ≤ 768px, the sidebar becomes a fixed bottom navigation bar:
 - `.admin-main` → `width: 100%; padding-bottom: 5rem` (space for bottom nav)
 
 All critical mobile overrides use `!important` to guarantee they win over desktop flex styles.
+
+## Chat widget
+
+Floating chat button (bottom-right) on all public pages via `MainLayout.razor`. Users fill a contact form (name, phone, email), then chat in real-time.
+
+### Architecture
+
+```
+User types message
+  → ChatService.SendUserMessageAsync()
+  → saves ChatMessage (IsFromUser=true) to DB
+  → TelegramService creates forum topic (first message) or sends to existing topic
+  → Admin replies in Telegram group
+  → POST /api/telegram/webhook fires
+  → ChatService.HandleTelegramWebhookAsync()
+  → saves ChatMessage (IsFromUser=false) to DB
+  → IHubContext<ChatHub>.Clients.Group("session_{id}").SendAsync("ReceiveMessage", ...)
+  → ChatWidget receives via HubConnection, updates UI
+```
+
+Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()` → pushes via SignalR AND sends to Telegram topic.
+
+### Key files
+
+| File | Role |
+|---|---|
+| `Hubs/ChatHub.cs` | SignalR hub — `JoinSession(sessionId)` adds client to group |
+| `Services/TelegramService.cs` | Bot API calls: `CreateTopicAsync`, `SendMessageAsync` |
+| `Services/ChatService.cs` | Business logic: sessions, messages, webhook handler, SignalR push |
+| `Components/Shared/ChatWidget.razor` + `.cs` | Public chat widget (floating button, form, chat window) |
+| `Components/Pages/Admin/AdminChats.razor` + `.cs` | Admin chat management page |
+| `wwwroot/js/chat.js` | `chatUtils.scrollToBottom(elementId)` — called from C# via IJSRuntime |
+
+### Session persistence
+
+`ProtectedLocalStorage` stores `chatSessionId` in the browser. On page reload, the widget restores the session and reconnects to the SignalR group.
+
+### Telegram setup
+
+- Bot: `@vodongha_personal_bot` (Forum group: `vodongha-personal Chat`)
+- Webhook registered at: `https://vodongha.fly.dev/api/telegram/webhook`
+- Each chat session = one forum topic in the group (title: `Name | Email`)
+- Fly.io secrets: `Telegram__BotToken`, `Telegram__ChatId`, `Telegram__WebhookSecret`
+
+**Note:** `vodongha.id.vn` may fail DNS resolution from Telegram servers — use `vodongha.fly.dev` for the webhook URL.
 
 ## Coding conventions
 
