@@ -14,19 +14,49 @@
             <li><a href="#blog" class="nav__link">@Lang.T("nav.blog")</a></li>
         </ul>
         <div class="nav__actions">
-            <button class="nav__lang-toggle" @onclick="ToggleLang" title="Switch language">
-                @if (Lang.IsVi) { <span>EN</span> } else { <span>VI</span> }
-            </button>
             <a href="#contact" class="nav__cta">
                 <i class="bi bi-chat-dots"></i>
                 @Lang.T("nav.contact")
             </a>
-            <a href="/admin" class="nav__avatar-btn" title="Admin">
-                <i class="bi bi-person-circle"></i>
-            </a>
+            <button class="nav__lang-toggle" @onclick="ToggleLang" title="Switch language">
+                @if (Lang.IsVi) { <span>EN</span> } else { <span>VI</span> }
+            </button>
+            <div class="nav__user">
+                <button class="nav__avatar-btn" @onclick="ToggleDropdown" title="Admin">
+                    <i class="bi bi-person-circle"></i>
+                </button>
+                @if (_showDropdown)
+                {
+                    <div class="nav__dropdown">
+                        <AuthorizeView>
+                            <Authorized>
+                                <a href="/admin" class="nav__dropdown-item" @onclick="CloseDropdown">
+                                    <i class="bi bi-grid"></i> Dashboard
+                                </a>
+                                <div class="nav__dropdown-divider"></div>
+                                <form method="post" action="/admin/logout">
+                                    <button type="submit" class="nav__dropdown-item nav__dropdown-item--danger">
+                                        <i class="bi bi-box-arrow-left"></i> Đăng xuất
+                                    </button>
+                                </form>
+                            </Authorized>
+                            <NotAuthorized>
+                                <a href="/admin/login" class="nav__dropdown-item" @onclick="CloseDropdown">
+                                    <i class="bi bi-lock"></i> Đăng nhập
+                                </a>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </nav>
+
+@if (_showDropdown)
+{
+    <div class="nav__overlay" @onclick="CloseDropdown"></div>
+}
 
 <main>
     @Body
@@ -51,6 +81,8 @@
 </div>
 
 @code {
+    private bool _showDropdown;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -68,13 +100,9 @@
         await JS.InvokeVoidAsync("localStorage.setItem", "lang", next);
     }
 
-    protected override void OnInitialized()
-    {
-        Lang.OnChange += StateHasChanged;
-    }
+    private void ToggleDropdown() => _showDropdown = !_showDropdown;
+    private void CloseDropdown() => _showDropdown = false;
 
-    public void Dispose()
-    {
-        Lang.OnChange -= StateHasChanged;
-    }
+    protected override void OnInitialized() => Lang.OnChange += StateHasChanged;
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
 }
