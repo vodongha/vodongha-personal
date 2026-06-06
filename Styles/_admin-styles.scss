@@ -558,7 +558,114 @@ tr.admin-row--dragover td {
     .admin-table__actions { display: flex; gap: 0.5rem; }
 }
 
-// QuickGrid Paginator dark theme — load after QuickGrid CSS so we win specificity
+// ── Mobile responsive ────────────────────────────────────────────
+@media (max-width: 768px) {
+
+    // Sidebar → bottom navigation bar
+    .admin-sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        min-height: unset;
+        height: auto;
+        flex-direction: row;
+        padding: 0;
+        border-right: none;
+        border-top: 1px solid #2a2a2a;
+        z-index: 100;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+
+        &__logo  { display: none; }
+        &__logout { display: none; }
+    }
+
+    .admin-nav {
+        flex-direction: row;
+        padding: 0;
+        gap: 0;
+        width: 100%;
+
+        &__item {
+            flex-direction: column;
+            gap: 0.2rem;
+            padding: 0.5rem 0.5rem 0.4rem;
+            font-size: 0.6rem;
+            border-radius: 0;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 56px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            i { font-size: 1.15rem; }
+        }
+    }
+
+    // Main content — full width, space for bottom nav
+    .admin-main {
+        padding: 1rem 0.75rem 5rem;
+    }
+
+    // Header
+    .admin-header {
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        &__title { font-size: 1.2rem; }
+    }
+
+    // Toolbar wraps and expands
+    .admin-toolbar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .admin-search-wrap { max-width: 100%; flex: 1 1 140px; }
+    .admin-select-wrap { flex-shrink: 0; }
+
+    // Tables — horizontal scroll
+    .quickgrid, .admin-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+
+        tbody tr:not(:has(> td:not(:empty))) { display: none !important; }
+    }
+
+    // Form grid collapses to 1 column
+    .admin-form__row { grid-template-columns: 1fr; }
+
+    // Modal — full width on small screens
+    .admin-modal {
+        padding: 1.25rem;
+        &--lg { max-width: 100%; }
+    }
+
+    // Settings grid already has its own media query — ok
+
+    // Dashboard cards already use auto-fill — ok
+
+    // Paginator wraps
+    .paginator {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    // Toast — full width at bottom, above nav
+    .toast-container {
+        bottom: 5rem;
+        right: 0.75rem;
+        left: 0.75rem;
+    }
+    .toast { max-width: 100%; min-width: unset; }
+}
+
+// ── QuickGrid Paginator dark theme — load after QuickGrid CSS so we win specificity
 .paginator {
     display: flex !important;
     flex-direction: row !important;
