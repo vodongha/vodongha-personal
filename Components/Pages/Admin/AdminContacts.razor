@@ -58,7 +58,7 @@
                 </TemplateColumn>
                 <PropertyColumn Property="m => m.Subject" Title="Subject" Sortable="true" />
                 <PropertyColumn Property="m => m.SentAt" Title="Date" Format="yyyy-MM-dd HH:mm" Sortable="true" />
-                <TemplateColumn Title="">
+                <TemplateColumn Title="Hành động">
                     <div class="admin-table__actions">
                         <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenMessage(context)" title="View"><i class="bi bi-eye"></i></button>
                         <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(context.Id)" title="Delete"><i class="bi bi-trash"></i></button>
