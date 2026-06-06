@@ -6,6 +6,8 @@
 @using vodongha.Data.Models
 @inject IDbContextFactory<AppDbContext> DbFactory
 @inject ToastService Toast
+@inject IWebHostEnvironment Env
+@inject IJSRuntime JS
 
 <div class="admin-shell">
     <aside class="admin-sidebar">
@@ -84,8 +86,32 @@
                     <input class="admin-form__input" value="@Val["Facebook"]" @oninput='e => Val["Facebook"] = e.Value?.ToString() ?? ""' placeholder="https://facebook.com/..." />
                 </div>
                 <div class="admin-form__group">
-                    <label class="admin-form__label">Avatar URL</label>
-                    <input class="admin-form__input" value="@Val["AvatarUrl"]" @oninput='e => Val["AvatarUrl"] = e.Value?.ToString() ?? ""' />
+                    <label class="admin-form__label">Avatar</label>
+                    <div class="admin-avatar-upload" @onclick="TriggerFilePicker" title="Bấm để đổi ảnh">
+                        @if (!string.IsNullOrEmpty(Val["AvatarUrl"]))
+                        {
+                            <img src="@Val["AvatarUrl"]" alt="Avatar" class="admin-avatar-upload__img" />
+                        }
+                        else
+                        {
+                            <div class="admin-avatar-upload__placeholder"><i class="bi bi-person-fill"></i></div>
+                        }
+                        <div class="admin-avatar-upload__overlay">
+                            @if (_uploading)
+                            {
+                                <span class="admin-avatar-upload__label"><i class="bi bi-arrow-repeat admin-spin"></i></span>
+                            }
+                            else
+                            {
+                                <span class="admin-avatar-upload__label"><i class="bi bi-camera"></i> Đổi ảnh</span>
+                            }
+                        </div>
+                    </div>
+                    <InputFile id="avatarFileInput" OnChange="OnAvatarFileChange" accept="image/*" style="display:none" />
+                    @if (!string.IsNullOrEmpty(Val["AvatarUrl"]))
+                    {
+                        <small style="opacity:.4;font-size:0.75rem;margin-top:0.35rem;display:block;word-break:break-all">@Val["AvatarUrl"]</small>
+                    }
                 </div>
             </div>
         </div>
@@ -99,6 +125,43 @@
 </div>
 
 @code {
+    private bool _uploading;
+
+    private async Task TriggerFilePicker()
+    {
+        await JS.InvokeVoidAsync("eval", "document.getElementById('avatarFileInput').click()");
+    }
+
+    private async Task OnAvatarFileChange(InputFileChangeEventArgs e)
+    {
+        IBrowserFile file = e.File;
+        if (file is null) { return; }
+
+        _uploading = true;
+        try
+        {
+            string ext = Path.GetExtension(file.Name).ToLowerInvariant();
+            string fileName = $"avatar{ext}";
+            string uploadsDir = Path.Combine(Env.WebRootPath, "uploads");
+            Directory.CreateDirectory(uploadsDir);
+            string filePath = Path.Combine(uploadsDir, fileName);
+
+            await using FileStream fs = new(filePath, FileMode.Create);
+            await file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024).CopyToAsync(fs);
+
+            Val["AvatarUrl"] = $"/uploads/{fileName}";
+            Toast.Show("Đã tải ảnh lên thành công");
+        }
+        catch (Exception ex)
+        {
+            Toast.Show($"Lỗi: {ex.Message}");
+        }
+        finally
+        {
+            _uploading = false;
+        }
+    }
+
     private Dictionary<string, string> Val = new()
     {
         ["Name"] = "", ["Title"] = "", ["Tagline"] = "", ["Bio"] = "", ["BioEn"] = "",
