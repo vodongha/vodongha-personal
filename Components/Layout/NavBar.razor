@@ -1,0 +1,89 @@
+@rendermode InteractiveServer
+@inject LanguageService Lang
+@inject IJSRuntime JS
+@implements IDisposable
+
+<nav class="nav">
+    <div class="nav__inner">
+        <a href="/" class="nav__logo">
+            vdh<span>.dev</span>
+        </a>
+        <ul class="nav__links">
+            <li><a href="#skills" class="nav__link">@Lang.T("nav.skills")</a></li>
+            <li><a href="#projects" class="nav__link">@Lang.T("nav.projects")</a></li>
+            <li><a href="#blog" class="nav__link">@Lang.T("nav.blog")</a></li>
+        </ul>
+        <div class="nav__actions">
+            <a href="#contact" class="nav__cta">
+                <i class="bi bi-chat-dots"></i>
+                @Lang.T("nav.contact")
+            </a>
+            <button class="nav__lang-toggle" @onclick="ToggleLang" title="Switch language">
+                @if (Lang.IsVi) { <span>EN</span> } else { <span>VI</span> }
+            </button>
+            <div class="nav__user">
+                <button class="nav__avatar-btn" @onclick="ToggleDropdown" title="Admin">
+                    <i class="bi bi-person-circle"></i>
+                </button>
+                @if (_showDropdown)
+                {
+                    <div class="nav__dropdown">
+                        <AuthorizeView>
+                            <Authorized>
+                                <a href="/admin" class="nav__dropdown-item" @onclick="CloseDropdown">
+                                    <i class="bi bi-grid"></i> Dashboard
+                                </a>
+                                <div class="nav__dropdown-divider"></div>
+                                <form method="post" action="/admin/logout">
+                                    <button type="submit" class="nav__dropdown-item nav__dropdown-item--danger">
+                                        <i class="bi bi-box-arrow-left"></i> Đăng xuất
+                                    </button>
+                                </form>
+                            </Authorized>
+                            <NotAuthorized>
+                                <a href="/admin/login" class="nav__dropdown-item" @onclick="CloseDropdown">
+                                    <i class="bi bi-lock"></i> Đăng nhập
+                                </a>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</nav>
+
+@if (_showDropdown)
+{
+    <div class="nav__overlay" @onclick="CloseDropdown"></div>
+}
+
+@code {
+    private bool _showDropdown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            string saved = await JS.InvokeAsync<string>("localStorage.getItem", "lang") ?? "vi";
+            if (saved != Lang.Current)
+            {
+                Lang.Set(saved);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task ToggleLang()
+    {
+        string next = Lang.IsVi ? "en" : "vi";
+        Lang.Set(next);
+        await JS.InvokeVoidAsync("localStorage.setItem", "lang", next);
+    }
+
+    private void ToggleDropdown() => _showDropdown = !_showDropdown;
+    private void CloseDropdown() => _showDropdown = false;
+
+    protected override void OnInitialized() => Lang.OnChange += StateHasChanged;
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
+}
