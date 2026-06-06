@@ -1,0 +1,54 @@
+@page "/admin"
+@layout AdminLayout
+@attribute [Authorize]
+@inject NavigationManager Nav
+@using Microsoft.AspNetCore.Authorization
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__logo">
+            <span>vdh</span><span class="dot">.</span><span>admin</span>
+        </div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav__item admin-nav__item--active"><i class="bi bi-grid"></i> Dashboard</a>
+            <a href="/admin/skills" class="admin-nav__item"><i class="bi bi-bar-chart"></i> Skills</a>
+            <a href="/admin/projects" class="admin-nav__item"><i class="bi bi-folder2"></i> Projects</a>
+            <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
+            <a href="/admin/experience" class="admin-nav__item"><i class="bi bi-briefcase"></i> Experience</a>
+            <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+        </nav>
+        <form method="post" action="/admin/logout" class="admin-sidebar__logout">
+            <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">Dashboard</h1>
+            <a href="/" target="_blank" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-up-right"></i> Xem website</a>
+        </header>
+
+        <div class="admin-cards">
+            <a href="/admin/skills" class="admin-card">
+                <i class="bi bi-bar-chart admin-card__icon"></i>
+                <span class="admin-card__label">Skills</span>
+            </a>
+            <a href="/admin/projects" class="admin-card">
+                <i class="bi bi-folder2 admin-card__icon"></i>
+                <span class="admin-card__label">Projects</span>
+            </a>
+            <a href="/admin/education" class="admin-card">
+                <i class="bi bi-mortarboard admin-card__icon"></i>
+                <span class="admin-card__label">Education</span>
+            </a>
+            <a href="/admin/experience" class="admin-card">
+                <i class="bi bi-briefcase admin-card__icon"></i>
+                <span class="admin-card__label">Experience</span>
+            </a>
+            <a href="/admin/blog" class="admin-card">
+                <i class="bi bi-file-text admin-card__icon"></i>
+                <span class="admin-card__label">Blog</span>
+            </a>
+        </div>
+    </main>
+</div>

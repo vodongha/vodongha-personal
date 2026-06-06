@@ -9,9 +9,23 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
     public DbSet<Skill> Skills => Set<Skill>();
+    public DbSet<Education> Educations => Set<Education>();
+    public DbSet<Experience> Experiences => Set<Experience>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Education>()
+            .HasData(
+                new Education { Id = 1, School = "Nguyen Tat Thanh University", Degree = "Bachelor's degree", Field = "Computer Software Engineering", StartYear = 2016, EndYear = 2020, Order = 1 },
+                new Education { Id = 2, School = "Vien Dong College", Degree = "Associate's degree", Field = "Automotive Engineering Technology", StartYear = 2013, EndYear = 2016, Order = 2 }
+            );
+
+        modelBuilder.Entity<Experience>()
+            .HasData(
+                new Experience { Id = 1, Company = "cisbox GmbH", Role = "Web Developer (Onsite)", Location = "Ho Chi Minh City", StartYear = 2021, StartMonth = 10, IsCurrent = true, Description = "Phát triển konfipay — nền tảng ngân hàng trực tuyến doanh nghiệp chuẩn EBICS. Full-stack với ASP.NET Core, Blazor WASM, SQL Server.", Order = 1 },
+                new Experience { Id = 2, Company = "BSP Software Services Corporation", Role = "Web Developer", Location = "Ho Chi Minh City", StartYear = 2020, StartMonth = 10, IsCurrent = true, Order = 2 }
+            );
+
         modelBuilder.Entity<BlogPost>()
             .HasIndex(b => b.Slug)
             .IsUnique();
