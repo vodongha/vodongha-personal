@@ -1,0 +1,129 @@
+@page "/admin/settings"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using vodongha.Data.Models
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__logo"><span>vdh</span><span class="dot">.</span><span>admin</span></div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav__item"><i class="bi bi-grid"></i> Dashboard</a>
+            <a href="/admin/skills" class="admin-nav__item"><i class="bi bi-bar-chart"></i> Skills</a>
+            <a href="/admin/projects" class="admin-nav__item"><i class="bi bi-folder2"></i> Projects</a>
+            <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
+            <a href="/admin/experience" class="admin-nav__item"><i class="bi bi-briefcase"></i> Experience</a>
+            <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+            <a href="/admin/settings" class="admin-nav__item admin-nav__item--active"><i class="bi bi-gear"></i> Thông tin</a>
+        </nav>
+        <form method="post" action="/admin/logout" class="admin-sidebar__logout">
+            <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">Thông tin cá nhân</h1>
+            @if (Saved)
+            {
+                <span class="admin-badge" style="background:rgba(110,231,183,.15);color:#6ee7b7">✓ Đã lưu</span>
+            }
+        </header>
+
+        <div class="admin-settings-grid">
+            <div class="admin-settings-section">
+                <h2 class="admin-settings-section__title">Giới thiệu</h2>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">Tên</label>
+                    <input class="admin-form__input" value="@Val["Name"]" @oninput='e => Val["Name"] = e.Value?.ToString() ?? ""' />
+                </div>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">Chức danh</label>
+                    <input class="admin-form__input" value="@Val["Title"]" @oninput='e => Val["Title"] = e.Value?.ToString() ?? ""' />
+                </div>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">Tagline</label>
+                    <input class="admin-form__input" value="@Val["Tagline"]" @oninput='e => Val["Tagline"] = e.Value?.ToString() ?? ""' />
+                </div>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">Bio</label>
+                    <textarea class="admin-form__input admin-form__textarea" @oninput='e => Val["Bio"] = e.Value?.ToString() ?? ""'>@Val["Bio"]</textarea>
+                </div>
+            </div>
+
+            <div class="admin-settings-section">
+                <h2 class="admin-settings-section__title">Liên hệ</h2>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">Email</label>
+                    <input class="admin-form__input" type="email" value="@Val["Email"]" @oninput='e => Val["Email"] = e.Value?.ToString() ?? ""' />
+                </div>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">Điện thoại</label>
+                    <input class="admin-form__input" value="@Val["Phone"]" @oninput='e => Val["Phone"] = e.Value?.ToString() ?? ""' />
+                </div>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">Địa điểm</label>
+                    <input class="admin-form__input" value="@Val["Location"]" @oninput='e => Val["Location"] = e.Value?.ToString() ?? ""' />
+                </div>
+
+                <h2 class="admin-settings-section__title" style="margin-top:1.5rem">Mạng xã hội</h2>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">GitHub URL</label>
+                    <input class="admin-form__input" value="@Val["GitHub"]" @oninput='e => Val["GitHub"] = e.Value?.ToString() ?? ""' />
+                </div>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">LinkedIn URL</label>
+                    <input class="admin-form__input" value="@Val["LinkedIn"]" @oninput='e => Val["LinkedIn"] = e.Value?.ToString() ?? ""' />
+                </div>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">Avatar URL</label>
+                    <input class="admin-form__input" value="@Val["AvatarUrl"]" @oninput='e => Val["AvatarUrl"] = e.Value?.ToString() ?? ""' />
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:2rem">
+            <button class="admin-btn admin-btn--primary" @onclick="SaveAll">
+                <i class="bi bi-check-lg"></i> Lưu tất cả
+            </button>
+        </div>
+    </main>
+</div>
+
+@code {
+    private Dictionary<string, string> Val = new()
+    {
+        ["Name"] = "", ["Title"] = "", ["Tagline"] = "", ["Bio"] = "",
+        ["Email"] = "", ["Phone"] = "", ["Location"] = "",
+        ["GitHub"] = "", ["LinkedIn"] = "", ["AvatarUrl"] = ""
+    };
+    private bool Saved;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        List<SiteSetting> settings = await db.SiteSettings.ToListAsync();
+        foreach (SiteSetting s in settings)
+        {
+            Val[s.Key] = s.Value;
+        }
+    }
+
+    private async Task SaveAll()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        foreach (KeyValuePair<string, string> kvp in Val)
+        {
+            SiteSetting? setting = await db.SiteSettings.FirstOrDefaultAsync(s => s.Key == kvp.Key);
+            if (setting != null) { setting.Value = kvp.Value; }
+            else { db.SiteSettings.Add(new SiteSetting { Key = kvp.Key, Value = kvp.Value }); }
+        }
+        await db.SaveChangesAsync();
+        Saved = true;
+        await Task.Delay(2000);
+        Saved = false;
+        StateHasChanged();
+    }
+}
