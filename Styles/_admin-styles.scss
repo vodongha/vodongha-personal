@@ -563,39 +563,42 @@ tr.admin-row--dragover td {
 
     // Shell → block, kills flex layout entirely so sidebar can't reserve column space
     .admin-shell {
-        display: block;
+        display: block !important;
+        flex-direction: unset !important;
     }
 
     // Sidebar → fixed bottom navigation bar
     .admin-sidebar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        min-height: unset;
-        height: auto;
-        flex-direction: row;
-        padding: 0;
-        border-right: none;
-        border-top: 1px solid #2a2a2a;
-        z-index: 100;
-        overflow-x: auto;
-        overflow-y: hidden;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: unset !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: unset !important;
+        height: auto !important;
+        flex-direction: row !important;
+        padding: 0 !important;
+        border-right: none !important;
+        border-top: 1px solid #2a2a2a !important;
+        z-index: 100 !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
         -webkit-overflow-scrolling: touch;
 
-        &__logo   { display: none; }
-        &__logout { display: none; }
+        &__logo   { display: none !important; }
+        &__logout { display: none !important; }
     }
 
     .admin-nav {
-        flex-direction: row;
-        padding: 0;
-        gap: 0;
-        width: 100%;
+        flex-direction: row !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        width: 100% !important;
 
         &__item {
-            flex-direction: column;
+            flex-direction: column !important;
             gap: 0.15rem;
             padding: 0.45rem 0.4rem 0.35rem;
             font-size: 0.58rem;
@@ -612,10 +615,10 @@ tr.admin-row--dragover td {
 
     // Main content — full width, space for bottom nav
     .admin-main {
-        flex: 1;
-        width: 100%;
-        min-width: 0;
-        padding: 1rem 0.75rem 5rem;
+        flex: unset !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 1rem 0.75rem 5rem !important;
     }
 
     // Header
