@@ -36,6 +36,34 @@
             <div class="admin-settings-section">
                 <h2 class="admin-settings-section__title">Giới thiệu</h2>
                 <div class="admin-form__group">
+                    <label class="admin-form__label">Avatar</label>
+                    <div class="admin-avatar-upload" @onclick="TriggerFilePicker" title="Bấm để đổi ảnh">
+                        @if (!string.IsNullOrEmpty(Val["AvatarUrl"]))
+                        {
+                            <img src="@Val["AvatarUrl"]" alt="Avatar" class="admin-avatar-upload__img" />
+                        }
+                        else
+                        {
+                            <div class="admin-avatar-upload__placeholder"><i class="bi bi-person-fill"></i></div>
+                        }
+                        <div class="admin-avatar-upload__overlay">
+                            @if (_uploading)
+                            {
+                                <span class="admin-avatar-upload__label"><i class="bi bi-arrow-repeat admin-spin"></i></span>
+                            }
+                            else
+                            {
+                                <span class="admin-avatar-upload__label"><i class="bi bi-camera"></i> Đổi ảnh</span>
+                            }
+                        </div>
+                    </div>
+                    <InputFile id="avatarFileInput" OnChange="OnAvatarFileChange" accept="image/*" style="display:none" />
+                    @if (!string.IsNullOrEmpty(Val["AvatarUrl"]))
+                    {
+                        <small style="opacity:.4;font-size:0.75rem;margin-top:0.35rem;display:block;word-break:break-all">@Val["AvatarUrl"]</small>
+                    }
+                </div>
+                <div class="admin-form__group">
                     <label class="admin-form__label">Tên</label>
                     <input class="admin-form__input" value="@Val["Name"]" @oninput='e => Val["Name"] = e.Value?.ToString() ?? ""' />
                 </div>
@@ -84,34 +112,6 @@
                 <div class="admin-form__group">
                     <label class="admin-form__label">Facebook URL</label>
                     <input class="admin-form__input" value="@Val["Facebook"]" @oninput='e => Val["Facebook"] = e.Value?.ToString() ?? ""' placeholder="https://facebook.com/..." />
-                </div>
-                <div class="admin-form__group">
-                    <label class="admin-form__label">Avatar</label>
-                    <div class="admin-avatar-upload" @onclick="TriggerFilePicker" title="Bấm để đổi ảnh">
-                        @if (!string.IsNullOrEmpty(Val["AvatarUrl"]))
-                        {
-                            <img src="@Val["AvatarUrl"]" alt="Avatar" class="admin-avatar-upload__img" />
-                        }
-                        else
-                        {
-                            <div class="admin-avatar-upload__placeholder"><i class="bi bi-person-fill"></i></div>
-                        }
-                        <div class="admin-avatar-upload__overlay">
-                            @if (_uploading)
-                            {
-                                <span class="admin-avatar-upload__label"><i class="bi bi-arrow-repeat admin-spin"></i></span>
-                            }
-                            else
-                            {
-                                <span class="admin-avatar-upload__label"><i class="bi bi-camera"></i> Đổi ảnh</span>
-                            }
-                        </div>
-                    </div>
-                    <InputFile id="avatarFileInput" OnChange="OnAvatarFileChange" accept="image/*" style="display:none" />
-                    @if (!string.IsNullOrEmpty(Val["AvatarUrl"]))
-                    {
-                        <small style="opacity:.4;font-size:0.75rem;margin-top:0.35rem;display:block;word-break:break-all">@Val["AvatarUrl"]</small>
-                    }
                 </div>
             </div>
         </div>
