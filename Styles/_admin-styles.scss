@@ -394,6 +394,42 @@ tr.admin-row--dragover td {
     to   { opacity: 1; transform: translateX(0); }
 }
 
+// ── Avatar upload ─────────────────────────────────────────────────
+.admin-avatar-upload {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid #2a2a2a;
+    transition: border-color 200ms;
+
+    &:hover { border-color: $color-primary; }
+
+    &__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    &__placeholder {
+        width: 100%; height: 100%;
+        background: #1a1a1a;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 3rem; color: #4a4a4a;
+    }
+
+    &__overlay {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity 200ms;
+    }
+    &:hover &__overlay { opacity: 1; }
+
+    &__label { color: #fff; font-size: 0.8rem; display: flex; align-items: center; gap: 0.35rem; }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.admin-spin { display: inline-block; animation: spin 0.8s linear infinite; }
+
 // ── Toolbar (search + actions) ────────────────────────────────────
 .admin-toolbar {
     display: flex;
