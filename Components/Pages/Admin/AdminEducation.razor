@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using vodongha.Data.Models
 @inject IDbContextFactory<AppDbContext> DbFactory
+@inject ToastService Toast
 
 <div class="admin-shell">
     <aside class="admin-sidebar">
@@ -129,13 +130,14 @@
         await db.SaveChangesAsync();
         ShowForm = false;
         await LoadAsync();
+        Toast.Show("Đã lưu thành công");
     }
 
     private async Task Delete(int id)
     {
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         Education? e = await db.Educations.FindAsync(id);
-        if (e != null) { db.Educations.Remove(e); await db.SaveChangesAsync(); }
+        if (e != null) { db.Educations.Remove(e); await db.SaveChangesAsync(); Toast.Show("Đã xoá"); }
         await LoadAsync();
     }
 }

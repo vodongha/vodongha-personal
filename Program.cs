@@ -55,6 +55,7 @@ builder.Services.AddScoped<EducationService>();
 builder.Services.AddScoped<LanguageService>();
 builder.Services.AddScoped<SiteSettingService>();
 builder.Services.AddScoped<VisitorService>();
+builder.Services.AddScoped<ToastService>();
 
 WebApplication app = builder.Build();
 
