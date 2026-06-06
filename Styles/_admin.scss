@@ -201,6 +201,28 @@
     &__check { display: flex; align-items: center; label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: $color-text; cursor: pointer; } }
 }
 
+// ── Settings ──────────────────────────────────────────────────────
+.admin-settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+
+    @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.admin-settings-section {
+    &__title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: $color-primary;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #2a2a2a;
+    }
+}
+
 // ── Login ─────────────────────────────────────────────────────────
 .admin-login {
     min-height: 100vh;
