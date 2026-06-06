@@ -22,7 +22,14 @@
                             <li class="skills__item">
                                 <div class="skills__item-header">
                                     <span class="skills__item-name">
-                                        <i class="@skill.Icon colored"></i>
+                                        @if (skill.Icon.StartsWith("bi "))
+                                        {
+                                            <i class="@skill.Icon"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="@skill.Icon colored"></i>
+                                        }
                                         @skill.Name
                                     </span>
                                     <span class="skills__item-pct">@skill.Proficiency%</span>
