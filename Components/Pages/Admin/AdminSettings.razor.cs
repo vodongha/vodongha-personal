@@ -1,0 +1,85 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop;
+using vodongha.Data;
+using vodongha.Data.Models;
+using vodongha.Services;
+
+namespace vodongha.Components.Pages.Admin;
+
+public partial class AdminSettings : ComponentBase
+{
+    [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
+    [Inject] private ToastService Toast { get; set; } = default!;
+    [Inject] private IWebHostEnvironment Env { get; set; } = default!;
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+
+    private bool _uploading;
+
+    private async Task TriggerFilePicker()
+    {
+        await JS.InvokeVoidAsync("eval", "document.getElementById('avatarFileInput').click()");
+    }
+
+    private async Task OnAvatarFileChange(InputFileChangeEventArgs e)
+    {
+        IBrowserFile file = e.File;
+        if (file is null) { return; }
+
+        _uploading = true;
+        try
+        {
+            string ext = Path.GetExtension(file.Name).ToLowerInvariant();
+            string fileName = $"avatar{ext}";
+            string uploadsDir = Path.Combine(Env.WebRootPath, "uploads");
+            Directory.CreateDirectory(uploadsDir);
+            string filePath = Path.Combine(uploadsDir, fileName);
+
+            await using FileStream fs = new(filePath, FileMode.Create);
+            await file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024).CopyToAsync(fs);
+
+            Val["AvatarUrl"] = $"/uploads/{fileName}";
+            Toast.Show("Đã tải ảnh lên thành công");
+        }
+        catch (Exception ex)
+        {
+            Toast.Show($"Lỗi: {ex.Message}");
+        }
+        finally
+        {
+            _uploading = false;
+        }
+    }
+
+    private Dictionary<string, string> Val = new()
+    {
+        ["Name"] = "", ["Title"] = "", ["Tagline"] = "", ["Bio"] = "", ["BioEn"] = "",
+        ["Email"] = "", ["Phone"] = "", ["Location"] = "",
+        ["GitHub"] = "", ["LinkedIn"] = "", ["Facebook"] = "", ["AvatarUrl"] = ""
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        List<SiteSetting> settings = await db.SiteSettings.ToListAsync();
+        foreach (SiteSetting s in settings)
+        {
+            Val[s.Key] = s.Value;
+        }
+    }
+
+    private async Task SaveAll()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        foreach (KeyValuePair<string, string> kvp in Val)
+        {
+            SiteSetting? setting = await db.SiteSettings.FirstOrDefaultAsync(s => s.Key == kvp.Key);
+            if (setting != null) { setting.Value = kvp.Value; }
+            else { db.SiteSettings.Add(new SiteSetting { Key = kvp.Key, Value = kvp.Value }); }
+        }
+        await db.SaveChangesAsync();
+        Toast.Show("Đã lưu cài đặt thành công");
+    }
+}

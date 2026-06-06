@@ -1,0 +1,59 @@
+<section class="section education" id="education">
+    <div class="section__header">
+        <span class="section__label">@Lang.T("edu.label")</span>
+        <h2 class="section__title">@Lang.T("edu.title")</h2>
+    </div>
+
+    @if (_items is not null)
+    {
+        <div class="timeline">
+            @foreach (Education item in VisibleItems)
+            {
+                <div class="timeline__item">
+                    <div class="timeline__dot"></div>
+                    <div class="timeline__content">
+                        <div class="timeline__header">
+                            <h3 class="timeline__role">
+                                @if (!string.IsNullOrEmpty(item.WebsiteUrl))
+                                {
+                                    <a href="@item.WebsiteUrl" target="_blank" class="timeline__company-link">@item.School</a>
+                                }
+                                else
+                                {
+                                    @item.School
+                                }
+                            </h3>
+                            <span class="timeline__period">@item.StartYear — @(item.EndYear?.ToString() ?? "Present")</span>
+                        </div>
+                        <p class="timeline__company">
+                            <i class="bi bi-mortarboard"></i> @item.Degree · @item.Field
+                        </p>
+                        @{
+                            string? desc = Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description);
+                        }
+                        @if (!string.IsNullOrEmpty(desc))
+                        {
+                            <p class="timeline__desc">@desc</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (_items.Count > InitialCount)
+        {
+            <div class="section__expand">
+                <button class="section__expand-btn" @onclick="Toggle">
+                    @if (_expanded)
+                    {
+                        <i class="bi bi-chevron-up"></i> @Lang.T("common.showless")
+                    }
+                    else
+                    {
+                        <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore")
+                    }
+                </button>
+            </div>
+        }
+    }
+</section>

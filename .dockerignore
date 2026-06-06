@@ -10,3 +10,7 @@
 appsettings.Development.json
 run.log
 README.md
+wwwroot/app.css
+wwwroot/app.css.map
+wwwroot/admin.css
+wwwroot/admin.css.map

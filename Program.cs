@@ -1,5 +1,7 @@
+using Resend;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using vodongha.Components;
 using vodongha.Data;
@@ -9,6 +11,11 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Persist Data Protection keys to DB so they survive redeploys
+builder.Services.AddDataProtection()
+    .PersistKeysToDbContext<AppDbContext>()
+    .SetApplicationName("vodongha");
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -26,17 +33,29 @@ builder.Services.AddHealthChecks()
 
 // Use DbContextFactory to avoid concurrency issues in Blazor Server
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 
 // Also register scoped DbContext (used by health checks and migration)
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 
+builder.Services.AddOptions();
+builder.Services.AddHttpClient<ResendClient>();
+builder.Services.Configure<ResendClientOptions>(o => o.ApiToken = builder.Configuration["Email:ResendApiKey"] ?? "");
+builder.Services.AddTransient<IResend, ResendClient>();
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<BlogService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ContactService>();
 builder.Services.AddScoped<SkillService>();
+builder.Services.AddScoped<ExperienceService>();
+builder.Services.AddScoped<EducationService>();
 builder.Services.AddScoped<LanguageService>();
+builder.Services.AddScoped<SiteSettingService>();
+builder.Services.AddScoped<VisitorService>();
+builder.Services.AddScoped<ToastService>();
 
 WebApplication app = builder.Build();
 
@@ -55,12 +74,35 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
+
+// Track unique visitors by IP on page requests
+app.Use(async (context, next) =>
+{
+    string path = context.Request.Path.Value ?? "";
+    bool isPageRequest = context.Request.Method == "GET"
+        && !path.StartsWith("/_")
+        && !path.StartsWith("/health")
+        && !path.StartsWith("/admin")
+        && !Path.HasExtension(path);
+
+    if (isPageRequest)
+    {
+        string ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',')[0].Trim()
+            ?? context.Connection.RemoteIpAddress?.ToString()
+            ?? "unknown";
+        string? ua = context.Request.Headers.UserAgent.FirstOrDefault();
+        VisitorService visitorSvc = context.RequestServices.GetRequiredService<VisitorService>();
+        await visitorSvc.LogAsync(ip, ua);
+    }
+
+    await next(context);
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
 app.MapHealthChecks("/health");
 
-app.MapPost("/admin/login", async (HttpContext ctx, IConfiguration config) =>
+app.MapPost("/admin/do-login", async (HttpContext ctx, IConfiguration config) =>
 {
     string username = ctx.Request.Form["username"].ToString();
     string password = ctx.Request.Form["password"].ToString();
@@ -76,6 +118,7 @@ app.MapPost("/admin/login", async (HttpContext ctx, IConfiguration config) =>
     else
     {
         ctx.Response.Redirect("/admin/login?error=1");
+
     }
 }).DisableAntiforgery();
 

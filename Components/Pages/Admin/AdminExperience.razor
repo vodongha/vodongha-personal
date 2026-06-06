@@ -1,10 +1,10 @@
-@page "/admin/experience"
+﻿@page "/admin/experience"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
 @using vodongha.Data.Models
-@inject IDbContextFactory<AppDbContext> DbFactory
 
 <div class="admin-shell">
     <aside class="admin-sidebar">
@@ -16,6 +16,8 @@
             <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
             <a href="/admin/experience" class="admin-nav__item admin-nav__item--active"><i class="bi bi-briefcase"></i> Experience</a>
             <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+            <a href="/admin/contacts" class="admin-nav__item"><i class="bi bi-envelope"></i> Messages</a>
+            <a href="/admin/settings" class="admin-nav__item"><i class="bi bi-gear"></i> Thông tin</a>
         </nav>
         <form method="post" action="/admin/logout" class="admin-sidebar__logout">
             <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
@@ -28,25 +30,36 @@
             <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
         </header>
 
-        <div class="admin-table-wrap">
-            <table class="admin-table">
-                <thead><tr><th>Công ty</th><th>Vai trò</th><th>Thời gian</th><th></th></tr></thead>
-                <tbody>
-                    @foreach (Experience e in Items)
-                    {
-                        <tr>
-                            <td>@e.Company</td>
-                            <td>@e.Role</td>
-                            <td>@e.StartMonth/@e.StartYear – @(e.IsCurrent ? "Hiện tại" : $"{e.EndMonth}/{e.EndYear}")</td>
-                            <td class="admin-table__actions">
-                                <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(e)"><i class="bi bi-pencil"></i></button>
-                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(e.Id)"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <div class="admin-toolbar">
+            <div class="admin-select-wrap">
+                <select class="admin-page-size" @onchange="SetPageSize">
+                    <option value="5">5 / trang</option>
+                    <option value="10" selected>10 / trang</option>
+                    <option value="20">20 / trang</option>
+                    <option value="50">50 / trang</option>
+                </select>
+            </div>
+            <div class="admin-search-wrap">
+                <i class="bi bi-search admin-search-wrap__icon"></i>
+                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm công ty, vai trò..." />
+            </div>
         </div>
+
+        <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
+            <PropertyColumn Property="e => e.Company" Title="Công ty" Sortable="true" />
+            <PropertyColumn Property="e => e.Role" Title="Vai trò" Sortable="true" />
+            <PropertyColumn Property="e => e.Location" Title="Địa điểm" Sortable="true" />
+            <TemplateColumn Title="Thời gian" Sortable="false">
+                @context.StartMonth/@context.StartYear – @(context.IsCurrent ? "Hiện tại" : $"{context.EndMonth}/{context.EndYear}")
+            </TemplateColumn>
+            <TemplateColumn Title="Hành động">
+                <div class="admin-table__actions">
+                    <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(context)"><i class="bi bi-pencil"></i></button>
+                    <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(context.Id)"><i class="bi bi-trash"></i></button>
+                </div>
+            </TemplateColumn>
+        </QuickGrid>
+        <Paginator State="_pagination" />
 
         @if (ShowForm)
         {
@@ -64,6 +77,10 @@
                     <div class="admin-form__group">
                         <label class="admin-form__label">Địa điểm</label>
                         <input class="admin-form__input" @bind="Editing.Location" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Website URL</label>
+                        <input class="admin-form__input" @bind="Editing.WebsiteUrl" placeholder="https://..." />
                     </div>
                     <div class="admin-form__row">
                         <div class="admin-form__group">
@@ -92,8 +109,12 @@
                         </div>
                     }
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Mô tả</label>
+                        <label class="admin-form__label">Mô tả 🇻🇳</label>
                         <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Description"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Description 🇬🇧</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.DescriptionEn"></textarea>
                     </div>
                     <div class="admin-form__group">
                         <label class="admin-form__label">Thứ tự</label>
@@ -106,42 +127,7 @@
                 </div>
             </div>
         }
+        <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
     </main>
 </div>
 
-@code {
-    private List<Experience> Items = [];
-    private Experience Editing = new();
-    private bool ShowForm;
-
-    protected override async Task OnInitializedAsync() => await LoadAsync();
-
-    private async Task LoadAsync()
-    {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        Items = await db.Experiences.OrderBy(e => e.Order).ToListAsync();
-    }
-
-    private void OpenAdd() { Editing = new Experience { StartMonth = 1, StartYear = DateTime.Now.Year, IsCurrent = true }; ShowForm = true; }
-    private void OpenEdit(Experience e) { Editing = new Experience { Id = e.Id, Company = e.Company, Role = e.Role, Location = e.Location, StartYear = e.StartYear, StartMonth = e.StartMonth, EndYear = e.EndYear, EndMonth = e.EndMonth, IsCurrent = e.IsCurrent, Description = e.Description, Order = e.Order }; ShowForm = true; }
-    private void CloseForm() { ShowForm = false; }
-
-    private async Task Save()
-    {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        if (Editing.IsCurrent) { Editing.EndYear = null; Editing.EndMonth = null; }
-        if (Editing.Id == 0) { db.Experiences.Add(Editing); }
-        else { db.Experiences.Update(Editing); }
-        await db.SaveChangesAsync();
-        ShowForm = false;
-        await LoadAsync();
-    }
-
-    private async Task Delete(int id)
-    {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        Experience? e = await db.Experiences.FindAsync(id);
-        if (e != null) { db.Experiences.Remove(e); await db.SaveChangesAsync(); }
-        await LoadAsync();
-    }
-}

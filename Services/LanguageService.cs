@@ -2,7 +2,7 @@ namespace vodongha.Services;
 
 public class LanguageService
 {
-    private string _lang = "vi";
+    private string _lang = "en";
     public string Current => _lang;
     public bool IsVi => _lang == "vi";
 
@@ -23,6 +23,7 @@ public class LanguageService
         // Nav
         ["nav.skills"]      = "Kỹ năng",
         ["nav.projects"]    = "Dự án",
+        ["nav.experience"]  = "Kinh nghiệm",
         ["nav.blog"]        = "Blog",
         ["nav.contact"]     = "Liên hệ",
         // Hero
@@ -58,9 +59,19 @@ public class LanguageService
         ["contact.send"]    = "Gửi tin nhắn",
         ["contact.success"] = "Tin nhắn đã được gửi thành công!",
         ["contact.error"]   = "Có lỗi xảy ra, vui lòng thử lại.",
+        // Experience
+        ["exp.label"]       = "Kinh nghiệm",
+        ["exp.title"]       = "Kinh nghiệm làm việc",
+        ["exp.present"]     = "Hiện tại",
+        // Education
+        ["edu.label"]       = "Học vấn",
+        ["edu.title"]       = "Trình độ học vấn",
+        // Expand / collapse
+        ["common.showmore"] = "Xem thêm",
+        ["common.showless"] = "Thu gọn",
         // Footer
         ["footer.rights"]   = "Tất cả quyền được bảo lưu.",
-        ["footer.built"]    = "Xây dựng với",
+        ["footer.built"]    = "Xây dựng với Claude",
     };
 
     private static readonly Dictionary<string, string> En = new()
@@ -68,6 +79,7 @@ public class LanguageService
         // Nav
         ["nav.skills"]      = "Skills",
         ["nav.projects"]    = "Projects",
+        ["nav.experience"]  = "Experience",
         ["nav.blog"]        = "Blog",
         ["nav.contact"]     = "Contact",
         // Hero
@@ -103,8 +115,18 @@ public class LanguageService
         ["contact.send"]    = "Send message",
         ["contact.success"] = "Message sent successfully!",
         ["contact.error"]   = "Something went wrong, please try again.",
+        // Experience
+        ["exp.label"]       = "Experience",
+        ["exp.title"]       = "Work Experience",
+        ["exp.present"]     = "Present",
+        // Education
+        ["edu.label"]       = "Education",
+        ["edu.title"]       = "Education",
+        // Expand / collapse
+        ["common.showmore"] = "Show more",
+        ["common.showless"] = "Show less",
         // Footer
         ["footer.rights"]   = "All rights reserved.",
-        ["footer.built"]    = "Built with",
+        ["footer.built"]    = "Built with Claude",
     };
 }

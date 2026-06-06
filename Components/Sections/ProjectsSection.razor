@@ -1,7 +1,3 @@
-@inject ProjectService ProjectSvc
-@inject LanguageService Lang
-@implements IDisposable
-
 <section class="section projects" id="projects">
     <div class="section__header">
         <span class="section__label">@Lang.T("projects.label")</span>
@@ -12,22 +8,26 @@
     @if (_projects is not null)
     {
         <div class="projects__grid">
-            @foreach (Project project in _projects)
+            @foreach (Project project in VisibleProjects)
             {
                 <ProjectCard Item="project" />
             }
         </div>
+
+        @if (_projects.Count > InitialCount)
+        {
+            <div class="section__expand">
+                <button class="section__expand-btn" @onclick="Toggle">
+                    @if (_expanded)
+                    {
+                        <i class="bi bi-chevron-up"></i> @Lang.T("common.showless")
+                    }
+                    else
+                    {
+                        <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore")
+                    }
+                </button>
+            </div>
+        }
     }
 </section>
-
-@code {
-    private List<Project>? _projects;
-
-    protected override async Task OnInitializedAsync()
-    {
-        _projects = await ProjectSvc.GetFeaturedAsync();
-        Lang.OnChange += StateHasChanged;
-    }
-
-    public void Dispose() => Lang.OnChange -= StateHasChanged;
-}

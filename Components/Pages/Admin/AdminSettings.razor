@@ -1,10 +1,9 @@
-@page "/admin/settings"
+﻿@page "/admin/settings"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
 @using vodongha.Data.Models
-@inject IDbContextFactory<AppDbContext> DbFactory
 
 <div class="admin-shell">
     <aside class="admin-sidebar">
@@ -16,6 +15,7 @@
             <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
             <a href="/admin/experience" class="admin-nav__item"><i class="bi bi-briefcase"></i> Experience</a>
             <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+            <a href="/admin/contacts" class="admin-nav__item"><i class="bi bi-envelope"></i> Messages</a>
             <a href="/admin/settings" class="admin-nav__item admin-nav__item--active"><i class="bi bi-gear"></i> Thông tin</a>
         </nav>
         <form method="post" action="/admin/logout" class="admin-sidebar__logout">
@@ -26,15 +26,39 @@
     <main class="admin-main">
         <header class="admin-header">
             <h1 class="admin-header__title">Thông tin cá nhân</h1>
-            @if (Saved)
-            {
-                <span class="admin-badge" style="background:rgba(110,231,183,.15);color:#6ee7b7">✓ Đã lưu</span>
-            }
         </header>
 
         <div class="admin-settings-grid">
             <div class="admin-settings-section">
                 <h2 class="admin-settings-section__title">Giới thiệu</h2>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">Avatar</label>
+                    <div class="admin-avatar-upload" @onclick="TriggerFilePicker" title="Bấm để đổi ảnh">
+                        @if (!string.IsNullOrEmpty(Val["AvatarUrl"]))
+                        {
+                            <img src="@Val["AvatarUrl"]" alt="Avatar" class="admin-avatar-upload__img" />
+                        }
+                        else
+                        {
+                            <div class="admin-avatar-upload__placeholder"><i class="bi bi-person-fill"></i></div>
+                        }
+                        <div class="admin-avatar-upload__overlay">
+                            @if (_uploading)
+                            {
+                                <span class="admin-avatar-upload__label"><i class="bi bi-arrow-repeat admin-spin"></i></span>
+                            }
+                            else
+                            {
+                                <span class="admin-avatar-upload__label"><i class="bi bi-camera"></i> Đổi ảnh</span>
+                            }
+                        </div>
+                    </div>
+                    <InputFile id="avatarFileInput" OnChange="OnAvatarFileChange" accept="image/*" style="display:none" />
+                    @if (!string.IsNullOrEmpty(Val["AvatarUrl"]))
+                    {
+                        <small style="opacity:.4;font-size:0.75rem;margin-top:0.35rem;display:block;word-break:break-all">@Val["AvatarUrl"]</small>
+                    }
+                </div>
                 <div class="admin-form__group">
                     <label class="admin-form__label">Tên</label>
                     <input class="admin-form__input" value="@Val["Name"]" @oninput='e => Val["Name"] = e.Value?.ToString() ?? ""' />
@@ -48,8 +72,12 @@
                     <input class="admin-form__input" value="@Val["Tagline"]" @oninput='e => Val["Tagline"] = e.Value?.ToString() ?? ""' />
                 </div>
                 <div class="admin-form__group">
-                    <label class="admin-form__label">Bio</label>
+                    <label class="admin-form__label">Bio 🇻🇳</label>
                     <textarea class="admin-form__input admin-form__textarea" @oninput='e => Val["Bio"] = e.Value?.ToString() ?? ""'>@Val["Bio"]</textarea>
+                </div>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">Bio 🇬🇧</label>
+                    <textarea class="admin-form__input admin-form__textarea" @oninput='e => Val["BioEn"] = e.Value?.ToString() ?? ""'>@Val["BioEn"]</textarea>
                 </div>
             </div>
 
@@ -78,8 +106,8 @@
                     <input class="admin-form__input" value="@Val["LinkedIn"]" @oninput='e => Val["LinkedIn"] = e.Value?.ToString() ?? ""' />
                 </div>
                 <div class="admin-form__group">
-                    <label class="admin-form__label">Avatar URL</label>
-                    <input class="admin-form__input" value="@Val["AvatarUrl"]" @oninput='e => Val["AvatarUrl"] = e.Value?.ToString() ?? ""' />
+                    <label class="admin-form__label">Facebook URL</label>
+                    <input class="admin-form__input" value="@Val["Facebook"]" @oninput='e => Val["Facebook"] = e.Value?.ToString() ?? ""' placeholder="https://facebook.com/..." />
                 </div>
             </div>
         </div>
@@ -92,38 +120,3 @@
     </main>
 </div>
 
-@code {
-    private Dictionary<string, string> Val = new()
-    {
-        ["Name"] = "", ["Title"] = "", ["Tagline"] = "", ["Bio"] = "",
-        ["Email"] = "", ["Phone"] = "", ["Location"] = "",
-        ["GitHub"] = "", ["LinkedIn"] = "", ["AvatarUrl"] = ""
-    };
-    private bool Saved;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        List<SiteSetting> settings = await db.SiteSettings.ToListAsync();
-        foreach (SiteSetting s in settings)
-        {
-            Val[s.Key] = s.Value;
-        }
-    }
-
-    private async Task SaveAll()
-    {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        foreach (KeyValuePair<string, string> kvp in Val)
-        {
-            SiteSetting? setting = await db.SiteSettings.FirstOrDefaultAsync(s => s.Key == kvp.Key);
-            if (setting != null) { setting.Value = kvp.Value; }
-            else { db.SiteSettings.Add(new SiteSetting { Key = kvp.Key, Value = kvp.Value }); }
-        }
-        await db.SaveChangesAsync();
-        Saved = true;
-        await Task.Delay(2000);
-        Saved = false;
-        StateHasChanged();
-    }
-}

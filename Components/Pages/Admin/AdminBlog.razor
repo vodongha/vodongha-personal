@@ -1,0 +1,119 @@
+﻿@page "/admin/blog"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using vodongha.Data.Models
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__logo"><span>vdh</span><span class="dot">.</span><span>admin</span></div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav__item"><i class="bi bi-grid"></i> Dashboard</a>
+            <a href="/admin/skills" class="admin-nav__item"><i class="bi bi-bar-chart"></i> Skills</a>
+            <a href="/admin/projects" class="admin-nav__item"><i class="bi bi-folder2"></i> Projects</a>
+            <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
+            <a href="/admin/experience" class="admin-nav__item"><i class="bi bi-briefcase"></i> Experience</a>
+            <a href="/admin/blog" class="admin-nav__item admin-nav__item--active"><i class="bi bi-file-text"></i> Blog</a>
+            <a href="/admin/contacts" class="admin-nav__item"><i class="bi bi-envelope"></i> Messages</a>
+            <a href="/admin/settings" class="admin-nav__item"><i class="bi bi-gear"></i> Thông tin</a>
+        </nav>
+        <form method="post" action="/admin/logout" class="admin-sidebar__logout">
+            <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">Blog</h1>
+            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
+        </header>
+
+        <div class="admin-toolbar">
+            <div class="admin-select-wrap">
+                <select class="admin-page-size" @onchange="SetPageSize">
+                    <option value="5">5 / trang</option>
+                    <option value="10" selected>10 / trang</option>
+                    <option value="20">20 / trang</option>
+                    <option value="50">50 / trang</option>
+                </select>
+            </div>
+            <div class="admin-search-wrap">
+                <i class="bi bi-search admin-search-wrap__icon"></i>
+                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm tiêu đề, tags..." />
+            </div>
+        </div>
+
+        <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
+            <PropertyColumn Property="p => p.Title" Title="Tiêu đề" Sortable="true" />
+            <PropertyColumn Property="p => p.Slug" Title="Slug" Sortable="true" />
+            <PropertyColumn Property="p => p.Tags" Title="Tags" Sortable="false" />
+            <TemplateColumn Title="Published" Sortable="false">
+                @(context.IsPublished ? "✓" : "")
+            </TemplateColumn>
+            <PropertyColumn Property="p => p.CreatedAt" Title="Ngày tạo" Format="yyyy-MM-dd" Sortable="true" />
+            <TemplateColumn Title="Hành động">
+                <div class="admin-table__actions">
+                    <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(context)"><i class="bi bi-pencil"></i></button>
+                    <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(context.Id)"><i class="bi bi-trash"></i></button>
+                </div>
+            </TemplateColumn>
+        </QuickGrid>
+        <Paginator State="_pagination" />
+
+        @if (ShowForm)
+        {
+            <div class="admin-modal-overlay" @onclick="CloseForm">
+                <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? "Thêm bài viết" : "Sửa bài viết")</h2>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Tiêu đề 🇻🇳</label>
+                        <input class="admin-form__input" value="@Editing.Title" @oninput="OnTitleInput" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Title 🇬🇧</label>
+                        <input class="admin-form__input" @bind="Editing.TitleEn" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Slug</label>
+                        <input class="admin-form__input" @bind="Editing.Slug" placeholder="auto-generated-from-title" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Tóm tắt 🇻🇳</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Summary"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Summary 🇬🇧</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.SummaryEn"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Nội dung 🇻🇳</label>
+                        <textarea class="admin-form__input admin-form__textarea admin-form__textarea--tall" @bind="Editing.Content"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Content 🇬🇧</label>
+                        <textarea class="admin-form__input admin-form__textarea admin-form__textarea--tall" @bind="Editing.ContentEn"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Tags (phân cách bằng dấu phẩy)</label>
+                        <input class="admin-form__input" @bind="Editing.Tags" placeholder=".NET,Blazor,..." />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Cover Image URL</label>
+                        <input class="admin-form__input" @bind="Editing.CoverImageUrl" placeholder="https://..." />
+                    </div>
+                    <div class="admin-form__group admin-form__check">
+                        <label><input type="checkbox" @bind="Editing.IsPublished" /> Published</label>
+                    </div>
+                    <div class="admin-modal__footer">
+                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">Huỷ</button>
+                        <button class="admin-btn admin-btn--primary" @onclick="Save">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        }
+        <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
+    </main>
+</div>
+

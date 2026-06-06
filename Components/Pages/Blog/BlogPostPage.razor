@@ -1,8 +1,26 @@
 @page "/blog/{Slug}"
-@inject BlogService BlogSvc
-@inject NavigationManager Nav
+@rendermode InteractiveServer
 
-<PageTitle>@(_post?.Title ?? "Bài viết") — Võ Đông Hà</PageTitle>
+<PageTitle>@(DisplayTitle ?? "Blog") — Võ Đông Hà</PageTitle>
+
+@if (_post is not null)
+{
+    <HeadContent>
+        <meta name="description" content="@DisplaySummary" />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content="@DisplayTitle — Võ Đông Hà" />
+        <meta property="og:description" content="@DisplaySummary" />
+        <meta property="og:url" content="https://vodongha.id.vn/blog/@_post.Slug" />
+        @if (!string.IsNullOrEmpty(_post.CoverImageUrl))
+        {
+            <meta property="og:image" content="@_post.CoverImageUrl" />
+        }
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="@DisplayTitle — Võ Đông Hà" />
+        <meta name="twitter:description" content="@DisplaySummary" />
+        <link rel="canonical" href="https://vodongha.id.vn/blog/@_post.Slug" />
+    </HeadContent>
+}
 
 @if (_post is null)
 {
@@ -20,7 +38,7 @@ else
         </a>
 
         <header class="blog-post__header">
-            <h1 class="blog-post__title">@_post.Title</h1>
+            <h1 class="blog-post__title">@DisplayTitle</h1>
             <div class="blog-post__meta">
                 <span><i class="bi bi-calendar3"></i> @_post.CreatedAt.ToString("dd/MM/yyyy")</span>
                 @if (_post.UpdatedAt.HasValue)
@@ -41,16 +59,7 @@ else
         </header>
 
         <div class="blog-post__content">
-            @((MarkupString)_post.Content)
+            @((MarkupString)DisplayContent)
         </div>
     </article>
-}
-
-@code {
-    [Parameter] public string Slug { get; set; } = string.Empty;
-
-    private BlogPost? _post;
-
-    protected override async Task OnParametersSetAsync() =>
-        _post = await BlogSvc.GetBySlugAsync(Slug);
 }
