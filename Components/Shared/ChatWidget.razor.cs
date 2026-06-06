@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.JSInterop;
 using vodongha.Data.Models;
 using vodongha.Services;
 
@@ -11,6 +12,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     [Inject] private ChatService ChatSvc { get; set; } = default!;
     [Inject] private ProtectedLocalStorage LocalStorage { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
+    [Inject] private IJSRuntime JS { get; set; } = default!;
 
     private enum ChatState { Closed, Form, Chat }
 
@@ -113,6 +115,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         {
             ChatMessage msg = await ChatSvc.SendUserMessageAsync(_sessionId.Value, content);
             _messages.Add(new ChatMessageDto(msg.Id, msg.Content, msg.IsFromUser, msg.SentAt));
+            await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "chatMessages");
         }
         finally
         {
@@ -140,7 +143,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             .WithAutomaticReconnect()
             .Build();
 
-        _hubConnection.On<object>("ReceiveMessage", msg =>
+        _hubConnection.On<object>("ReceiveMessage", async msg =>
         {
             string json = System.Text.Json.JsonSerializer.Serialize(msg);
             using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(json);
@@ -152,7 +155,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             DateTime sentAt = root.TryGetProperty("sentAt", out System.Text.Json.JsonElement sentEl) ? sentEl.GetDateTime() : DateTime.UtcNow;
 
             _messages.Add(new ChatMessageDto(id, content, isFromUser, sentAt));
-            InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
+            await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "chatMessages");
         });
 
         await _hubConnection.StartAsync();
