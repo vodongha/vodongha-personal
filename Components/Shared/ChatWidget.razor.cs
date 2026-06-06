@@ -23,9 +23,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private string _inputText = "";
     private bool _loading;
     private bool _sending;
+    private bool _otherIsTyping;
     private int? _sessionId;
     private List<ChatMessageDto> _messages = [];
     private HubConnection? _hubConnection;
+    private CancellationTokenSource? _typingCts;
 
     private bool CanStartChat => !string.IsNullOrWhiteSpace(_name) && !string.IsNullOrWhiteSpace(_email);
 
@@ -107,6 +109,9 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
+        // Stop typing indicator before sending
+        await StopTypingAsync();
+
         string content = _inputText.Trim();
         _inputText = "";
         _sending = true;
@@ -120,6 +125,40 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         finally
         {
             _sending = false;
+        }
+    }
+
+    private async Task OnTypingInput(Microsoft.AspNetCore.Components.ChangeEventArgs e)
+    {
+        _inputText = e.Value?.ToString() ?? "";
+
+        if (_hubConnection == null || !_sessionId.HasValue)
+        {
+            return;
+        }
+
+        _typingCts?.Cancel();
+        _typingCts = new CancellationTokenSource();
+
+        await _hubConnection.InvokeAsync("StartTyping", _sessionId.Value.ToString());
+
+        try
+        {
+            await Task.Delay(2000, _typingCts.Token);
+            await StopTypingAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            // Cancelled by next keystroke — fine
+        }
+    }
+
+    private async Task StopTypingAsync()
+    {
+        _typingCts?.Cancel();
+        if (_hubConnection != null && _sessionId.HasValue)
+        {
+            await _hubConnection.InvokeAsync("StopTyping", _sessionId.Value.ToString());
         }
     }
 
@@ -145,6 +184,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
         _hubConnection.On<object>("ReceiveMessage", async msg =>
         {
+            _otherIsTyping = false;
+
             string json = System.Text.Json.JsonSerializer.Serialize(msg);
             using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(json);
             System.Text.Json.JsonElement root = doc.RootElement;
@@ -159,12 +200,26 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "chatMessages");
         });
 
+        _hubConnection.On("TypingStarted", async () =>
+        {
+            _otherIsTyping = true;
+            await InvokeAsync(StateHasChanged);
+            await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "chatMessages");
+        });
+
+        _hubConnection.On("TypingStopped", async () =>
+        {
+            _otherIsTyping = false;
+            await InvokeAsync(StateHasChanged);
+        });
+
         await _hubConnection.StartAsync();
         await _hubConnection.InvokeAsync("JoinSession", _sessionId.Value.ToString());
     }
 
     public async ValueTask DisposeAsync()
     {
+        _typingCts?.Cancel();
         if (_hubConnection != null)
         {
             await _hubConnection.DisposeAsync();
