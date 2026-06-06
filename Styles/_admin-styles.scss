@@ -687,14 +687,78 @@ tr.admin-row--dragover td {
         left: 0.75rem;
     }
     .toast { max-width: 100%; min-width: unset; }
+
+    // Admin Chats — master/detail on mobile
+    .admin-chat-layout {
+        display: block;
+
+        // List view: show sessions, hide chat panel
+        .chat-sessions {
+            height: auto;
+            max-height: calc(100dvh - 9rem);
+        }
+
+        .chat-admin-window,
+        .admin-chat-placeholder { display: none !important; }
+
+        // Chat view: hide list, show chat full-screen
+        &--chat-open {
+            .chat-sessions { display: none; }
+
+            .admin-chat-placeholder { display: none !important; }
+
+            .chat-admin-window {
+                display: flex !important;
+                height: calc(100dvh - 9rem);
+            }
+
+            .chat-admin-back { display: block; }
+        }
+    }
 }
 
 // ── Admin Chats ───────────────────────────────────────────────────
+.admin-chat-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.admin-chat-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 480px;
+    color: #6b7280;
+    font-size: .875rem;
+}
+
+.chat-admin-back {
+    display: none;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 0.5rem 0 0;
+    line-height: 1;
+    flex-shrink: 0;
+
+    &:hover { color: #e5e7eb; }
+}
+
 .chat-sessions {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-bottom: 2rem;
+    height: 480px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
 }
 
 .chat-session-card {
@@ -710,6 +774,7 @@ tr.admin-row--dragover td {
 
     &:hover { border-color: #3a3a3a; }
     &--active { border-color: rgba($color-primary, 0.5) !important; background: rgba($color-primary, 0.04); }
+    &--unread { border-color: rgba($color-primary, 0.25); }
 
     &__info { flex: 1; min-width: 0; }
     &__name { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.15rem; }

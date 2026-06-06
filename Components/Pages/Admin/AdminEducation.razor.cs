@@ -11,7 +11,9 @@ public partial class AdminEducation : ComponentBase
 {
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private ToastService Toast { get; set; } = default!;
+    [Inject] private ChatService ChatSvc { get; set; } = default!;
 
+    private int _unreadChatCount;
     private int _deleteId;
     private bool _confirmShow;
 
@@ -38,7 +40,11 @@ public partial class AdminEducation : ComponentBase
                     e.School.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
                     e.Field.Contains(_search, StringComparison.OrdinalIgnoreCase));
 
-    protected override async Task OnInitializedAsync() => await LoadAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
+        await LoadAsync();
+    }
 
     private async Task LoadAsync()
     {

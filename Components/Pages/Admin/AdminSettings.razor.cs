@@ -15,7 +15,9 @@ public partial class AdminSettings : ComponentBase
     [Inject] private ToastService Toast { get; set; } = default!;
     [Inject] private IWebHostEnvironment Env { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private ChatService ChatSvc { get; set; } = default!;
 
+    private int _unreadChatCount;
     private bool _uploading;
 
     private async Task TriggerFilePicker()
@@ -62,6 +64,7 @@ public partial class AdminSettings : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         List<SiteSetting> settings = await db.SiteSettings.ToListAsync();
         foreach (SiteSetting s in settings)

@@ -11,7 +11,9 @@ public partial class AdminContacts : ComponentBase
 {
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private ToastService Toast { get; set; } = default!;
+    [Inject] private ChatService ChatSvc { get; set; } = default!;
 
+    private int _unreadChatCount;
     private List<ContactMessage> Messages = [];
     private ContactMessage? Selected;
     private string _search = "";
@@ -39,7 +41,11 @@ public partial class AdminContacts : ComponentBase
                     m.Email.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
                     m.Subject.Contains(_search, StringComparison.OrdinalIgnoreCase));
 
-    protected override async Task OnInitializedAsync() => await LoadAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
+        await LoadAsync();
+    }
 
     private async Task LoadAsync()
     {
