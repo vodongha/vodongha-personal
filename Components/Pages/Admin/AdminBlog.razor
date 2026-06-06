@@ -104,10 +104,17 @@
                 </div>
             </div>
         }
+        <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
     </main>
 </div>
 
 @code {
+    private int _deleteId;
+    private bool _confirmShow;
+
+    private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
+    private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
+
     private List<BlogPost> _posts = [];
     private BlogPost Editing = new();
     private bool ShowForm;
