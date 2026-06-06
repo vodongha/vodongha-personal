@@ -141,6 +141,97 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 <p>After more than a year, I no longer think of AI as a ""support tool"" — it has become part of my workflow. Not because it replaces developer thinking, but because it <strong>amplifies</strong> the speed and accuracy of every technical decision.</p>
 
 <p>If you haven't tried Claude Code in a real work environment yet, I think now is a great time to start.</p>"
+                },
+                new BlogPost
+                {
+                    Id = 2,
+                    Title = "AI Skills cho Developer: Những kỹ năng cần có trong kỷ nguyên AI",
+                    TitleEn = "AI Skills for Developers: What You Need in the Age of AI",
+                    Slug = "ai-skills-for-developers",
+                    Summary = "AI không thay thế developer — nhưng developer biết dùng AI sẽ thay thế developer không biết dùng. Bài viết chia sẻ những kỹ năng thực tế cần có để làm việc hiệu quả với AI.",
+                    SummaryEn = "AI won't replace developers — but developers who know how to use AI will replace those who don't. This post shares practical skills for working effectively with AI tools.",
+                    CoverImageUrl = "https://news.vio.vn/wp-content/uploads/2024/05/claude-ai-la-gi.jpg",
+                    Tags = "AI,Claude,Skills,Developer",
+                    IsPublished = true,
+                    CreatedAt = new DateTime(2026, 6, 10, 0, 0, 0, DateTimeKind.Utc),
+                    Content = @"<p><img src=""https://news.vio.vn/wp-content/uploads/2024/05/claude-ai-la-gi.jpg"" alt=""Claude AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+
+<p>Trong vài năm trở lại đây, AI đã thay đổi hoàn toàn cách developer làm việc. Không còn là câu hỏi ""AI có thay thế lập trình viên không?"" — mà là <strong>""bạn có biết cách làm việc cùng AI không?""</strong></p>
+
+<h2>1. Prompt Engineering — Kỹ năng giao tiếp với AI</h2>
+<p>Đây là kỹ năng quan trọng nhất. Một prompt rõ ràng, có context đầy đủ sẽ cho kết quả tốt hơn gấp nhiều lần so với một câu hỏi mơ hồ.</p>
+<p>Ví dụ thực tế: thay vì hỏi <em>""fix bug này""</em>, hãy nói <em>""đây là một ASP.NET Core service, method GetAsync đang throw NullReferenceException khi list rỗng, đây là stack trace, đây là code — tìm nguyên nhân và sửa""</em>.</p>
+
+<h2>2. Context Management — Biết cái gì cần nói với AI</h2>
+<p>AI làm việc tốt nhất khi hiểu đủ ngữ cảnh. Với các dự án lớn, hãy duy trì một file <code>CLAUDE.md</code> hoặc tương đương — mô tả kiến trúc, convention, và những quyết định kỹ thuật quan trọng. Claude Code đọc file này trước khi làm bất kỳ việc gì.</p>
+
+<h2>3. Verification — Không tin tưởng mù quáng</h2>
+<p>AI có thể tự tin đưa ra câu trả lời sai. Kỹ năng quan trọng là biết <em>khi nào cần verify</em>:</p>
+<ul>
+    <li>Code liên quan đến security, payment, authentication — luôn review kỹ</li>
+    <li>Migration database — không bao giờ chạy mà không đọc lại</li>
+    <li>Logic nghiệp vụ phức tạp — viết test trước, để AI implement sau</li>
+</ul>
+
+<h2>4. Iterative Workflow — Làm việc theo vòng lặp</h2>
+<p>Đừng yêu cầu AI làm một tác vụ lớn trong một lần. Hãy chia nhỏ:</p>
+<ol>
+    <li>Yêu cầu AI phân tích vấn đề trước</li>
+    <li>Xác nhận hướng giải quyết</li>
+    <li>Implement từng bước nhỏ</li>
+    <li>Review và điều chỉnh</li>
+</ol>
+<p>Cách này giúp bạn kiểm soát được chất lượng output và tránh những thay đổi ngoài ý muốn.</p>
+
+<h2>5. Tool Selection — Chọn đúng công cụ</h2>
+<p>Không phải mọi AI tool đều như nhau:</p>
+<ul>
+    <li><strong>Claude Code</strong> — tốt nhất cho coding tasks trong terminal, hiểu codebase phức tạp</li>
+    <li><strong>GitHub Copilot</strong> — inline suggestion trong IDE, tốt cho autocomplete</li>
+    <li><strong>ChatGPT / Claude.ai</strong> — brainstorming, giải thích concept, viết tài liệu</li>
+</ul>
+
+<h2>Kết luận</h2>
+<p>AI không làm bạn kém đi nếu bạn dùng đúng cách — ngược lại, nó <strong>nhân lên</strong> những gì bạn đã có. Developer giỏi dùng AI sẽ làm được công việc của một team nhỏ. Đó là lợi thế cạnh tranh thực sự trong thị trường hiện tại.</p>",
+                    ContentEn = @"<p><img src=""https://news.vio.vn/wp-content/uploads/2024/05/claude-ai-la-gi.jpg"" alt=""Claude AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+
+<p>In recent years, AI has completely changed the way developers work. The question is no longer ""will AI replace programmers?"" — it's <strong>""do you know how to work with AI?""</strong></p>
+
+<h2>1. Prompt Engineering — Communicating Effectively with AI</h2>
+<p>This is the most important skill. A clear, context-rich prompt produces far better results than a vague question.</p>
+<p>Real example: instead of asking <em>""fix this bug""</em>, say <em>""this is an ASP.NET Core service, the GetAsync method is throwing NullReferenceException when the list is empty, here's the stack trace, here's the code — find the root cause and fix it""</em>.</p>
+
+<h2>2. Context Management — Knowing What to Tell AI</h2>
+<p>AI works best with sufficient context. For large projects, maintain a <code>CLAUDE.md</code> or equivalent file — describing the architecture, conventions, and key technical decisions. Claude Code reads this file before doing anything.</p>
+
+<h2>3. Verification — Don't Trust Blindly</h2>
+<p>AI can confidently give wrong answers. The key skill is knowing <em>when to verify</em>:</p>
+<ul>
+    <li>Security, payment, authentication code — always review carefully</li>
+    <li>Database migrations — never run without re-reading them</li>
+    <li>Complex business logic — write tests first, let AI implement after</li>
+</ul>
+
+<h2>4. Iterative Workflow — Work in Small Loops</h2>
+<p>Don't ask AI to complete a large task in one shot. Break it down:</p>
+<ol>
+    <li>Ask AI to analyse the problem first</li>
+    <li>Confirm the approach</li>
+    <li>Implement in small steps</li>
+    <li>Review and adjust</li>
+</ol>
+<p>This keeps you in control of output quality and avoids unintended changes.</p>
+
+<h2>5. Tool Selection — Choosing the Right Tool</h2>
+<p>Not all AI tools are equal:</p>
+<ul>
+    <li><strong>Claude Code</strong> — best for coding tasks in the terminal, understands complex codebases</li>
+    <li><strong>GitHub Copilot</strong> — inline suggestions in the IDE, great for autocomplete</li>
+    <li><strong>ChatGPT / Claude.ai</strong> — brainstorming, explaining concepts, writing documentation</li>
+</ul>
+
+<h2>Conclusion</h2>
+<p>AI doesn't make you worse if you use it correctly — it <strong>multiplies</strong> what you already have. A skilled developer using AI can do the work of a small team. That's a real competitive advantage in today's market.</p>"
                 }
             );
 
