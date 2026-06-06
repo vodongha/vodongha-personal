@@ -11,9 +11,27 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Skill> Skills => Set<Skill>();
     public DbSet<Education> Educations => Set<Education>();
     public DbSet<Experience> Experiences => Set<Experience>();
+    public DbSet<SiteSetting> SiteSettings => Set<SiteSetting>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<SiteSetting>()
+            .HasIndex(s => s.Key).IsUnique();
+
+        modelBuilder.Entity<SiteSetting>()
+            .HasData(
+                new SiteSetting { Id = 1,  Key = "Name",       Value = "Võ Đông Hà" },
+                new SiteSetting { Id = 2,  Key = "Title",      Value = "Full-Stack Developer" },
+                new SiteSetting { Id = 3,  Key = "Tagline",    Value = "Building modern web experiences" },
+                new SiteSetting { Id = 4,  Key = "Bio",        Value = "Tôi xây dựng các ứng dụng web hiện đại với .NET, Blazor và PostgreSQL. Đam mê tạo ra những sản phẩm sạch, hiệu quả và đẹp mắt." },
+                new SiteSetting { Id = 5,  Key = "Email",      Value = "vodongha@hotmail.com" },
+                new SiteSetting { Id = 6,  Key = "Phone",      Value = "0929758757" },
+                new SiteSetting { Id = 7,  Key = "Location",   Value = "Ho Chi Minh City, Vietnam" },
+                new SiteSetting { Id = 8,  Key = "GitHub",     Value = "https://github.com/vodongha" },
+                new SiteSetting { Id = 9,  Key = "LinkedIn",   Value = "https://linkedin.com/in/vodongha" },
+                new SiteSetting { Id = 10, Key = "AvatarUrl",  Value = "/images/avatar.jpg" }
+            );
+
         modelBuilder.Entity<Education>()
             .HasData(
                 new Education { Id = 1, School = "Nguyen Tat Thanh University", Degree = "Bachelor's degree", Field = "Computer Software Engineering", StartYear = 2016, EndYear = 2020, Order = 1 },
