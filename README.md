@@ -8,27 +8,34 @@ Live: [https://vodongha.id.vn](https://vodongha.id.vn)
 
 | Layer | Technology |
 |---|---|
-| Framework | Blazor Web App (.NET 10) |
-| Database | PostgreSQL (Neon — Singapore) |
+| Framework | Blazor Web App (.NET 10, Interactive Server) |
+| Database | PostgreSQL via Neon (Singapore) |
 | ORM | Entity Framework Core |
-| Styling | SCSS (compiled via AspNetCore.SassCompiler) |
-| Deploy | Fly.io (Singapore region) |
-| CI/CD | GitHub Actions |
+| Styling | SCSS → `wwwroot/app.css` (AspNetCore.SassCompiler) |
+| Deploy | Fly.io, app `vodongha`, region Singapore |
+| Email | Resend API (contact form notifications) |
 
 ## Project structure
 
 ```
 vodongha/
 ├── Components/
-│   ├── Layout/          # NavMenu, MainLayout, ReconnectModal
-│   ├── Pages/           # Home, BlogPostPage, Error, NotFound
-│   ├── Sections/        # HeroSection, SkillsSection, ProjectsSection, BlogSection, ContactSection
+│   ├── Layout/          # NavBar, MainLayout, AdminLayout, ReconnectModal
+│   ├── Pages/
+│   │   ├── Admin/       # Login, Dashboard, AdminSkills, AdminProjects,
+│   │   │                #   AdminBlog, AdminEducation, AdminExperience, AdminSettings
+│   │   ├── Blog/        # BlogPostPage
+│   │   └── Home.razor
+│   ├── Sections/        # Hero, Skills, Projects, Experience, Education, Blog, Contact
 │   └── Shared/          # ProjectCard, BlogCard
 ├── Data/
 │   ├── AppDbContext.cs
-│   └── Models/          # BlogPost, Project, Skill, ContactMessage
-├── Services/            # BlogService, ProjectService, SkillService, ContactService
-├── Styles/              # SCSS partials + app.scss entry point
+│   └── Models/          # Skill, Project, BlogPost, Experience, Education,
+│                        #   ContactMessage, SiteSetting
+├── Services/            # Blog, Project, Skill, Experience, Education,
+│                        #   Contact, Email, Language
+├── Styles/              # _variables, _base, _nav, _hero, _skills, _projects,
+│                        #   _timeline, _blog, _contact, _footer, _admin, app.scss
 ├── Migrations/          # EF Core migrations
 ├── Dockerfile
 └── fly.toml
@@ -36,48 +43,41 @@ vodongha/
 
 ## Local development
 
-**Prerequisites:** .NET 10 SDK, PostgreSQL (or Docker)
+**Prerequisites:** .NET 10 SDK, PostgreSQL instance
 
 ```bash
-# Clone
-git clone https://github.com/vodongha/vodongha.id.vn.git
-cd vodongha.id.vn
+git clone https://github.com/vodongha/vodongha-personal.git
+cd vodongha-personal
+```
 
-# Set connection string
-cp appsettings.Development.json.example appsettings.Development.json
-# Edit DefaultConnection in appsettings.Development.json
+Create `appsettings.Development.json` with your local connection string:
 
-# Run
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=...;Database=...;Username=...;Password=..."
+  },
+  "Admin": {
+    "Username": "admin",
+    "Password": "changeme"
+  }
+}
+```
+
+```bash
 dotnet run
 ```
 
-The app auto-migrates the database on startup.
+The app applies EF Core migrations automatically on startup.
 
-## Branch & PR workflow
+**SCSS:** edit `Styles/_*.scss`, then run `dotnet build` — `wwwroot/app.css` is regenerated. Commit both the `.scss` and `app.css` changes.
 
-```
-master  ←── merge (auto-deploy to Fly.io)
-  ↑
-develop ←── merge (after Claude review)
-  ↑
-feature/xxx  ←── your work
-```
+## Admin panel
 
-1. Branch off `develop`: `git checkout -b feature/my-change develop`
-2. Push and open a PR targeting `develop`
-3. Claude AI agent reviews the PR automatically
-4. On approval, the PR is merged into `develop`
-5. Merging `develop` → `master` triggers deploy to production
+`/admin/login` — manage Skills, Projects, Blog, Experience, Education, and site settings.
 
-See [CLAUDE.md](CLAUDE.md) for full conventions used by the AI agent.
+## Deploy
 
-## Contributors
+Push to `master` → GitHub Actions triggers a Fly.io deploy (~2 min).
 
-| Name | Role |
-|---|---|
-| [Võ Đông Hà](https://github.com/vodongha) | Author & maintainer |
-| [Claude](https://claude.ai) (Anthropic) | AI contributor — code review, PR merges, pair programming |
-
-<a href="https://github.com/vodongha/vodongha.id.vn/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=vodongha/vodongha.id.vn" />
-</a>
+Production secrets are stored in Fly.io (`flyctl secrets set KEY=VALUE`). Never commit secrets.
