@@ -237,6 +237,12 @@ img {
     text-align: center;
   }
 }
+.hero__text {
+  outline: none;
+}
+.hero__name {
+  outline: none;
+}
 .hero__badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
@@ -377,32 +383,31 @@ img {
 }
 .hero__avatar-wrap {
   position: relative;
-  width: 320px;
-  height: 320px;
-  background: radial-gradient(circle at center, #1a1a2e 0%, #0d0d0d 70%);
-  border-radius: 40% 60% 60% 40%/40% 40% 60% 60%;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  overflow: hidden;
 }
 @media (max-width: 640px) {
   .hero__avatar-wrap {
-    width: 220px;
-    height: 220px;
+    width: 200px;
+    height: 200px;
   }
 }
 .hero__avatar-img {
   width: 100%;
   height: 100%;
-  border-radius: 40% 60% 60% 40%/40% 40% 60% 60%;
+  border-radius: 50%;
   object-fit: cover;
-  object-position: center top;
-  animation: morph 8s ease-in-out infinite;
-  mix-blend-mode: luminosity;
-  filter: contrast(1.05) brightness(0.92);
+  object-position: center 15%;
+  display: none;
 }
 .hero__avatar-placeholder {
   width: 100%;
   height: 100%;
-  border-radius: 40% 60% 60% 40%/40% 40% 60% 60%;
-  background: #141414;
+  border-radius: 50%;
+  background: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -411,10 +416,11 @@ img {
 }
 .hero__avatar-ring {
   position: absolute;
-  inset: -12px;
-  border-radius: 40% 60% 60% 40%/40% 40% 60% 60%;
-  border: 1px solid rgba(110, 231, 183, 0.3);
-  animation: morph 8s ease-in-out infinite, spin 20s linear infinite;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(110, 231, 183, 0.4);
+  animation: spin 20s linear infinite;
+  border-top-color: #6ee7b7;
 }
 .hero__scroll {
   position: absolute;
@@ -1550,6 +1556,28 @@ img {
   font-size: 0.875rem;
   color: #e5e7eb;
   cursor: pointer;
+}
+
+.admin-settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+@media (max-width: 768px) {
+  .admin-settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-settings-section__title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #6ee7b7;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #2a2a2a;
 }
 
 .admin-login {
