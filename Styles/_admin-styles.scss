@@ -694,7 +694,13 @@ tr.admin-row--dragover td {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-bottom: 2rem;
+    height: 480px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
 }
 
 .chat-session-card {
@@ -710,6 +716,7 @@ tr.admin-row--dragover td {
 
     &:hover { border-color: #3a3a3a; }
     &--active { border-color: rgba($color-primary, 0.5) !important; background: rgba($color-primary, 0.04); }
+    &--unread { border-color: rgba($color-primary, 0.25); }
 
     &__info { flex: 1; min-width: 0; }
     &__name { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.15rem; }
