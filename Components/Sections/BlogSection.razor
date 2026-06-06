@@ -1,4 +1,4 @@
-@inject BlogService BlogSvc
+﻿@inject BlogService BlogSvc
 @inject NavigationManager Nav
 @inject LanguageService Lang
 @implements IDisposable
@@ -19,23 +19,46 @@
         else
         {
             <div class="blog__grid">
-                @foreach (BlogPost post in _posts.Take(3))
+                @foreach (BlogPost post in VisiblePosts)
                 {
                     <BlogCard Item="post" OnClick="@(() => Nav.NavigateTo("/blog/" + post.Slug))" />
                 }
             </div>
+
+            @if (_posts.Count > InitialCount)
+            {
+                <div class="section__expand">
+                    <button class="section__expand-btn" @onclick="Toggle">
+                        @if (_expanded)
+                        {
+                            <i class="bi bi-chevron-up"></i> @Lang.T("common.showless")
+                        }
+                        else
+                        {
+                            <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore") 
+                        }
+                    </button>
+                </div>
+            }
         }
     }
 </section>
 
 @code {
+    private const int InitialCount = 2;
     private List<BlogPost>? _posts;
+    private bool _expanded;
+
+    private IEnumerable<BlogPost> VisiblePosts =>
+        _expanded ? _posts! : _posts!.Take(InitialCount);
 
     protected override async Task OnInitializedAsync()
     {
         _posts = await BlogSvc.GetPublishedAsync();
         Lang.OnChange += StateHasChanged;
     }
+
+    private void Toggle() => _expanded = !_expanded;
 
     public void Dispose() => Lang.OnChange -= StateHasChanged;
 }

@@ -1,4 +1,4 @@
-@inject SkillService SkillSvc
+﻿@inject SkillService SkillSvc
 @inject LanguageService Lang
 @implements IDisposable
 
@@ -12,7 +12,7 @@
     @if (_grouped is not null)
     {
         <div class="skills__grid">
-            @foreach (KeyValuePair<string, List<Skill>> category in _grouped)
+            @foreach (KeyValuePair<string, List<Skill>> category in VisibleCategories)
             {
                 <div class="skills__category">
                     <h3 class="skills__category-title">@category.Key</h3>
@@ -43,17 +43,40 @@
                 </div>
             }
         </div>
+
+        @if (_grouped.Count > InitialCount)
+        {
+            <div class="section__expand">
+                <button class="section__expand-btn" @onclick="Toggle">
+                    @if (_expanded)
+                    {
+                        <i class="bi bi-chevron-up"></i> @Lang.T("common.showless")
+                    }
+                    else
+                    {
+                        <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore") 
+                    }
+                </button>
+            </div>
+        }
     }
 </section>
 
 @code {
+    private const int InitialCount = 2;
     private Dictionary<string, List<Skill>>? _grouped;
+    private bool _expanded;
+
+    private IEnumerable<KeyValuePair<string, List<Skill>>> VisibleCategories =>
+        _expanded ? _grouped! : _grouped!.Take(InitialCount);
 
     protected override async Task OnInitializedAsync()
     {
         _grouped = await SkillSvc.GetGroupedAsync();
         Lang.OnChange += StateHasChanged;
     }
+
+    private void Toggle() => _expanded = !_expanded;
 
     public void Dispose() => Lang.OnChange -= StateHasChanged;
 }
