@@ -1,0 +1,20 @@
+@rendermode InteractiveServer
+@inject LanguageService Lang
+@implements IDisposable
+
+<footer class="footer">
+    <div class="footer__inner">
+        <p class="footer__copy">
+            &copy; @DateTime.Now.Year <span>Võ Đông Hà</span>. @Lang.T("footer.built")
+        </p>
+        <ul class="footer__links">
+            <li><a href="https://github.com/vodongha" target="_blank" class="footer__link">GitHub</a></li>
+            <li><a href="mailto:vodongha@hotmail.com" class="footer__link">Email</a></li>
+        </ul>
+    </div>
+</footer>
+
+@code {
+    protected override void OnInitialized() => Lang.OnChange += StateHasChanged;
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
+}
