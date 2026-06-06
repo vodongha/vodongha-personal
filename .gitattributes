@@ -1,0 +1,7 @@
+# Razor files → C# (not HTML)
+*.razor linguist-language=C#
+*.razor.cs linguist-language=C#
+
+# Exclude vendored libraries from language stats
+wwwroot/lib/** linguist-vendored
+Migrations/** linguist-generated
