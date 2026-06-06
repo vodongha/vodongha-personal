@@ -20,13 +20,19 @@
     }
 
     &__logo {
-        font-family: $font-mono;
-        font-size: $text-lg;
-        font-weight: 700;
-        color: $color-primary;
-        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: $space-1;
+        text-decoration: none;
 
-        span { color: $color-text-muted; }
+        svg { display: block; }
+
+        &-text {
+            font-family: $font-mono;
+            font-size: $text-sm;
+            font-weight: 700;
+            color: $color-text-muted;
+        }
     }
 
     &__links {
