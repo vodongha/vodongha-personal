@@ -1,0 +1,61 @@
+@inject ExperienceService ExpSvc
+@inject LanguageService Lang
+@implements IDisposable
+
+<section class="section experience" id="experience">
+    <div class="section__header">
+        <span class="section__label">@Lang.T("exp.label")</span>
+        <h2 class="section__title">@Lang.T("exp.title")</h2>
+    </div>
+
+    @if (_items is not null)
+    {
+        <div class="timeline">
+            @foreach (Experience item in _items)
+            {
+                <div class="timeline__item">
+                    <div class="timeline__dot"></div>
+                    <div class="timeline__content">
+                        <div class="timeline__header">
+                            <h3 class="timeline__role">@item.Role</h3>
+                            <span class="timeline__period">
+                                @MonthYear(item.StartMonth, item.StartYear) —
+                                @(item.IsCurrent ? Lang.T("exp.present") : MonthYear(item.EndMonth ?? 1, item.EndYear ?? item.StartYear))
+                            </span>
+                        </div>
+                        <p class="timeline__company">
+                            <i class="bi bi-building"></i> @item.Company
+                            @if (!string.IsNullOrEmpty(item.Location))
+                            {
+                                <span class="timeline__location"> · @item.Location</span>
+                            }
+                        </p>
+                        @if (!string.IsNullOrEmpty(item.Description))
+                        {
+                            <p class="timeline__desc">@item.Description</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private List<Experience>? _items;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _items = await ExpSvc.GetAllAsync();
+        Lang.OnChange += StateHasChanged;
+    }
+
+    private static string MonthYear(int month, int year)
+    {
+        string[] months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        string m = month >= 1 && month <= 12 ? months[month - 1] : "";
+        return $"{m} {year}";
+    }
+
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
+}

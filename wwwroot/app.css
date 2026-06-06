@@ -850,6 +850,105 @@ img {
   padding: 0.5rem 0.75rem;
 }
 
+.experience .timeline,
+.education .timeline {
+  position: relative;
+  padding-left: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.experience .timeline::before,
+.education .timeline::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #6ee7b7, transparent);
+}
+.experience .timeline__item,
+.education .timeline__item {
+  position: relative;
+  margin-bottom: 2rem;
+}
+.experience .timeline__item:last-child,
+.education .timeline__item:last-child {
+  margin-bottom: 0;
+}
+.experience .timeline__dot,
+.education .timeline__dot {
+  position: absolute;
+  left: calc(-2rem - 5px);
+  top: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: #6ee7b7;
+  border: 2px solid #0d0d0d;
+  box-shadow: 0 0 8px rgba(110, 231, 183, 0.5);
+}
+.experience .timeline__content,
+.education .timeline__content {
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.experience .timeline__content:hover,
+.education .timeline__content:hover {
+  border-color: rgba(110, 231, 183, 0.3);
+  box-shadow: 0 0 40px rgba(110, 231, 183, 0.15);
+}
+.experience .timeline__header,
+.education .timeline__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+.experience .timeline__role,
+.education .timeline__role {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin: 0;
+}
+.experience .timeline__period,
+.education .timeline__period {
+  font-size: 0.75rem;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  color: #6ee7b7;
+  white-space: nowrap;
+  background: rgba(110, 231, 183, 0.1);
+  padding: 2px 0.75rem;
+  border-radius: 9999px;
+}
+.experience .timeline__company,
+.education .timeline__company {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 0.75rem;
+}
+.experience .timeline__company i,
+.education .timeline__company i {
+  margin-right: 0.25rem;
+}
+.experience .timeline__location,
+.education .timeline__location {
+  color: #9ca3af;
+}
+.experience .timeline__desc,
+.education .timeline__desc {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  line-height: 1.6;
+  margin: 0;
+}
+
 .blog {
   background: #1a1a1a;
 }
