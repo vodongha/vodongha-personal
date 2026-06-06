@@ -47,8 +47,10 @@
         <div class="hero__avatar">
             <div class="hero__avatar-wrap">
                 <img src="/images/avatar.jpg" alt="Võ Đông Hà" class="hero__avatar-img"
-                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-                <div class="hero__avatar-placeholder" style="display:none">
+                     style="display:none"
+                     onload="this.style.display='block'"
+                     onerror="this.nextElementSibling.style.display='flex'" />
+                <div class="hero__avatar-placeholder">
                     <i class="bi bi-person-circle"></i>
                 </div>
                 <div class="hero__avatar-ring"></div>
