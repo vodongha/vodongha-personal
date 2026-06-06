@@ -48,9 +48,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 {
                     Id = 1,
                     Title = "konfipay",
-                    Description = "Nền tảng ngân hàng trực tuyến doanh nghiệp hỗ trợ chuẩn EBICS. Quản lý hàng trăm tài khoản ngân hàng, tích hợp REST API cho ERP, multi-tenant, tự động hoá thanh toán.",
-                    Technologies = "C#,ASP.NET Core,Blazor,SQL Server,Hangfire,Azure",
-                    LiveUrl = "https://konfipay.de",
+                    Description = "Nền tảng ngân hàng trực tuyến doanh nghiệp quy mô lớn, hỗ trợ chuẩn EBICS (European Banking Standard). Quản lý hàng trăm tài khoản ngân hàng trên 13+ ngân hàng, REST API cho tích hợp ERP, multi-tenant, tự động hoá ký và nộp lệnh thanh toán. Tích hợp PayPal, Atlassian/Jira. Deploy trên Azure (SaaS) và Swisscom Docker (konfipay.ch) cho khách hàng Thụy Sĩ yêu cầu data sovereignty.",
+                    Technologies = "C#,.NET 9,ASP.NET Core,Blazor WASM,SQL Server,Hangfire,Serilog,Azure,Docker,EBICS",
+                    LiveUrl = "https://portal.konfipay.de",
                     IsFeatured = true,
                     Order = 1,
                     CreatedAt = new DateTime(2021, 10, 1, 0, 0, 0, DateTimeKind.Utc)
