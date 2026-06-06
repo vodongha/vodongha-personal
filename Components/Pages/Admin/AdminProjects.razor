@@ -3,6 +3,7 @@
 @attribute [Authorize]
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
 @using vodongha.Data.Models
 @inject IDbContextFactory<AppDbContext> DbFactory
 @inject ToastService Toast
@@ -35,44 +36,23 @@
             <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm tên, công nghệ..." />
         </div>
 
-        <div class="admin-table-wrap">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th style="width:2rem"></th>
-                        <th>Tên</th>
-                        <th>Technologies</th>
-                        <th>Featured</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < Filtered.Count; i++)
-                    {
-                        int idx = i;
-                        Project p = Filtered[i];
-                        <tr draggable="true"
-                            @ondragstart="() => DragStart(idx)"
-                            @ondragover:preventDefault="true"
-                            @ondragover="() => DragOver(idx)"
-                            @ondrop="() => Drop(idx)"
-                            @ondragend="DragEnd"
-                            class="@DragClass(idx)">
-                            <td class="admin-drag-handle" title="Kéo để sắp xếp">
-                                <i class="bi bi-grip-vertical"></i>
-                            </td>
-                            <td>@p.Title</td>
-                            <td><small>@p.Technologies</small></td>
-                            <td>@(p.IsFeatured ? "✓" : "")</td>
-                            <td class="admin-table__actions">
-                                <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(p)"><i class="bi bi-pencil"></i></button>
-                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(p.Id)"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
+            <PropertyColumn Property="p => p.Title" Title="Tên" Sortable="true" />
+            <TemplateColumn Title="Technologies" Sortable="false">
+                <small>@context.Technologies</small>
+            </TemplateColumn>
+            <TemplateColumn Title="Featured" Sortable="false">
+                @(context.IsFeatured ? "✓" : "")
+            </TemplateColumn>
+            <PropertyColumn Property="p => p.Order" Title="Thứ tự" Sortable="true" />
+            <TemplateColumn Title="Hành động">
+                <div class="admin-table__actions">
+                    <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(context)"><i class="bi bi-pencil"></i></button>
+                    <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(context.Id)"><i class="bi bi-trash"></i></button>
+                </div>
+            </TemplateColumn>
+        </QuickGrid>
+        <Paginator State="_pagination" />
 
         @if (ShowForm)
         {
@@ -132,13 +112,12 @@
     private bool ShowForm;
     private string _search = "";
 
-    private List<Project> Filtered => string.IsNullOrEmpty(_search)
-        ? Projects
-        : Projects.Where(p => p.Title.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
-                               (p.Technologies ?? "").Contains(_search, StringComparison.OrdinalIgnoreCase)).ToList();
+    private PaginationState _pagination = new() { ItemsPerPage = 10 };
 
-    private int _dragIndex = -1;
-    private int _dropIndex = -1;
+    private IQueryable<Project> Filtered => Projects.AsQueryable()
+        .Where(p => string.IsNullOrEmpty(_search) ||
+                    p.Title.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
+                    (p.Technologies ?? "").Contains(_search, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync() => await LoadAsync();
 
@@ -146,42 +125,6 @@
     {
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         Projects = await db.Projects.OrderBy(p => p.Order).ToListAsync();
-    }
-
-    // ── Drag & drop ───────────────────────────────────────────────
-    private void DragStart(int index) => _dragIndex = index;
-    private void DragOver(int index) => _dropIndex = index;
-    private void DragEnd() { _dragIndex = -1; _dropIndex = -1; }
-
-    private string DragClass(int index)
-    {
-        if (index == _dragIndex) { return "admin-row--dragging"; }
-        if (index == _dropIndex) { return "admin-row--dragover"; }
-        return "";
-    }
-
-    private async Task Drop(int targetIndex)
-    {
-        if (_dragIndex < 0 || _dragIndex == targetIndex) { DragEnd(); return; }
-
-        Project dragged = Projects[_dragIndex];
-        Projects.RemoveAt(_dragIndex);
-        Projects.Insert(targetIndex, dragged);
-
-        for (int i = 0; i < Projects.Count; i++) { Projects[i].Order = i + 1; }
-
-        _dragIndex = -1;
-        _dropIndex = -1;
-
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        foreach (Project p in Projects)
-        {
-            await db.Projects
-                .Where(x => x.Id == p.Id)
-                .ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, p.Order));
-        }
-
-        Toast.Show("Đã lưu thứ tự project");
     }
 
     // ── CRUD ──────────────────────────────────────────────────────
