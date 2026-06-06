@@ -8,7 +8,10 @@ obj/
 run.log
 
 ## Secrets — NEVER commit
+.env
 appsettings.Development.json
+appsettings.*.json
+!appsettings.json
 
 ## OS
 .DS_Store
