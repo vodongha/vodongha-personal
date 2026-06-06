@@ -25,7 +25,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | Framework | Blazor Web App (.NET 10, Interactive Server) |
 | Database | PostgreSQL via [Neon](https://neon.tech) (Singapore) |
 | ORM | Entity Framework Core |
-| Styling | SCSS → `wwwroot/app.css` (AspNetCore.SassCompiler) |
+| Styling | SCSS → `wwwroot/app.css` (public) + `wwwroot/admin.css` (admin) via `AspNetCore.SassCompiler` |
 | Email | [Resend](https://resend.com) API |
 | Deploy | [Fly.io](https://fly.io), app `vodongha`, region Singapore |
 | CI/CD | Push to `master` → auto-deploy |
@@ -44,19 +44,22 @@ vodongha-personal/
 │   │   ├── Blog/               # BlogPostPage (per-post dynamic SEO)
 │   │   └── Admin/              # Login, Dashboard, Skills, Projects, Blog,
 │   │                           #   Education, Experience, Contacts, Settings
+│   │                           #   (each page: .razor + .razor.cs code-behind)
 │   ├── Sections/               # HeroSection, SkillsSection, ProjectsSection,
 │   │                           #   ExperienceSection, EducationSection,
 │   │                           #   BlogSection, ContactSection
-│   └── Shared/                 # ProjectCard, BlogCard
+│   └── Shared/                 # ProjectCard, BlogCard, ConfirmDialog
 ├── Data/
 │   ├── AppDbContext.cs          # EF context + seed data
 │   └── Models/                 # Skill, Project, BlogPost, Experience, Education,
 │                               #   ContactMessage, SiteSetting, VisitorLog
 ├── Services/                   # Blog, Project, Skill, Experience, Education,
 │                               #   Contact, Email, Language, SiteSetting, Visitor
-├── Styles/                     # _variables, _base, _nav, _hero, _skills,
-│                               #   _projects, _timeline, _blog, _contact,
-│                               #   _footer, _reconnect, _admin, app.scss
+├── Styles/
+│   ├── app.scss                # Entry point for public site → wwwroot/app.css
+│   ├── admin.scss              # Entry point for admin panel → wwwroot/admin.css
+│   ├── _admin-styles.scss      # All admin panel styles (imported by admin.scss)
+│   └── _*.scss                 # Public site partials (variables, base, nav, hero, ...)
 ├── Migrations/                 # EF Core migrations
 ├── Dockerfile
 ├── fly.toml
@@ -99,8 +102,21 @@ EF Core migrations run automatically on startup. The app is available at `https:
 
 ### SCSS
 
-Edit `Styles/_*.scss` → run `dotnet build` → commit both the `.scss` file **and** `wwwroot/app.css`.  
-The `AspNetCore.SassCompiler` package handles compilation during build — no external `sass` CLI needed.
+The project has two separate CSS pipelines:
+
+| Source | Output | Used by |
+|---|---|---|
+| `Styles/app.scss` | `wwwroot/app.css` | Public pages |
+| `Styles/admin.scss` | `wwwroot/admin.css` | Admin panel |
+
+`dotnet build` triggers `AspNetCore.SassCompiler` to compile both. Always commit the compiled `.css` files alongside their `.scss` source.
+
+If CSS appears stale after editing SCSS (Dart Sass skips recompile when the `.css` is newer), force recompile manually — find `dart.exe` under the SassCompiler NuGet tools path and run:
+
+```
+dart.exe sass.snapshot --style=expanded --no-source-map Styles\app.scss wwwroot\app.css
+dart.exe sass.snapshot --style=expanded --no-source-map Styles\admin.scss wwwroot\admin.css
+```
 
 ---
 
@@ -110,14 +126,14 @@ URL: `/admin/login`
 
 | Page | Path | Purpose |
 |---|---|---|
-| Dashboard | `/admin` | Overview |
-| Skills | `/admin/skills` | Add/edit/delete skills with proficiency |
-| Projects | `/admin/projects` | Add/edit/delete projects (VI + EN descriptions) |
-| Blog | `/admin/blog` | Write and publish blog posts (VI + EN, auto-slug) |
+| Dashboard | `/admin` | Overview stats |
+| Skills | `/admin/skills` | Add/edit/delete skills with proficiency and devicon class |
+| Projects | `/admin/projects` | Add/edit/delete projects (VI + EN), drag-to-reorder, paginated |
+| Blog | `/admin/blog` | Write and publish posts (VI + EN, auto-slug from Vietnamese title) |
 | Education | `/admin/education` | Manage education entries |
 | Experience | `/admin/experience` | Manage work experience entries |
 | Messages | `/admin/contacts` | View contact form submissions — unread badge, mark read, delete, reply |
-| Settings | `/admin/settings` | Bio (VI/EN), social links (GitHub, LinkedIn, Facebook), contact info |
+| Settings | `/admin/settings` | Bio (VI/EN), social links (GitHub, LinkedIn, Facebook), avatar upload |
 
 ---
 
