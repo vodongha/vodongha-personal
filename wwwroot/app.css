@@ -1787,6 +1787,9 @@ img {
   min-height: 100px;
   resize: vertical;
 }
+.admin-form__textarea--tall {
+  min-height: 300px;
+}
 .admin-form__range {
   width: 100%;
   accent-color: #6ee7b7;

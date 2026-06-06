@@ -1,0 +1,182 @@
+@page "/admin/blog"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using vodongha.Data.Models
+@inject BlogService BlogSvc
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__logo"><span>vdh</span><span class="dot">.</span><span>admin</span></div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav__item"><i class="bi bi-grid"></i> Dashboard</a>
+            <a href="/admin/skills" class="admin-nav__item"><i class="bi bi-bar-chart"></i> Skills</a>
+            <a href="/admin/projects" class="admin-nav__item"><i class="bi bi-folder2"></i> Projects</a>
+            <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
+            <a href="/admin/experience" class="admin-nav__item"><i class="bi bi-briefcase"></i> Experience</a>
+            <a href="/admin/blog" class="admin-nav__item admin-nav__item--active"><i class="bi bi-file-text"></i> Blog</a>
+        </nav>
+        <form method="post" action="/admin/logout" class="admin-sidebar__logout">
+            <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">Blog</h1>
+            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
+        </header>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Slug</th>
+                        <th>Tags</th>
+                        <th>Published</th>
+                        <th>Ngày tạo</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (BlogPost post in Posts)
+                    {
+                        <tr>
+                            <td>@post.Title</td>
+                            <td><small>@post.Slug</small></td>
+                            <td><small>@post.Tags</small></td>
+                            <td>@(post.IsPublished ? "✓" : "")</td>
+                            <td><small>@post.CreatedAt.ToString("yyyy-MM-dd")</small></td>
+                            <td class="admin-table__actions">
+                                <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(post)"><i class="bi bi-pencil"></i></button>
+                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(post.Id)"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (ShowForm)
+        {
+            <div class="admin-modal-overlay" @onclick="CloseForm">
+                <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? "Thêm bài viết" : "Sửa bài viết")</h2>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Tiêu đề</label>
+                        <input class="admin-form__input" value="@Editing.Title" @oninput="OnTitleInput" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Slug</label>
+                        <input class="admin-form__input" @bind="Editing.Slug" placeholder="auto-generated-from-title" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Tóm tắt</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Summary"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Nội dung</label>
+                        <textarea class="admin-form__input admin-form__textarea admin-form__textarea--tall" @bind="Editing.Content"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Tags (phân cách bằng dấu phẩy)</label>
+                        <input class="admin-form__input" @bind="Editing.Tags" placeholder=".NET,Blazor,..." />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Cover Image URL</label>
+                        <input class="admin-form__input" @bind="Editing.CoverImageUrl" placeholder="https://..." />
+                    </div>
+                    <div class="admin-form__group admin-form__check">
+                        <label><input type="checkbox" @bind="Editing.IsPublished" /> Published</label>
+                    </div>
+                    <div class="admin-modal__footer">
+                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">Huỷ</button>
+                        <button class="admin-btn admin-btn--primary" @onclick="Save">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </main>
+</div>
+
+@code {
+    private List<BlogPost> Posts = [];
+    private BlogPost Editing = new();
+    private bool ShowForm;
+    private bool _isNew;
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        Posts = await BlogSvc.GetAllAsync();
+    }
+
+    private void OpenAdd()
+    {
+        Editing = new BlogPost { CreatedAt = DateTime.UtcNow };
+        _isNew = true;
+        ShowForm = true;
+    }
+
+    private void OpenEdit(BlogPost post)
+    {
+        Editing = new BlogPost
+        {
+            Id = post.Id,
+            Title = post.Title,
+            Slug = post.Slug,
+            Summary = post.Summary,
+            Content = post.Content,
+            Tags = post.Tags,
+            CoverImageUrl = post.CoverImageUrl,
+            IsPublished = post.IsPublished,
+            CreatedAt = post.CreatedAt,
+            UpdatedAt = post.UpdatedAt
+        };
+        _isNew = false;
+        ShowForm = true;
+    }
+
+    private void CloseForm() { ShowForm = false; }
+
+    private void OnTitleInput(ChangeEventArgs e)
+    {
+        Editing.Title = e.Value?.ToString() ?? string.Empty;
+        if (_isNew)
+        {
+            Editing.Slug = GenerateSlug(Editing.Title);
+        }
+    }
+
+    private static string GenerateSlug(string title)
+    {
+        string slug = title.ToLowerInvariant();
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[àáạảãăắặẳẵâấậẩẫ]", "a");
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[èéẹẻẽêếệểễ]", "e");
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[ìíịỉĩ]", "i");
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[òóọỏõôốộổỗơớợởỡ]", "o");
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[ùúụủũưứựửữ]", "u");
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[ỳýỵỷỹ]", "y");
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[đ]", "d");
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"[^a-z0-9\s-]", "");
+        slug = System.Text.RegularExpressions.Regex.Replace(slug, @"\s+", "-");
+        slug = slug.Trim('-');
+        return slug;
+    }
+
+    private async Task Save()
+    {
+        await BlogSvc.SaveAsync(Editing);
+        ShowForm = false;
+        await LoadAsync();
+    }
+
+    private async Task Delete(int id)
+    {
+        await BlogSvc.DeleteAsync(id);
+        await LoadAsync();
+    }
+}
