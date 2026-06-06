@@ -35,11 +35,11 @@
                 <thead>
                     <tr>
                         <th>Tiêu đề</th>
-                        <th>Slug</th>
-                        <th>Tags</th>
-                        <th>Published</th>
-                        <th>Ngày tạo</th>
-                        <th></th>
+                        <th style="width:220px">Slug</th>
+                        <th style="width:200px">Tags</th>
+                        <th style="width:90px">Published</th>
+                        <th style="width:100px;white-space:nowrap">Ngày tạo</th>
+                        <th style="width:80px"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,10 +47,10 @@
                     {
                         <tr>
                             <td>@post.Title</td>
-                            <td><small>@post.Slug</small></td>
-                            <td><small>@post.Tags</small></td>
+                            <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><small>@post.Slug</small></td>
+                            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><small>@post.Tags</small></td>
                             <td>@(post.IsPublished ? "✓" : "")</td>
-                            <td><small>@post.CreatedAt.ToString("yyyy-MM-dd")</small></td>
+                            <td style="white-space:nowrap"><small>@post.CreatedAt.ToString("yyyy-MM-dd")</small></td>
                             <td class="admin-table__actions">
                                 <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(post)"><i class="bi bi-pencil"></i></button>
                                 <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(post.Id)"><i class="bi bi-trash"></i></button>
