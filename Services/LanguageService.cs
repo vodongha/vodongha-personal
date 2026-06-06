@@ -68,7 +68,7 @@ public class LanguageService
         ["edu.title"]       = "Trình độ học vấn",
         // Footer
         ["footer.rights"]   = "Tất cả quyền được bảo lưu.",
-        ["footer.built"]    = "Xây dựng với",
+        ["footer.built"]    = "Xây dựng với Claude",
     };
 
     private static readonly Dictionary<string, string> En = new()
@@ -121,6 +121,6 @@ public class LanguageService
         ["edu.title"]       = "Education",
         // Footer
         ["footer.rights"]   = "All rights reserved.",
-        ["footer.built"]    = "Built with",
+        ["footer.built"]    = "Built with Claude",
     };
 }
