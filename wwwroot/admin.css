@@ -126,17 +126,24 @@
 .admin-table th, .admin-table td {
   padding: 0.75rem 1rem;
   text-align: left;
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid #1f1f1f;
 }
 .admin-table th {
-  color: #6b7280;
-  font-weight: 500;
+  background: #111827;
+  color: #6ee7b7;
+  font-weight: 600;
   font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+}
+.admin-table tbody tr:nth-child(odd) td {
+  background: #0d0d0d;
+}
+.admin-table tbody tr:nth-child(even) td {
+  background: #121212;
 }
 .admin-table tr:hover td {
-  background: #1a1a1a;
+  background: #1e2a24 !important;
 }
 .admin-table__actions {
   display: flex;
@@ -632,17 +639,17 @@ tr.admin-row--dragover td {
   font-size: 0.875rem;
 }
 .quickgrid thead tr {
-  background: transparent;
+  background: #111827;
 }
 .quickgrid th {
   padding: 0.6rem 1rem;
   text-align: left;
-  border-bottom: 1px solid #2a2a2a;
-  color: #6b7280;
-  font-weight: 500;
+  border-bottom: 1px solid #1e3a2f;
+  color: #6ee7b7;
+  font-weight: 600;
   font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   white-space: nowrap;
   cursor: default;
 }
@@ -689,8 +696,14 @@ tr.admin-row--dragover td {
   border-bottom: 1px solid #1f1f1f;
   color: #e5e7eb;
 }
+.quickgrid tbody tr:nth-child(odd) td {
+  background: #0d0d0d;
+}
+.quickgrid tbody tr:nth-child(even) td {
+  background: #121212;
+}
 .quickgrid tr:hover td {
-  background: #1a1a1a;
+  background: #1e2a24 !important;
 }
 .quickgrid tbody tr:not(:has(> td:not(:empty))) {
   display: none !important;

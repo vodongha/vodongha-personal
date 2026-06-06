@@ -105,9 +105,11 @@
     border-collapse: collapse;
     font-size: 0.875rem;
 
-    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #2a2a2a; }
-    th { color: #6b7280; font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    tr:hover td { background: #1a1a1a; }
+    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #1f1f1f; }
+    th { background: #111827; color: #6ee7b7; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    tbody tr:nth-child(odd)  td { background: #0d0d0d; }
+    tbody tr:nth-child(even) td { background: #121212; }
+    tr:hover td { background: #1e2a24 !important; }
 
     &__actions { display: flex; gap: 0.5rem; }
 }
@@ -486,17 +488,17 @@ tr.admin-row--dragover td {
     border-collapse: collapse;
     font-size: 0.875rem;
 
-    thead tr { background: transparent; }
+    thead tr { background: #111827; }
 
     th {
         padding: 0.6rem 1rem;
         text-align: left;
-        border-bottom: 1px solid #2a2a2a;
-        color: #6b7280;
-        font-weight: 500;
+        border-bottom: 1px solid #1e3a2f;
+        color: #6ee7b7;
+        font-weight: 600;
         font-size: 0.75rem;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.06em;
         white-space: nowrap;
         cursor: default;
 
@@ -526,7 +528,9 @@ tr.admin-row--dragover td {
         color: $color-text;
     }
 
-    tr:hover td { background: #1a1a1a; }
+    tbody tr:nth-child(odd)  td { background: #0d0d0d; }
+    tbody tr:nth-child(even) td { background: #121212; }
+    tr:hover td { background: #1e2a24 !important; }
 
     // Hide filler rows QuickGrid renders as <tr><td></td>...</tr> (no class, all tds empty)
     tbody tr:not(:has(> td:not(:empty))) { display: none !important; }
