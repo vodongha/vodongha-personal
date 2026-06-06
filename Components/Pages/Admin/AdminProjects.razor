@@ -32,7 +32,13 @@
         </header>
 
         <div class="admin-toolbar">
-            <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm tên, công nghệ..." />
+            <select class="admin-page-size" value="@_pageSize" @onchange="OnPageSizeChange">
+                <option value="5">5 / trang</option>
+                <option value="10" selected>10 / trang</option>
+                <option value="20">20 / trang</option>
+                <option value="50">50 / trang</option>
+            </select>
+            <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" @bind:after="ResetPage" placeholder="Tìm kiếm tên, công nghệ..." />
         </div>
 
         <table class="quickgrid">
@@ -46,10 +52,10 @@
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 0; i < Filtered.Count; i++)
+                @for (int i = 0; i < Paged.Count; i++)
                 {
                     int idx = i;
-                    Project p = Filtered[i];
+                    Project p = Paged[i];
                     <tr draggable="true"
                         @ondragstart="() => DragStart(idx)"
                         @ondragover:preventDefault="true"
@@ -57,7 +63,7 @@
                         @ondrop="() => Drop(idx)"
                         @ondragend="DragEnd"
                         class="@DragClass(idx)">
-                        <td class="admin-drag-handle" title="Kéo để sắp xếp" style="cursor:grab;opacity:.4">
+                        <td style="cursor:grab;opacity:.4;width:2rem" title="Kéo để sắp xếp">
                             <i class="bi bi-grip-vertical"></i>
                         </td>
                         <td>@p.Title</td>
@@ -71,10 +77,22 @@
                         </td>
                     </tr>
                 }
+                @for (int i = Paged.Count; i < _pageSize; i++)
+                {
+                    <tr><td colspan="5">&nbsp;</td></tr>
+                }
             </tbody>
         </table>
-        <div class="paginator" style="justify-content:flex-start">
+
+        <div class="paginator">
             <span class="paginator-summary">@Filtered.Count items</span>
+            <nav>
+                <button @onclick="() => GoPage(0)" disabled="@(_page == 0)">«</button>
+                <button @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">‹</button>
+                <span>Page @(_page + 1) of @TotalPages</span>
+                <button @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">›</button>
+                <button @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">»</button>
+            </nav>
         </div>
 
         @if (ShowForm)
@@ -141,11 +159,20 @@
     private Project Editing = new();
     private bool ShowForm;
     private string _search = "";
+    private int _pageSize = 10;
+    private int _page = 0;
 
     private List<Project> Filtered => string.IsNullOrEmpty(_search)
         ? Projects
         : Projects.Where(p => p.Title.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
                                (p.Technologies ?? "").Contains(_search, StringComparison.OrdinalIgnoreCase)).ToList();
+
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(Filtered.Count / (double)_pageSize));
+    private List<Project> Paged => Filtered.Skip(_page * _pageSize).Take(_pageSize).ToList();
+
+    private void GoPage(int p) { _page = Math.Clamp(p, 0, TotalPages - 1); }
+    private void ResetPage() { _page = 0; }
+    private void OnPageSizeChange(ChangeEventArgs e) { if (int.TryParse(e.Value?.ToString(), out int s)) { _pageSize = s; _page = 0; } }
 
     private int _dragIndex = -1;
     private int _dropIndex = -1;
@@ -158,19 +185,21 @@
         Projects = await db.Projects.OrderBy(p => p.Order).ToListAsync();
     }
 
-    private void DragStart(int index) => _dragIndex = index;
-    private void DragOver(int index) => _dropIndex = index;
+    private void DragStart(int localIndex) => _dragIndex = _page * _pageSize + localIndex;
+    private void DragOver(int localIndex) => _dropIndex = _page * _pageSize + localIndex;
     private void DragEnd() { _dragIndex = -1; _dropIndex = -1; }
 
-    private string DragClass(int index)
+    private string DragClass(int localIndex)
     {
-        if (index == _dragIndex) { return "admin-row--dragging"; }
-        if (index == _dropIndex) { return "admin-row--dragover"; }
+        int globalIndex = _page * _pageSize + localIndex;
+        if (globalIndex == _dragIndex) { return "admin-row--dragging"; }
+        if (globalIndex == _dropIndex) { return "admin-row--dragover"; }
         return "";
     }
 
-    private async Task Drop(int targetIndex)
+    private async Task Drop(int targetLocalIndex)
     {
+        int targetIndex = _page * _pageSize + targetLocalIndex;
         if (_dragIndex < 0 || _dragIndex == targetIndex) { DragEnd(); return; }
         Project dragged = Projects[_dragIndex];
         Projects.RemoveAt(_dragIndex);
