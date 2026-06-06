@@ -65,20 +65,32 @@
                 <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
                     <h2 class="admin-modal__title">@(Editing.Id == 0 ? "Thêm bài viết" : "Sửa bài viết")</h2>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Tiêu đề</label>
+                        <label class="admin-form__label">Tiêu đề 🇻🇳</label>
                         <input class="admin-form__input" value="@Editing.Title" @oninput="OnTitleInput" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Title 🇬🇧</label>
+                        <input class="admin-form__input" @bind="Editing.TitleEn" />
                     </div>
                     <div class="admin-form__group">
                         <label class="admin-form__label">Slug</label>
                         <input class="admin-form__input" @bind="Editing.Slug" placeholder="auto-generated-from-title" />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Tóm tắt</label>
+                        <label class="admin-form__label">Tóm tắt 🇻🇳</label>
                         <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Summary"></textarea>
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Nội dung</label>
+                        <label class="admin-form__label">Summary 🇬🇧</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.SummaryEn"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Nội dung 🇻🇳</label>
                         <textarea class="admin-form__input admin-form__textarea admin-form__textarea--tall" @bind="Editing.Content"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Content 🇬🇧</label>
+                        <textarea class="admin-form__input admin-form__textarea admin-form__textarea--tall" @bind="Editing.ContentEn"></textarea>
                     </div>
                     <div class="admin-form__group">
                         <label class="admin-form__label">Tags (phân cách bằng dấu phẩy)</label>
@@ -127,9 +139,12 @@
         {
             Id = post.Id,
             Title = post.Title,
+            TitleEn = post.TitleEn,
             Slug = post.Slug,
             Summary = post.Summary,
+            SummaryEn = post.SummaryEn,
             Content = post.Content,
+            ContentEn = post.ContentEn,
             Tags = post.Tags,
             CoverImageUrl = post.CoverImageUrl,
             IsPublished = post.IsPublished,
