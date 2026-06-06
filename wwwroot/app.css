@@ -490,18 +490,49 @@ img {
     order: -1;
   }
 }
+.hero__avatar-outer {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 640px) {
+  .hero__avatar-outer {
+    width: 220px;
+    height: 220px;
+  }
+}
+.hero__avatar-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 40% 60% 60% 40%/40% 40% 60% 60%;
+  border: 2px solid rgba(110, 231, 183, 0.5);
+  animation: morph 8s ease-in-out infinite, spin 20s linear infinite;
+  border-top-color: #6ee7b7;
+  border-right-color: transparent;
+}
+.hero__avatar-ring2 {
+  position: absolute;
+  inset: 8px;
+  border-radius: 60% 40% 40% 60%/60% 60% 40% 40%;
+  border: 1px solid rgba(129, 140, 248, 0.3);
+  animation: morph 8s ease-in-out infinite reverse, spin 15s linear infinite reverse;
+}
 .hero__avatar-wrap {
   position: relative;
-  width: 300px;
-  height: 300px;
+  width: 260px;
+  height: 260px;
   border-radius: 50%;
   background: #1a1a1a;
   overflow: hidden;
+  z-index: 1;
 }
 @media (max-width: 640px) {
   .hero__avatar-wrap {
-    width: 200px;
-    height: 200px;
+    width: 170px;
+    height: 170px;
   }
 }
 .hero__avatar-img {
