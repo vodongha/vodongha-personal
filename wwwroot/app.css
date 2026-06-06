@@ -39,6 +39,11 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
 img {
@@ -422,6 +427,11 @@ img {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   animation: bounce 2s ease-in-out infinite;
+}
+@media (max-width: 1024px) {
+  .hero__scroll {
+    display: none;
+  }
 }
 
 @keyframes float {
