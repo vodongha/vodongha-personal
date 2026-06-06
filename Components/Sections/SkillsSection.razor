@@ -1,10 +1,12 @@
 @inject SkillService SkillSvc
+@inject LanguageService Lang
+@implements IDisposable
 
 <section class="section skills" id="skills">
     <div class="section__header">
-        <span class="section__label">Năng lực</span>
-        <h2 class="section__title">Kỹ năng & Công nghệ</h2>
-        <p class="section__subtitle">Các công nghệ tôi sử dụng để xây dựng sản phẩm</p>
+        <span class="section__label">@Lang.T("skills.label")</span>
+        <h2 class="section__title">@Lang.T("skills.title")</h2>
+        <p class="section__subtitle">@Lang.T("skills.subtitle")</p>
     </div>
 
     @if (_grouped is not null)
@@ -40,6 +42,11 @@
 @code {
     private Dictionary<string, List<Skill>>? _grouped;
 
-    protected override async Task OnInitializedAsync() =>
+    protected override async Task OnInitializedAsync()
+    {
         _grouped = await SkillSvc.GetGroupedAsync();
+        Lang.OnChange += StateHasChanged;
+    }
+
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
 }

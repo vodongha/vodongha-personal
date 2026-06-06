@@ -1,3 +1,6 @@
+@inject LanguageService Lang
+@implements IDisposable
+
 <section class="hero" id="home">
     <div class="hero__bg">
         <div class="hero__bg-blob hero__bg-blob--1"></div>
@@ -6,28 +9,25 @@
 
     <div class="hero__content">
         <div class="hero__text">
-            <span class="hero__badge">&#x1F44B; Xin chào, tôi là</span>
+            <span class="hero__badge">@Lang.T("hero.greeting")</span>
 
             <h1 class="hero__name">
                 Võ Đông Hà<br />
                 <span>Full-Stack Developer</span>
             </h1>
 
-            <p class="hero__role">Building modern web experiences</p>
+            <p class="hero__role">@Lang.T("hero.role")</p>
 
-            <p class="hero__desc">
-                Tôi xây dựng các ứng dụng web hiện đại với .NET, Blazor và PostgreSQL.
-                Đam mê tạo ra những sản phẩm sạch, hiệu quả và đẹp mắt.
-            </p>
+            <p class="hero__desc">@Lang.T("hero.bio")</p>
 
             <div class="hero__actions">
                 <a href="#projects" class="hero__btn-primary">
                     <i class="bi bi-folder2-open"></i>
-                    Xem dự án
+                    @Lang.T("hero.cta.view")
                 </a>
                 <a href="#contact" class="hero__btn-outline">
                     <i class="bi bi-send"></i>
-                    Liên hệ
+                    @Lang.T("hero.cta.contact")
                 </a>
             </div>
 
@@ -50,9 +50,7 @@
                      style="display:none"
                      onload="this.style.display='block'"
                      onerror="this.nextElementSibling.style.display='flex'" />
-                <div class="hero__avatar-placeholder">
-                    <i class="bi bi-person-circle"></i>
-                </div>
+                <div class="hero__avatar-placeholder"></div>
                 <div class="hero__avatar-ring"></div>
             </div>
         </div>
@@ -63,3 +61,8 @@
         <i class="bi bi-chevron-down"></i>
     </div>
 </section>
+
+@code {
+    protected override void OnInitialized() => Lang.OnChange += StateHasChanged;
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
+}

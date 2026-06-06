@@ -1,39 +1,33 @@
 @rendermode InteractiveServer
 @inject ContactService ContactSvc
+@inject LanguageService Lang
+@implements IDisposable
 
 <section class="section contact" id="contact">
     <div class="section__header">
-        <span class="section__label">Liên hệ</span>
-        <h2 class="section__title">Kết nối với tôi</h2>
-        <p class="section__subtitle">Hãy nhắn cho tôi nếu bạn muốn hợp tác hoặc chỉ muốn nói chuyện</p>
+        <span class="section__label">@Lang.T("contact.label")</span>
+        <h2 class="section__title">@Lang.T("contact.title")</h2>
+        <p class="section__subtitle">@Lang.T("contact.subtitle")</p>
     </div>
 
     <div class="contact__inner">
         <div class="contact__info">
             <div class="contact__info-item">
-                <div class="contact__info-icon">
-                    <i class="bi bi-geo-alt"></i>
-                </div>
+                <div class="contact__info-icon"><i class="bi bi-geo-alt"></i></div>
                 <div>
-                    <div class="contact__info-label">Địa chỉ</div>
-                    <div class="contact__info-value">Việt Nam</div>
+                    <div class="contact__info-label">@(Lang.IsVi ? "Địa chỉ" : "Location")</div>
+                    <div class="contact__info-value">Ho Chi Minh City, Vietnam</div>
                 </div>
             </div>
-
             <div class="contact__info-item">
-                <div class="contact__info-icon">
-                    <i class="bi bi-envelope"></i>
-                </div>
+                <div class="contact__info-icon"><i class="bi bi-envelope"></i></div>
                 <div>
                     <div class="contact__info-label">Email</div>
-                    <div class="contact__info-value">ha.vodong@cisbox.com</div>
+                    <div class="contact__info-value">REDACTED_EMAIL</div>
                 </div>
             </div>
-
             <div class="contact__info-item">
-                <div class="contact__info-icon">
-                    <i class="bi bi-github"></i>
-                </div>
+                <div class="contact__info-icon"><i class="bi bi-github"></i></div>
                 <div>
                     <div class="contact__info-label">GitHub</div>
                     <div class="contact__info-value">github.com/vodongha</div>
@@ -45,8 +39,7 @@
         {
             <div class="contact__form contact__success">
                 <i class="bi bi-check-circle"></i>
-                <h3>Đã gửi thành công!</h3>
-                <p>Cảm ơn bạn đã liên hệ. Tôi sẽ phản hồi sớm nhất có thể.</p>
+                <h3>@Lang.T("contact.success")</h3>
             </div>
         }
         else
@@ -55,38 +48,38 @@
                 <DataAnnotationsValidator />
 
                 <div class="contact__field">
-                    <label class="contact__label">Họ tên</label>
-                    <InputText @bind-Value="_model.Name" class="contact__input" placeholder="Nguyễn Văn A" />
+                    <label class="contact__label">@Lang.T("contact.name")</label>
+                    <InputText @bind-Value="_model.Name" class="contact__input" />
                     <ValidationMessage For="() => _model.Name" />
                 </div>
 
                 <div class="contact__field">
-                    <label class="contact__label">Email</label>
-                    <InputText @bind-Value="_model.Email" class="contact__input" placeholder="email@example.com" />
+                    <label class="contact__label">@Lang.T("contact.email")</label>
+                    <InputText @bind-Value="_model.Email" class="contact__input" />
                     <ValidationMessage For="() => _model.Email" />
                 </div>
 
                 <div class="contact__field">
-                    <label class="contact__label">Tiêu đề</label>
-                    <InputText @bind-Value="_model.Subject" class="contact__input" placeholder="Muốn hợp tác dự án..." />
+                    <label class="contact__label">@(Lang.IsVi ? "Tiêu đề" : "Subject")</label>
+                    <InputText @bind-Value="_model.Subject" class="contact__input" />
                     <ValidationMessage For="() => _model.Subject" />
                 </div>
 
                 <div class="contact__field">
-                    <label class="contact__label">Nội dung</label>
-                    <InputTextArea @bind-Value="_model.Message" class="contact__textarea" placeholder="Nội dung tin nhắn..." />
+                    <label class="contact__label">@Lang.T("contact.message")</label>
+                    <InputTextArea @bind-Value="_model.Message" class="contact__textarea" />
                     <ValidationMessage For="() => _model.Message" />
                 </div>
 
                 <button type="submit" class="contact__submit" disabled="@_sending">
                     @if (_sending)
                     {
-                        <span>Đang gửi...</span>
+                        <span>@(Lang.IsVi ? "Đang gửi..." : "Sending...")</span>
                     }
                     else
                     {
                         <i class="bi bi-send"></i>
-                        <span>Gửi tin nhắn</span>
+                        <span>@Lang.T("contact.send")</span>
                     }
                 </button>
             </EditForm>
@@ -98,6 +91,9 @@
     private ContactMessage _model = new();
     private bool _sending;
     private bool _sent;
+
+    protected override void OnInitialized() => Lang.OnChange += StateHasChanged;
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
 
     private async Task HandleSubmit()
     {
