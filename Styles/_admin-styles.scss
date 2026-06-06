@@ -610,6 +610,7 @@ tr.admin-row--dragover td {
                 justify-content: center;
                 align-items: center;
                 text-align: center;
+                white-space: nowrap !important;
                 cursor: pointer;
                 i { font-size: 1.1rem !important; display: block; }
                 &:hover { color: #ef4444 !important; opacity: 1 !important; }
