@@ -2,6 +2,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
+RUN apt-get update && apt-get install -y nodejs npm && npm install -g sass && rm -rf /var/lib/apt/lists/*
+
 COPY vodongha.csproj .
 RUN dotnet restore
 
