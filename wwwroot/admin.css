@@ -227,6 +227,9 @@
 .admin-modal--lg {
   max-width: 640px;
 }
+.admin-modal--sm {
+  max-width: 360px;
+}
 .admin-modal__title {
   font-size: 1.125rem;
   font-weight: 700;
@@ -538,19 +541,35 @@ tr.admin-row--dragover td {
   white-space: nowrap;
   cursor: default;
 }
-.quickgrid th .col-sort-asc::after {
+.quickgrid th[aria-sort=none]::after {
+  content: " ↕";
+  opacity: 0.35;
+}
+.quickgrid th.col-sort-asc::after {
   content: " ↑";
   color: #6ee7b7;
+  opacity: 1;
 }
-.quickgrid th .col-sort-desc::after {
+.quickgrid th.col-sort-desc::after {
   content: " ↓";
   color: #6ee7b7;
+  opacity: 1;
 }
-.quickgrid th.sortable {
+.quickgrid th.sortable, .quickgrid th[aria-sort] {
   cursor: pointer;
   user-select: none;
 }
-.quickgrid th.sortable:hover {
+.quickgrid th.sortable button, .quickgrid th[aria-sort] button {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+.quickgrid th.sortable:hover, .quickgrid th[aria-sort]:hover {
   color: #e5e7eb;
 }
 .quickgrid td {
@@ -561,36 +580,56 @@ tr.admin-row--dragover td {
 .quickgrid tr:hover td {
   background: #1a1a1a;
 }
+.quickgrid tbody tr.empty-row {
+  display: none !important;
+}
 .quickgrid .admin-table__actions {
   display: flex;
   gap: 0.5rem;
 }
 
-.paginator-nav {
-  display: flex;
-  align-items: center;
+.paginator {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: 0.75rem;
   margin-top: 1rem;
   font-size: 0.8rem;
   color: #6b7280;
+  background: transparent !important;
 }
-.paginator-nav button {
-  background: transparent;
-  border: 1px solid #2a2a2a;
+.paginator nav {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 0.25rem;
+  align-items: center;
+}
+.paginator button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  background: transparent !important;
+  border: 1px solid #2a2a2a !important;
   border-radius: 6px;
-  color: #6b7280;
-  padding: 0.3rem 0.6rem;
+  color: #6b7280 !important;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: border-color 150ms, color 150ms;
 }
-.paginator-nav button:hover:not(:disabled) {
-  border-color: #6ee7b7;
-  color: #6ee7b7;
+.paginator button:hover:not(:disabled) {
+  border-color: #6ee7b7 !important;
+  color: #6ee7b7 !important;
 }
-.paginator-nav button:disabled {
+.paginator button:disabled {
   opacity: 0.35;
   cursor: default;
+}
+.paginator .paginator-summary {
+  opacity: 0.6;
+  white-space: nowrap;
 }
 
 /*# sourceMappingURL=admin.css.map */

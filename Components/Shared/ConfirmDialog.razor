@@ -1,0 +1,20 @@
+@if (Show)
+{
+    <div class="admin-modal-overlay" @onclick="OnCancel">
+        <div class="admin-modal admin-modal--sm" @onclick:stopPropagation>
+            <h2 class="admin-modal__title" style="color:#f87171">Xác nhận xoá</h2>
+            <p style="margin-bottom:1.5rem;opacity:.7">@Message</p>
+            <div class="admin-modal__footer">
+                <button class="admin-btn admin-btn--ghost" @onclick="OnCancel">Huỷ</button>
+                <button class="admin-btn admin-btn--danger" @onclick="OnConfirm">Xoá</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Show { get; set; }
+    [Parameter] public string Message { get; set; } = "Bạn có chắc muốn xoá mục này không?";
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+}

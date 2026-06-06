@@ -19,6 +19,11 @@ public partial class AdminContacts : ComponentBase
 
     private int UnreadCount => Messages.Count(m => !m.IsRead);
 
+    private int _deleteId;
+    private bool _confirmShow;
+    private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
+    private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
+
     private IQueryable<ContactMessage> Filtered => Messages.AsQueryable()
         .Where(m => string.IsNullOrEmpty(_search) ||
                     m.Name.Contains(_search, StringComparison.OrdinalIgnoreCase) ||

@@ -66,7 +66,7 @@
                         <td>
                             <div class="admin-table__actions">
                                 <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(p)"><i class="bi bi-pencil"></i></button>
-                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(p.Id)"><i class="bi bi-trash"></i></button>
+                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(p.Id)"><i class="bi bi-trash"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -126,10 +126,17 @@
                 </div>
             </div>
         }
+        <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
     </main>
 </div>
 
 @code {
+    private int _deleteId;
+    private bool _confirmShow;
+
+    private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
+    private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
+
     private List<Project> Projects = [];
     private Project Editing = new();
     private bool ShowForm;
