@@ -20,12 +20,14 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     private string _replyText = "";
     private bool _sending;
     private bool _otherIsTyping;
+    private int _unreadChatCount;
     private HubConnection? _hubConnection;
     private CancellationTokenSource? _typingCts;
 
     protected override async Task OnInitializedAsync()
     {
         _sessions = await ChatSvc.GetSessionsAsync();
+        _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
         await ConnectHubAsync();
     }
 
@@ -61,6 +63,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
 
             _messages.Add(new ChatMessage { Id = id, Content = content, IsFromUser = isFromUser, SentAt = sentAt });
             _sessions = await ChatSvc.GetSessionsAsync();
+            _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
             await InvokeAsync(StateHasChanged);
             await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "adminChatMessages");
         });
@@ -94,6 +97,14 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         _messages = await ChatSvc.GetMessagesAsync(sessionId);
         _replyText = "";
         _otherIsTyping = false;
+
+        // Mark session as read
+        await ChatSvc.MarkSessionReadAsync(sessionId);
+        if (_selectedSession != null)
+        {
+            _selectedSession.HasUnread = false;
+        }
+        _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
 
         // Join new session group
         if (_hubConnection != null)

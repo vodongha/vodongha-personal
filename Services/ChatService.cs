@@ -77,6 +77,7 @@ public class ChatService
         }
 
         session.LastMessageAt = DateTime.UtcNow;
+        session.HasUnread = true;
         db.ChatMessages.Add(message);
         await db.SaveChangesAsync();
 
@@ -163,6 +164,7 @@ public class ChatService
         };
 
         session.LastMessageAt = DateTime.UtcNow;
+        session.HasUnread = true;
         db.ChatMessages.Add(message);
         await db.SaveChangesAsync();
 
@@ -200,15 +202,21 @@ public class ChatService
         return await db.ChatSessions.FindAsync(sessionId);
     }
 
+    public async Task MarkSessionReadAsync(int sessionId)
+    {
+        await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
+        ChatSession? session = await db.ChatSessions.FindAsync(sessionId);
+        if (session != null && session.HasUnread)
+        {
+            session.HasUnread = false;
+            await db.SaveChangesAsync();
+        }
+    }
+
     public async Task<int> GetUnreadCountAsync()
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
-        // Count sessions that have user messages more recent than last admin reply
-        return await db.ChatSessions
-            .Where(s => s.Messages.Any(m => m.IsFromUser) &&
-                        !s.Messages.Any(m => !m.IsFromUser &&
-                            m.SentAt >= s.Messages.Where(u => u.IsFromUser).Max(u => u.SentAt)))
-            .CountAsync();
+        return await db.ChatSessions.CountAsync(s => s.HasUnread);
     }
 }
 
