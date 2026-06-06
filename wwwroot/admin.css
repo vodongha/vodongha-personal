@@ -715,10 +715,10 @@ tr.admin-row--dragover td {
 .paginator nav button:nth-child(2)::after {
   content: "\2039";
 }
-.paginator nav button:nth-child(3)::after {
+.paginator nav button:nth-child(4)::after {
   content: "\203A";
 }
-.paginator nav button:nth-child(4)::after {
+.paginator nav button:nth-child(5)::after {
   content: "\BB";
 }
 .paginator nav button:hover:not(:disabled) {
