@@ -664,7 +664,8 @@ tr.admin-row--dragover td {
 .quickgrid tr:hover td {
   background: #1a1a1a;
 }
-.quickgrid tbody tr.empty-row {
+.quickgrid tbody tr.empty-row,
+.quickgrid tbody tr:has(> td[colspan]) {
   display: none !important;
 }
 .quickgrid .admin-table__actions {
