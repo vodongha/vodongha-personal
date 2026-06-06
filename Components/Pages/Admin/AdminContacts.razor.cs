@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.EntityFrameworkCore;
 using vodongha.Data;
 using vodongha.Data.Models;
@@ -13,16 +14,23 @@ public partial class AdminContacts : ComponentBase
 
     private List<ContactMessage> Messages = [];
     private ContactMessage? Selected;
+    private string _search = "";
+    private PaginationState _pagination = new() { ItemsPerPage = 10 };
+
     private int UnreadCount => Messages.Count(m => !m.IsRead);
+
+    private IQueryable<ContactMessage> Filtered => Messages.AsQueryable()
+        .Where(m => string.IsNullOrEmpty(_search) ||
+                    m.Name.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
+                    m.Email.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
+                    m.Subject.Contains(_search, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync() => await LoadAsync();
 
     private async Task LoadAsync()
     {
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        Messages = await db.ContactMessages
-            .OrderByDescending(m => m.SentAt)
-            .ToListAsync();
+        Messages = await db.ContactMessages.OrderByDescending(m => m.SentAt).ToListAsync();
     }
 
     private async Task OpenMessage(ContactMessage msg)
@@ -46,13 +54,8 @@ public partial class AdminContacts : ComponentBase
     private async Task MarkAllRead()
     {
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        await db.ContactMessages
-            .Where(m => !m.IsRead)
-            .ExecuteUpdateAsync(s => s.SetProperty(m => m.IsRead, true));
-        foreach (ContactMessage msg in Messages)
-        {
-            msg.IsRead = true;
-        }
+        await db.ContactMessages.Where(m => !m.IsRead).ExecuteUpdateAsync(s => s.SetProperty(m => m.IsRead, true));
+        foreach (ContactMessage msg in Messages) { msg.IsRead = true; }
         Toast.Show("Đã đánh dấu tất cả đã đọc");
     }
 
@@ -61,10 +64,7 @@ public partial class AdminContacts : ComponentBase
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         await db.ContactMessages.Where(m => m.Id == id).ExecuteDeleteAsync();
         Messages.RemoveAll(m => m.Id == id);
-        if (Selected?.Id == id)
-        {
-            Selected = null;
-        }
+        if (Selected?.Id == id) { Selected = null; }
         Toast.Show("Đã xoá tin nhắn");
     }
 }

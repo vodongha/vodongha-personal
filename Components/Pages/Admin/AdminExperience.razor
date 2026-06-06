@@ -1,8 +1,9 @@
-﻿@page "/admin/experience"
+@page "/admin/experience"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
 @using vodongha.Data.Models
 @inject IDbContextFactory<AppDbContext> DbFactory
 @inject ToastService Toast
@@ -31,25 +32,25 @@
             <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
         </header>
 
-        <div class="admin-table-wrap">
-            <table class="admin-table">
-                <thead><tr><th>Công ty</th><th>Vai trò</th><th>Thời gian</th><th></th></tr></thead>
-                <tbody>
-                    @foreach (Experience e in Items)
-                    {
-                        <tr>
-                            <td>@e.Company</td>
-                            <td>@e.Role</td>
-                            <td>@e.StartMonth/@e.StartYear – @(e.IsCurrent ? "Hiện tại" : $"{e.EndMonth}/{e.EndYear}")</td>
-                            <td class="admin-table__actions">
-                                <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(e)"><i class="bi bi-pencil"></i></button>
-                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(e.Id)"><i class="bi bi-trash"></i></button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <div class="admin-toolbar">
+            <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm công ty, vai trò..." />
         </div>
+
+        <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
+            <PropertyColumn Property="e => e.Company" Title="Công ty" Sortable="true" />
+            <PropertyColumn Property="e => e.Role" Title="Vai trò" Sortable="true" />
+            <PropertyColumn Property="e => e.Location" Title="Địa điểm" Sortable="true" />
+            <TemplateColumn Title="Thời gian" Sortable="false">
+                @context.StartMonth/@context.StartYear – @(context.IsCurrent ? "Hiện tại" : $"{context.EndMonth}/{context.EndYear}")
+            </TemplateColumn>
+            <TemplateColumn Title="">
+                <div class="admin-table__actions">
+                    <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(context)"><i class="bi bi-pencil"></i></button>
+                    <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(context.Id)"><i class="bi bi-trash"></i></button>
+                </div>
+            </TemplateColumn>
+        </QuickGrid>
+        <Paginator State="_pagination" />
 
         @if (ShowForm)
         {
@@ -121,16 +122,23 @@
 </div>
 
 @code {
-    private List<Experience> Items = [];
+    private List<Experience> _items = [];
     private Experience Editing = new();
     private bool ShowForm;
+    private string _search = "";
+    private PaginationState _pagination = new() { ItemsPerPage = 10 };
+
+    private IQueryable<Experience> Filtered => _items.AsQueryable()
+        .Where(e => string.IsNullOrEmpty(_search) ||
+                    e.Company.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
+                    e.Role.Contains(_search, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync() => await LoadAsync();
 
     private async Task LoadAsync()
     {
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        Items = await db.Experiences.OrderBy(e => e.Order).ToListAsync();
+        _items = await db.Experiences.OrderBy(e => e.Order).ToListAsync();
     }
 
     private void OpenAdd() { Editing = new Experience { StartMonth = 1, StartYear = DateTime.Now.Year, IsCurrent = true }; ShowForm = true; }

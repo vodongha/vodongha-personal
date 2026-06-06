@@ -392,3 +392,78 @@ tr.admin-row--dragover td {
     from { opacity: 0; transform: translateX(1rem); }
     to   { opacity: 1; transform: translateX(0); }
 }
+
+// ── Toolbar (search + actions) ────────────────────────────────────
+.admin-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.admin-search {
+    max-width: 280px;
+    padding: 0.45rem 0.75rem;
+}
+
+// ── QuickGrid dark theme ──────────────────────────────────────────
+.quickgrid {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    thead tr { background: transparent; }
+
+    th {
+        padding: 0.6rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid #2a2a2a;
+        color: #6b7280;
+        font-weight: 500;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+        cursor: default;
+
+        .col-sort-asc::after  { content: ' ↑'; color: $color-primary; }
+        .col-sort-desc::after { content: ' ↓'; color: $color-primary; }
+
+        &.sortable { cursor: pointer; user-select: none;
+            &:hover { color: $color-text; }
+        }
+    }
+
+    td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #1f1f1f;
+        color: $color-text;
+    }
+
+    tr:hover td { background: #1a1a1a; }
+
+    .admin-table__actions { display: flex; gap: 0.5rem; }
+}
+
+.paginator-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: $color-text-muted;
+
+    button {
+        background: transparent;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        color: $color-text-muted;
+        padding: 0.3rem 0.6rem;
+        cursor: pointer;
+        transition: border-color 150ms, color 150ms;
+
+        &:hover:not(:disabled) { border-color: $color-primary; color: $color-primary; }
+        &:disabled { opacity: 0.35; cursor: default; }
+    }
+}
