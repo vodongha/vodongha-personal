@@ -38,7 +38,7 @@
         }
         else
         {
-            <div style="display:grid;grid-template-columns:300px 1fr;gap:1.5rem;align-items:start">
+            <div class="admin-chat-layout @(_selectedSessionId.HasValue ? "admin-chat-layout--chat-open" : "")">
                 <div class="chat-sessions">
                     @foreach (ChatSession session in _sessions)
                     {
@@ -60,6 +60,9 @@
                 {
                     <div class="chat-admin-window">
                         <div class="chat-header" style="flex-shrink:0;border-bottom:1px solid #2a2a2a;padding:.875rem 1rem;background:#141414">
+                            <button class="chat-admin-back" @onclick="CloseChat" title="Quay lại">
+                                <i class="bi bi-arrow-left"></i>
+                            </button>
                             <div class="chat-header__info">
                                 <div class="chat-header__avatar"><i class="bi bi-person-circle"></i></div>
                                 <div>
@@ -118,7 +121,7 @@
                 }
                 else
                 {
-                    <div style="display:flex;align-items:center;justify-content:center;height:480px;color:#6b7280;font-size:.875rem">
+                    <div class="admin-chat-placeholder">
                         Chọn một cuộc trò chuyện để xem
                     </div>
                 }

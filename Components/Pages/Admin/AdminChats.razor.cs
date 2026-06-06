@@ -115,6 +115,19 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "adminChatMessages");
     }
 
+    private async Task CloseChat()
+    {
+        if (_selectedSessionId.HasValue && _hubConnection != null)
+        {
+            await _hubConnection.InvokeAsync("LeaveSession", _selectedSessionId.Value.ToString());
+        }
+
+        _selectedSessionId = null;
+        _selectedSession = null;
+        _messages = [];
+        _otherIsTyping = false;
+    }
+
     private async Task SendReply()
     {
         if (string.IsNullOrWhiteSpace(_replyText) || _sending || !_selectedSessionId.HasValue)
