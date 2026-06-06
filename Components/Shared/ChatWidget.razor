@@ -68,11 +68,21 @@
                         Gửi tin nhắn để bắt đầu cuộc trò chuyện 👋
                     </div>
                 }
+
+                @if (_otherIsTyping)
+                {
+                    <div class="chat-msg chat-msg--admin">
+                        <div class="chat-typing">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                }
             </div>
 
             <div class="chat-input">
                 <textarea class="chat-input__field" rows="1" placeholder="Nhập tin nhắn..."
-                          @bind="_inputText" @bind:event="oninput"
+                          value="@_inputText"
+                          @oninput="OnTypingInput"
                           @onkeydown="OnKeyDown"></textarea>
                 <button class="chat-input__send" @onclick="SendMessage"
                         disabled="@(string.IsNullOrWhiteSpace(_inputText) || _sending)">

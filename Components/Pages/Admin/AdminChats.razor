@@ -81,11 +81,21 @@
                             {
                                 <div style="text-align:center;color:#6b7280;font-size:.8rem;margin-top:1rem">No messages yet.</div>
                             }
+
+                            @if (_otherIsTyping)
+                            {
+                                <div class="chat-msg chat-msg--user">
+                                    <div class="chat-typing">
+                                        <span></span><span></span><span></span>
+                                    </div>
+                                </div>
+                            }
                         </div>
 
                         <div class="chat-admin-input">
                             <textarea rows="2" placeholder="Nhập tin nhắn trả lời..."
-                                      @bind="_replyText" @bind:event="oninput"
+                                      value="@_replyText"
+                                      @oninput="OnReplyInput"
                                       @onkeydown="OnReplyKeyDown"></textarea>
                             <button class="admin-btn admin-btn--primary"
                                     @onclick="SendReply"
