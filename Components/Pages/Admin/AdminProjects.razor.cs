@@ -10,7 +10,9 @@ public partial class AdminProjects : ComponentBase
 {
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private ToastService Toast { get; set; } = default!;
+    [Inject] private ChatService ChatSvc { get; set; } = default!;
 
+    private int _unreadChatCount;
     private int _deleteId;
     private bool _confirmShow;
 
@@ -39,7 +41,11 @@ public partial class AdminProjects : ComponentBase
     private int _dragIndex = -1;
     private int _dropIndex = -1;
 
-    protected override async Task OnInitializedAsync() => await LoadAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
+        await LoadAsync();
+    }
 
     private async Task LoadAsync()
     {

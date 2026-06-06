@@ -9,7 +9,9 @@ public partial class AdminBlog : ComponentBase
 {
     [Inject] private BlogService BlogSvc { get; set; } = default!;
     [Inject] private ToastService Toast { get; set; } = default!;
+    [Inject] private ChatService ChatSvc { get; set; } = default!;
 
+    private int _unreadChatCount;
     private int _deleteId;
     private bool _confirmShow;
 
@@ -37,7 +39,11 @@ public partial class AdminBlog : ComponentBase
                     p.Title.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
                     (p.Tags ?? "").Contains(_search, StringComparison.OrdinalIgnoreCase));
 
-    protected override async Task OnInitializedAsync() => await LoadAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
+        await LoadAsync();
+    }
 
     private async Task LoadAsync() => _posts = await BlogSvc.GetAllAsync();
 
