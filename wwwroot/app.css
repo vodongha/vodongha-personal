@@ -1388,6 +1388,18 @@ img {
 .footer__link:hover {
   color: #6ee7b7;
 }
+.footer__visitors {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  opacity: 0.6;
+}
+.footer__visitors i {
+  font-size: 0.8rem;
+}
 
 .components-reconnect-first-attempt-visible,
 .components-reconnect-repeated-attempt-visible,

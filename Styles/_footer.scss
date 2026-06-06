@@ -32,4 +32,16 @@
 
         &:hover { color: $color-primary; }
     }
+
+    &__visitors {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: $text-xs;
+        color: $color-text-muted;
+        font-family: $font-mono;
+        opacity: 0.6;
+
+        i { font-size: 0.8rem; }
+    }
 }

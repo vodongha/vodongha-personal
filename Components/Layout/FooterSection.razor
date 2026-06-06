@@ -1,5 +1,6 @@
 @rendermode InteractiveServer
 @inject LanguageService Lang
+@inject VisitorService VisitorSvc
 @implements IDisposable
 
 <footer class="footer">
@@ -11,10 +12,21 @@
             <li><a href="https://github.com/vodongha" target="_blank" class="footer__link">GitHub</a></li>
             <li><a href="mailto:REDACTED_EMAIL" class="footer__link">Email</a></li>
         </ul>
+        <span class="footer__visitors" title="@(Lang.IsVi ? "Khách truy cập độc lập" : "Unique visitors")">
+            <i class="bi bi-eye"></i>
+            @_visitorCount.ToString("N0")
+        </span>
     </div>
 </footer>
 
 @code {
-    protected override void OnInitialized() => Lang.OnChange += StateHasChanged;
+    private int _visitorCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Lang.OnChange += StateHasChanged;
+        _visitorCount = await VisitorSvc.GetCountAsync();
+    }
+
     public void Dispose() => Lang.OnChange -= StateHasChanged;
 }

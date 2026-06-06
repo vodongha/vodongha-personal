@@ -7,6 +7,7 @@ namespace vodongha.Data;
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IDataProtectionKeyContext
 {
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
+    public DbSet<VisitorLog> VisitorLogs => Set<VisitorLog>();
     public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
@@ -17,6 +18,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<VisitorLog>()
+            .HasIndex(v => v.IpAddress).IsUnique();
+
         modelBuilder.Entity<SiteSetting>()
             .HasIndex(s => s.Key).IsUnique();
 
