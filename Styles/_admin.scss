@@ -1,9 +1,7 @@
 @use 'variables' as *;
 
 // ── Layout ──────────────────────────────────────────────────────
-.admin-body { background: #0f0f0f; color: $color-text; font-family: $font-sans; margin: 0; }
-
-.admin-shell { display: flex; min-height: 100vh; }
+.admin-shell { display: flex; min-height: 100vh; background: #0f0f0f; color: $color-text; font-family: $font-sans; }
 
 // ── Sidebar ──────────────────────────────────────────────────────
 .admin-sidebar {
