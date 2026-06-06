@@ -4,10 +4,13 @@ using vodongha.Data.Models;
 
 namespace vodongha.Services;
 
-public class SkillService(AppDbContext db)
+public class SkillService(IDbContextFactory<AppDbContext> dbFactory)
 {
-    public async Task<List<Skill>> GetAllAsync() =>
-        await db.Skills.OrderBy(s => s.Order).ToListAsync();
+    public async Task<List<Skill>> GetAllAsync()
+    {
+        await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+        return await db.Skills.OrderBy(s => s.Order).ToListAsync();
+    }
 
     public async Task<Dictionary<string, List<Skill>>> GetGroupedAsync()
     {

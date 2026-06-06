@@ -11,6 +11,11 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<AppDbContext>();
 
+// Use DbContextFactory to avoid concurrency issues in Blazor Server
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Also register scoped DbContext (used by health checks and migration)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
