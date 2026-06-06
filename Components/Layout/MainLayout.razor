@@ -1,4 +1,7 @@
 @inherits LayoutComponentBase
+@inject LanguageService Lang
+@inject IJSRuntime JS
+@implements IDisposable
 
 <nav class="nav">
     <div class="nav__inner">
@@ -6,14 +9,26 @@
             vdh<span>.dev</span>
         </a>
         <ul class="nav__links">
-            <li><a href="#skills" class="nav__link">Skills</a></li>
-            <li><a href="#projects" class="nav__link">Projects</a></li>
-            <li><a href="#blog" class="nav__link">Blog</a></li>
+            <li><a href="#skills" class="nav__link">@Lang.T("nav.skills")</a></li>
+            <li><a href="#projects" class="nav__link">@Lang.T("nav.projects")</a></li>
+            <li><a href="#blog" class="nav__link">@Lang.T("nav.blog")</a></li>
         </ul>
-        <a href="#contact" class="nav__cta">
-            <i class="bi bi-chat-dots"></i>
-            Liên hệ
-        </a>
+        <div class="nav__actions">
+            <button class="nav__lang-toggle" @onclick="ToggleLang" title="Switch language">
+                @if (Lang.IsVi)
+                {
+                    <span>EN</span>
+                }
+                else
+                {
+                    <span>VI</span>
+                }
+            </button>
+            <a href="#contact" class="nav__cta">
+                <i class="bi bi-chat-dots"></i>
+                @Lang.T("nav.contact")
+            </a>
+        </div>
     </div>
 </nav>
 
@@ -24,11 +39,11 @@
 <footer class="footer">
     <div class="footer__inner">
         <p class="footer__copy">
-            &copy; @DateTime.Now.Year <span>Võ Đông Hà</span>. Built with Blazor &amp; ❤️
+            &copy; @DateTime.Now.Year <span>Võ Đông Hà</span>. @Lang.T("footer.built") Blazor &amp; ❤️
         </p>
         <ul class="footer__links">
             <li><a href="https://github.com/vodongha" target="_blank" class="footer__link">GitHub</a></li>
-            <li><a href="mailto:ha.vodong@cisbox.com" class="footer__link">Email</a></li>
+            <li><a href="mailto:REDACTED_EMAIL" class="footer__link">Email</a></li>
         </ul>
     </div>
 </footer>
@@ -38,3 +53,32 @@
     <a href="." class="reload">Tải lại</a>
     <span class="dismiss">&#x2715;</span>
 </div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            string saved = await JS.InvokeAsync<string>("localStorage.getItem", "lang") ?? "vi";
+            Lang.Set(saved);
+            StateHasChanged();
+        }
+    }
+
+    private async Task ToggleLang()
+    {
+        string next = Lang.IsVi ? "en" : "vi";
+        Lang.Set(next);
+        await JS.InvokeVoidAsync("localStorage.setItem", "lang", next);
+    }
+
+    protected override void OnInitialized()
+    {
+        Lang.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        Lang.OnChange -= StateHasChanged;
+    }
+}

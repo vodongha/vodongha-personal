@@ -1,10 +1,12 @@
 @inject ProjectService ProjectSvc
+@inject LanguageService Lang
+@implements IDisposable
 
 <section class="section projects" id="projects">
     <div class="section__header">
-        <span class="section__label">Portfolio</span>
-        <h2 class="section__title">Dự án nổi bật</h2>
-        <p class="section__subtitle">Một số dự án tôi đã xây dựng và đóng góp</p>
+        <span class="section__label">@Lang.T("projects.label")</span>
+        <h2 class="section__title">@Lang.T("projects.title")</h2>
+        <p class="section__subtitle">@Lang.T("projects.subtitle")</p>
     </div>
 
     @if (_projects is not null)
@@ -21,6 +23,11 @@
 @code {
     private List<Project>? _projects;
 
-    protected override async Task OnInitializedAsync() =>
+    protected override async Task OnInitializedAsync()
+    {
         _projects = await ProjectSvc.GetFeaturedAsync();
+        Lang.OnChange += StateHasChanged;
+    }
+
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
 }

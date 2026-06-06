@@ -62,6 +62,36 @@
         }
     }
 
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: $space-3;
+    }
+
+    &__lang-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        border: 1px solid $color-border;
+        border-radius: $radius-full;
+        color: $color-text-muted;
+        font-size: 0.7rem;
+        font-weight: 700;
+        font-family: $font-mono;
+        cursor: pointer;
+        transition: border-color $transition-fast, color $transition-fast;
+        letter-spacing: 0.05em;
+        -webkit-tap-highlight-color: transparent;
+
+        &:hover {
+            border-color: $color-primary;
+            color: $color-primary;
+        }
+    }
+
     &__cta {
         @include btn-primary;
         padding: $space-2 $space-4;
