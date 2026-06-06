@@ -6,7 +6,7 @@ COPY vodongha.csproj .
 RUN dotnet restore
 
 COPY . .
-RUN dotnet publish -c Release -o /app/publish --no-restore
+RUN dotnet publish -c Release -o /app/publish
 
 # ── Stage 2: Runtime ──────────────────────────────────────────
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
