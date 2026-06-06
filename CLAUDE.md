@@ -7,6 +7,7 @@ Personal website of Võ Đông Hà. Blazor Web App (.NET 10) + PostgreSQL (Neon,
 - Live: https://vodongha.id.vn
 - Repo: https://github.com/vodongha/vodongha-personal
 - Admin: https://vodongha.id.vn/admin/login
+- Project file: `vodongha-personal.csproj` (RootNamespace: `vodongha`)
 
 ## Technology stack
 
@@ -23,14 +24,14 @@ Personal website of Võ Đông Hà. Blazor Web App (.NET 10) + PostgreSQL (Neon,
 
 | Path | Purpose |
 |---|---|
-| `Components/Layout/` | NavBar (InteractiveServer), MainLayout, AdminLayout, ReconnectModal |
+| `Components/Layout/` | NavBar (InteractiveServer), MainLayout, FooterSection (InteractiveServer), AdminLayout, ReconnectModal |
 | `Components/Pages/` | Home, BlogPostPage, Error, NotFound |
 | `Components/Pages/Admin/` | Login, Dashboard, AdminSkills, AdminProjects, AdminBlog, AdminEducation, AdminExperience, AdminSettings |
 | `Components/Sections/` | Hero, Skills, Projects, Experience, Education, Blog, Contact — one file per landing page section |
 | `Components/Shared/` | ProjectCard, BlogCard |
 | `Data/Models/` | Skill, Project, BlogPost, Experience, Education, ContactMessage, SiteSetting |
 | `Data/AppDbContext.cs` | EF Core context. Seed data for Skills, Projects, Experience, Education, SiteSettings lives here. |
-| `Services/` | BlogService, ProjectService, SkillService, ExperienceService, EducationService, ContactService, EmailService, LanguageService |
+| `Services/` | BlogService, ProjectService, SkillService, ExperienceService, EducationService, ContactService, EmailService, LanguageService, SiteSettingService |
 | `Styles/` | `_variables`, `_base`, `_nav`, `_hero`, `_skills`, `_projects`, `_timeline`, `_blog`, `_contact`, `_footer`, `_reconnect`, `_admin`, `app.scss` |
 | `Migrations/` | EF Core migration files — never modify an existing migration, always add new |
 
@@ -54,6 +55,29 @@ Each admin page (`/admin/*`) uses `@layout AdminLayout` and `@attribute [Authori
 ## i18n
 
 `LanguageService` handles Vietnamese/English toggle. Use `Lang.T("key")` for UI strings and `Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description)` for content with dual-language fields.
+
+Content models with bilingual support: `Project` (Description/DescriptionEn), `Experience` (Description/DescriptionEn), `Education` (Description/DescriptionEn), `BlogPost` (Title/TitleEn, Summary/SummaryEn, Content/ContentEn), `SiteSetting` (Bio + BioEn as separate keys).
+
+Layout components that react to language changes must use `@rendermode InteractiveServer` and subscribe to `Lang.OnChange += StateHasChanged` — static SSR layouts do not re-render on language toggle.
+
+## SiteSettings keys
+
+| Key | Purpose |
+|---|---|
+| `Name` | Full name |
+| `Title` | Job title |
+| `Tagline` | Short tagline |
+| `Bio` | Bio in Vietnamese |
+| `BioEn` | Bio in English |
+| `Email` | Contact email |
+| `Phone` | Phone number |
+| `Location` | City/country |
+| `GitHub` | GitHub profile URL |
+| `LinkedIn` | LinkedIn profile URL |
+| `Facebook` | Facebook profile URL (optional) |
+| `AvatarUrl` | Avatar image path |
+
+Social links in HeroSection are loaded dynamically from SiteSettings — links with empty values are hidden.
 
 ## Git workflow
 
