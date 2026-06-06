@@ -1,29 +1,19 @@
-function bindSelectArrows() {
-    document.querySelectorAll('.admin-select-wrap select').forEach(function (sel) {
-        if (sel._arrowBound) return;
-        sel._arrowBound = true;
+// Event delegation — works regardless of when Blazor renders the elements
+document.addEventListener('mousedown', function (e) {
+    var sel = e.target.closest('.admin-select-wrap select');
+    if (!sel) return;
+    var wrap = sel.closest('.admin-select-wrap');
+    wrap.classList.toggle('is-open');
+});
 
-        sel.addEventListener('mousedown', function () {
-            var wrap = sel.closest('.admin-select-wrap');
-            if (wrap.classList.contains('is-open')) {
-                wrap.classList.remove('is-open');
-            } else {
-                wrap.classList.add('is-open');
-            }
-        });
+document.addEventListener('change', function (e) {
+    var sel = e.target.closest('.admin-select-wrap select');
+    if (!sel) return;
+    sel.closest('.admin-select-wrap').classList.remove('is-open');
+});
 
-        sel.addEventListener('change', function () {
-            sel.closest('.admin-select-wrap').classList.remove('is-open');
-        });
-
-        sel.addEventListener('blur', function () {
-            sel.closest('.admin-select-wrap').classList.remove('is-open');
-        });
-    });
-}
-
-// Run immediately (DOM already ready when this script loads in Blazor)
-bindSelectArrows();
-
-// Re-bind after Blazor enhanced navigation replaces the DOM
-document.addEventListener('enhancedload', bindSelectArrows);
+document.addEventListener('blur', function (e) {
+    var sel = e.target.closest('.admin-select-wrap select');
+    if (!sel) return;
+    sel.closest('.admin-select-wrap').classList.remove('is-open');
+}, true);
