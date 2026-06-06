@@ -77,3 +77,7 @@ See [CLAUDE.md](CLAUDE.md) for full conventions used by the AI agent.
 |---|---|
 | [Võ Đông Hà](https://github.com/vodongha) | Author & maintainer |
 | [Claude](https://claude.ai) (Anthropic) | AI contributor — code review, PR merges, pair programming |
+
+<a href="https://github.com/vodongha/vodongha.id.vn/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=vodongha/vodongha.id.vn" />
+</a>
