@@ -1,0 +1,130 @@
+@page "/admin/projects"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using vodongha.Data.Models
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__logo"><span>vdh</span><span class="dot">.</span><span>admin</span></div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav__item"><i class="bi bi-grid"></i> Dashboard</a>
+            <a href="/admin/skills" class="admin-nav__item"><i class="bi bi-bar-chart"></i> Skills</a>
+            <a href="/admin/projects" class="admin-nav__item admin-nav__item--active"><i class="bi bi-folder2"></i> Projects</a>
+            <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
+            <a href="/admin/experience" class="admin-nav__item"><i class="bi bi-briefcase"></i> Experience</a>
+            <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+        </nav>
+        <form method="post" action="/admin/logout" class="admin-sidebar__logout">
+            <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">Projects</h1>
+            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
+        </header>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead><tr><th>Tên</th><th>Technologies</th><th>Featured</th><th>Thứ tự</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (Project p in Projects)
+                    {
+                        <tr>
+                            <td>@p.Title</td>
+                            <td><small>@p.Technologies</small></td>
+                            <td>@(p.IsFeatured ? "✓" : "")</td>
+                            <td>@p.Order</td>
+                            <td class="admin-table__actions">
+                                <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(p)"><i class="bi bi-pencil"></i></button>
+                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(p.Id)"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (ShowForm)
+        {
+            <div class="admin-modal-overlay" @onclick="CloseForm">
+                <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? "Thêm Project" : "Sửa Project")</h2>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Tên dự án</label>
+                        <input class="admin-form__input" @bind="Editing.Title" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Mô tả</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Description"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Technologies (phân cách bằng dấu phẩy)</label>
+                        <input class="admin-form__input" @bind="Editing.Technologies" placeholder="C#,ASP.NET Core,..." />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">GitHub URL</label>
+                        <input class="admin-form__input" @bind="Editing.GitHubUrl" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Live URL</label>
+                        <input class="admin-form__input" @bind="Editing.LiveUrl" />
+                    </div>
+                    <div class="admin-form__row">
+                        <div class="admin-form__group">
+                            <label class="admin-form__label">Thứ tự</label>
+                            <input type="number" class="admin-form__input" @bind="Editing.Order" />
+                        </div>
+                        <div class="admin-form__group admin-form__check">
+                            <label><input type="checkbox" @bind="Editing.IsFeatured" /> Featured</label>
+                        </div>
+                    </div>
+                    <div class="admin-modal__footer">
+                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">Huỷ</button>
+                        <button class="admin-btn admin-btn--primary" @onclick="Save">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </main>
+</div>
+
+@code {
+    private List<Project> Projects = [];
+    private Project Editing = new();
+    private bool ShowForm;
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        Projects = await db.Projects.OrderBy(p => p.Order).ToListAsync();
+    }
+
+    private void OpenAdd() { Editing = new Project { CreatedAt = DateTime.UtcNow }; ShowForm = true; }
+    private void OpenEdit(Project p) { Editing = new Project { Id = p.Id, Title = p.Title, Description = p.Description, Technologies = p.Technologies, GitHubUrl = p.GitHubUrl, LiveUrl = p.LiveUrl, IsFeatured = p.IsFeatured, Order = p.Order, CreatedAt = p.CreatedAt }; ShowForm = true; }
+    private void CloseForm() { ShowForm = false; }
+
+    private async Task Save()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        if (Editing.Id == 0) { db.Projects.Add(Editing); }
+        else { db.Projects.Update(Editing); }
+        await db.SaveChangesAsync();
+        ShowForm = false;
+        await LoadAsync();
+    }
+
+    private async Task Delete(int id)
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        Project? p = await db.Projects.FindAsync(id);
+        if (p != null) { db.Projects.Remove(p); await db.SaveChangesAsync(); }
+        await LoadAsync();
+    }
+}

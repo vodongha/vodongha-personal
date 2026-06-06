@@ -1,0 +1,33 @@
+@page "/admin/login"
+@layout AdminLayout
+
+<div class="admin-login">
+    <div class="admin-login__box">
+        <div class="admin-login__logo">
+            <span class="admin-login__logo-vdh">vdh</span><span class="admin-login__logo-dot">.</span><span class="admin-login__logo-admin">admin</span>
+        </div>
+        <h1 class="admin-login__title">Đăng nhập</h1>
+
+        @if (ShowError)
+        {
+            <div class="admin-alert admin-alert--error">Sai tên đăng nhập hoặc mật khẩu.</div>
+        }
+
+        <form method="post" action="/admin/login" class="admin-login__form">
+            <div class="admin-form__group">
+                <label class="admin-form__label">Tên đăng nhập</label>
+                <input type="text" name="username" class="admin-form__input" autofocus required />
+            </div>
+            <div class="admin-form__group">
+                <label class="admin-form__label">Mật khẩu</label>
+                <input type="password" name="password" class="admin-form__input" required />
+            </div>
+            <button type="submit" class="admin-btn admin-btn--primary admin-btn--full">Đăng nhập</button>
+        </form>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery] private string? Error { get; set; }
+    private bool ShowError => Error == "1";
+}

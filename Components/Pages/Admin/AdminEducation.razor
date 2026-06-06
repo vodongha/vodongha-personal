@@ -1,0 +1,131 @@
+@page "/admin/education"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using vodongha.Data.Models
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__logo"><span>vdh</span><span class="dot">.</span><span>admin</span></div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav__item"><i class="bi bi-grid"></i> Dashboard</a>
+            <a href="/admin/skills" class="admin-nav__item"><i class="bi bi-bar-chart"></i> Skills</a>
+            <a href="/admin/projects" class="admin-nav__item"><i class="bi bi-folder2"></i> Projects</a>
+            <a href="/admin/education" class="admin-nav__item admin-nav__item--active"><i class="bi bi-mortarboard"></i> Education</a>
+            <a href="/admin/experience" class="admin-nav__item"><i class="bi bi-briefcase"></i> Experience</a>
+            <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+        </nav>
+        <form method="post" action="/admin/logout" class="admin-sidebar__logout">
+            <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">Education</h1>
+            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
+        </header>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead><tr><th>Trường</th><th>Bằng cấp</th><th>Ngành</th><th>Năm</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (Education e in Items)
+                    {
+                        <tr>
+                            <td>@e.School</td>
+                            <td>@e.Degree</td>
+                            <td>@e.Field</td>
+                            <td>@e.StartYear – @(e.EndYear?.ToString() ?? "nay")</td>
+                            <td class="admin-table__actions">
+                                <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(e)"><i class="bi bi-pencil"></i></button>
+                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(e.Id)"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (ShowForm)
+        {
+            <div class="admin-modal-overlay" @onclick="CloseForm">
+                <div class="admin-modal" @onclick:stopPropagation>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? "Thêm" : "Sửa") Education</h2>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Trường</label>
+                        <input class="admin-form__input" @bind="Editing.School" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Bằng cấp</label>
+                        <input class="admin-form__input" @bind="Editing.Degree" placeholder="Bachelor's degree" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Ngành</label>
+                        <input class="admin-form__input" @bind="Editing.Field" />
+                    </div>
+                    <div class="admin-form__row">
+                        <div class="admin-form__group">
+                            <label class="admin-form__label">Năm bắt đầu</label>
+                            <input type="number" class="admin-form__input" @bind="Editing.StartYear" />
+                        </div>
+                        <div class="admin-form__group">
+                            <label class="admin-form__label">Năm kết thúc</label>
+                            <input type="number" class="admin-form__input" @bind="Editing.EndYear" />
+                        </div>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Mô tả</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Description"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Thứ tự</label>
+                        <input type="number" class="admin-form__input" @bind="Editing.Order" />
+                    </div>
+                    <div class="admin-modal__footer">
+                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">Huỷ</button>
+                        <button class="admin-btn admin-btn--primary" @onclick="Save">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </main>
+</div>
+
+@code {
+    private List<Education> Items = [];
+    private Education Editing = new();
+    private bool ShowForm;
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        Items = await db.Educations.OrderBy(e => e.Order).ToListAsync();
+    }
+
+    private void OpenAdd() { Editing = new Education(); ShowForm = true; }
+    private void OpenEdit(Education e) { Editing = new Education { Id = e.Id, School = e.School, Degree = e.Degree, Field = e.Field, StartYear = e.StartYear, EndYear = e.EndYear, Description = e.Description, Order = e.Order }; ShowForm = true; }
+    private void CloseForm() { ShowForm = false; }
+
+    private async Task Save()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        if (Editing.Id == 0) { db.Educations.Add(Editing); }
+        else { db.Educations.Update(Editing); }
+        await db.SaveChangesAsync();
+        ShowForm = false;
+        await LoadAsync();
+    }
+
+    private async Task Delete(int id)
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        Education? e = await db.Educations.FindAsync(id);
+        if (e != null) { db.Educations.Remove(e); await db.SaveChangesAsync(); }
+        await LoadAsync();
+    }
+}
