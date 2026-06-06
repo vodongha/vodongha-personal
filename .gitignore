@@ -13,6 +13,11 @@ appsettings.Development.json
 appsettings.*.json
 !appsettings.json
 
+## Build artifacts
+msbuild.binlog
+Styles/*.css
+Styles/*.css.map
+
 ## OS
 .DS_Store
 Thumbs.db
