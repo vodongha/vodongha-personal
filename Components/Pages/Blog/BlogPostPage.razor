@@ -1,7 +1,5 @@
 @page "/blog/{Slug}"
-@inject BlogService BlogSvc
-@inject LanguageService Lang
-@implements IDisposable
+@rendermode InteractiveServer
 
 <PageTitle>@(DisplayTitle ?? "Blog") — Võ Đông Hà</PageTitle>
 
@@ -64,22 +62,4 @@ else
             @((MarkupString)DisplayContent)
         </div>
     </article>
-}
-
-@code {
-    [Parameter] public string Slug { get; set; } = string.Empty;
-
-    private BlogPost? _post;
-
-    private string DisplayTitle => Lang.IsVi ? (_post?.Title ?? "") : (_post?.TitleEn ?? _post?.Title ?? "");
-    private string DisplaySummary => Lang.IsVi ? (_post?.Summary ?? "") : (_post?.SummaryEn ?? _post?.Summary ?? "");
-    private string DisplayContent => Lang.IsVi ? (_post?.Content ?? "") : (_post?.ContentEn ?? _post?.Content ?? "");
-
-    protected override async Task OnParametersSetAsync()
-    {
-        _post = await BlogSvc.GetBySlugAsync(Slug);
-        Lang.OnChange += StateHasChanged;
-    }
-
-    public void Dispose() => Lang.OnChange -= StateHasChanged;
 }

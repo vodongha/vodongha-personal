@@ -1,7 +1,4 @@
 @rendermode InteractiveServer
-@inject LanguageService Lang
-@inject VisitorService VisitorSvc
-@implements IDisposable
 
 <footer class="footer">
     <div class="footer__inner">
@@ -18,15 +15,3 @@
         </span>
     </div>
 </footer>
-
-@code {
-    private int _visitorCount;
-
-    protected override async Task OnInitializedAsync()
-    {
-        Lang.OnChange += StateHasChanged;
-        _visitorCount = await VisitorSvc.GetCountAsync();
-    }
-
-    public void Dispose() => Lang.OnChange -= StateHasChanged;
-}

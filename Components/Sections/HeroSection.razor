@@ -1,7 +1,3 @@
-﻿@inject LanguageService Lang
-@inject SiteSettingService SettingSvc
-@implements IDisposable
-
 <section class="hero" id="home">
     <div class="hero__bg">
         <div class="hero__bg-blob hero__bg-blob--1"></div>
@@ -13,7 +9,7 @@
             <span class="hero__badge">@Lang.T("hero.greeting")</span>
 
             <h1 class="hero__name">
-                VÃµ ÄÃ´ng HÃ <br />
+                Võ Đông Hà <br />
                 <span>Full-Stack Developer</span>
             </h1>
 
@@ -64,7 +60,7 @@
             <div class="hero__avatar-outer">
                 <div class="hero__avatar-ring2"></div>
                 <div class="hero__avatar-wrap">
-                    <img src="/images/avatar.png" alt="VÃµ ÄÃ´ng HÃ " class="hero__avatar-img"
+                    <img src="/images/avatar.png" alt="Võ Đông Hà" class="hero__avatar-img"
                          style="display:none"
                          onload="this.style.display='block'"
                          onerror="this.nextElementSibling.style.display='flex'" />
@@ -79,18 +75,3 @@
         <i class="bi bi-chevron-down"></i>
     </button>
 </section>
-
-@code {
-    private Dictionary<string, string> _settings = new();
-
-    private string Bio => Lang.IsVi ? S("Bio") : (S("BioEn") is { Length: > 0 } en ? en : S("Bio"));
-    private string S(string key) => _settings.TryGetValue(key, out string? v) ? v : "";
-
-    protected override async Task OnInitializedAsync()
-    {
-        _settings = await SettingSvc.GetAllAsync();
-        Lang.OnChange += StateHasChanged;
-    }
-
-    public void Dispose() => Lang.OnChange -= StateHasChanged;
-}
