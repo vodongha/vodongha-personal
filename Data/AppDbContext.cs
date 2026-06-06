@@ -1,10 +1,12 @@
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using vodongha.Data.Models;
 
 namespace vodongha.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IDataProtectionKeyContext
 {
+    public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
     public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
