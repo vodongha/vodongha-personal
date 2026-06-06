@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY vodongha.csproj .
+COPY vodongha-personal.csproj .
 RUN dotnet restore
 
 COPY . .
@@ -22,4 +22,4 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "vodongha.dll"]
+ENTRYPOINT ["dotnet", "vodongha-personal.dll"]
