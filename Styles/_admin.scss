@@ -197,6 +197,7 @@
         &:focus { border-color: $color-primary; }
     }
     &__textarea { min-height: 100px; resize: vertical; }
+    &__textarea--tall { min-height: 300px; }
     &__range { width: 100%; accent-color: $color-primary; }
     &__check { display: flex; align-items: center; label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: $color-text; cursor: pointer; } }
 }
