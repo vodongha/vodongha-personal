@@ -24,6 +24,15 @@ public partial class AdminContacts : ComponentBase
     private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
 
+    private async Task SetPageSize(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int size))
+        {
+            _pagination.ItemsPerPage = size;
+            await _pagination.SetCurrentPageIndexAsync(0);
+        }
+    }
+
     private IQueryable<ContactMessage> Filtered => Messages.AsQueryable()
         .Where(m => string.IsNullOrEmpty(_search) ||
                     m.Name.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
