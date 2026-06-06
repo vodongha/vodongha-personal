@@ -1,3 +1,4 @@
+using Resend;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
@@ -38,6 +39,10 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddOptions();
+builder.Services.AddHttpClient<ResendClient>();
+builder.Services.Configure<ResendClientOptions>(o => o.ApiToken = builder.Configuration["Email:ResendApiKey"] ?? "");
+builder.Services.AddTransient<IResend, ResendClient>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<BlogService>();
 builder.Services.AddScoped<ProjectService>();
