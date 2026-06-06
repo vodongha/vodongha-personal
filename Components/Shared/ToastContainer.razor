@@ -1,0 +1,22 @@
+@inject ToastService ToastSvc
+@implements IDisposable
+@rendermode InteractiveServer
+
+<div class="toast-container">
+    @foreach (ToastItem t in ToastSvc.Toasts)
+    {
+        <div class="toast @(t.Success ? "toast--success" : "toast--error")" @key="t.Id">
+            <i class="bi @(t.Success ? "bi-check-circle-fill" : "bi-x-circle-fill")"></i>
+            <span>@t.Message</span>
+            <button class="toast__close" @onclick="() => ToastSvc.Remove(t.Id)">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized() => ToastSvc.OnChange += Refresh;
+    private void Refresh() => InvokeAsync(StateHasChanged);
+    public void Dispose() => ToastSvc.OnChange -= Refresh;
+}

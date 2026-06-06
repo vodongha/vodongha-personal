@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using vodongha.Data.Models
 @inject IDbContextFactory<AppDbContext> DbFactory
+@inject ToastService Toast
 
 <div class="admin-shell">
     <aside class="admin-sidebar">
@@ -137,6 +138,7 @@
             .Where(m => !m.IsRead)
             .ExecuteUpdateAsync(s => s.SetProperty(m => m.IsRead, true));
         foreach (ContactMessage msg in Messages) { msg.IsRead = true; }
+        Toast.Show("Đã đánh dấu tất cả đã đọc");
     }
 
     private async Task Delete(int id)
@@ -145,5 +147,6 @@
         await db.ContactMessages.Where(m => m.Id == id).ExecuteDeleteAsync();
         Messages.RemoveAll(m => m.Id == id);
         if (Selected?.Id == id) { Selected = null; }
+        Toast.Show("Đã xoá tin nhắn");
     }
 }

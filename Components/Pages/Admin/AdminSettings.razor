@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using vodongha.Data.Models
 @inject IDbContextFactory<AppDbContext> DbFactory
+@inject ToastService Toast
 
 <div class="admin-shell">
     <aside class="admin-sidebar">
@@ -27,10 +28,6 @@
     <main class="admin-main">
         <header class="admin-header">
             <h1 class="admin-header__title">Thông tin cá nhân</h1>
-            @if (Saved)
-            {
-                <span class="admin-badge" style="background:rgba(110,231,183,.15);color:#6ee7b7">✓ Đã lưu</span>
-            }
         </header>
 
         <div class="admin-settings-grid">
@@ -108,7 +105,6 @@
         ["Email"] = "", ["Phone"] = "", ["Location"] = "",
         ["GitHub"] = "", ["LinkedIn"] = "", ["Facebook"] = "", ["AvatarUrl"] = ""
     };
-    private bool Saved;
 
     protected override async Task OnInitializedAsync()
     {
@@ -130,9 +126,6 @@
             else { db.SiteSettings.Add(new SiteSetting { Key = kvp.Key, Value = kvp.Value }); }
         }
         await db.SaveChangesAsync();
-        Saved = true;
-        await Task.Delay(2000);
-        Saved = false;
-        StateHasChanged();
+        Toast.Show("Đã lưu cài đặt thành công");
     }
 }

@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using vodongha.Data.Models
 @inject BlogService BlogSvc
+@inject ToastService Toast
 
 <div class="admin-shell">
     <aside class="admin-sidebar">
@@ -34,7 +35,7 @@
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>Tiêu đề</th>
+                        <th style="width:35%">Tiêu đề</th>
                         <th style="width:220px">Slug</th>
                         <th style="width:200px">Tags</th>
                         <th style="width:90px">Published</th>
@@ -46,7 +47,7 @@
                     @foreach (BlogPost post in Posts)
                     {
                         <tr>
-                            <td>@post.Title</td>
+                            <td style="max-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">@post.Title</td>
                             <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><small>@post.Slug</small></td>
                             <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><small>@post.Tags</small></td>
                             <td>@(post.IsPublished ? "✓" : "")</td>
@@ -189,11 +190,13 @@
         await BlogSvc.SaveAsync(Editing);
         ShowForm = false;
         await LoadAsync();
+        Toast.Show("Đã lưu bài viết thành công");
     }
 
     private async Task Delete(int id)
     {
         await BlogSvc.DeleteAsync(id);
         await LoadAsync();
+        Toast.Show("Đã xoá bài viết");
     }
 }
