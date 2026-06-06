@@ -1,0 +1,138 @@
+@page "/admin/skills"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using vodongha.Data.Models
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__logo"><span>vdh</span><span class="dot">.</span><span>admin</span></div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav__item"><i class="bi bi-grid"></i> Dashboard</a>
+            <a href="/admin/skills" class="admin-nav__item admin-nav__item--active"><i class="bi bi-bar-chart"></i> Skills</a>
+            <a href="/admin/projects" class="admin-nav__item"><i class="bi bi-folder2"></i> Projects</a>
+            <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
+            <a href="/admin/experience" class="admin-nav__item"><i class="bi bi-briefcase"></i> Experience</a>
+            <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+        </nav>
+        <form method="post" action="/admin/logout" class="admin-sidebar__logout">
+            <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">Skills</h1>
+            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
+        </header>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>Tên</th><th>Danh mục</th><th>%</th><th>Thứ tự</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (Skill s in Skills)
+                    {
+                        <tr>
+                            <td>@s.Name</td>
+                            <td><span class="admin-badge">@s.Category</span></td>
+                            <td>@s.Proficiency%</td>
+                            <td>@s.Order</td>
+                            <td class="admin-table__actions">
+                                <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(s)"><i class="bi bi-pencil"></i></button>
+                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(s.Id)"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (ShowForm)
+        {
+            <div class="admin-modal-overlay" @onclick="CloseForm">
+                <div class="admin-modal" @onclick:stopPropagation>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? "Thêm Skill" : "Sửa Skill")</h2>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Tên</label>
+                        <input class="admin-form__input" @bind="Editing.Name" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Danh mục</label>
+                        <select class="admin-form__input" @bind="Editing.Category">
+                            <option>Backend</option>
+                            <option>Frontend</option>
+                            <option>Database</option>
+                            <option>DevOps</option>
+                            <option>AI</option>
+                        </select>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Icon (devicon class)</label>
+                        <input class="admin-form__input" @bind="Editing.Icon" placeholder="devicon-csharp-plain" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Thành thạo (@Editing.Proficiency%)</label>
+                        <input type="range" min="0" max="100" class="admin-form__range" @bind="Editing.Proficiency" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Thứ tự</label>
+                        <input type="number" class="admin-form__input" @bind="Editing.Order" />
+                    </div>
+                    <div class="admin-modal__footer">
+                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">Huỷ</button>
+                        <button class="admin-btn admin-btn--primary" @onclick="Save">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </main>
+</div>
+
+@code {
+    private List<Skill> Skills = [];
+    private Skill Editing = new();
+    private bool ShowForm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        Skills = await db.Skills.OrderBy(s => s.Order).ToListAsync();
+    }
+
+    private void OpenAdd() { Editing = new Skill(); ShowForm = true; }
+    private void OpenEdit(Skill s) { Editing = new Skill { Id = s.Id, Name = s.Name, Category = s.Category, Icon = s.Icon, Proficiency = s.Proficiency, Order = s.Order }; ShowForm = true; }
+    private void CloseForm() { ShowForm = false; }
+
+    private async Task Save()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        if (Editing.Id == 0)
+        {
+            db.Skills.Add(Editing);
+        }
+        else
+        {
+            db.Skills.Update(Editing);
+        }
+        await db.SaveChangesAsync();
+        ShowForm = false;
+        await LoadAsync();
+    }
+
+    private async Task Delete(int id)
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        Skill? skill = await db.Skills.FindAsync(id);
+        if (skill != null) { db.Skills.Remove(skill); await db.SaveChangesAsync(); }
+        await LoadAsync();
+    }
+}

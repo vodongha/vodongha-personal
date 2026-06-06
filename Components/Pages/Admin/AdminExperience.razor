@@ -1,0 +1,147 @@
+@page "/admin/experience"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using vodongha.Data.Models
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__logo"><span>vdh</span><span class="dot">.</span><span>admin</span></div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav__item"><i class="bi bi-grid"></i> Dashboard</a>
+            <a href="/admin/skills" class="admin-nav__item"><i class="bi bi-bar-chart"></i> Skills</a>
+            <a href="/admin/projects" class="admin-nav__item"><i class="bi bi-folder2"></i> Projects</a>
+            <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
+            <a href="/admin/experience" class="admin-nav__item admin-nav__item--active"><i class="bi bi-briefcase"></i> Experience</a>
+            <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+        </nav>
+        <form method="post" action="/admin/logout" class="admin-sidebar__logout">
+            <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">Experience</h1>
+            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
+        </header>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead><tr><th>Công ty</th><th>Vai trò</th><th>Thời gian</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (Experience e in Items)
+                    {
+                        <tr>
+                            <td>@e.Company</td>
+                            <td>@e.Role</td>
+                            <td>@e.StartMonth/@e.StartYear – @(e.IsCurrent ? "Hiện tại" : $"{e.EndMonth}/{e.EndYear}")</td>
+                            <td class="admin-table__actions">
+                                <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(e)"><i class="bi bi-pencil"></i></button>
+                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(e.Id)"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (ShowForm)
+        {
+            <div class="admin-modal-overlay" @onclick="CloseForm">
+                <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? "Thêm" : "Sửa") Experience</h2>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Công ty</label>
+                        <input class="admin-form__input" @bind="Editing.Company" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Vai trò</label>
+                        <input class="admin-form__input" @bind="Editing.Role" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Địa điểm</label>
+                        <input class="admin-form__input" @bind="Editing.Location" />
+                    </div>
+                    <div class="admin-form__row">
+                        <div class="admin-form__group">
+                            <label class="admin-form__label">Tháng bắt đầu</label>
+                            <input type="number" min="1" max="12" class="admin-form__input" @bind="Editing.StartMonth" />
+                        </div>
+                        <div class="admin-form__group">
+                            <label class="admin-form__label">Năm bắt đầu</label>
+                            <input type="number" class="admin-form__input" @bind="Editing.StartYear" />
+                        </div>
+                    </div>
+                    <div class="admin-form__group admin-form__check">
+                        <label><input type="checkbox" @bind="Editing.IsCurrent" /> Đang làm việc</label>
+                    </div>
+                    @if (!Editing.IsCurrent)
+                    {
+                        <div class="admin-form__row">
+                            <div class="admin-form__group">
+                                <label class="admin-form__label">Tháng kết thúc</label>
+                                <input type="number" min="1" max="12" class="admin-form__input" @bind="Editing.EndMonth" />
+                            </div>
+                            <div class="admin-form__group">
+                                <label class="admin-form__label">Năm kết thúc</label>
+                                <input type="number" class="admin-form__input" @bind="Editing.EndYear" />
+                            </div>
+                        </div>
+                    }
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Mô tả</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Description"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Thứ tự</label>
+                        <input type="number" class="admin-form__input" @bind="Editing.Order" />
+                    </div>
+                    <div class="admin-modal__footer">
+                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">Huỷ</button>
+                        <button class="admin-btn admin-btn--primary" @onclick="Save">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </main>
+</div>
+
+@code {
+    private List<Experience> Items = [];
+    private Experience Editing = new();
+    private bool ShowForm;
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        Items = await db.Experiences.OrderBy(e => e.Order).ToListAsync();
+    }
+
+    private void OpenAdd() { Editing = new Experience { StartMonth = 1, StartYear = DateTime.Now.Year, IsCurrent = true }; ShowForm = true; }
+    private void OpenEdit(Experience e) { Editing = new Experience { Id = e.Id, Company = e.Company, Role = e.Role, Location = e.Location, StartYear = e.StartYear, StartMonth = e.StartMonth, EndYear = e.EndYear, EndMonth = e.EndMonth, IsCurrent = e.IsCurrent, Description = e.Description, Order = e.Order }; ShowForm = true; }
+    private void CloseForm() { ShowForm = false; }
+
+    private async Task Save()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        if (Editing.IsCurrent) { Editing.EndYear = null; Editing.EndMonth = null; }
+        if (Editing.Id == 0) { db.Experiences.Add(Editing); }
+        else { db.Experiences.Update(Editing); }
+        await db.SaveChangesAsync();
+        ShowForm = false;
+        await LoadAsync();
+    }
+
+    private async Task Delete(int id)
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        Experience? e = await db.Experiences.FindAsync(id);
+        if (e != null) { db.Experiences.Remove(e); await db.SaveChangesAsync(); }
+        await LoadAsync();
+    }
+}

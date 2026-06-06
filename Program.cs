@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using vodongha.Components;
 using vodongha.Data;
@@ -7,6 +9,17 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/admin/login";
+        options.LogoutPath = "/admin/logout";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
+    });
+builder.Services.AddAuthorization();
+builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<AppDbContext>();
@@ -41,8 +54,35 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
 app.MapHealthChecks("/health");
+
+app.MapPost("/admin/login", async (HttpContext ctx, IConfiguration config) =>
+{
+    string username = ctx.Request.Form["username"].ToString();
+    string password = ctx.Request.Form["password"].ToString();
+    string adminUser = config["Admin:Username"] ?? "admin";
+    string adminPass = config["Admin:Password"] ?? "changeme";
+    if (username == adminUser && password == adminPass)
+    {
+        System.Security.Claims.Claim[] claims = [new(System.Security.Claims.ClaimTypes.Name, username), new(System.Security.Claims.ClaimTypes.Role, "Admin")];
+        System.Security.Claims.ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new System.Security.Claims.ClaimsPrincipal(identity));
+        ctx.Response.Redirect("/admin");
+    }
+    else
+    {
+        ctx.Response.Redirect("/admin/login?error=1");
+    }
+}).DisableAntiforgery();
+
+app.MapPost("/admin/logout", async (HttpContext ctx) =>
+{
+    await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    ctx.Response.Redirect("/");
+}).DisableAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
