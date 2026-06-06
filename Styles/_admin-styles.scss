@@ -607,21 +607,22 @@ tr.admin-row--dragover td {
         padding: 0 !important;
         gap: 0 !important;
         width: auto !important;
+    }
 
-        &__item {
-            flex-direction: column !important;
-            gap: 0.15rem;
-            padding: 0.45rem 0.4rem 0.35rem;
-            font-size: 0.58rem;
-            border-radius: 0;
-            white-space: nowrap;
-            flex: 1;
-            min-width: 50px;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            i { font-size: 1.1rem; }
-        }
+    // Apply to ALL .admin-nav__item regardless of parent (includes logout button outside <nav>)
+    .admin-nav__item {
+        flex-direction: column !important;
+        gap: 0.15rem !important;
+        padding: 0.45rem 0.4rem 0.35rem !important;
+        font-size: 0.58rem !important;
+        border-radius: 0 !important;
+        white-space: nowrap !important;
+        flex: 1 !important;
+        min-width: 50px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+        i { font-size: 1.1rem !important; }
     }
 
     // Main content — full width, space for bottom nav
