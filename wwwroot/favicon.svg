@@ -4,9 +4,15 @@
       <stop offset="0%" stop-color="#1a2e22"/>
       <stop offset="100%" stop-color="#1a1a2e"/>
     </linearGradient>
+    <clipPath id="clip">
+      <rect width="32" height="32" rx="8"/>
+    </clipPath>
   </defs>
   <rect width="32" height="32" rx="8" fill="url(#bg)"/>
-  <text x="3" y="22" font-family="monospace" font-size="14" font-weight="bold" fill="#e5e7eb">vdh</text>
-  <circle cx="29" cy="22" r="3" fill="#6ee7b7"/>
-  <circle cx="29" cy="22" r="5.5" fill="#6ee7b7" fill-opacity="0.12"/>
+  <g clip-path="url(#clip)">
+    <text x="3" y="22" font-family="monospace" font-size="14" font-weight="bold" fill="#e5e7eb">vdh</text>
+    <circle cx="28" cy="24" r="7" fill="#6ee7b7" fill-opacity="0.12"/>
+    <circle cx="28" cy="24" r="4" fill="#6ee7b7" fill-opacity="0.3"/>
+    <circle cx="28" cy="24" r="2.5" fill="#6ee7b7"/>
+  </g>
 </svg>
