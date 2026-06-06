@@ -24,7 +24,15 @@
                             </span>
                         </div>
                         <p class="timeline__company">
-                            <i class="bi bi-building"></i> @item.Company
+                            <i class="bi bi-building"></i>
+                            @if (!string.IsNullOrEmpty(item.WebsiteUrl))
+                            {
+                                <a href="@item.WebsiteUrl" target="_blank" class="timeline__company-link">@item.Company</a>
+                            }
+                            else
+                            {
+                                @item.Company
+                            }
                             @if (!string.IsNullOrEmpty(item.Location))
                             {
                                 <span class="timeline__location"> · @item.Location</span>

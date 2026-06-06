@@ -65,6 +65,10 @@
                         <label class="admin-form__label">Địa điểm</label>
                         <input class="admin-form__input" @bind="Editing.Location" />
                     </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Website URL</label>
+                        <input class="admin-form__input" @bind="Editing.WebsiteUrl" placeholder="https://..." />
+                    </div>
                     <div class="admin-form__row">
                         <div class="admin-form__group">
                             <label class="admin-form__label">Tháng bắt đầu</label>
@@ -127,7 +131,7 @@
     }
 
     private void OpenAdd() { Editing = new Experience { StartMonth = 1, StartYear = DateTime.Now.Year, IsCurrent = true }; ShowForm = true; }
-    private void OpenEdit(Experience e) { Editing = new Experience { Id = e.Id, Company = e.Company, Role = e.Role, Location = e.Location, StartYear = e.StartYear, StartMonth = e.StartMonth, EndYear = e.EndYear, EndMonth = e.EndMonth, IsCurrent = e.IsCurrent, Description = e.Description, DescriptionEn = e.DescriptionEn, Order = e.Order }; ShowForm = true; }
+    private void OpenEdit(Experience e) { Editing = new Experience { Id = e.Id, Company = e.Company, Role = e.Role, Location = e.Location, WebsiteUrl = e.WebsiteUrl, StartYear = e.StartYear, StartMonth = e.StartMonth, EndYear = e.EndYear, EndMonth = e.EndMonth, IsCurrent = e.IsCurrent, Description = e.Description, DescriptionEn = e.DescriptionEn, Order = e.Order }; ShowForm = true; }
     private void CloseForm() { ShowForm = false; }
 
     private async Task Save()

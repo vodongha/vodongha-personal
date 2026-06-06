@@ -936,6 +936,18 @@ img {
 .education .timeline__company i {
   margin-right: 0.25rem;
 }
+.experience .timeline__company-link,
+.education .timeline__company-link {
+  color: #6b7280;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.experience .timeline__company-link:hover,
+.education .timeline__company-link:hover {
+  color: #6ee7b7;
+  border-bottom-color: #6ee7b7;
+}
 .experience .timeline__location,
 .education .timeline__location {
   color: #9ca3af;

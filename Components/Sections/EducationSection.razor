@@ -17,7 +17,16 @@
                     <div class="timeline__dot"></div>
                     <div class="timeline__content">
                         <div class="timeline__header">
-                            <h3 class="timeline__role">@item.School</h3>
+                            <h3 class="timeline__role">
+                                @if (!string.IsNullOrEmpty(item.WebsiteUrl))
+                                {
+                                    <a href="@item.WebsiteUrl" target="_blank" class="timeline__company-link">@item.School</a>
+                                }
+                                else
+                                {
+                                    @item.School
+                                }
+                            </h3>
                             <span class="timeline__period">@item.StartYear — @(item.EndYear?.ToString() ?? "Present")</span>
                         </div>
                         <p class="timeline__company">

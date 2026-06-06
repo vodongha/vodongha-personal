@@ -66,6 +66,10 @@
                         <label class="admin-form__label">Ngành</label>
                         <input class="admin-form__input" @bind="Editing.Field" />
                     </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Website URL</label>
+                        <input class="admin-form__input" @bind="Editing.WebsiteUrl" placeholder="https://..." />
+                    </div>
                     <div class="admin-form__row">
                         <div class="admin-form__group">
                             <label class="admin-form__label">Năm bắt đầu</label>
@@ -112,7 +116,7 @@
     }
 
     private void OpenAdd() { Editing = new Education(); ShowForm = true; }
-    private void OpenEdit(Education e) { Editing = new Education { Id = e.Id, School = e.School, Degree = e.Degree, Field = e.Field, StartYear = e.StartYear, EndYear = e.EndYear, Description = e.Description, DescriptionEn = e.DescriptionEn, Order = e.Order }; ShowForm = true; }
+    private void OpenEdit(Education e) { Editing = new Education { Id = e.Id, School = e.School, Degree = e.Degree, Field = e.Field, WebsiteUrl = e.WebsiteUrl, StartYear = e.StartYear, EndYear = e.EndYear, Description = e.Description, DescriptionEn = e.DescriptionEn, Order = e.Order }; ShowForm = true; }
     private void CloseForm() { ShowForm = false; }
 
     private async Task Save()
