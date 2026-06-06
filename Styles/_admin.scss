@@ -313,3 +313,22 @@
     max-height: 300px;
     overflow-y: auto;
 }
+
+.admin-drag-handle {
+    cursor: grab;
+    color: #4a4a4a;
+    text-align: center;
+    user-select: none;
+
+    &:hover { color: $color-text; }
+    &:active { cursor: grabbing; }
+}
+
+tr.admin-row--dragging {
+    opacity: 0.4;
+    background: #1a1a1a;
+}
+
+tr.admin-row--dragover td {
+    box-shadow: inset 0 -2px 0 $color-primary;
+}
