@@ -14,34 +14,4 @@
 
 <ToastContainer />
 
-<script>
-    (function () {
-        function bindSelects() {
-            document.querySelectorAll('.admin-select-wrap select').forEach(function (sel) {
-                if (sel._selectBound) return;
-                sel._selectBound = true;
-
-                sel.addEventListener('mousedown', function () {
-                    var wrap = sel.closest('.admin-select-wrap');
-                    if (wrap.classList.contains('is-open')) {
-                        wrap.classList.remove('is-open');
-                    } else {
-                        wrap.classList.add('is-open');
-                    }
-                });
-
-                sel.addEventListener('change', function () {
-                    sel.closest('.admin-select-wrap').classList.remove('is-open');
-                });
-
-                sel.addEventListener('blur', function () {
-                    sel.closest('.admin-select-wrap').classList.remove('is-open');
-                });
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', bindSelects);
-        // Re-bind after Blazor enhanced navigation
-        document.addEventListener('enhancedload', bindSelects);
-    })();
-</script>
+<script src="js/admin.js"></script>
