@@ -17,6 +17,7 @@ appsettings.*.json
 msbuild.binlog
 Styles/*.css
 Styles/*.css.map
+wwwroot/*.css.map
 
 ## OS
 .DS_Store
