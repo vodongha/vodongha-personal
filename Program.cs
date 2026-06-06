@@ -68,7 +68,7 @@ app.UseAuthorization();
 app.UseAntiforgery();
 app.MapHealthChecks("/health");
 
-app.MapPost("/admin/login", async (HttpContext ctx, IConfiguration config) =>
+app.MapPost("/admin/do-login", async (HttpContext ctx, IConfiguration config) =>
 {
     string username = ctx.Request.Form["username"].ToString();
     string password = ctx.Request.Form["password"].ToString();
@@ -84,6 +84,7 @@ app.MapPost("/admin/login", async (HttpContext ctx, IConfiguration config) =>
     else
     {
         ctx.Response.Redirect("/admin/login?error=1");
+
     }
 }).DisableAntiforgery();
 
