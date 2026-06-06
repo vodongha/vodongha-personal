@@ -480,7 +480,7 @@ tr.admin-row--dragover td {
         pointer-events: none;
         transition: transform 200ms ease;
     }
-    &:has(select:focus)::after {
+    &.is-open::after {
         transform: translateY(-50%) rotate(180deg);
     }
 }

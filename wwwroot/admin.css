@@ -626,7 +626,7 @@ tr.admin-row--dragover td {
   pointer-events: none;
   transition: transform 200ms ease;
 }
-.admin-select-wrap:has(select:focus)::after {
+.admin-select-wrap.is-open::after {
   transform: translateY(-50%) rotate(180deg);
 }
 
