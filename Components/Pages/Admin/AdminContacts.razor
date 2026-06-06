@@ -43,12 +43,14 @@
         else
         {
             <div class="admin-toolbar">
-                <select class="admin-page-size" @onchange="SetPageSize">
-                    <option value="5">5 / trang</option>
-                    <option value="10" selected>10 / trang</option>
-                    <option value="20">20 / trang</option>
-                    <option value="50">50 / trang</option>
-                </select>
+                <div class="admin-select-wrap">
+                    <select class="admin-page-size" @onchange="SetPageSize">
+                        <option value="5">5 / trang</option>
+                        <option value="10" selected>10 / trang</option>
+                        <option value="20">20 / trang</option>
+                        <option value="50">50 / trang</option>
+                    </select>
+                </div>
                 <div class="admin-search-wrap">
                     <i class="bi bi-search admin-search-wrap__icon"></i>
                     <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm tên, email, tiêu đề..." />
