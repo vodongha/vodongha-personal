@@ -34,10 +34,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 new SiteSetting { Id = 6,  Key = "Phone",      Value = "0929758757" },
                 new SiteSetting { Id = 7,  Key = "Location",   Value = "Ho Chi Minh City, Vietnam" },
                 new SiteSetting { Id = 8,  Key = "GitHub",     Value = "https://github.com/vodongha" },
-                new SiteSetting { Id = 9,  Key = "LinkedIn",   Value = "https://linkedin.com/in/vodongha" },
+                new SiteSetting { Id = 9,  Key = "LinkedIn",   Value = "https://www.linkedin.com/in/vodongha" },
                 new SiteSetting { Id = 10, Key = "AvatarUrl",  Value = "/images/avatar.png" },
                 new SiteSetting { Id = 11, Key = "BioEn",      Value = "I build modern web applications with .NET, Blazor, and PostgreSQL. Passionate about creating clean, efficient, and beautiful products." },
-                new SiteSetting { Id = 12, Key = "Facebook",   Value = "" }
+                new SiteSetting { Id = 12, Key = "Facebook",   Value = "https://www.facebook.com/vodongha.fb" }
             );
 
         modelBuilder.Entity<Education>()
