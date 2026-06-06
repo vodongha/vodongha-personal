@@ -1,0 +1,26 @@
+@inject ProjectService ProjectSvc
+
+<section class="section projects" id="projects">
+    <div class="section__header">
+        <span class="section__label">Portfolio</span>
+        <h2 class="section__title">Dự án nổi bật</h2>
+        <p class="section__subtitle">Một số dự án tôi đã xây dựng và đóng góp</p>
+    </div>
+
+    @if (_projects is not null)
+    {
+        <div class="projects__grid">
+            @foreach (Project project in _projects)
+            {
+                <ProjectCard Item="project" />
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private List<Project>? _projects;
+
+    protected override async Task OnInitializedAsync() =>
+        _projects = await ProjectSvc.GetFeaturedAsync();
+}

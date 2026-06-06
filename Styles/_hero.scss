@@ -1,0 +1,199 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.hero {
+    min-height: 100dvh;
+    @include flex-center;
+    position: relative;
+    overflow: hidden;
+    padding-top: $nav-height;
+
+    &__bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+
+        &-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.12;
+
+            &--1 {
+                width: 500px;
+                height: 500px;
+                background: $color-primary;
+                top: -100px;
+                right: -100px;
+                animation: float 8s ease-in-out infinite;
+            }
+
+            &--2 {
+                width: 400px;
+                height: 400px;
+                background: $color-secondary;
+                bottom: -80px;
+                left: -80px;
+                animation: float 10s ease-in-out infinite reverse;
+            }
+        }
+    }
+
+    &__content {
+        @include container;
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: $space-16;
+        align-items: center;
+
+        @include tablet { grid-template-columns: 1fr; text-align: center; }
+    }
+
+    &__text { }
+
+    &__badge {
+        @include tag;
+        margin-bottom: $space-6;
+        animation: fadeInUp 0.6s ease both;
+    }
+
+    &__name {
+        font-size: clamp($text-4xl, 6vw, $text-6xl);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+        margin-bottom: $space-4;
+        animation: fadeInUp 0.6s 0.1s ease both;
+
+        span { @include gradient-text; }
+    }
+
+    &__role {
+        font-size: $text-xl;
+        color: $color-text-muted;
+        margin-bottom: $space-6;
+        animation: fadeInUp 0.6s 0.2s ease both;
+    }
+
+    &__desc {
+        font-size: $text-lg;
+        color: $color-text-dim;
+        line-height: 1.7;
+        max-width: 480px;
+        margin-bottom: $space-8;
+        animation: fadeInUp 0.6s 0.3s ease both;
+
+        @include tablet { margin-inline: auto; }
+    }
+
+    &__actions {
+        display: flex;
+        gap: $space-4;
+        animation: fadeInUp 0.6s 0.4s ease both;
+
+        @include tablet { justify-content: center; }
+        @include mobile  { flex-direction: column; align-items: center; }
+    }
+
+    &__btn-primary  { @include btn-primary; }
+    &__btn-outline  { @include btn-outline; }
+
+    &__social {
+        display: flex;
+        gap: $space-4;
+        margin-top: $space-8;
+        animation: fadeInUp 0.6s 0.5s ease both;
+
+        @include tablet { justify-content: center; }
+    }
+
+    &__social-link {
+        @include flex-center;
+        width: 40px;
+        height: 40px;
+        border: 1px solid $color-border;
+        border-radius: $radius-full;
+        color: $color-text-muted;
+        font-size: $text-lg;
+        transition: border-color $transition-fast, color $transition-fast, transform $transition-fast;
+
+        &:hover {
+            border-color: $color-primary;
+            color: $color-primary;
+            transform: translateY(-2px);
+        }
+    }
+
+    &__avatar {
+        @include flex-center;
+        animation: fadeInUp 0.6s 0.2s ease both;
+
+        @include tablet { order: -1; }
+
+        &-wrap {
+            position: relative;
+            width: 320px;
+            height: 320px;
+
+            @include mobile { width: 220px; height: 220px; }
+        }
+
+        &-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+            object-fit: cover;
+            border: 2px solid $color-border;
+            animation: morph 8s ease-in-out infinite;
+        }
+
+        &-ring {
+            position: absolute;
+            inset: -12px;
+            border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+            border: 1px solid rgba($color-primary, 0.3);
+            animation: morph 8s ease-in-out infinite, spin 20s linear infinite;
+        }
+    }
+
+    &__scroll {
+        position: absolute;
+        bottom: $space-8;
+        left: 50%;
+        transform: translateX(-50%);
+        @include flex-center;
+        flex-direction: column;
+        gap: $space-2;
+        color: $color-text-muted;
+        font-size: $text-xs;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        animation: bounce 2s ease-in-out infinite;
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50%       { transform: translateY(-30px) scale(1.05); }
+}
+
+@keyframes morph {
+    0%, 100% { border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%; }
+    50%       { border-radius: 60% 40% 40% 60% / 60% 60% 40% 40%; }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%       { transform: translateX(-50%) translateY(8px); }
+}

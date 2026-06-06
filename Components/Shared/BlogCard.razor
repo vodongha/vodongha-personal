@@ -1,0 +1,26 @@
+@using vodongha.Data.Models
+
+<article class="blog-card" @onclick="OnClick">
+    <span class="blog-card__date">@Item.CreatedAt.ToString("dd/MM/yyyy")</span>
+    <h3 class="blog-card__title">@Item.Title</h3>
+    <p class="blog-card__summary">@Item.Summary</p>
+
+    @if (!string.IsNullOrEmpty(Item.Tags))
+    {
+        <div class="blog-card__tags">
+            @foreach (string tag in Item.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Take(3))
+            {
+                <span class="blog-card__tag">@tag.Trim()</span>
+            }
+        </div>
+    }
+
+    <span class="blog-card__read-more">
+        Đọc tiếp <i class="bi bi-arrow-right"></i>
+    </span>
+</article>
+
+@code {
+    [Parameter, EditorRequired] public BlogPost Item { get; set; } = default!;
+    [Parameter] public EventCallback OnClick { get; set; }
+}

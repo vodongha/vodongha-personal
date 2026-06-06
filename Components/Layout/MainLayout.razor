@@ -1,0 +1,40 @@
+@inherits LayoutComponentBase
+
+<nav class="nav">
+    <div class="nav__inner">
+        <a href="/" class="nav__logo">
+            vdh<span>.dev</span>
+        </a>
+        <ul class="nav__links">
+            <li><a href="#skills" class="nav__link">Skills</a></li>
+            <li><a href="#projects" class="nav__link">Projects</a></li>
+            <li><a href="#blog" class="nav__link">Blog</a></li>
+        </ul>
+        <a href="#contact" class="nav__cta">
+            <i class="bi bi-chat-dots"></i>
+            Liên hệ
+        </a>
+    </div>
+</nav>
+
+<main>
+    @Body
+</main>
+
+<footer class="footer">
+    <div class="footer__inner">
+        <p class="footer__copy">
+            &copy; @DateTime.Now.Year <span>Võ Đông Hà</span>. Built with Blazor &amp; ❤️
+        </p>
+        <ul class="footer__links">
+            <li><a href="https://github.com/vodongha" target="_blank" class="footer__link">GitHub</a></li>
+            <li><a href="mailto:ha.vodong@cisbox.com" class="footer__link">Email</a></li>
+        </ul>
+    </div>
+</footer>
+
+<div id="blazor-error-ui" data-nosnippet>
+    Có lỗi xảy ra.
+    <a href="." class="reload">Tải lại</a>
+    <span class="dismiss">&#x2715;</span>
+</div>

@@ -1,0 +1,113 @@
+@use 'variables' as *;
+
+// ── Responsive ─────────────────────────────────────────────
+@mixin mobile  { @media (max-width: 640px)  { @content; } }
+@mixin tablet  { @media (max-width: 1024px) { @content; } }
+@mixin desktop { @media (min-width: 1025px) { @content; } }
+
+// ── Layout ─────────────────────────────────────────────────
+@mixin container {
+    width: 100%;
+    max-width: $container-max;
+    margin-inline: auto;
+    padding-inline: $space-6;
+
+    @include mobile { padding-inline: $space-4; }
+}
+
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+// ── Typography ─────────────────────────────────────────────
+@mixin gradient-text($from: $color-primary, $to: $color-secondary) {
+    background: linear-gradient(135deg, $from, $to);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+@mixin section-title {
+    font-size: $text-3xl;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: $space-4;
+
+    @include mobile { font-size: $text-2xl; }
+}
+
+// ── Components ─────────────────────────────────────────────
+@mixin card {
+    background: $color-bg-card;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: $space-6;
+    transition: border-color $transition-base, transform $transition-base, box-shadow $transition-base;
+
+    &:hover {
+        border-color: rgba($color-primary, 0.4);
+        transform: translateY(-2px);
+        box-shadow: $shadow-card;
+    }
+}
+
+@mixin btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    padding: $space-3 $space-6;
+    background: $color-primary;
+    color: $color-bg;
+    border: none;
+    border-radius: $radius-full;
+    font-weight: 600;
+    font-size: $text-sm;
+    cursor: pointer;
+    transition: opacity $transition-fast, transform $transition-fast;
+    text-decoration: none;
+
+    &:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+}
+
+@mixin btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    padding: $space-3 $space-6;
+    background: transparent;
+    color: $color-text;
+    border: 1px solid $color-border;
+    border-radius: $radius-full;
+    font-weight: 500;
+    font-size: $text-sm;
+    cursor: pointer;
+    transition: border-color $transition-fast, color $transition-fast;
+    text-decoration: none;
+
+    &:hover {
+        border-color: $color-primary;
+        color: $color-primary;
+    }
+}
+
+@mixin tag {
+    display: inline-block;
+    padding: $space-1 $space-3;
+    background: rgba($color-primary, 0.1);
+    color: $color-primary;
+    border-radius: $radius-full;
+    font-size: $text-xs;
+    font-weight: 500;
+    font-family: $font-mono;
+}

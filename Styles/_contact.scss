@@ -1,0 +1,120 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.contact {
+    &__inner {
+        @include container;
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: $space-16;
+        align-items: start;
+
+        @include tablet { grid-template-columns: 1fr; }
+    }
+
+    &__info {
+        display: flex;
+        flex-direction: column;
+        gap: $space-6;
+    }
+
+    &__info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: $space-4;
+    }
+
+    &__info-icon {
+        @include flex-center;
+        width: 44px;
+        height: 44px;
+        border: 1px solid $color-border;
+        border-radius: $radius-md;
+        color: $color-primary;
+        font-size: $text-lg;
+        flex-shrink: 0;
+    }
+
+    &__info-label {
+        font-size: $text-xs;
+        color: $color-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-family: $font-mono;
+        margin-bottom: $space-1;
+    }
+
+    &__info-value {
+        font-size: $text-sm;
+        font-weight: 500;
+    }
+
+    &__form {
+        @include card;
+        display: flex;
+        flex-direction: column;
+        gap: $space-4;
+    }
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: $space-2;
+    }
+
+    &__label {
+        font-size: $text-sm;
+        font-weight: 500;
+        color: $color-text-dim;
+    }
+
+    &__input,
+    &__textarea {
+        background: $color-bg;
+        border: 1px solid $color-border;
+        border-radius: $radius-sm;
+        padding: $space-3 $space-4;
+        color: $color-text;
+        font-size: $text-sm;
+        font-family: $font-sans;
+        transition: border-color $transition-fast;
+        width: 100%;
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+        }
+
+        &::placeholder { color: $color-text-muted; }
+    }
+
+    &__textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    &__submit {
+        @include btn-primary;
+        align-self: flex-start;
+        justify-content: center;
+        min-width: 160px;
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    &__success {
+        @include flex-center;
+        flex-direction: column;
+        gap: $space-3;
+        padding: $space-8;
+        text-align: center;
+        color: $color-primary;
+
+        i { font-size: $text-4xl; }
+
+        p { color: $color-text-muted; font-size: $text-sm; }
+    }
+}

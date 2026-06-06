@@ -1,0 +1,78 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.projects {
+    &__grid {
+        @include container;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: $space-6;
+    }
+}
+
+.project-card {
+    @include card;
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+
+    &__image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: $radius-sm;
+        background: $color-bg-elevated;
+
+        &--placeholder {
+            @include flex-center;
+            color: $color-text-muted;
+            font-size: $text-3xl;
+        }
+    }
+
+    &__body { flex: 1; }
+
+    &__title {
+        font-size: $text-lg;
+        font-weight: 600;
+        margin-bottom: $space-2;
+    }
+
+    &__desc {
+        font-size: $text-sm;
+        color: $color-text-muted;
+        line-height: 1.6;
+        margin-bottom: $space-4;
+    }
+
+    &__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $space-2;
+        margin-bottom: $space-4;
+    }
+
+    &__tag { @include tag; }
+
+    &__links {
+        display: flex;
+        gap: $space-3;
+        margin-top: auto;
+    }
+
+    &__link {
+        @include btn-outline;
+        flex: 1;
+        justify-content: center;
+        font-size: $text-xs;
+        padding: $space-2 $space-3;
+    }
+
+    &__link--primary {
+        @include btn-primary;
+        flex: 1;
+        justify-content: center;
+        font-size: $text-xs;
+        padding: $space-2 $space-3;
+    }
+}

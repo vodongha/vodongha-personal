@@ -1,0 +1,75 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.skills {
+    background: $color-bg-elevated;
+
+    &__grid {
+        @include container;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: $space-6;
+    }
+
+    &__category {
+        @include card;
+    }
+
+    &__category-title {
+        font-size: $text-sm;
+        font-weight: 600;
+        color: $color-primary;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-family: $font-mono;
+        margin-bottom: $space-6;
+        padding-bottom: $space-3;
+        border-bottom: 1px solid $color-border;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: $space-4;
+    }
+
+    &__item {
+        display: flex;
+        flex-direction: column;
+        gap: $space-2;
+    }
+
+    &__item-header {
+        @include flex-between;
+        font-size: $text-sm;
+        font-weight: 500;
+    }
+
+    &__item-name {
+        display: flex;
+        align-items: center;
+        gap: $space-2;
+
+        i { color: $color-primary; font-size: $text-xl; }
+    }
+
+    &__item-pct {
+        color: $color-text-muted;
+        font-size: $text-xs;
+        font-family: $font-mono;
+    }
+
+    &__bar {
+        height: 4px;
+        background: $color-border;
+        border-radius: $radius-full;
+        overflow: hidden;
+
+        &-fill {
+            height: 100%;
+            background: linear-gradient(90deg, $color-primary, $color-secondary);
+            border-radius: $radius-full;
+            transition: width 1s ease;
+        }
+    }
+}

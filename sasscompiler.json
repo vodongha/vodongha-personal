@@ -1,0 +1,8 @@
+{
+  "SourceFolder": "Styles",
+  "TargetFolder": "wwwroot",
+  "GenerateSourceMap": false,
+  "Style": "compressed",
+  "Indented": false,
+  "StopOnFirstError": true
+}

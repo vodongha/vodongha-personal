@@ -1,0 +1,47 @@
+@using vodongha.Data.Models
+
+<article class="project-card">
+    @if (!string.IsNullOrEmpty(Item.ImageUrl))
+    {
+        <img src="@Item.ImageUrl" alt="@Item.Title" class="project-card__image" />
+    }
+    else
+    {
+        <div class="project-card__image project-card__image--placeholder">
+            <i class="bi bi-code-square"></i>
+        </div>
+    }
+
+    <div class="project-card__body">
+        <h3 class="project-card__title">@Item.Title</h3>
+        <p class="project-card__desc">@Item.Description</p>
+
+        <div class="project-card__tags">
+            @foreach (string tech in Item.Technologies.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                <span class="project-card__tag">@tech.Trim()</span>
+            }
+        </div>
+    </div>
+
+    <div class="project-card__links">
+        @if (!string.IsNullOrEmpty(Item.GitHubUrl))
+        {
+            <a href="@Item.GitHubUrl" target="_blank" class="project-card__link">
+                <i class="bi bi-github"></i>
+                GitHub
+            </a>
+        }
+        @if (!string.IsNullOrEmpty(Item.LiveUrl))
+        {
+            <a href="@Item.LiveUrl" target="_blank" class="project-card__link--primary">
+                <i class="bi bi-box-arrow-up-right"></i>
+                Live
+            </a>
+        }
+    </div>
+</article>
+
+@code {
+    [Parameter, EditorRequired] public Project Item { get; set; } = default!;
+}

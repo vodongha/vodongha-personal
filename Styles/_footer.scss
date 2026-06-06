@@ -1,0 +1,35 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.footer {
+    border-top: 1px solid $color-border;
+    padding-block: $space-8;
+
+    &__inner {
+        @include container;
+        @include flex-between;
+
+        @include mobile { flex-direction: column; gap: $space-4; text-align: center; }
+    }
+
+    &__copy {
+        font-size: $text-sm;
+        color: $color-text-muted;
+
+        span { color: $color-primary; }
+    }
+
+    &__links {
+        display: flex;
+        gap: $space-6;
+        list-style: none;
+    }
+
+    &__link {
+        font-size: $text-sm;
+        color: $color-text-muted;
+        transition: color $transition-fast;
+
+        &:hover { color: $color-primary; }
+    }
+}

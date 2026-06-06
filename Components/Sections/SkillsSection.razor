@@ -1,0 +1,45 @@
+@inject SkillService SkillSvc
+
+<section class="section skills" id="skills">
+    <div class="section__header">
+        <span class="section__label">Năng lực</span>
+        <h2 class="section__title">Kỹ năng & Công nghệ</h2>
+        <p class="section__subtitle">Các công nghệ tôi sử dụng để xây dựng sản phẩm</p>
+    </div>
+
+    @if (_grouped is not null)
+    {
+        <div class="skills__grid">
+            @foreach (KeyValuePair<string, List<Skill>> category in _grouped)
+            {
+                <div class="skills__category">
+                    <h3 class="skills__category-title">@category.Key</h3>
+                    <ul class="skills__list">
+                        @foreach (Skill skill in category.Value)
+                        {
+                            <li class="skills__item">
+                                <div class="skills__item-header">
+                                    <span class="skills__item-name">
+                                        <i class="@skill.Icon colored"></i>
+                                        @skill.Name
+                                    </span>
+                                    <span class="skills__item-pct">@skill.Proficiency%</span>
+                                </div>
+                                <div class="skills__bar">
+                                    <div class="skills__bar-fill" style="width: @(skill.Proficiency)%"></div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private Dictionary<string, List<Skill>>? _grouped;
+
+    protected override async Task OnInitializedAsync() =>
+        _grouped = await SkillSvc.GetGroupedAsync();
+}

@@ -1,0 +1,27 @@
+@inject BlogService BlogSvc
+@inject NavigationManager Nav
+
+<section class="section blog" id="blog">
+    <div class="section__header">
+        <span class="section__label">Blog</span>
+        <h2 class="section__title">Bài viết mới nhất</h2>
+        <p class="section__subtitle">Chia sẻ kiến thức và kinh nghiệm của tôi</p>
+    </div>
+
+    @if (_posts is not null)
+    {
+        <div class="blog__grid">
+            @foreach (BlogPost post in _posts.Take(3))
+            {
+                <BlogCard Item="post" OnClick="@(() => Nav.NavigateTo("/blog/" + post.Slug))" />
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private List<BlogPost>? _posts;
+
+    protected override async Task OnInitializedAsync() =>
+        _posts = await BlogSvc.GetPublishedAsync();
+}

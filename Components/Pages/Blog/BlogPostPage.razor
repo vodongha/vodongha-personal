@@ -1,0 +1,56 @@
+@page "/blog/{Slug}"
+@inject BlogService BlogSvc
+@inject NavigationManager Nav
+
+<PageTitle>@(_post?.Title ?? "Bài viết") — Võ Đông Hà</PageTitle>
+
+@if (_post is null)
+{
+    <div class="blog-post">
+        <p>Không tìm thấy bài viết.</p>
+        <a href="/" class="blog-post__back"><i class="bi bi-arrow-left"></i> Quay lại</a>
+    </div>
+}
+else
+{
+    <article class="blog-post">
+        <a href="/#blog" class="blog-post__back">
+            <i class="bi bi-arrow-left"></i>
+            Quay lại
+        </a>
+
+        <header class="blog-post__header">
+            <h1 class="blog-post__title">@_post.Title</h1>
+            <div class="blog-post__meta">
+                <span><i class="bi bi-calendar3"></i> @_post.CreatedAt.ToString("dd/MM/yyyy")</span>
+                @if (_post.UpdatedAt.HasValue)
+                {
+                    <span>· Cập nhật @_post.UpdatedAt.Value.ToString("dd/MM/yyyy")</span>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(_post.Tags))
+            {
+                <div class="blog-post__tags">
+                    @foreach (string tag in _post.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <span class="blog-post__tag">@tag.Trim()</span>
+                    }
+                </div>
+            }
+        </header>
+
+        <div class="blog-post__content">
+            @((MarkupString)_post.Content)
+        </div>
+    </article>
+}
+
+@code {
+    [Parameter] public string Slug { get; set; } = string.Empty;
+
+    private BlogPost? _post;
+
+    protected override async Task OnParametersSetAsync() =>
+        _post = await BlogSvc.GetBySlugAsync(Slug);
+}
