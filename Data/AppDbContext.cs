@@ -198,9 +198,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 {
                     Id = 3,
                     Title = "Grac",
-                    Description = "Hệ thống quản lý cho nền tảng đô thị không rác. Quản lý khách hàng, nhân viên, hợp đồng, thanh toán tích hợp MoMo Payment Gateway. Xây dựng bằng Laravel + PostgreSQL.",
-                    DescriptionEn = "Management system for an eco-city waste platform. Handles customers, employees, contracts, and payment with MoMo Payment Gateway integration. Built with Laravel and PostgreSQL.",
-                    Technologies = "Laravel,PHP,JavaScript,jQuery,AJAX,PostgreSQL,MoMo API",
+                    Description = "Hệ thống quản lý cho nền tảng đô thị không rác. Quản lý khách hàng, nhân viên, hợp đồng, tích hợp thanh toán MoMo và Payoo. Xây dựng bằng Laravel + MySQL.",
+                    DescriptionEn = "Management system for an eco-city waste platform. Handles customers, employees, contracts, with MoMo and Payoo payment gateway integration. Built with Laravel and MySQL.",
+                    Technologies = "Laravel,PHP,JavaScript,jQuery,AJAX,MySQL,MoMo API,Payoo",
                     LiveUrl = "https://e.grac.vn",
                     IsFeatured = false,
                     Order = 3,
