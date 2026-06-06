@@ -524,18 +524,10 @@ img {
   position: relative;
   width: 260px;
   height: 260px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-}
-.hero__avatar-wrap::before {
-  content: "";
-  position: absolute;
-  inset: -20px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(110, 231, 183, 0.12) 0%, rgba(129, 140, 248, 0.08) 50%, transparent 75%);
-  z-index: 0;
+  background: linear-gradient(135deg, rgba(110, 231, 183, 0.15) 0%, rgba(129, 140, 248, 0.12) 100%);
+  overflow: hidden;
+  z-index: 1;
 }
 @media (max-width: 640px) {
   .hero__avatar-wrap {
@@ -546,12 +538,9 @@ img {
 .hero__avatar-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: center bottom;
-  position: relative;
-  z-index: 1;
+  object-fit: cover;
+  object-position: center 15%;
   display: none;
-  filter: drop-shadow(0 0 20px rgba(110, 231, 183, 0.2));
 }
 .hero__avatar-placeholder {
   width: 100%;
