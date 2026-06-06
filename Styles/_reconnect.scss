@@ -1,0 +1,120 @@
+@use 'variables' as *;
+
+// ── Blazor Reconnect Modal ──────────────────────────────────
+
+.components-reconnect-first-attempt-visible,
+.components-reconnect-repeated-attempt-visible,
+.components-reconnect-failed-visible,
+.components-pause-visible,
+.components-resume-failed-visible,
+.components-rejoining-animation { display: none; }
+
+#components-reconnect-modal {
+    &.components-reconnect-show .components-reconnect-first-attempt-visible,
+    &.components-reconnect-show .components-rejoining-animation,
+    &.components-reconnect-paused .components-pause-visible,
+    &.components-reconnect-resume-failed .components-resume-failed-visible,
+    &.components-reconnect-retrying,
+    &.components-reconnect-retrying .components-reconnect-repeated-attempt-visible,
+    &.components-reconnect-retrying .components-rejoining-animation,
+    &.components-reconnect-failed,
+    &.components-reconnect-failed .components-reconnect-failed-visible { display: block; }
+
+    background: $color-bg-card;
+    width: 20rem;
+    margin: 20vh auto;
+    padding: $space-8;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    box-shadow: $shadow-card;
+    opacity: 0;
+    animation: reconnect-fade-out 0.5s both;
+
+    &[open] { animation: reconnect-slide-up 1.5s cubic-bezier(.05,.89,.25,1.02) 0.3s, reconnect-fade-in 0.5s ease-in-out 0.3s; animation-fill-mode: both; }
+
+    &::backdrop { background: rgba(0,0,0,0.6); animation: reconnect-fade-in 0.5s ease-in-out; opacity: 1; }
+
+    p { margin: 0; text-align: center; color: $color-text-muted; font-size: $text-sm; }
+
+    button {
+        border: none;
+        background: $color-primary;
+        color: $color-bg;
+        padding: $space-2 $space-6;
+        border-radius: $radius-full;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity $transition-fast;
+
+        &:hover { opacity: 0.85; }
+    }
+}
+
+.components-reconnect-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-4;
+}
+
+// ── Blazor Error UI ─────────────────────────────────────────
+#blazor-error-ui {
+    background: $color-bg-elevated;
+    border-top: 1px solid $color-border;
+    color: $color-text;
+    bottom: 0;
+    display: none;
+    left: 0;
+    padding: $space-3 $space-6;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    font-size: $text-sm;
+
+    .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: $space-4;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $color-text-muted;
+    }
+}
+
+// ── Animations ──────────────────────────────────────────────
+@keyframes reconnect-slide-up {
+    from { transform: translateY(30px) scale(0.95); }
+    to   { transform: translateY(0) scale(1); }
+}
+
+@keyframes reconnect-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes reconnect-fade-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+.components-rejoining-animation {
+    position: relative;
+    width: 60px;
+    height: 60px;
+
+    div {
+        position: absolute;
+        border: 2px solid $color-primary;
+        opacity: 1;
+        border-radius: 50%;
+        animation: rejoining-pulse 1.5s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+
+        &:nth-child(2) { animation-delay: -0.5s; }
+    }
+}
+
+@keyframes rejoining-pulse {
+    0%    { top: 30px; left: 30px; width: 0; height: 0; opacity: 0; }
+    5%    { top: 30px; left: 30px; width: 0; height: 0; opacity: 1; }
+    100%  { top: 0; left: 0; width: 60px; height: 60px; opacity: 0; }
+}
