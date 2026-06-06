@@ -1,20 +1,8 @@
 @inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Components.Authorization
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin — vdh.dev</title>
-    <base href="/" />
-    <link rel="stylesheet" href="@Assets["app.css"]" />
-    <ImportMap />
-</head>
-<body class="admin-body">
-    <CascadingAuthenticationState>
-        @Body
-    </CascadingAuthenticationState>
-    <script src="@Assets["_framework/blazor.web.js"]"></script>
-</body>
-</html>
+<PageTitle>Admin — vdh.dev</PageTitle>
+
+<CascadingAuthenticationState>
+    @Body
+</CascadingAuthenticationState>
