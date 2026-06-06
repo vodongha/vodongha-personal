@@ -71,7 +71,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 new Skill { Id = 14, Name = "Claude (Anthropic)", Category = "AI", Icon = "devicon-python-plain",       Proficiency = 90, Order = 14 },
                 new Skill { Id = 15, Name = "GitHub Copilot",     Category = "AI", Icon = "devicon-github-plain",       Proficiency = 85, Order = 15 },
                 new Skill { Id = 16, Name = "Prompt Engineering",  Category = "AI", Icon = "devicon-tensorflow-plain",  Proficiency = 80, Order = 16 },
-                new Skill { Id = 17, Name = "AI-Assisted Dev",     Category = "AI", Icon = "devicon-vscode-plain",      Proficiency = 85, Order = 17 }
+                new Skill { Id = 17, Name = "AI-Assisted Dev",     Category = "AI", Icon = "devicon-vscode-plain",      Proficiency = 85, Order = 17 },
+                // Frontend extras from LinkedIn
+                new Skill { Id = 18, Name = "jQuery",            Category = "Frontend", Icon = "devicon-jquery-plain",        Proficiency = 75, Order = 18 },
+                new Skill { Id = 19, Name = "AJAX",              Category = "Frontend", Icon = "devicon-javascript-plain",    Proficiency = 72, Order = 19 },
+                new Skill { Id = 20, Name = "JSON",              Category = "Backend",  Icon = "devicon-json-plain",          Proficiency = 85, Order = 20 },
+                new Skill { Id = 21, Name = "CoffeeScript",      Category = "Frontend", Icon = "devicon-coffeescript-plain",  Proficiency = 60, Order = 21 }
             );
 
         modelBuilder.Entity<Project>()
@@ -87,6 +92,29 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                     IsFeatured = true,
                     Order = 1,
                     CreatedAt = new DateTime(2021, 10, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Project
+                {
+                    Id = 3,
+                    Title = "Grac",
+                    Description = "Hệ thống quản lý cho nền tảng đô thị không rác. Quản lý khách hàng, nhân viên, hợp đồng, thanh toán tích hợp MoMo Payment Gateway.",
+                    DescriptionEn = "Management system for an eco-city waste platform. Handles customers, employees, contracts, and payment with MoMo Payment Gateway integration.",
+                    Technologies = "Ruby on Rails,JavaScript,jQuery,AJAX,PostgreSQL,MoMo API",
+                    LiveUrl = "https://e.grac.vn",
+                    IsFeatured = false,
+                    Order = 3,
+                    CreatedAt = new DateTime(2021, 7, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Project
+                {
+                    Id = 4,
+                    Title = "Foto Solution",
+                    Description = "Website quản lý studio ảnh: khách hàng, sale, editor, admin. Khách hàng upload ảnh qua Dropbox/FTP, editor chỉnh sửa và ghi chú, quản lý doanh thu và thanh toán.",
+                    DescriptionEn = "Photo studio management platform: client portal, sales, editor workflow, and admin dashboard. Clients upload images via Dropbox/FTP, editors annotate and design, with sales reporting and payment management.",
+                    Technologies = "Ruby on Rails,JavaScript,jQuery,CoffeeScript,CSS,Dropbox API,FTP",
+                    IsFeatured = false,
+                    Order = 4,
+                    CreatedAt = new DateTime(2020, 10, 1, 0, 0, 0, DateTimeKind.Utc)
                 },
                 new Project
                 {
