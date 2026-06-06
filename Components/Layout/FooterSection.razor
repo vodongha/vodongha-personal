@@ -3,11 +3,17 @@
 <footer class="footer">
     <div class="footer__inner">
         <p class="footer__copy">
-            &copy; @DateTime.Now.Year <span>Võ Đông Hà</span>. @Lang.T("footer.built")
+            &copy; @DateTime.Now.Year <span>@S("Name")</span>. @Lang.T("footer.built")
         </p>
         <ul class="footer__links">
-            <li><a href="https://github.com/vodongha" target="_blank" class="footer__link">GitHub</a></li>
-            <li><a href="mailto:vodongha@hotmail.com" class="footer__link">Email</a></li>
+            @if (!string.IsNullOrEmpty(S("GitHub")))
+            {
+                <li><a href="@S("GitHub")" target="_blank" class="footer__link">GitHub</a></li>
+            }
+            @if (!string.IsNullOrEmpty(S("Email")))
+            {
+                <li><a href="mailto:@S("Email")" class="footer__link">Email</a></li>
+            }
         </ul>
         <span class="footer__visitors" title="@(Lang.IsVi ? "Khách truy cập độc lập" : "Unique visitors")">
             <i class="bi bi-eye"></i>

@@ -9,8 +9,8 @@
             <span class="hero__badge">@Lang.T("hero.greeting")</span>
 
             <h1 class="hero__name">
-                Võ Đông Hà <br />
-                <span>Full-Stack Developer</span>
+                @S("Name") <br />
+                <span>@S("Title")</span>
             </h1>
 
             <p class="hero__role">@Lang.T("hero.role")</p>
@@ -60,7 +60,7 @@
             <div class="hero__avatar-outer">
                 <div class="hero__avatar-ring2"></div>
                 <div class="hero__avatar-wrap">
-                    <img src="/images/avatar.png" alt="Võ Đông Hà" class="hero__avatar-img"
+                    <img src="@(S("AvatarUrl") is { Length: > 0 } av ? av : "/images/avatar.png")" alt="@S("Name")" class="hero__avatar-img"
                          style="display:none"
                          onload="this.style.display='block'"
                          onerror="this.nextElementSibling.style.display='flex'" />
