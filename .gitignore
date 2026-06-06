@@ -17,6 +17,8 @@ appsettings.*.json
 msbuild.binlog
 Styles/*.css
 Styles/*.css.map
+wwwroot/app.css
+wwwroot/admin.css
 wwwroot/*.css.map
 
 ## OS
