@@ -38,6 +38,7 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<BlogService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ContactService>();
