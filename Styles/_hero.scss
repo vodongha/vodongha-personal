@@ -136,6 +136,8 @@
             position: relative;
             width: 320px;
             height: 320px;
+            background: radial-gradient(circle at center, #1a1a2e 0%, $color-bg 70%);
+            border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
 
             @include mobile { width: 220px; height: 220px; }
         }
@@ -145,8 +147,10 @@
             height: 100%;
             border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
             object-fit: cover;
-            border: 2px solid $color-border;
+            object-position: center top;
             animation: morph 8s ease-in-out infinite;
+            mix-blend-mode: luminosity;
+            filter: contrast(1.05) brightness(0.92);
         }
 
         &-placeholder {
