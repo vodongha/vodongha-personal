@@ -544,16 +544,17 @@ tr.admin-row--dragover td {
         cursor: pointer;
         transition: border-color 150ms, color 150ms;
 
-        // Show arrows via pseudo-element using Bootstrap Icons font
+        // Show arrows via pseudo-element with Arial (guaranteed to have « ‹ › »)
         &::after {
-            font-family: "bootstrap-icons";
-            font-size: 0.75rem;
+            font-family: Arial, sans-serif;
+            font-size: 0.9rem;
             color: inherit;
+            line-height: 1;
         }
-        &:nth-child(1)::after { content: "\F272"; } // bi-chevron-double-left
-        &:nth-child(2)::after { content: "\F284"; } // bi-chevron-left
-        &:nth-child(3)::after { content: "\F285"; } // bi-chevron-right
-        &:nth-child(4)::after { content: "\F273"; } // bi-chevron-double-right
+        &:nth-child(1)::after { content: "«"; }
+        &:nth-child(2)::after { content: "‹"; }
+        &:nth-child(3)::after { content: "›"; }
+        &:nth-child(4)::after { content: "»"; }
 
         &:hover:not(:disabled) { border-color: $color-primary !important; color: $color-primary !important; }
         &:disabled { opacity: 0.35; cursor: default; }
