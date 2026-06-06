@@ -36,6 +36,7 @@ builder.Services.AddScoped<BlogService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ContactService>();
 builder.Services.AddScoped<SkillService>();
+builder.Services.AddScoped<LanguageService>();
 
 WebApplication app = builder.Build();
 

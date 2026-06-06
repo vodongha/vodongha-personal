@@ -1,27 +1,41 @@
 @inject BlogService BlogSvc
 @inject NavigationManager Nav
+@inject LanguageService Lang
+@implements IDisposable
 
 <section class="section blog" id="blog">
     <div class="section__header">
-        <span class="section__label">Blog</span>
-        <h2 class="section__title">Bài viết mới nhất</h2>
-        <p class="section__subtitle">Chia sẻ kiến thức và kinh nghiệm của tôi</p>
+        <span class="section__label">@Lang.T("blog.label")</span>
+        <h2 class="section__title">@Lang.T("blog.title")</h2>
+        <p class="section__subtitle">@Lang.T("blog.subtitle")</p>
     </div>
 
     @if (_posts is not null)
     {
-        <div class="blog__grid">
-            @foreach (BlogPost post in _posts.Take(3))
-            {
-                <BlogCard Item="post" OnClick="@(() => Nav.NavigateTo("/blog/" + post.Slug))" />
-            }
-        </div>
+        @if (_posts.Count == 0)
+        {
+            <p style="text-align:center;color:#6b7280">@Lang.T("blog.empty")</p>
+        }
+        else
+        {
+            <div class="blog__grid">
+                @foreach (BlogPost post in _posts.Take(3))
+                {
+                    <BlogCard Item="post" OnClick="@(() => Nav.NavigateTo("/blog/" + post.Slug))" />
+                }
+            </div>
+        }
     }
 </section>
 
 @code {
     private List<BlogPost>? _posts;
 
-    protected override async Task OnInitializedAsync() =>
+    protected override async Task OnInitializedAsync()
+    {
         _posts = await BlogSvc.GetPublishedAsync();
+        Lang.OnChange += StateHasChanged;
+    }
+
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
 }
