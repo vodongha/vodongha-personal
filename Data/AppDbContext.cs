@@ -97,6 +97,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 },
                 new Project
                 {
+                    Id = 5,
+                    Title = "Order",
+                    Description = "Hệ thống quản lý đơn hàng full-stack. Xây dựng với Ruby on Rails, CoffeeScript và tích hợp Elasticsearch để tìm kiếm và lọc đơn hàng nhanh chóng.",
+                    DescriptionEn = "Full-stack order management system built with Ruby on Rails and CoffeeScript, integrated with Elasticsearch for fast order search and filtering.",
+                    Technologies = "Ruby on Rails,CoffeeScript,Elasticsearch,jQuery,PostgreSQL",
+                    IsFeatured = false,
+                    Order = 5,
+                    CreatedAt = new DateTime(2021, 10, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Project
+                {
                     Id = 3,
                     Title = "Grac",
                     Description = "Hệ thống quản lý cho nền tảng đô thị không rác. Quản lý khách hàng, nhân viên, hợp đồng, thanh toán tích hợp MoMo Payment Gateway.",
