@@ -1,102 +1,75 @@
 # vodongha.id.vn — CLAUDE.md
 
-Instructions for Claude AI when working in this repository.
-
 ## Project overview
 
-Personal website of Võ Đông Hà. Built with Blazor Web App (.NET 10), PostgreSQL (Neon), SCSS, deployed on Fly.io (Singapore).
+Personal website of Võ Đông Hà. Blazor Web App (.NET 10) + PostgreSQL (Neon, Singapore) + SCSS dark theme, deployed on Fly.io.
 
-Live: https://vodongha.id.vn | Repo: https://github.com/vodongha/vodongha.id.vn
+- Live: https://vodongha.id.vn
+- Repo: https://github.com/vodongha/vodongha-personal
+- Admin: https://vodongha.id.vn/admin/login
 
 ## Technology stack
 
 - **Runtime:** .NET 10
-- **Frontend:** Blazor Web App (Interactive Server render mode)
-- **Database:** PostgreSQL via Neon (ap-southeast-1)
+- **Frontend:** Blazor Web App — `@rendermode InteractiveServer` on pages/components with logic
+- **Database:** PostgreSQL via Neon (Singapore). Fly.io secret: `ConnectionStrings__DefaultConnection`
 - **ORM:** Entity Framework Core — no raw SQL in application code
-- **Styling:** SCSS compiled by `AspNetCore.SassCompiler` → `wwwroot/app.css`
-- **Deploy:** Fly.io, app name `vodongha`, region `sin` (Singapore)
-- **CI/CD:** GitHub Actions (`.github/workflows/`)
+- **SCSS:** `Styles/app.scss` imports all partials → compiled to `wwwroot/app.css` via `AspNetCore.SassCompiler` on `dotnet build`. Always commit both the `.scss` change and the updated `app.css`.
+- **Email:** Resend API (`Email__ResendApiKey` secret). Sender: `no-reply@vodongha.id.vn`, recipient: `vodongha@hotmail.com`
+- **Deploy:** Fly.io, app `vodongha`, region `sin`. Push `master` → auto-deploy (~2 min)
+- **Migrations:** EF Core, applied automatically on startup via `MigrateAsync()` in `Program.cs`
 
-## Branch strategy
+## Solution structure
 
-```
-master    ← production (auto-deploy to Fly.io on push)
-develop   ← integration branch
-feature/* ← one branch per change, branched off develop
-```
+| Path | Purpose |
+|---|---|
+| `Components/Layout/` | NavBar (InteractiveServer), MainLayout, AdminLayout, ReconnectModal |
+| `Components/Pages/` | Home, BlogPostPage, Error, NotFound |
+| `Components/Pages/Admin/` | Login, Dashboard, AdminSkills, AdminProjects, AdminBlog, AdminEducation, AdminExperience, AdminSettings |
+| `Components/Sections/` | Hero, Skills, Projects, Experience, Education, Blog, Contact — one file per landing page section |
+| `Components/Shared/` | ProjectCard, BlogCard |
+| `Data/Models/` | Skill, Project, BlogPost, Experience, Education, ContactMessage, SiteSetting |
+| `Data/AppDbContext.cs` | EF Core context. Seed data for Skills, Projects, Experience, Education, SiteSettings lives here. |
+| `Services/` | BlogService, ProjectService, SkillService, ExperienceService, EducationService, ContactService, EmailService, LanguageService |
+| `Styles/` | `_variables`, `_base`, `_nav`, `_hero`, `_skills`, `_projects`, `_timeline`, `_blog`, `_contact`, `_footer`, `_reconnect`, `_admin`, `app.scss` |
+| `Migrations/` | EF Core migration files — never modify an existing migration, always add new |
 
-**Every change goes through a PR.** Direct commits to `master` or `develop` are not allowed.
+## Admin panel
 
-### Workflow for each change
+Login: `/admin/login` → POST `/admin/do-login` → cookie auth.
 
-1. Create a feature branch from `develop`:
-   ```bash
-   git checkout develop
-   git pull origin develop
-   git checkout -b feature/short-description
-   ```
-2. Make changes, commit with a clear message
-3. Push and open a PR targeting `develop`:
-   ```bash
-   git push origin feature/short-description
-   gh pr create --base develop --title "..." --body "..."
-   ```
-4. Claude AI agent reviews the PR (see `.github/workflows/claude-review.yml`)
-5. On approval, merge into `develop`
-6. When ready to ship: merge `develop` → `master` to deploy
+Each admin page (`/admin/*`) uses `@layout AdminLayout` and `@attribute [Authorize]`. They inject `IDbContextFactory<AppDbContext>` or the relevant service directly — no separate API layer.
 
 ## Coding conventions
 
-- **C#:** follow Microsoft .NET naming conventions
-- **Always use braces** for `if`, `for`, `foreach` — even single-line
-- **`var`** only when the type is obvious from the right-hand side
-- **Blazor components:** always use code-behind (`.razor` + `.razor.cs`) for any component with logic
-- **Async:** all DB-touching code must be async end-to-end (`await`, `ToListAsync`, `FirstOrDefaultAsync`)
-- **`IDbContextFactory<AppDbContext>`** — use the factory in services, not a scoped `DbContext`
-- **No comments** unless the WHY is non-obvious
+- Follow Microsoft .NET naming conventions
+- **Always use braces** — even for single-line `if`, `for`, `foreach`
+- Use `var` only when the type is obvious from the right-hand side
+- Blazor components with logic use code-behind (`.razor` + `.razor.cs`). Simple display-only components may be single-file.
+- All DB-touching code must be async end-to-end: `await`, `ToListAsync()`, `FirstOrDefaultAsync()`, etc.
+- Use `await using var db = await DbFactory.CreateDbContextAsync()` — factory pattern, not scoped DbContext
+- No `.Result` or `.Wait()` on Tasks
+- No comments unless the WHY is non-obvious
 
-## SCSS
+## i18n
 
-- Entry point: `Styles/app.scss` — imports all partials
-- Partials live in `Styles/_*.scss`
-- Output: `wwwroot/app.css` (compiled automatically on `dotnet build/publish`)
-- Config: `sasscompiler.json` at project root
+`LanguageService` handles Vietnamese/English toggle. Use `Lang.T("key")` for UI strings and `Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description)` for content with dual-language fields.
 
-## Database migrations
+## Git workflow
 
-- EF Core migrations only: `dotnet ef migrations add <Name>`
-- Applied automatically on startup (`db.Database.MigrateAsync()` in `Program.cs`)
-- Never modify an already-applied migration — add a new one
+Direct commits to `master` are fine for this solo project. Branch naming: `feature/short-description` for larger changes.
 
-## Environment & secrets
+Commit messages: short, focused on what changed. No trailing summaries.
 
-- Local: `appsettings.Development.json` (gitignored)
-- Production: Fly.io secrets (`flyctl secrets set KEY=VALUE`)
-- Connection string secret name: `ConnectionStrings__DefaultConnection`
-- Never commit secrets or connection strings
+Deploy by pushing to `master`.
 
-## Claude's role as contributor
+## Fly.io secrets
 
-Claude acts as an AI pair programmer and reviewer on this project:
+| Secret | Purpose |
+|---|---|
+| `ConnectionStrings__DefaultConnection` | Neon PostgreSQL |
+| `Admin__Username` | Admin panel login |
+| `Admin__Password` | Admin panel login |
+| `Email__ResendApiKey` | Resend API key for contact form |
 
-- **Code review:** Claude reviews every PR for correctness, style, and security
-- **PR merges:** Claude merges approved PRs via `gh pr merge`
-- **Pair programming:** Claude helps implement features when asked
-- **Commits by Claude** include the trailer:
-  ```
-  Co-Authored-By: Claude <noreply@anthropic.com>
-  ```
-
-## PR review checklist (used by Claude agent)
-
-When reviewing a PR, check:
-
-- [ ] No secrets or connection strings committed
-- [ ] SCSS changes compile to `wwwroot/app.css` (no stray `main.css`)
-- [ ] New Blazor components with logic have a `.razor.cs` code-behind
-- [ ] DB-touching code is async all the way down
-- [ ] No `.Result` or `.Wait()` on Tasks
-- [ ] EF migrations are additive (no modifications to existing migrations)
-- [ ] `IDbContextFactory` used in services, not scoped `DbContext`
-- [ ] No raw SQL in application code
+Set with: `flyctl secrets set KEY=VALUE`
