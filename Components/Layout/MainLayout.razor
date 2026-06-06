@@ -15,18 +15,14 @@
         </ul>
         <div class="nav__actions">
             <button class="nav__lang-toggle" @onclick="ToggleLang" title="Switch language">
-                @if (Lang.IsVi)
-                {
-                    <span>EN</span>
-                }
-                else
-                {
-                    <span>VI</span>
-                }
+                @if (Lang.IsVi) { <span>EN</span> } else { <span>VI</span> }
             </button>
             <a href="#contact" class="nav__cta">
                 <i class="bi bi-chat-dots"></i>
                 @Lang.T("nav.contact")
+            </a>
+            <a href="/admin" class="nav__avatar-btn" title="Admin">
+                <i class="bi bi-person-circle"></i>
             </a>
         </div>
     </div>
