@@ -136,8 +136,9 @@
     transition: opacity 150ms, transform 150ms;
     text-decoration: none;
 
-    &:hover { opacity: 0.85; }
-    &:active { transform: scale(0.97); }
+    &:hover:not(:disabled) { opacity: 0.85; }
+    &:active:not(:disabled) { transform: scale(0.97); }
+    &:disabled { opacity: 0.35; cursor: not-allowed; }
 
     &--primary { background: $color-primary; color: #0d0d0d; }
     &--ghost { background: transparent; color: #6b7280; border: 1px solid #2a2a2a; &:hover { color: $color-text; border-color: #4a4a4a; } }

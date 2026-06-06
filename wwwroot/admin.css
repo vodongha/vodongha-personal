@@ -166,11 +166,15 @@
   transition: opacity 150ms, transform 150ms;
   text-decoration: none;
 }
-.admin-btn:hover {
+.admin-btn:hover:not(:disabled) {
   opacity: 0.85;
 }
-.admin-btn:active {
+.admin-btn:active:not(:disabled) {
   transform: scale(0.97);
+}
+.admin-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 .admin-btn--primary {
   background: #6ee7b7;
