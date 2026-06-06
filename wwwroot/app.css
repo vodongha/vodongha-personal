@@ -1248,6 +1248,20 @@ img {
   align-items: flex-start;
   gap: 1rem;
 }
+.contact__info-item--link {
+  text-decoration: none;
+  color: inherit;
+  border-radius: 12px;
+  padding: 0.5rem;
+  margin: -0.5rem;
+  transition: background 150ms ease;
+}
+.contact__info-item--link:hover {
+  background: rgba(110, 231, 183, 0.06);
+}
+.contact__info-item--link:hover .contact__info-value {
+  color: #6ee7b7;
+}
 .contact__info-icon {
   display: flex;
   align-items: center;
