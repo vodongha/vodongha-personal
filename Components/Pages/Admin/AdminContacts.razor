@@ -4,8 +4,6 @@
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
 @using vodongha.Data.Models
-@inject IDbContextFactory<AppDbContext> DbFactory
-@inject ToastService Toast
 
 <div class="admin-shell">
     <aside class="admin-sidebar">
@@ -97,56 +95,3 @@
         }
     </main>
 </div>
-
-@code {
-    private List<ContactMessage> Messages = [];
-    private ContactMessage? Selected;
-    private int UnreadCount => Messages.Count(m => !m.IsRead);
-
-    protected override async Task OnInitializedAsync() => await LoadAsync();
-
-    private async Task LoadAsync()
-    {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        Messages = await db.ContactMessages
-            .OrderByDescending(m => m.SentAt)
-            .ToListAsync();
-    }
-
-    private async Task OpenMessage(ContactMessage msg)
-    {
-        Selected = msg;
-        if (!msg.IsRead)
-        {
-            await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-            ContactMessage? entity = await db.ContactMessages.FindAsync(msg.Id);
-            if (entity is not null)
-            {
-                entity.IsRead = true;
-                await db.SaveChangesAsync();
-                msg.IsRead = true;
-            }
-        }
-    }
-
-    private void CloseMessage() => Selected = null;
-
-    private async Task MarkAllRead()
-    {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        await db.ContactMessages
-            .Where(m => !m.IsRead)
-            .ExecuteUpdateAsync(s => s.SetProperty(m => m.IsRead, true));
-        foreach (ContactMessage msg in Messages) { msg.IsRead = true; }
-        Toast.Show("Đã đánh dấu tất cả đã đọc");
-    }
-
-    private async Task Delete(int id)
-    {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        await db.ContactMessages.Where(m => m.Id == id).ExecuteDeleteAsync();
-        Messages.RemoveAll(m => m.Id == id);
-        if (Selected?.Id == id) { Selected = null; }
-        Toast.Show("Đã xoá tin nhắn");
-    }
-}

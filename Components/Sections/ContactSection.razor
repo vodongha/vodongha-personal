@@ -1,7 +1,3 @@
-﻿@inject ContactService ContactSvc
-@inject LanguageService Lang
-@implements IDisposable
-
 <section class="section contact" id="contact">
     <div class="section__header">
         <span class="section__label">@Lang.T("contact.label")</span>
@@ -14,7 +10,7 @@
             <div class="contact__info-item">
                 <div class="contact__info-icon"><i class="bi bi-geo-alt"></i></div>
                 <div>
-                    <div class="contact__info-label">@(Lang.IsVi ? "Äá»‹a chá»‰" : "Location")</div>
+                    <div class="contact__info-label">@(Lang.IsVi ? "Địa chỉ" : "Location")</div>
                     <div class="contact__info-value">Ho Chi Minh City, Vietnam</div>
                 </div>
             </div>
@@ -59,7 +55,7 @@
                 </div>
 
                 <div class="contact__field">
-                    <label class="contact__label">@(Lang.IsVi ? "TiÃªu Ä‘á»" : "Subject")</label>
+                    <label class="contact__label">@(Lang.IsVi ? "Tiêu đề" : "Subject")</label>
                     <InputText @bind-Value="_model.Subject" class="contact__input" />
                     <ValidationMessage For="() => _model.Subject" />
                 </div>
@@ -73,7 +69,7 @@
                 <button type="submit" class="contact__submit" disabled="@_sending">
                     @if (_sending)
                     {
-                        <span>@(Lang.IsVi ? "Äang gá»­i..." : "Sending...")</span>
+                        <span>@(Lang.IsVi ? "Đang gửi..." : "Sending...")</span>
                     }
                     else
                     {
@@ -85,20 +81,3 @@
         }
     </div>
 </section>
-
-@code {
-    private ContactMessage _model = new();
-    private bool _sending;
-    private bool _sent;
-
-    protected override void OnInitialized() => Lang.OnChange += StateHasChanged;
-    public void Dispose() => Lang.OnChange -= StateHasChanged;
-
-    private async Task HandleSubmit()
-    {
-        _sending = true;
-        await ContactSvc.SendAsync(_model);
-        _sent = true;
-        _sending = false;
-    }
-}

@@ -1,6 +1,3 @@
-@using vodongha.Data.Models
-@inject LanguageService Lang
-
 <article class="blog-card" @onclick="OnClick">
     <span class="blog-card__date">@Item.CreatedAt.ToString("dd/MM/yyyy")</span>
     <h3 class="blog-card__title">@(Lang.IsVi ? Item.Title : (Item.TitleEn ?? Item.Title))</h3>
@@ -20,8 +17,3 @@
         @Lang.T("blog.read") <i class="bi bi-arrow-right"></i>
     </span>
 </article>
-
-@code {
-    [Parameter, EditorRequired] public BlogPost Item { get; set; } = default!;
-    [Parameter] public EventCallback OnClick { get; set; }
-}

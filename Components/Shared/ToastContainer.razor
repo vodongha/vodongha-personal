@@ -1,5 +1,3 @@
-@inject ToastService ToastSvc
-@implements IDisposable
 @rendermode InteractiveServer
 
 <div class="toast-container">
@@ -14,9 +12,3 @@
         </div>
     }
 </div>
-
-@code {
-    protected override void OnInitialized() => ToastSvc.OnChange += Refresh;
-    private void Refresh() => InvokeAsync(StateHasChanged);
-    public void Dispose() => ToastSvc.OnChange -= Refresh;
-}

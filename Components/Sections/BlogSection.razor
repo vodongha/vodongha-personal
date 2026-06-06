@@ -1,8 +1,3 @@
-﻿@inject BlogService BlogSvc
-@inject NavigationManager Nav
-@inject LanguageService Lang
-@implements IDisposable
-
 <section class="section blog" id="blog">
     <div class="section__header">
         <span class="section__label">@Lang.T("blog.label")</span>
@@ -35,7 +30,7 @@
                         }
                         else
                         {
-                            <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore") 
+                            <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore")
                         }
                     </button>
                 </div>
@@ -43,22 +38,3 @@
         }
     }
 </section>
-
-@code {
-    private const int InitialCount = 3;
-    private List<BlogPost>? _posts;
-    private bool _expanded;
-
-    private IEnumerable<BlogPost> VisiblePosts =>
-        _expanded ? _posts! : _posts!.Take(InitialCount);
-
-    protected override async Task OnInitializedAsync()
-    {
-        _posts = await BlogSvc.GetPublishedAsync();
-        Lang.OnChange += StateHasChanged;
-    }
-
-    private void Toggle() => _expanded = !_expanded;
-
-    public void Dispose() => Lang.OnChange -= StateHasChanged;
-}

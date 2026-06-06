@@ -1,7 +1,3 @@
-﻿@inject EducationService EduSvc
-@inject LanguageService Lang
-@implements IDisposable
-
 <section class="section education" id="education">
     <div class="section__header">
         <span class="section__label">@Lang.T("edu.label")</span>
@@ -54,29 +50,10 @@
                     }
                     else
                     {
-                        <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore") 
+                        <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore")
                     }
                 </button>
             </div>
         }
     }
 </section>
-
-@code {
-    private const int InitialCount = 3;
-    private List<Education>? _items;
-    private bool _expanded;
-
-    private IEnumerable<Education> VisibleItems =>
-        _expanded ? _items! : _items!.Take(InitialCount);
-
-    protected override async Task OnInitializedAsync()
-    {
-        _items = await EduSvc.GetAllAsync();
-        Lang.OnChange += StateHasChanged;
-    }
-
-    private void Toggle() => _expanded = !_expanded;
-
-    public void Dispose() => Lang.OnChange -= StateHasChanged;
-}
