@@ -3,7 +3,26 @@
 @inject LanguageService Lang
 @implements IDisposable
 
-<PageTitle>@(DisplayTitle ?? "Bài viết") — Võ Đông Hà</PageTitle>
+<PageTitle>@(DisplayTitle ?? "Blog") — Võ Đông Hà</PageTitle>
+
+@if (_post is not null)
+{
+    <HeadContent>
+        <meta name="description" content="@DisplaySummary" />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content="@DisplayTitle — Võ Đông Hà" />
+        <meta property="og:description" content="@DisplaySummary" />
+        <meta property="og:url" content="https://vodongha.id.vn/blog/@_post.Slug" />
+        @if (!string.IsNullOrEmpty(_post.CoverImageUrl))
+        {
+            <meta property="og:image" content="@_post.CoverImageUrl" />
+        }
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="@DisplayTitle — Võ Đông Hà" />
+        <meta name="twitter:description" content="@DisplaySummary" />
+        <link rel="canonical" href="https://vodongha.id.vn/blog/@_post.Slug" />
+    </HeadContent>
+}
 
 @if (_post is null)
 {
@@ -53,6 +72,7 @@ else
     private BlogPost? _post;
 
     private string DisplayTitle => Lang.IsVi ? (_post?.Title ?? "") : (_post?.TitleEn ?? _post?.Title ?? "");
+    private string DisplaySummary => Lang.IsVi ? (_post?.Summary ?? "") : (_post?.SummaryEn ?? _post?.Summary ?? "");
     private string DisplayContent => Lang.IsVi ? (_post?.Content ?? "") : (_post?.ContentEn ?? _post?.Content ?? "");
 
     protected override async Task OnParametersSetAsync()

@@ -1,0 +1,149 @@
+@page "/admin/contacts"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using vodongha.Data.Models
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__logo"><span>vdh</span><span class="dot">.</span><span>admin</span></div>
+        <nav class="admin-nav">
+            <a href="/admin" class="admin-nav__item"><i class="bi bi-grid"></i> Dashboard</a>
+            <a href="/admin/skills" class="admin-nav__item"><i class="bi bi-bar-chart"></i> Skills</a>
+            <a href="/admin/projects" class="admin-nav__item"><i class="bi bi-folder2"></i> Projects</a>
+            <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
+            <a href="/admin/experience" class="admin-nav__item"><i class="bi bi-briefcase"></i> Experience</a>
+            <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+            <a href="/admin/contacts" class="admin-nav__item admin-nav__item--active"><i class="bi bi-envelope"></i> Messages @if (UnreadCount > 0) { <span class="admin-badge-count">@UnreadCount</span> }</a>
+            <a href="/admin/settings" class="admin-nav__item"><i class="bi bi-gear"></i> Thông tin</a>
+        </nav>
+        <form method="post" action="/admin/logout" class="admin-sidebar__logout">
+            <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>
+        </form>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">Messages @if (UnreadCount > 0) { <span class="admin-badge" style="background:rgba(99,102,241,.15);color:#818cf8">@UnreadCount unread</span> }</h1>
+            @if (Messages.Count > 0)
+            {
+                <button class="admin-btn admin-btn--ghost" @onclick="MarkAllRead"><i class="bi bi-check2-all"></i> Mark all read</button>
+            }
+        </header>
+
+        @if (Messages.Count == 0)
+        {
+            <div class="admin-empty">
+                <i class="bi bi-inbox" style="font-size:3rem;opacity:.3"></i>
+                <p style="margin-top:.75rem;opacity:.5">No messages yet.</p>
+            </div>
+        }
+        else
+        {
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (ContactMessage msg in Messages)
+                        {
+                            <tr class="@(!msg.IsRead ? "admin-table__row--unread" : "")">
+                                <td>
+                                    @if (!msg.IsRead)
+                                    {
+                                        <span class="admin-unread-dot" title="Unread"></span>
+                                    }
+                                </td>
+                                <td><strong>@msg.Name</strong></td>
+                                <td><a href="mailto:@msg.Email">@msg.Email</a></td>
+                                <td>@msg.Subject</td>
+                                <td><small>@msg.SentAt.ToString("yyyy-MM-dd HH:mm")</small></td>
+                                <td class="admin-table__actions">
+                                    <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenMessage(msg)" title="View"><i class="bi bi-eye"></i></button>
+                                    <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => Delete(msg.Id)" title="Delete"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        @if (Selected is not null)
+        {
+            <div class="admin-modal-overlay" @onclick="CloseMessage">
+                <div class="admin-modal" @onclick:stopPropagation>
+                    <h2 class="admin-modal__title">@Selected.Subject</h2>
+                    <p style="margin-bottom:.25rem"><strong>From:</strong> @Selected.Name &lt;<a href="mailto:@Selected.Email">@Selected.Email</a>&gt;</p>
+                    <p style="margin-bottom:1.25rem;opacity:.5"><small>@Selected.SentAt.ToString("dddd, MMMM d yyyy — HH:mm UTC")</small></p>
+                    <div class="admin-message-body">@((MarkupString)System.Web.HttpUtility.HtmlEncode(Selected.Message).Replace("\n", "<br/>"))</div>
+                    <div class="admin-modal__footer">
+                        <a class="admin-btn admin-btn--ghost" href="mailto:@Selected.Email?subject=Re: @Uri.EscapeDataString(Selected.Subject)"><i class="bi bi-reply"></i> Reply</a>
+                        <button class="admin-btn admin-btn--primary" @onclick="CloseMessage">Close</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </main>
+</div>
+
+@code {
+    private List<ContactMessage> Messages = [];
+    private ContactMessage? Selected;
+    private int UnreadCount => Messages.Count(m => !m.IsRead);
+
+    protected override async Task OnInitializedAsync() => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        Messages = await db.ContactMessages
+            .OrderByDescending(m => m.SentAt)
+            .ToListAsync();
+    }
+
+    private async Task OpenMessage(ContactMessage msg)
+    {
+        Selected = msg;
+        if (!msg.IsRead)
+        {
+            await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+            ContactMessage? entity = await db.ContactMessages.FindAsync(msg.Id);
+            if (entity is not null)
+            {
+                entity.IsRead = true;
+                await db.SaveChangesAsync();
+                msg.IsRead = true;
+            }
+        }
+    }
+
+    private void CloseMessage() => Selected = null;
+
+    private async Task MarkAllRead()
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        await db.ContactMessages
+            .Where(m => !m.IsRead)
+            .ExecuteUpdateAsync(s => s.SetProperty(m => m.IsRead, true));
+        foreach (ContactMessage msg in Messages) { msg.IsRead = true; }
+    }
+
+    private async Task Delete(int id)
+    {
+        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
+        await db.ContactMessages.Where(m => m.Id == id).ExecuteDeleteAsync();
+        Messages.RemoveAll(m => m.Id == id);
+        if (Selected?.Id == id) { Selected = null; }
+    }
+}
