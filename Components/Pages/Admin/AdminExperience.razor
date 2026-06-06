@@ -1,4 +1,4 @@
-@page "/admin/experience"
+﻿@page "/admin/experience"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode InteractiveServer
@@ -16,6 +16,8 @@
             <a href="/admin/education" class="admin-nav__item"><i class="bi bi-mortarboard"></i> Education</a>
             <a href="/admin/experience" class="admin-nav__item admin-nav__item--active"><i class="bi bi-briefcase"></i> Experience</a>
             <a href="/admin/blog" class="admin-nav__item"><i class="bi bi-file-text"></i> Blog</a>
+            <a href="/admin/contacts" class="admin-nav__item"><i class="bi bi-envelope"></i> Messages</a>
+            <a href="/admin/settings" class="admin-nav__item"><i class="bi bi-gear"></i> Thông tin</a>
         </nav>
         <form method="post" action="/admin/logout" class="admin-sidebar__logout">
             <button type="submit" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-left"></i> Đăng xuất</button>

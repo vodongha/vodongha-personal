@@ -2,7 +2,7 @@ namespace vodongha.Services;
 
 public class LanguageService
 {
-    private string _lang = "vi";
+    private string _lang = "en";
     public string Current => _lang;
     public bool IsVi => _lang == "vi";
 
