@@ -1,4 +1,4 @@
-@inject ContactService ContactSvc
+﻿@inject ContactService ContactSvc
 @inject LanguageService Lang
 @implements IDisposable
 
@@ -14,7 +14,7 @@
             <div class="contact__info-item">
                 <div class="contact__info-icon"><i class="bi bi-geo-alt"></i></div>
                 <div>
-                    <div class="contact__info-label">@(Lang.IsVi ? "Địa chỉ" : "Location")</div>
+                    <div class="contact__info-label">@(Lang.IsVi ? "Äá»‹a chá»‰" : "Location")</div>
                     <div class="contact__info-value">Ho Chi Minh City, Vietnam</div>
                 </div>
             </div>
@@ -59,7 +59,7 @@
                 </div>
 
                 <div class="contact__field">
-                    <label class="contact__label">@(Lang.IsVi ? "Tiêu đề" : "Subject")</label>
+                    <label class="contact__label">@(Lang.IsVi ? "TiÃªu Ä‘á»" : "Subject")</label>
                     <InputText @bind-Value="_model.Subject" class="contact__input" />
                     <ValidationMessage For="() => _model.Subject" />
                 </div>
@@ -73,7 +73,7 @@
                 <button type="submit" class="contact__submit" disabled="@_sending">
                     @if (_sending)
                     {
-                        <span>@(Lang.IsVi ? "Đang gửi..." : "Sending...")</span>
+                        <span>@(Lang.IsVi ? "Äang gá»­i..." : "Sending...")</span>
                     }
                     else
                     {
