@@ -664,8 +664,7 @@ tr.admin-row--dragover td {
 .quickgrid tr:hover td {
   background: #1a1a1a;
 }
-.quickgrid tbody tr.empty-row,
-.quickgrid tbody tr:has(> td[colspan]) {
+.quickgrid tbody tr:not(:has(> td:not(:empty))) {
   display: none !important;
 }
 .quickgrid .admin-table__actions {
@@ -711,16 +710,16 @@ tr.admin-row--dragover td {
   line-height: 1;
 }
 .paginator nav button:nth-child(1)::after {
-  content: "\AB";
+  content: "«";
 }
 .paginator nav button:nth-child(2)::after {
-  content: "\2039";
+  content: "‹";
 }
 .paginator nav button:nth-child(4)::after {
-  content: "\203A";
+  content: "›";
 }
 .paginator nav button:nth-child(5)::after {
-  content: "\BB";
+  content: "»";
 }
 .paginator nav button:hover:not(:disabled) {
   border-color: #6ee7b7 !important;
