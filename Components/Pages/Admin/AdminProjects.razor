@@ -67,6 +67,10 @@
                         <input class="admin-form__input" @bind="Editing.Technologies" placeholder="C#,ASP.NET Core,..." />
                     </div>
                     <div class="admin-form__group">
+                        <label class="admin-form__label">Image URL</label>
+                        <input class="admin-form__input" @bind="Editing.ImageUrl" placeholder="https://..." />
+                    </div>
+                    <div class="admin-form__group">
                         <label class="admin-form__label">GitHub URL</label>
                         <input class="admin-form__input" @bind="Editing.GitHubUrl" />
                     </div>
@@ -107,7 +111,7 @@
     }
 
     private void OpenAdd() { Editing = new Project { CreatedAt = DateTime.UtcNow }; ShowForm = true; }
-    private void OpenEdit(Project p) { Editing = new Project { Id = p.Id, Title = p.Title, Description = p.Description, Technologies = p.Technologies, GitHubUrl = p.GitHubUrl, LiveUrl = p.LiveUrl, IsFeatured = p.IsFeatured, Order = p.Order, CreatedAt = p.CreatedAt }; ShowForm = true; }
+    private void OpenEdit(Project p) { Editing = new Project { Id = p.Id, Title = p.Title, Description = p.Description, Technologies = p.Technologies, ImageUrl = p.ImageUrl, GitHubUrl = p.GitHubUrl, LiveUrl = p.LiveUrl, IsFeatured = p.IsFeatured, Order = p.Order, CreatedAt = p.CreatedAt }; ShowForm = true; }
     private void CloseForm() { ShowForm = false; }
 
     private async Task Save()
