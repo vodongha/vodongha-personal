@@ -19,7 +19,7 @@ public class EmailService(IResend resend, IConfiguration config, ILogger<EmailSe
 
             EmailMessage email = new()
             {
-                From    = "vodongha.id.vn <onboarding@resend.dev>",
+                From    = "vodongha.id.vn <no-reply@vodongha.id.vn>",
                 To      = [notifyTo],
                 Subject = $"[Contact] {subject}",
                 TextBody = $"""
