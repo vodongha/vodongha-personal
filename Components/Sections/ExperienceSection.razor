@@ -1,4 +1,4 @@
-@inject ExperienceService ExpSvc
+﻿@inject ExperienceService ExpSvc
 @inject LanguageService Lang
 @implements IDisposable
 
@@ -11,7 +11,7 @@
     @if (_items is not null)
     {
         <div class="timeline">
-            @foreach (Experience item in _items)
+            @foreach (Experience item in VisibleItems)
             {
                 <div class="timeline__item">
                     <div class="timeline__dot"></div>
@@ -49,17 +49,40 @@
                 </div>
             }
         </div>
+
+        @if (_items.Count > InitialCount)
+        {
+            <div class="section__expand">
+                <button class="section__expand-btn" @onclick="Toggle">
+                    @if (_expanded)
+                    {
+                        <i class="bi bi-chevron-up"></i> @Lang.T("common.showless")
+                    }
+                    else
+                    {
+                        <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore") 
+                    }
+                </button>
+            </div>
+        }
     }
 </section>
 
 @code {
+    private const int InitialCount = 2;
     private List<Experience>? _items;
+    private bool _expanded;
+
+    private IEnumerable<Experience> VisibleItems =>
+        _expanded ? _items! : _items!.Take(InitialCount);
 
     protected override async Task OnInitializedAsync()
     {
         _items = await ExpSvc.GetAllAsync();
         Lang.OnChange += StateHasChanged;
     }
+
+    private void Toggle() => _expanded = !_expanded;
 
     private static string MonthYear(int month, int year)
     {

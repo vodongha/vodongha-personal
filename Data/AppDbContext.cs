@@ -194,9 +194,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 {
                     Id = 3,
                     Title = "Grac",
-                    Description = "Hệ thống quản lý cho nền tảng đô thị không rác. Quản lý khách hàng, nhân viên, hợp đồng, thanh toán tích hợp MoMo Payment Gateway.",
-                    DescriptionEn = "Management system for an eco-city waste platform. Handles customers, employees, contracts, and payment with MoMo Payment Gateway integration.",
-                    Technologies = "Ruby on Rails,JavaScript,jQuery,AJAX,PostgreSQL,MoMo API",
+                    Description = "Hệ thống quản lý cho nền tảng đô thị không rác. Quản lý khách hàng, nhân viên, hợp đồng, thanh toán tích hợp MoMo Payment Gateway. Xây dựng bằng Laravel + PostgreSQL.",
+                    DescriptionEn = "Management system for an eco-city waste platform. Handles customers, employees, contracts, and payment with MoMo Payment Gateway integration. Built with Laravel and PostgreSQL.",
+                    Technologies = "Laravel,PHP,JavaScript,jQuery,AJAX,PostgreSQL,MoMo API",
                     LiveUrl = "https://e.grac.vn",
                     IsFeatured = false,
                     Order = 3,
@@ -212,6 +212,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                     IsFeatured = false,
                     Order = 4,
                     CreatedAt = new DateTime(2020, 10, 1, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Project
+                {
+                    Id = 6,
+                    Title = "Hangry",
+                    Description = "Hệ thống đặt đồ ăn phục vụ phòng khách sạn. Khách xác thực bằng số phòng + PIN hoặc quét mã QR, xem thực đơn tuần và đặt order tính vào hóa đơn phòng. Theo dõi đơn hàng real-time qua SignalR. Kitchen staff quản lý orders và thực đơn theo thời gian thực từ dashboard riêng.",
+                    DescriptionEn = "Hotel room service ordering system. Guests authenticate via room number + PIN or QR code scan, browse the weekly menu, and place orders charged directly to their room bill. Real-time order tracking via SignalR. Kitchen staff manage live orders and menu from a dedicated dashboard.",
+                    Technologies = "Blazor WASM,.NET 10,ASP.NET Core,SignalR,PostgreSQL,EF Core,.NET Aspire,SCSS,JWT,Bootstrap 5",
+                    IsFeatured = true,
+                    Order = 6,
+                    CreatedAt = new DateTime(2026, 6, 1, 0, 0, 0, DateTimeKind.Utc)
                 },
                 new Project
                 {

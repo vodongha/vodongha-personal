@@ -66,6 +66,9 @@ public class LanguageService
         // Education
         ["edu.label"]       = "Học vấn",
         ["edu.title"]       = "Trình độ học vấn",
+        // Expand / collapse
+        ["common.showmore"] = "Xem thêm",
+        ["common.showless"] = "Thu gọn",
         // Footer
         ["footer.rights"]   = "Tất cả quyền được bảo lưu.",
         ["footer.built"]    = "Xây dựng với Claude",
@@ -119,6 +122,9 @@ public class LanguageService
         // Education
         ["edu.label"]       = "Education",
         ["edu.title"]       = "Education",
+        // Expand / collapse
+        ["common.showmore"] = "Show more",
+        ["common.showless"] = "Show less",
         // Footer
         ["footer.rights"]   = "All rights reserved.",
         ["footer.built"]    = "Built with Claude",

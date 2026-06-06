@@ -79,6 +79,29 @@ img {
   max-width: 600px;
   margin-inline: auto;
 }
+.section__expand {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+.section__expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.5rem;
+  background: transparent;
+  border: 1px solid rgba(110, 231, 183, 0.35);
+  border-radius: 9999px;
+  color: #6ee7b7;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms;
+}
+.section__expand-btn:hover {
+  background: rgba(110, 231, 183, 0.08);
+  border-color: #6ee7b7;
+}
 
 .nav {
   position: fixed;

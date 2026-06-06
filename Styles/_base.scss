@@ -62,4 +62,30 @@ img { max-width: 100%; display: block; }
         max-width: 600px;
         margin-inline: auto;
     }
+
+    &__expand {
+        display: flex;
+        justify-content: center;
+        margin-top: $space-12;
+    }
+
+    &__expand-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.55rem 1.5rem;
+        background: transparent;
+        border: 1px solid rgba($color-primary, 0.35);
+        border-radius: 9999px;
+        color: $color-primary;
+        font-size: $text-sm;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 150ms, border-color 150ms;
+
+        &:hover {
+            background: rgba($color-primary, 0.08);
+            border-color: $color-primary;
+        }
+    }
 }
