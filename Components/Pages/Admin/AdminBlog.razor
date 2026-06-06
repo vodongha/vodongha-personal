@@ -1,4 +1,4 @@
-@page "/admin/blog"
+﻿@page "/admin/blog"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode InteractiveServer
@@ -33,6 +33,12 @@
         </header>
 
         <div class="admin-toolbar">
+            <select class="admin-page-size" @onchange="SetPageSize">
+                <option value="5">5 / trang</option>
+                <option value="10" selected>10 / trang</option>
+                <option value="20">20 / trang</option>
+                <option value="50">50 / trang</option>
+            </select>
             <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm tiêu đề, tags..." />
         </div>
 
@@ -114,6 +120,15 @@
 
     private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
+
+    private async Task SetPageSize(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int size))
+        {
+            _pagination.ItemsPerPage = size;
+            await _pagination.SetCurrentPageIndexAsync(0);
+        }
+    }
 
     private List<BlogPost> _posts = [];
     private BlogPost Editing = new();
