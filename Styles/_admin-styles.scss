@@ -505,7 +505,8 @@ tr.admin-row--dragover td {
     tr:hover td { background: #1a1a1a; }
 
     // Hide empty placeholder rows QuickGrid adds to fill ItemsPerPage
-    tbody tr.empty-row { display: none !important; }
+    tbody tr.empty-row,
+    tbody tr:has(> td[colspan]) { display: none !important; }
 
     .admin-table__actions { display: flex; gap: 0.5rem; }
 }
