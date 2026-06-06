@@ -551,10 +551,10 @@ tr.admin-row--dragover td {
             color: inherit;
             line-height: 1;
         }
-        &:nth-child(1)::after { content: "«"; }
-        &:nth-child(2)::after { content: "‹"; }
-        &:nth-child(3)::after { content: "›"; }
-        &:nth-child(4)::after { content: "»"; }
+        &:nth-child(1)::after { content: "\AB"; }
+        &:nth-child(2)::after { content: "\2039"; }
+        &:nth-child(3)::after { content: "\203A"; }
+        &:nth-child(4)::after { content: "\BB"; }
 
         &:hover:not(:disabled) { border-color: $color-primary !important; color: $color-primary !important; }
         &:disabled { opacity: 0.35; cursor: default; }

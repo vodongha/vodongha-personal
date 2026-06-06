@@ -704,21 +704,22 @@ tr.admin-row--dragover td {
   transition: border-color 150ms, color 150ms;
 }
 .paginator nav button::after {
-  font-family: "bootstrap-icons";
-  font-size: 0.75rem;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
   color: inherit;
+  line-height: 1;
 }
 .paginator nav button:nth-child(1)::after {
-  content: "\f272";
+  content: "\AB";
 }
 .paginator nav button:nth-child(2)::after {
-  content: "\f284";
+  content: "\2039";
 }
 .paginator nav button:nth-child(3)::after {
-  content: "\f285";
+  content: "\203A";
 }
 .paginator nav button:nth-child(4)::after {
-  content: "\f273";
+  content: "\BB";
 }
 .paginator nav button:hover:not(:disabled) {
   border-color: #6ee7b7 !important;
