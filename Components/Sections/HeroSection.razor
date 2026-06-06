@@ -1,4 +1,5 @@
 @inject LanguageService Lang
+@inject SiteSettingService SettingSvc
 @implements IDisposable
 
 <section class="hero" id="home">
@@ -18,7 +19,7 @@
 
             <p class="hero__role">@Lang.T("hero.role")</p>
 
-            <p class="hero__desc">@Lang.T("hero.bio")</p>
+            <p class="hero__desc">@Bio</p>
 
             <div class="hero__actions">
                 <a href="#projects" class="hero__btn-primary">
@@ -32,15 +33,30 @@
             </div>
 
             <div class="hero__social">
-                <a href="https://github.com/vodongha" target="_blank" class="hero__social-link" title="GitHub">
-                    <i class="bi bi-github"></i>
-                </a>
-                <a href="https://linkedin.com/in/vodongha" target="_blank" class="hero__social-link" title="LinkedIn">
-                    <i class="bi bi-linkedin"></i>
-                </a>
-                <a href="mailto:vodongha@hotmail.com" class="hero__social-link" title="Email">
-                    <i class="bi bi-envelope"></i>
-                </a>
+                @if (!string.IsNullOrEmpty(S("GitHub")))
+                {
+                    <a href="@S("GitHub")" target="_blank" class="hero__social-link" title="GitHub">
+                        <i class="bi bi-github"></i>
+                    </a>
+                }
+                @if (!string.IsNullOrEmpty(S("LinkedIn")))
+                {
+                    <a href="@S("LinkedIn")" target="_blank" class="hero__social-link" title="LinkedIn">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                }
+                @if (!string.IsNullOrEmpty(S("Facebook")))
+                {
+                    <a href="@S("Facebook")" target="_blank" class="hero__social-link" title="Facebook">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                }
+                @if (!string.IsNullOrEmpty(S("Email")))
+                {
+                    <a href="mailto:@S("Email")" class="hero__social-link" title="Email">
+                        <i class="bi bi-envelope"></i>
+                    </a>
+                }
             </div>
         </div>
 
@@ -65,6 +81,16 @@
 </section>
 
 @code {
-    protected override void OnInitialized() => Lang.OnChange += StateHasChanged;
+    private Dictionary<string, string> _settings = new();
+
+    private string Bio => Lang.IsVi ? S("Bio") : (S("BioEn") is { Length: > 0 } en ? en : S("Bio"));
+    private string S(string key) => _settings.TryGetValue(key, out string? v) ? v : "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _settings = await SettingSvc.GetAllAsync();
+        Lang.OnChange += StateHasChanged;
+    }
+
     public void Dispose() => Lang.OnChange -= StateHasChanged;
 }

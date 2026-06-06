@@ -48,8 +48,12 @@
                     <input class="admin-form__input" value="@Val["Tagline"]" @oninput='e => Val["Tagline"] = e.Value?.ToString() ?? ""' />
                 </div>
                 <div class="admin-form__group">
-                    <label class="admin-form__label">Bio</label>
+                    <label class="admin-form__label">Bio 🇻🇳</label>
                     <textarea class="admin-form__input admin-form__textarea" @oninput='e => Val["Bio"] = e.Value?.ToString() ?? ""'>@Val["Bio"]</textarea>
+                </div>
+                <div class="admin-form__group">
+                    <label class="admin-form__label">Bio 🇬🇧</label>
+                    <textarea class="admin-form__input admin-form__textarea" @oninput='e => Val["BioEn"] = e.Value?.ToString() ?? ""'>@Val["BioEn"]</textarea>
                 </div>
             </div>
 
@@ -78,6 +82,10 @@
                     <input class="admin-form__input" value="@Val["LinkedIn"]" @oninput='e => Val["LinkedIn"] = e.Value?.ToString() ?? ""' />
                 </div>
                 <div class="admin-form__group">
+                    <label class="admin-form__label">Facebook URL</label>
+                    <input class="admin-form__input" value="@Val["Facebook"]" @oninput='e => Val["Facebook"] = e.Value?.ToString() ?? ""' placeholder="https://facebook.com/..." />
+                </div>
+                <div class="admin-form__group">
                     <label class="admin-form__label">Avatar URL</label>
                     <input class="admin-form__input" value="@Val["AvatarUrl"]" @oninput='e => Val["AvatarUrl"] = e.Value?.ToString() ?? ""' />
                 </div>
@@ -95,9 +103,9 @@
 @code {
     private Dictionary<string, string> Val = new()
     {
-        ["Name"] = "", ["Title"] = "", ["Tagline"] = "", ["Bio"] = "",
+        ["Name"] = "", ["Title"] = "", ["Tagline"] = "", ["Bio"] = "", ["BioEn"] = "",
         ["Email"] = "", ["Phone"] = "", ["Location"] = "",
-        ["GitHub"] = "", ["LinkedIn"] = "", ["AvatarUrl"] = ""
+        ["GitHub"] = "", ["LinkedIn"] = "", ["Facebook"] = "", ["AvatarUrl"] = ""
     };
     private bool Saved;
 

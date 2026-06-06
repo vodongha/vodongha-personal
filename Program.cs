@@ -51,6 +51,7 @@ builder.Services.AddScoped<SkillService>();
 builder.Services.AddScoped<ExperienceService>();
 builder.Services.AddScoped<EducationService>();
 builder.Services.AddScoped<LanguageService>();
+builder.Services.AddScoped<SiteSettingService>();
 
 WebApplication app = builder.Build();
 
