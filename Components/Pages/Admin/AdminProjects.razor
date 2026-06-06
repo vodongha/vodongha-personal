@@ -36,7 +36,10 @@
                 <option value="20">20 / trang</option>
                 <option value="50">50 / trang</option>
             </select>
-            <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" @bind:after="ResetPage" placeholder="Tìm kiếm tên, công nghệ..." />
+            <div class="admin-search-wrap">
+                <i class="bi bi-search admin-search-wrap__icon"></i>
+                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" @bind:after="ResetPage" placeholder="Tìm kiếm tên, công nghệ..." />
+            </div>
         </div>
 
         <table class="quickgrid">
