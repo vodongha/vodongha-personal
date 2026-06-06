@@ -92,8 +92,12 @@
                         </div>
                     }
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Mô tả</label>
+                        <label class="admin-form__label">Mô tả 🇻🇳</label>
                         <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Description"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Description 🇬🇧</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.DescriptionEn"></textarea>
                     </div>
                     <div class="admin-form__group">
                         <label class="admin-form__label">Thứ tự</label>
@@ -123,7 +127,7 @@
     }
 
     private void OpenAdd() { Editing = new Experience { StartMonth = 1, StartYear = DateTime.Now.Year, IsCurrent = true }; ShowForm = true; }
-    private void OpenEdit(Experience e) { Editing = new Experience { Id = e.Id, Company = e.Company, Role = e.Role, Location = e.Location, StartYear = e.StartYear, StartMonth = e.StartMonth, EndYear = e.EndYear, EndMonth = e.EndMonth, IsCurrent = e.IsCurrent, Description = e.Description, Order = e.Order }; ShowForm = true; }
+    private void OpenEdit(Experience e) { Editing = new Experience { Id = e.Id, Company = e.Company, Role = e.Role, Location = e.Location, StartYear = e.StartYear, StartMonth = e.StartMonth, EndYear = e.EndYear, EndMonth = e.EndMonth, IsCurrent = e.IsCurrent, Description = e.Description, DescriptionEn = e.DescriptionEn, Order = e.Order }; ShowForm = true; }
     private void CloseForm() { ShowForm = false; }
 
     private async Task Save()

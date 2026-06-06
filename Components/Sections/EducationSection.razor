@@ -23,9 +23,12 @@
                         <p class="timeline__company">
                             <i class="bi bi-mortarboard"></i> @item.Degree · @item.Field
                         </p>
-                        @if (!string.IsNullOrEmpty(item.Description))
+                        @{
+                            string? desc = Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description);
+                        }
+                        @if (!string.IsNullOrEmpty(desc))
                         {
-                            <p class="timeline__desc">@item.Description</p>
+                            <p class="timeline__desc">@desc</p>
                         }
                     </div>
                 </div>

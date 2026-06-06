@@ -77,8 +77,12 @@
                         </div>
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Mô tả</label>
+                        <label class="admin-form__label">Mô tả 🇻🇳</label>
                         <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Description"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">Description 🇬🇧</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.DescriptionEn"></textarea>
                     </div>
                     <div class="admin-form__group">
                         <label class="admin-form__label">Thứ tự</label>
@@ -108,7 +112,7 @@
     }
 
     private void OpenAdd() { Editing = new Education(); ShowForm = true; }
-    private void OpenEdit(Education e) { Editing = new Education { Id = e.Id, School = e.School, Degree = e.Degree, Field = e.Field, StartYear = e.StartYear, EndYear = e.EndYear, Description = e.Description, Order = e.Order }; ShowForm = true; }
+    private void OpenEdit(Education e) { Editing = new Education { Id = e.Id, School = e.School, Degree = e.Degree, Field = e.Field, StartYear = e.StartYear, EndYear = e.EndYear, Description = e.Description, DescriptionEn = e.DescriptionEn, Order = e.Order }; ShowForm = true; }
     private void CloseForm() { ShowForm = false; }
 
     private async Task Save()

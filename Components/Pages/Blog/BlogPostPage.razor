@@ -1,8 +1,9 @@
 @page "/blog/{Slug}"
 @inject BlogService BlogSvc
-@inject NavigationManager Nav
+@inject LanguageService Lang
+@implements IDisposable
 
-<PageTitle>@(_post?.Title ?? "Bài viết") — Võ Đông Hà</PageTitle>
+<PageTitle>@(DisplayTitle ?? "Bài viết") — Võ Đông Hà</PageTitle>
 
 @if (_post is null)
 {
@@ -20,7 +21,7 @@ else
         </a>
 
         <header class="blog-post__header">
-            <h1 class="blog-post__title">@_post.Title</h1>
+            <h1 class="blog-post__title">@DisplayTitle</h1>
             <div class="blog-post__meta">
                 <span><i class="bi bi-calendar3"></i> @_post.CreatedAt.ToString("dd/MM/yyyy")</span>
                 @if (_post.UpdatedAt.HasValue)
@@ -41,7 +42,7 @@ else
         </header>
 
         <div class="blog-post__content">
-            @((MarkupString)_post.Content)
+            @((MarkupString)DisplayContent)
         </div>
     </article>
 }
@@ -51,6 +52,14 @@ else
 
     private BlogPost? _post;
 
-    protected override async Task OnParametersSetAsync() =>
+    private string DisplayTitle => Lang.IsVi ? (_post?.Title ?? "") : (_post?.TitleEn ?? _post?.Title ?? "");
+    private string DisplayContent => Lang.IsVi ? (_post?.Content ?? "") : (_post?.ContentEn ?? _post?.Content ?? "");
+
+    protected override async Task OnParametersSetAsync()
+    {
         _post = await BlogSvc.GetBySlugAsync(Slug);
+        Lang.OnChange += StateHasChanged;
+    }
+
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
 }
