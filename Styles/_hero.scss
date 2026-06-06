@@ -181,6 +181,8 @@
         letter-spacing: 0.1em;
         text-transform: uppercase;
         animation: bounce 2s ease-in-out infinite;
+
+        @include tablet { display: none; }
     }
 }
 
