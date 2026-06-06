@@ -13,4 +13,14 @@ public class ChatHub : Hub
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"session_{sessionId}");
     }
+
+    public async Task StartTyping(string sessionId)
+    {
+        await Clients.OthersInGroup($"session_{sessionId}").SendAsync("TypingStarted");
+    }
+
+    public async Task StopTyping(string sessionId)
+    {
+        await Clients.OthersInGroup($"session_{sessionId}").SendAsync("TypingStopped");
+    }
 }
