@@ -5,12 +5,15 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using vodongha.Components;
 using vodongha.Data;
+using vodongha.Hubs;
 using vodongha.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddSignalR();
 
 // Persist Data Protection keys to DB so they survive redeploys
 builder.Services.AddDataProtection()
@@ -56,6 +59,8 @@ builder.Services.AddScoped<LanguageService>();
 builder.Services.AddScoped<SiteSettingService>();
 builder.Services.AddScoped<VisitorService>();
 builder.Services.AddScoped<ToastService>();
+builder.Services.AddHttpClient<TelegramService>();
+builder.Services.AddScoped<ChatService>();
 
 WebApplication app = builder.Build();
 
@@ -127,6 +132,26 @@ app.MapPost("/admin/logout", async (HttpContext ctx) =>
     await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     ctx.Response.Redirect("/");
 }).DisableAntiforgery();
+app.MapHub<ChatHub>("/chathub");
+
+app.MapPost("/api/telegram/webhook", async (HttpContext ctx, ChatService chatService, IConfiguration config) =>
+{
+    string secret = config["Telegram:WebhookSecret"] ?? "";
+    string headerSecret = ctx.Request.Headers["X-Telegram-Bot-Api-Secret-Token"].FirstOrDefault() ?? "";
+    if (!string.IsNullOrEmpty(secret) && headerSecret != secret)
+    {
+        return Results.Unauthorized();
+    }
+
+    TelegramUpdate? update = await ctx.Request.ReadFromJsonAsync<TelegramUpdate>();
+    if (update != null)
+    {
+        await chatService.HandleTelegramWebhookAsync(update);
+    }
+
+    return Results.Ok();
+}).DisableAntiforgery();
+
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
