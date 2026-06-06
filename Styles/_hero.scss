@@ -186,6 +186,12 @@
         letter-spacing: 0.1em;
         text-transform: uppercase;
         animation: bounce 2s ease-in-out infinite;
+        background: none;
+        border: none;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+
+        &:hover { color: $color-primary; }
 
         @include tablet { display: none; }
     }
