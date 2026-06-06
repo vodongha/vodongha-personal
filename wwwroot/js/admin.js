@@ -22,5 +22,8 @@ function bindSelectArrows() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', bindSelectArrows);
+// Run immediately (DOM already ready when this script loads in Blazor)
+bindSelectArrows();
+
+// Re-bind after Blazor enhanced navigation replaces the DOM
 document.addEventListener('enhancedload', bindSelectArrows);
