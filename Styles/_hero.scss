@@ -142,16 +142,6 @@
             @include mobile { width: 220px; height: 220px; }
         }
 
-        &-ring {
-            position: absolute;
-            inset: 0;
-            border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
-            border: 2px solid rgba($color-primary, 0.5);
-            animation: morph 8s ease-in-out infinite, spin 20s linear infinite;
-            border-top-color: $color-primary;
-            border-right-color: transparent;
-        }
-
         &-ring2 {
             position: absolute;
             inset: 8px;

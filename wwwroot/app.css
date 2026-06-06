@@ -504,15 +504,6 @@ img {
     height: 220px;
   }
 }
-.hero__avatar-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 40% 60% 60% 40%/40% 40% 60% 60%;
-  border: 2px solid rgba(110, 231, 183, 0.5);
-  animation: morph 8s ease-in-out infinite, spin 20s linear infinite;
-  border-top-color: #6ee7b7;
-  border-right-color: transparent;
-}
 .hero__avatar-ring2 {
   position: absolute;
   inset: 8px;
