@@ -551,10 +551,11 @@ tr.admin-row--dragover td {
             color: inherit;
             line-height: 1;
         }
-        &:nth-child(1)::after { content: "\AB"; }
-        &:nth-child(2)::after { content: "\2039"; }
-        &:nth-child(3)::after { content: "\203A"; }
-        &:nth-child(4)::after { content: "\BB"; }
+        &:nth-child(1)::after { content: "\AB"; }   // « first
+        &:nth-child(2)::after { content: "\2039"; } // ‹ prev
+        // child 3 is the <span> "Page X of Y", skip it
+        &:nth-child(4)::after { content: "\203A"; } // › next
+        &:nth-child(5)::after { content: "\BB"; }   // » last
 
         &:hover:not(:disabled) { border-color: $color-primary !important; color: $color-primary !important; }
         &:disabled { opacity: 0.35; cursor: default; }
