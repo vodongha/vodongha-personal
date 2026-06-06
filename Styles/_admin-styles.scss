@@ -595,12 +595,12 @@ tr.admin-row--dragover td {
             flex: 1;
             min-width: 50px;
 
-            // Style the logout button like a nav item
+            // Style the logout button like a nav item — icon only, text hidden
             button {
                 flex-direction: column !important;
-                gap: 0.15rem !important;
+                gap: 0 !important;
                 padding: 0.45rem 0.4rem 0.35rem !important;
-                font-size: 0.58rem !important;
+                font-size: 0 !important;
                 border-radius: 0 !important;
                 border: none !important;
                 background: transparent !important;
@@ -610,7 +610,6 @@ tr.admin-row--dragover td {
                 justify-content: center;
                 align-items: center;
                 text-align: center;
-                white-space: nowrap !important;
                 cursor: pointer;
                 i { font-size: 1.1rem !important; display: block; }
                 &:hover { color: #ef4444 !important; opacity: 1 !important; }
