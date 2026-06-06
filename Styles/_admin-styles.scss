@@ -48,6 +48,12 @@
         font-size: 0.875rem;
         color: #6b7280;
         transition: background 150ms, color 150ms;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        width: 100%;
+        font-family: inherit;
 
         i { font-size: 1rem; }
 
