@@ -1,0 +1,95 @@
+@rendermode InteractiveServer
+
+@if (_state != ChatState.Closed)
+{
+    <div class="chat-panel">
+        <div class="chat-header">
+            <div class="chat-header__info">
+                <div class="chat-header__avatar"><i class="bi bi-person-circle"></i></div>
+                <div>
+                    <div class="chat-header__name">Võ Đông Hà</div>
+                    <div class="chat-header__status">● Online</div>
+                </div>
+            </div>
+            <button class="chat-header__close" @onclick="Close" title="Đóng">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        @if (_state == ChatState.Form)
+        {
+            <div class="chat-form">
+                <div class="chat-form__title">Bắt đầu cuộc trò chuyện</div>
+                <div class="chat-form__subtitle">Điền thông tin để mình có thể liên hệ lại với bạn.</div>
+
+                <div class="chat-form__group">
+                    <label class="chat-form__label">Họ tên *</label>
+                    <input class="chat-form__input" type="text" placeholder="Nguyễn Văn A"
+                           @bind="_name" @bind:event="oninput" />
+                </div>
+                <div class="chat-form__group">
+                    <label class="chat-form__label">Số điện thoại</label>
+                    <input class="chat-form__input" type="tel" placeholder="09xxxxxxxx"
+                           @bind="_phone" @bind:event="oninput" />
+                </div>
+                <div class="chat-form__group">
+                    <label class="chat-form__label">Email *</label>
+                    <input class="chat-form__input" type="email" placeholder="email@example.com"
+                           @bind="_email" @bind:event="oninput" />
+                </div>
+
+                <button class="chat-form__submit" @onclick="StartChat"
+                        disabled="@(!CanStartChat || _loading)">
+                    @if (_loading)
+                    {
+                        <i class="bi bi-arrow-clockwise admin-spin"></i>
+                    }
+                    else
+                    {
+                        <span>Bắt đầu chat <i class="bi bi-arrow-right"></i></span>
+                    }
+                </button>
+            </div>
+        }
+        else if (_state == ChatState.Chat)
+        {
+            <div class="chat-messages" id="chatMessages">
+                @foreach (ChatMessageDto msg in _messages)
+                {
+                    <div class="chat-msg @(msg.IsFromUser ? "chat-msg--user" : "chat-msg--admin")">
+                        <div class="chat-msg__bubble">@msg.Content</div>
+                        <div class="chat-msg__time">@msg.SentAt.ToLocalTime().ToString("HH:mm")</div>
+                    </div>
+                }
+
+                @if (_messages.Count == 0)
+                {
+                    <div style="text-align:center; color:#6b7280; font-size:0.8rem; margin-top:1rem;">
+                        Gửi tin nhắn để bắt đầu cuộc trò chuyện 👋
+                    </div>
+                }
+            </div>
+
+            <div class="chat-input">
+                <textarea class="chat-input__field" rows="1" placeholder="Nhập tin nhắn..."
+                          @bind="_inputText" @bind:event="oninput"
+                          @onkeydown="OnKeyDown"></textarea>
+                <button class="chat-input__send" @onclick="SendMessage"
+                        disabled="@(string.IsNullOrWhiteSpace(_inputText) || _sending)">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </div>
+        }
+    </div>
+}
+
+<button class="chat-fab" @onclick="ToggleOpen" title="Chat với mình">
+    @if (_state == ChatState.Closed)
+    {
+        <i class="bi bi-chat-dots-fill"></i>
+    }
+    else
+    {
+        <i class="bi bi-chevron-down"></i>
+    }
+</button>
