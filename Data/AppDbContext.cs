@@ -124,7 +124,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                     Title = "Foto Solution",
                     Description = "Website quản lý studio ảnh: khách hàng, sale, editor, admin. Khách hàng upload ảnh qua Dropbox/FTP, editor chỉnh sửa và ghi chú, quản lý doanh thu và thanh toán.",
                     DescriptionEn = "Photo studio management platform: client portal, sales, editor workflow, and admin dashboard. Clients upload images via Dropbox/FTP, editors annotate and design, with sales reporting and payment management.",
-                    Technologies = "Ruby on Rails,JavaScript,jQuery,CoffeeScript,CSS,Dropbox API,FTP",
+                    Technologies = "ASP.NET Core 3.1,C#,JavaScript,jQuery,CSS,Dropbox API,FTP,SQL Server",
                     IsFeatured = false,
                     Order = 4,
                     CreatedAt = new DateTime(2020, 10, 1, 0, 0, 0, DateTimeKind.Utc)
