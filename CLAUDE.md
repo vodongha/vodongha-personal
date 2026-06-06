@@ -17,17 +17,59 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 | Frontend | Blazor Web App — `@rendermode InteractiveServer` on pages/components with state |
 | Database | PostgreSQL via Neon (Singapore). Fly.io secret: `ConnectionStrings__DefaultConnection` |
 | ORM | Entity Framework Core — no raw SQL in application code |
-| SCSS | Two entry points compiled by `AspNetCore.SassCompiler` on `dotnet build`: `Styles/app.scss` → `wwwroot/app.css` (public), `Styles/admin.scss` → `wwwroot/admin.css` (admin). Always commit both `.scss` and the compiled `.css`. |
+| SCSS | Two entry points compiled by `AspNetCore.SassCompiler` on `dotnet build`: `Styles/app.scss` → `wwwroot/app.css` (public), `Styles/admin.scss` → `wwwroot/admin.css` (admin). Compiled CSS is **gitignored** — never commit `wwwroot/app.css` or `wwwroot/admin.css`. |
 | Email | Resend API (`Email__ResendApiKey`). Sender: `no-reply@vodongha.id.vn`, recipient: `REDACTED_EMAIL` |
-| Deploy | Fly.io, app `vodongha`, region `sin`. Push `master` → auto-deploy (~2 min) |
+| Deploy | Fly.io, app `vodongha`, region `sin`. Merge PR to `master` → auto-deploy (~2 min) |
 | Migrations | EF Core, applied automatically on startup via `MigrateAsync()` in `Program.cs` |
+
+## Git workflow
+
+**All commits go to `develop`. `master` is production-only — never commit directly to `master`.**
+
+```
+develop  →  Pull Request  →  master  →  Fly.io auto-deploy
+```
+
+### Daily workflow
+
+```bash
+# Always work on develop
+git checkout develop
+
+# Make changes, commit
+git add <files>
+git commit -m "short description of what changed"
+git push origin develop
+
+# Open PR: develop → master
+gh pr create --title "PR title" --body "description" --base master --head develop
+
+# After merge, master deploys automatically to Fly.io
+```
+
+### PR conventions
+
+- One PR per feature or fix
+- Title: short imperative phrase ("Add blog post", "Fix mobile layout")
+- Base branch: always `master`
+- Merge with merge commit (no squash, no rebase)
+
+### Releases
+
+After significant merges, tag a release on GitHub:
+
+```bash
+git tag v1.x.x
+git push origin v1.x.x
+gh release create v1.x.x --title "v1.x.x — description" --notes "changelog"
+```
 
 ## Solution structure
 
 ```
 vodongha-personal/
 ├── Components/
-│   ├── App.razor                     # Root — <head> with SEO meta tags (OG, Twitter Card, canonical)
+│   ├── App.razor                     # Root — <head> SEO meta tags (OG, Twitter Card, canonical) + <script> tags
 │   ├── Layout/
 │   │   ├── MainLayout.razor          # Public layout — loads app.css
 │   │   ├── AdminLayout.razor         # Admin layout — loads admin.css
@@ -43,10 +85,10 @@ vodongha-personal/
 │   │   │   ├── AdminSkills.razor + .cs   # /admin/skills — QuickGrid + PaginationState
 │   │   │   ├── AdminProjects.razor + .cs # /admin/projects — manual pagination + drag-to-reorder
 │   │   │   ├── AdminBlog.razor + .cs     # /admin/blog — auto-slug from Vietnamese title
-│   │   │   ├── AdminEducation.razor + .cs   # /admin/education — QuickGrid
-│   │   │   ├── AdminExperience.razor + .cs  # /admin/experience — QuickGrid
-│   │   │   ├── AdminContacts.razor + .cs    # /admin/contacts — unread badge, mark read, reply
-│   │   │   └── AdminSettings.razor + .cs    # /admin/settings — avatar upload, social links
+│   │   │   ├── AdminEducation.razor + .cs
+│   │   │   ├── AdminExperience.razor + .cs
+│   │   │   ├── AdminContacts.razor + .cs    # unread badge, mark read, reply
+│   │   │   └── AdminSettings.razor + .cs    # avatar upload, social links, bio
 │   │   ├── Error.razor
 │   │   └── NotFound.razor
 │   ├── Sections/                     # One file per landing page section
@@ -88,7 +130,7 @@ vodongha-personal/
 │   ├── admin.scss                    # Admin entry point — imports _admin-styles.scss
 │   ├── _admin-styles.scss            # All admin panel styles (BEM: .admin-*)
 │   ├── _variables.scss               # Design tokens (colors, spacing, fonts)
-│   ├── _base.scss                    # Global styles + .section layout (including expand button)
+│   ├── _base.scss                    # Global styles + .section layout
 │   ├── _nav.scss
 │   ├── _hero.scss
 │   ├── _skills.scss
@@ -96,13 +138,15 @@ vodongha-personal/
 │   ├── _timeline.scss                # Shared by Experience + Education sections
 │   ├── _blog.scss
 │   ├── _contact.scss
-│   ├── _footer.scss                  # Footer + visitor count badge
+│   ├── _footer.scss
 │   └── _reconnect.scss
+├── wwwroot/
+│   └── js/admin.js                   # Event delegation for admin UI (select arrow open/close)
 ├── Migrations/                       # EF Core — never modify existing migrations
 ├── Program.cs                        # DI, middleware (visitor tracking), auth, routes
 ├── Dockerfile
-├── .dockerignore                     # Excludes wwwroot/app.css and wwwroot/admin.css so Docker build forces Dart Sass recompile
-├── .gitattributes                    # wwwroot/*.css marked linguist-generated (hidden from GitHub language stats)
+├── .dockerignore                     # Excludes wwwroot/app.css + admin.css → Docker forces Dart Sass recompile
+├── .gitignore                        # Excludes wwwroot/app.css, admin.css, *.css.map
 ├── fly.toml
 └── vodongha-personal.csproj
 ```
@@ -116,47 +160,71 @@ Two separate CSS outputs — public and admin are completely independent:
 | `Styles/app.scss` | `wwwroot/app.css` | `MainLayout.razor` |
 | `Styles/admin.scss` | `wwwroot/admin.css` | `AdminLayout.razor` |
 
-`AspNetCore.SassCompiler` runs Dart Sass with `--update` during `dotnet build`. The `--update` flag skips recompile if the output `.css` is newer than the source `.scss`. This causes stale output when:
-- You edit `.scss` and the `.css` already exists with a newer timestamp
-- Docker build (`COPY . .` preserves host timestamps)
+**Compiled CSS is gitignored.** Never commit `wwwroot/app.css` or `wwwroot/admin.css`.
 
-**Fix for Docker:** `wwwroot/app.css` and `wwwroot/admin.css` are listed in `.dockerignore`, so Docker never copies them — Dart Sass always recompiles from scratch.
+`AspNetCore.SassCompiler` runs Dart Sass with `--update` during `dotnet build`. The `--update` flag skips recompile if the output `.css` is newer than the source `.scss`.
 
-**Fix for local stale CSS:** Force recompile by running Dart Sass directly. Find `dart.exe` in the NuGet package cache under `AspNetCore.SassCompiler` tools, then:
+**If CSS appears stale locally**, force recompile by running Dart Sass directly:
 
 ```
 dart.exe sass.snapshot --style=expanded --no-source-map Styles\app.scss wwwroot\app.css
 dart.exe sass.snapshot --style=expanded --no-source-map Styles\admin.scss wwwroot\admin.css
 ```
 
-After editing `_admin-styles.scss`, touch `admin.scss` or run the command above — do NOT just run `dotnet build` and assume it compiled.
+Find `dart.exe` in the NuGet package cache under `AspNetCore.SassCompiler` tools.
+
+## Blazor — important rules
+
+**Scripts only execute from `App.razor`** — not from `.razor` layout or page components. All `<script>` tags must be placed in `App.razor` (before `</body>`). Currently: `<script src="js/admin.js"></script>`.
+
+**Use event delegation** for admin JS — Blazor InteractiveServer renders elements after the WebSocket connects, so `document.querySelectorAll()` called immediately returns nothing. Attach listeners to `document` instead:
+
+```js
+document.addEventListener('mousedown', function (e) {
+    var el = e.target.closest('.some-selector');
+    if (!el) return;
+    // handle event
+});
+```
+
+**Static asset fingerprinting** — .NET 10 fingerprints CSS/JS URLs at build time. `@Assets["admin.css"]` resolves to `/admin.j51ad4dks9.css`. When CSS changes, the hash changes and browsers are forced to reload the file.
 
 ## Admin panel
 
 - Login: `/admin/login` → POST `/admin/do-login` → cookie auth (7-day sliding expiration)
 - Each admin page uses `@layout AdminLayout` and `@attribute [Authorize]`
 - Direct DB access via `IDbContextFactory<AppDbContext>` — no separate API layer
-- All admin pages follow the `.razor` + `.razor.cs` code-behind pattern (partial class inheriting `ComponentBase`, `[Inject]` properties)
+- All admin pages follow the `.razor` + `.razor.cs` code-behind pattern
+
+### Blazor code-behind pattern
+
+Every admin page uses a `.razor.cs` partial class:
+
+```csharp
+public partial class AdminSkills : ComponentBase
+{
+    [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
+    [Inject] private ToastService Toast { get; set; } = default!;
+}
+```
+
+The `.razor` file contains only markup — no `@code { }` block, no `@inject` directives.
 
 ### AdminProjects — manual pagination + drag-to-reorder
 
 AdminProjects uses a hand-rolled `<table>` (not QuickGrid) because it needs HTML5 drag-and-drop for ordering.
 
-Key pattern — drag indices must be translated to global list indices when pagination is active:
+Drag indices must be translated to global list indices when pagination is active:
 
 ```csharp
-// Local index = position within the current page (0..pageSize-1)
-// Global index = position in the full Projects list
+// Local index = position on current page (0..pageSize-1)
+// Global index = position in full list
 int globalIndex = _page * _pageSize + localIndex;
 ```
 
-All four drag methods (`DragStart`, `DragOver`, `DragClass`, `Drop`) compute `globalIndex` from `localIndex` before touching the `Projects` list.
-
 ### AdminSkills / AdminBlog / AdminEducation / AdminExperience — QuickGrid
 
-These pages use `QuickGrid` with `PaginationState`. The table is bound via `Items="Filtered"` where `Filtered` is a computed `IQueryable<T>` filtered by the search string.
-
-QuickGrid renders empty filler rows as `<tr><td></td>...</tr>` (no class). They are hidden in `_admin-styles.scss`:
+QuickGrid renders empty filler rows as `<tr><td></td>...</tr>`. They are hidden in `_admin-styles.scss`:
 
 ```scss
 tbody tr:not(:has(> td:not(:empty))) { display: none !important; }
@@ -164,7 +232,17 @@ tbody tr:not(:has(> td:not(:empty))) { display: none !important; }
 
 ### AdminBlog — auto-slug
 
-Typing in the Vietnamese title field triggers `OnTitleInput`, which calls `GenerateSlug()` — a static method that lowercases, strips Vietnamese diacritics, and replaces spaces with hyphens. The slug field is editable and is only auto-filled when adding a new post (not when editing).
+`OnTitleInput` → `GenerateSlug()` — lowercases, strips Vietnamese diacritics, replaces spaces with hyphens. Auto-filled only when adding (not editing).
+
+### Admin mobile responsive
+
+On screens ≤ 768px, the sidebar becomes a fixed bottom navigation bar:
+
+- `.admin-shell` → `display: block !important` (removes flex layout)
+- `.admin-sidebar` → `position: fixed !important; bottom: 0; left: 0; right: 0; width: 100%`
+- `.admin-main` → `width: 100%; padding-bottom: 5rem` (space for bottom nav)
+
+All critical mobile overrides use `!important` to guarantee they win over desktop flex styles.
 
 ## Coding conventions
 
@@ -176,24 +254,9 @@ Typing in the Vietnamese title field triggers `OnTitleInput`, which calls `Gener
 - No `.Result` or `.Wait()` on Tasks
 - No comments unless the WHY is non-obvious
 
-## Blazor code-behind pattern
-
-Every admin page uses a `.razor.cs` partial class:
-
-```csharp
-public partial class AdminSkills : ComponentBase
-{
-    [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
-    [Inject] private ToastService Toast { get; set; } = default!;
-    // ...
-}
-```
-
-The `.razor` file contains only markup — no `@code { }` block, no `@inject` directives.
-
 ## Admin table styles
 
-Admin tables (both `<table class="quickgrid">` and `<QuickGrid class="quickgrid">`) share the same CSS rules in `_admin-styles.scss`:
+Admin tables (both `<table class="quickgrid">` and `<QuickGrid class="quickgrid">`) share the same CSS:
 
 - Header: dark background (`#111827`), green-tinted text (`#6ee7b7`)
 - Odd rows: `#0d0d0d`, even rows: `#121212`
@@ -205,7 +268,7 @@ Admin tables (both `<table class="quickgrid">` and `<QuickGrid class="quickgrid"
 
 - UI strings: `Lang.T("key")`
 - Content with dual fields: `Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description)`
-- Layout components that react to language changes need `@rendermode InteractiveServer` + `Lang.OnChange += StateHasChanged`
+- Components that react to language changes need `@rendermode InteractiveServer` + `Lang.OnChange += StateHasChanged`
 
 Bilingual content models: `Project`, `Experience`, `Education` (Description/DescriptionEn), `BlogPost` (Title/TitleEn, Summary/SummaryEn, Content/ContentEn), `SiteSetting` (Bio + BioEn as separate keys).
 
@@ -226,43 +289,31 @@ Bilingual content models: `Project`, `Experience`, `Education` (Description/Desc
 | `Facebook` | Facebook profile URL (optional, hidden if empty) |
 | `AvatarUrl` | Avatar image path (relative to wwwroot) |
 
-Social links in HeroSection are loaded dynamically — links with empty values are hidden.
-
 ## Visitor tracking
 
-`VisitorService` deduplicates by IP address — each unique IP is stored once in `VisitorLogs`.
+`VisitorService` deduplicates by IP — each unique IP stored once in `VisitorLogs`.
 
-Middleware in `Program.cs` fires on GET requests to non-static, non-admin, non-framework paths. It reads the real IP from the `X-Forwarded-For` header (Fly.io proxy) and calls `VisitorService.LogAsync()`.
-
-Localhost (`::1`, `127.x`, `10.x`) IPs are excluded from tracking.
+Middleware in `Program.cs` fires on GET requests to non-static, non-admin, non-framework paths. Reads real IP from `X-Forwarded-For` (Fly.io proxy). Localhost (`::1`, `127.x`, `10.x`) excluded.
 
 ## Sections — expand/collapse
 
-All 5 landing page sections (Skills, Projects, Experience, Education, Blog) show 2 items initially with a pill-style "Show more / Thu gọn" button. The button only renders when the total count exceeds 2. i18n keys: `common.showmore` / `common.showless`.
+All 5 landing page sections (Skills, Projects, Experience, Education, Blog) show 2 items initially with a "Show more / Thu gọn" button. Button only renders when total count > 2. i18n keys: `common.showmore` / `common.showless`.
 
 ## SEO
 
-`App.razor` contains static Open Graph, Twitter Card, and canonical meta tags for the homepage.
+`App.razor` — static Open Graph, Twitter Card, canonical meta for homepage.
 
-`BlogPostPage.razor` renders per-post `<HeadContent>` with dynamic `og:title`, `og:description`, `og:url`, `og:image`, `twitter:card`, and `link rel=canonical` — populated from the blog post's Title/TitleEn, Summary/SummaryEn, CoverImageUrl, and Slug.
+`BlogPostPage.razor` — per-post `<HeadContent>` with dynamic `og:title`, `og:description`, `og:url`, `og:image`, `twitter:card`, `link rel=canonical` from blog post fields.
 
 ## Database migrations
 
 Never modify an existing migration. Add new migrations with:
 
-```
+```bash
 dotnet ef migrations add <MigrationName>
 ```
 
-Migrations apply automatically on startup. Seed data for Skills, Projects, Experience, Education, SiteSettings, and the first blog post live in `AppDbContext.OnModelCreating` via `HasData`.
-
-## Git workflow
-
-Direct commits to `master` are fine for this solo project.
-
-Commit messages: short, focused on what changed. No trailing summaries.
-
-Deploy by pushing `master` — Fly.io auto-deploys in ~2 minutes.
+Migrations apply automatically on startup. Seed data lives in `AppDbContext.OnModelCreating` via `HasData`.
 
 ## Fly.io secrets
 
