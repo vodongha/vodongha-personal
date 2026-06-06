@@ -1,102 +1,327 @@
 # vodongha.id.vn — CLAUDE.md
 
-Instructions for Claude AI when working in this repository.
-
 ## Project overview
 
-Personal website of Võ Đông Hà. Built with Blazor Web App (.NET 10), PostgreSQL (Neon), SCSS, deployed on Fly.io (Singapore).
+Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + PostgreSQL (Neon, Singapore) + SCSS dark theme, deployed on Fly.io.
 
-Live: https://vodongha.id.vn | Repo: https://github.com/vodongha/vodongha.id.vn
+- **Live:** https://vodongha.id.vn
+- **Repo:** https://github.com/vodongha/vodongha-personal
+- **Admin:** https://vodongha.id.vn/admin/login
+- **Project file:** `vodongha-personal.csproj` (RootNamespace: `vodongha`, AssemblyName: `vodongha-personal`)
 
 ## Technology stack
 
-- **Runtime:** .NET 10
-- **Frontend:** Blazor Web App (Interactive Server render mode)
-- **Database:** PostgreSQL via Neon (ap-southeast-1)
-- **ORM:** Entity Framework Core — no raw SQL in application code
-- **Styling:** SCSS compiled by `AspNetCore.SassCompiler` → `wwwroot/app.css`
-- **Deploy:** Fly.io, app name `vodongha`, region `sin` (Singapore)
-- **CI/CD:** GitHub Actions (`.github/workflows/`)
+| Layer | Technology |
+|---|---|
+| Runtime | .NET 10 |
+| Frontend | Blazor Web App — `@rendermode InteractiveServer` on pages/components with state |
+| Database | PostgreSQL via Neon (Singapore). Fly.io secret: `ConnectionStrings__DefaultConnection` |
+| ORM | Entity Framework Core — no raw SQL in application code |
+| SCSS | Two entry points compiled by `AspNetCore.SassCompiler` on `dotnet build`: `Styles/app.scss` → `wwwroot/app.css` (public), `Styles/admin.scss` → `wwwroot/admin.css` (admin). Compiled CSS is **gitignored** — never commit `wwwroot/app.css` or `wwwroot/admin.css`. |
+| Email | Resend API (`Email__ResendApiKey`). Sender: `no-reply@vodongha.id.vn`, recipient: `vodongha@hotmail.com` |
+| Deploy | Fly.io, app `vodongha`, region `sin`. Merge PR to `master` → auto-deploy (~2 min) |
+| Migrations | EF Core, applied automatically on startup via `MigrateAsync()` in `Program.cs` |
 
-## Branch strategy
+## Git workflow
+
+**All commits go to `develop`. `master` is production-only — never commit directly to `master`.**
 
 ```
-master    ← production (auto-deploy to Fly.io on push)
-develop   ← integration branch
-feature/* ← one branch per change, branched off develop
+develop  →  Pull Request  →  master  →  Fly.io auto-deploy
 ```
 
-**Every change goes through a PR.** Direct commits to `master` or `develop` are not allowed.
+### Daily workflow
 
-### Workflow for each change
+```bash
+# Always work on develop
+git checkout develop
 
-1. Create a feature branch from `develop`:
-   ```bash
-   git checkout develop
-   git pull origin develop
-   git checkout -b feature/short-description
-   ```
-2. Make changes, commit with a clear message
-3. Push and open a PR targeting `develop`:
-   ```bash
-   git push origin feature/short-description
-   gh pr create --base develop --title "..." --body "..."
-   ```
-4. Claude AI agent reviews the PR (see `.github/workflows/claude-review.yml`)
-5. On approval, merge into `develop`
-6. When ready to ship: merge `develop` → `master` to deploy
+# Make changes, commit
+git add <files>
+git commit -m "short description of what changed"
+git push origin develop
+
+# Open PR: develop → master
+gh pr create --title "PR title" --body "description" --base master --head develop
+
+# After merge, master deploys automatically to Fly.io
+```
+
+### PR conventions
+
+- One PR per feature or fix
+- Title: short imperative phrase ("Add blog post", "Fix mobile layout")
+- Base branch: always `master`
+- Merge with merge commit (no squash, no rebase)
+
+### Releases
+
+After significant merges, tag a release on GitHub:
+
+```bash
+git tag v1.x.x
+git push origin v1.x.x
+gh release create v1.x.x --title "v1.x.x — description" --notes "changelog"
+```
+
+## Solution structure
+
+```
+vodongha-personal/
+├── Components/
+│   ├── App.razor                     # Root — <head> SEO meta tags (OG, Twitter Card, canonical) + <script> tags
+│   ├── Layout/
+│   │   ├── MainLayout.razor          # Public layout — loads app.css
+│   │   ├── AdminLayout.razor         # Admin layout — loads admin.css
+│   │   ├── NavBar.razor              # Top navigation (InteractiveServer — language toggle)
+│   │   ├── FooterSection.razor       # Footer with visitor count badge (InteractiveServer)
+│   │   └── ReconnectModal.razor      # Blazor reconnect overlay
+│   ├── Pages/
+│   │   ├── Home.razor                # Landing page (InteractiveServer)
+│   │   ├── Blog/BlogPostPage.razor   # Individual blog post with per-page OG meta tags
+│   │   ├── Admin/
+│   │   │   ├── Login.razor + .cs         # /admin/login
+│   │   │   ├── Dashboard.razor + .cs     # /admin
+│   │   │   ├── AdminSkills.razor + .cs   # /admin/skills — QuickGrid + PaginationState
+│   │   │   ├── AdminProjects.razor + .cs # /admin/projects — manual pagination + drag-to-reorder
+│   │   │   ├── AdminBlog.razor + .cs     # /admin/blog — auto-slug from Vietnamese title
+│   │   │   ├── AdminEducation.razor + .cs
+│   │   │   ├── AdminExperience.razor + .cs
+│   │   │   ├── AdminContacts.razor + .cs    # unread badge, mark read, reply
+│   │   │   └── AdminSettings.razor + .cs    # avatar upload, social links, bio
+│   │   ├── Error.razor
+│   │   └── NotFound.razor
+│   ├── Sections/                     # One file per landing page section
+│   │   ├── HeroSection.razor         # Name, role, bio, social links (from SiteSettings)
+│   │   ├── SkillsSection.razor       # Skills grid grouped by category — expand/collapse
+│   │   ├── ProjectsSection.razor     # Featured projects grid — expand/collapse
+│   │   ├── ExperienceSection.razor   # Work experience timeline — expand/collapse
+│   │   ├── EducationSection.razor    # Education timeline — expand/collapse
+│   │   ├── BlogSection.razor         # Latest blog posts — expand/collapse
+│   │   └── ContactSection.razor      # Contact form
+│   └── Shared/
+│       ├── ProjectCard.razor         # Reusable project card
+│       ├── BlogCard.razor            # Reusable blog post card
+│       └── ConfirmDialog.razor       # Delete confirmation modal (type "Delete" to enable button)
+├── Data/
+│   ├── AppDbContext.cs               # EF context + seed data (Skills, Projects, Experience, Education, SiteSettings, BlogPost)
+│   └── Models/
+│       ├── Skill.cs
+│       ├── Project.cs
+│       ├── BlogPost.cs
+│       ├── Experience.cs
+│       ├── Education.cs
+│       ├── ContactMessage.cs
+│       ├── SiteSetting.cs            # Key-value store for site metadata
+│       └── VisitorLog.cs             # Unique visitors by IP — IpAddress, FirstSeenAt, UserAgent
+├── Services/
+│   ├── BlogService.cs
+│   ├── ProjectService.cs
+│   ├── SkillService.cs
+│   ├── ExperienceService.cs
+│   ├── EducationService.cs
+│   ├── ContactService.cs             # Save message to DB + send email notification via Resend
+│   ├── EmailService.cs
+│   ├── LanguageService.cs            # VI/EN toggle; T("key") for UI strings; OnChange event
+│   ├── SiteSettingService.cs
+│   └── VisitorService.cs             # LogAsync(ip) — deduplicated by IP; GetCountAsync()
+├── Styles/
+│   ├── app.scss                      # Public site entry point — imports all _*.scss partials
+│   ├── admin.scss                    # Admin entry point — imports _admin-styles.scss
+│   ├── _admin-styles.scss            # All admin panel styles (BEM: .admin-*)
+│   ├── _variables.scss               # Design tokens (colors, spacing, fonts)
+│   ├── _base.scss                    # Global styles + .section layout
+│   ├── _nav.scss
+│   ├── _hero.scss
+│   ├── _skills.scss
+│   ├── _projects.scss
+│   ├── _timeline.scss                # Shared by Experience + Education sections
+│   ├── _blog.scss
+│   ├── _contact.scss
+│   ├── _footer.scss
+│   └── _reconnect.scss
+├── wwwroot/
+│   └── js/admin.js                   # Event delegation for admin UI (select arrow open/close)
+├── Migrations/                       # EF Core — never modify existing migrations
+├── Program.cs                        # DI, middleware (visitor tracking), auth, routes
+├── Dockerfile
+├── .dockerignore                     # Excludes wwwroot/app.css + admin.css → Docker forces Dart Sass recompile
+├── .gitignore                        # Excludes wwwroot/app.css, admin.css, *.css.map
+├── fly.toml
+└── vodongha-personal.csproj
+```
+
+## SCSS pipeline
+
+Two separate CSS outputs — public and admin are completely independent:
+
+| SCSS entry | Output | Layout that loads it |
+|---|---|---|
+| `Styles/app.scss` | `wwwroot/app.css` | `MainLayout.razor` |
+| `Styles/admin.scss` | `wwwroot/admin.css` | `AdminLayout.razor` |
+
+**Compiled CSS is gitignored.** Never commit `wwwroot/app.css` or `wwwroot/admin.css`.
+
+`AspNetCore.SassCompiler` runs Dart Sass with `--update` during `dotnet build`. The `--update` flag skips recompile if the output `.css` is newer than the source `.scss`.
+
+**If CSS appears stale locally**, force recompile by running Dart Sass directly:
+
+```
+dart.exe sass.snapshot --style=expanded --no-source-map Styles\app.scss wwwroot\app.css
+dart.exe sass.snapshot --style=expanded --no-source-map Styles\admin.scss wwwroot\admin.css
+```
+
+Find `dart.exe` in the NuGet package cache under `AspNetCore.SassCompiler` tools.
+
+## Blazor — important rules
+
+**Scripts only execute from `App.razor`** — not from `.razor` layout or page components. All `<script>` tags must be placed in `App.razor` (before `</body>`). Currently: `<script src="js/admin.js"></script>`.
+
+**Use event delegation** for admin JS — Blazor InteractiveServer renders elements after the WebSocket connects, so `document.querySelectorAll()` called immediately returns nothing. Attach listeners to `document` instead:
+
+```js
+document.addEventListener('mousedown', function (e) {
+    var el = e.target.closest('.some-selector');
+    if (!el) return;
+    // handle event
+});
+```
+
+**Static asset fingerprinting** — .NET 10 fingerprints CSS/JS URLs at build time. `@Assets["admin.css"]` resolves to `/admin.j51ad4dks9.css`. When CSS changes, the hash changes and browsers are forced to reload the file.
+
+## Admin panel
+
+- Login: `/admin/login` → POST `/admin/do-login` → cookie auth (7-day sliding expiration)
+- Each admin page uses `@layout AdminLayout` and `@attribute [Authorize]`
+- Direct DB access via `IDbContextFactory<AppDbContext>` — no separate API layer
+- All admin pages follow the `.razor` + `.razor.cs` code-behind pattern
+
+### Blazor code-behind pattern
+
+Every admin page uses a `.razor.cs` partial class:
+
+```csharp
+public partial class AdminSkills : ComponentBase
+{
+    [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
+    [Inject] private ToastService Toast { get; set; } = default!;
+}
+```
+
+The `.razor` file contains only markup — no `@code { }` block, no `@inject` directives.
+
+### AdminProjects — manual pagination + drag-to-reorder
+
+AdminProjects uses a hand-rolled `<table>` (not QuickGrid) because it needs HTML5 drag-and-drop for ordering.
+
+Drag indices must be translated to global list indices when pagination is active:
+
+```csharp
+// Local index = position on current page (0..pageSize-1)
+// Global index = position in full list
+int globalIndex = _page * _pageSize + localIndex;
+```
+
+### AdminSkills / AdminBlog / AdminEducation / AdminExperience — QuickGrid
+
+QuickGrid renders empty filler rows as `<tr><td></td>...</tr>`. They are hidden in `_admin-styles.scss`:
+
+```scss
+tbody tr:not(:has(> td:not(:empty))) { display: none !important; }
+```
+
+### AdminBlog — auto-slug
+
+`OnTitleInput` → `GenerateSlug()` — lowercases, strips Vietnamese diacritics, replaces spaces with hyphens. Auto-filled only when adding (not editing).
+
+### Admin mobile responsive
+
+On screens ≤ 768px, the sidebar becomes a fixed bottom navigation bar:
+
+- `.admin-shell` → `display: block !important` (removes flex layout)
+- `.admin-sidebar` → `position: fixed !important; bottom: 0; left: 0; right: 0; width: 100%`
+- `.admin-main` → `width: 100%; padding-bottom: 5rem` (space for bottom nav)
+
+All critical mobile overrides use `!important` to guarantee they win over desktop flex styles.
 
 ## Coding conventions
 
-- **C#:** follow Microsoft .NET naming conventions
+- Microsoft .NET naming conventions throughout
 - **Always use braces** for `if`, `for`, `foreach` — even single-line
-- **`var`** only when the type is obvious from the right-hand side
-- **Blazor components:** always use code-behind (`.razor` + `.razor.cs`) for any component with logic
-- **Async:** all DB-touching code must be async end-to-end (`await`, `ToListAsync`, `FirstOrDefaultAsync`)
-- **`IDbContextFactory<AppDbContext>`** — use the factory in services, not a scoped `DbContext`
-- **No comments** unless the WHY is non-obvious
+- `var` only when the type is obvious from the right-hand side
+- All DB-touching code async end-to-end: `await`, `ToListAsync()`, `FirstOrDefaultAsync()`
+- `await using var db = await DbFactory.CreateDbContextAsync()` — factory pattern, never scoped DbContext
+- No `.Result` or `.Wait()` on Tasks
+- No comments unless the WHY is non-obvious
 
-## SCSS
+## Admin table styles
 
-- Entry point: `Styles/app.scss` — imports all partials
-- Partials live in `Styles/_*.scss`
-- Output: `wwwroot/app.css` (compiled automatically on `dotnet build/publish`)
-- Config: `sasscompiler.json` at project root
+Admin tables (both `<table class="quickgrid">` and `<QuickGrid class="quickgrid">`) share the same CSS:
+
+- Header: dark background (`#111827`), green-tinted text (`#6ee7b7`)
+- Odd rows: `#0d0d0d`, even rows: `#121212`
+- Hover: `#1e2a24` (overrides stripe with `!important`)
+
+## i18n
+
+`LanguageService` handles VI/EN toggle. Default language: **English**.
+
+- UI strings: `Lang.T("key")`
+- Content with dual fields: `Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description)`
+- Components that react to language changes need `@rendermode InteractiveServer` + `Lang.OnChange += StateHasChanged`
+
+Bilingual content models: `Project`, `Experience`, `Education` (Description/DescriptionEn), `BlogPost` (Title/TitleEn, Summary/SummaryEn, Content/ContentEn), `SiteSetting` (Bio + BioEn as separate keys).
+
+## SiteSettings keys
+
+| Key | Purpose |
+|---|---|
+| `Name` | Full name |
+| `Title` | Job title |
+| `Tagline` | Short tagline |
+| `Bio` | Bio in Vietnamese |
+| `BioEn` | Bio in English |
+| `Email` | Contact email |
+| `Phone` | Phone number |
+| `Location` | City/country |
+| `GitHub` | GitHub profile URL |
+| `LinkedIn` | LinkedIn profile URL |
+| `Facebook` | Facebook profile URL (optional, hidden if empty) |
+| `AvatarUrl` | Avatar image path (relative to wwwroot) |
+
+## Visitor tracking
+
+`VisitorService` deduplicates by IP — each unique IP stored once in `VisitorLogs`.
+
+Middleware in `Program.cs` fires on GET requests to non-static, non-admin, non-framework paths. Reads real IP from `X-Forwarded-For` (Fly.io proxy). Localhost (`::1`, `127.x`, `10.x`) excluded.
+
+## Sections — expand/collapse
+
+All 5 landing page sections (Skills, Projects, Experience, Education, Blog) show 2 items initially with a "Show more / Thu gọn" button. Button only renders when total count > 2. i18n keys: `common.showmore` / `common.showless`.
+
+## SEO
+
+`App.razor` — static Open Graph, Twitter Card, canonical meta for homepage.
+
+`BlogPostPage.razor` — per-post `<HeadContent>` with dynamic `og:title`, `og:description`, `og:url`, `og:image`, `twitter:card`, `link rel=canonical` from blog post fields.
 
 ## Database migrations
 
-- EF Core migrations only: `dotnet ef migrations add <Name>`
-- Applied automatically on startup (`db.Database.MigrateAsync()` in `Program.cs`)
-- Never modify an already-applied migration — add a new one
+Never modify an existing migration. Add new migrations with:
 
-## Environment & secrets
+```bash
+dotnet ef migrations add <MigrationName>
+```
 
-- Local: `appsettings.Development.json` (gitignored)
-- Production: Fly.io secrets (`flyctl secrets set KEY=VALUE`)
-- Connection string secret name: `ConnectionStrings__DefaultConnection`
-- Never commit secrets or connection strings
+Migrations apply automatically on startup. Seed data lives in `AppDbContext.OnModelCreating` via `HasData`.
 
-## Claude's role as contributor
+## Fly.io secrets
 
-Claude acts as an AI pair programmer and reviewer on this project:
+| Secret | Purpose |
+|---|---|
+| `ConnectionStrings__DefaultConnection` | Neon PostgreSQL |
+| `Admin__Username` | Admin panel login |
+| `Admin__Password` | Admin panel login |
+| `Email__ResendApiKey` | Resend API key for contact form |
 
-- **Code review:** Claude reviews every PR for correctness, style, and security
-- **PR merges:** Claude merges approved PRs via `gh pr merge`
-- **Pair programming:** Claude helps implement features when asked
-- **Commits by Claude** include the trailer:
-  ```
-  Co-Authored-By: Claude <noreply@anthropic.com>
-  ```
-
-## PR review checklist (used by Claude agent)
-
-When reviewing a PR, check:
-
-- [ ] No secrets or connection strings committed
-- [ ] SCSS changes compile to `wwwroot/app.css` (no stray `main.css`)
-- [ ] New Blazor components with logic have a `.razor.cs` code-behind
-- [ ] DB-touching code is async all the way down
-- [ ] No `.Result` or `.Wait()` on Tasks
-- [ ] EF migrations are additive (no modifications to existing migrations)
-- [ ] `IDbContextFactory` used in services, not scoped `DbContext`
-- [ ] No raw SQL in application code
+Set with: `flyctl secrets set KEY=VALUE`
