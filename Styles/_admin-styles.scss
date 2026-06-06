@@ -426,10 +426,14 @@ tr.admin-row--dragover td {
         white-space: nowrap;
         cursor: default;
 
-        .col-sort-asc::after  { content: ' ↑'; color: $color-primary; }
-        .col-sort-desc::after { content: ' ↓'; color: $color-primary; }
+        // Sortable but not yet sorted: show neutral indicator
+        &[aria-sort="none"]::after       { content: ' ↕'; opacity: 0.35; }
+        &.col-sort-asc::after            { content: ' ↑'; color: $color-primary; opacity: 1; }
+        &.col-sort-desc::after           { content: ' ↓'; color: $color-primary; opacity: 1; }
 
-        &.sortable { cursor: pointer; user-select: none;
+        &.sortable, &[aria-sort] {
+            cursor: pointer; user-select: none;
+            button { background: none; border: none; color: inherit; font: inherit; text-transform: inherit; letter-spacing: inherit; cursor: pointer; padding: 0; }
             &:hover { color: $color-text; }
         }
     }
