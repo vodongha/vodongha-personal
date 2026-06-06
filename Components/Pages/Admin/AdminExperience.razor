@@ -37,7 +37,10 @@
                 <option value="20">20 / trang</option>
                 <option value="50">50 / trang</option>
             </select>
-            <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm công ty, vai trò..." />
+            <div class="admin-search-wrap">
+                <i class="bi bi-search admin-search-wrap__icon"></i>
+                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm công ty, vai trò..." />
+            </div>
         </div>
 
         <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
