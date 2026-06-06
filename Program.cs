@@ -52,6 +52,7 @@ builder.Services.AddScoped<ExperienceService>();
 builder.Services.AddScoped<EducationService>();
 builder.Services.AddScoped<LanguageService>();
 builder.Services.AddScoped<SiteSettingService>();
+builder.Services.AddScoped<VisitorService>();
 
 WebApplication app = builder.Build();
 
@@ -70,6 +71,29 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
+
+// Track unique visitors by IP on page requests
+app.Use(async (context, next) =>
+{
+    string path = context.Request.Path.Value ?? "";
+    bool isPageRequest = context.Request.Method == "GET"
+        && !path.StartsWith("/_")
+        && !path.StartsWith("/health")
+        && !path.StartsWith("/admin")
+        && !Path.HasExtension(path);
+
+    if (isPageRequest)
+    {
+        string ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',')[0].Trim()
+            ?? context.Connection.RemoteIpAddress?.ToString()
+            ?? "unknown";
+        string? ua = context.Request.Headers.UserAgent.FirstOrDefault();
+        VisitorService visitorSvc = context.RequestServices.GetRequiredService<VisitorService>();
+        await visitorSvc.LogAsync(ip, ua);
+    }
+
+    await next(context);
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
