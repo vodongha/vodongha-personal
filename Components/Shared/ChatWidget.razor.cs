@@ -39,7 +39,17 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private bool _pendingScrollToUnread;
 
-    private bool CanStartChat => !string.IsNullOrWhiteSpace(_name) && !string.IsNullOrWhiteSpace(_phone) && !string.IsNullOrWhiteSpace(_email);
+    private static bool IsValidEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email)) return false;
+        try { return new System.Net.Mail.MailAddress(email).Address == email.Trim(); }
+        catch { return false; }
+    }
+
+    private bool CanStartChat =>
+        !string.IsNullOrWhiteSpace(_name) &&
+        !string.IsNullOrWhiteSpace(_phone) &&
+        IsValidEmail(_email);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

@@ -34,8 +34,13 @@
                 </div>
                 <div class="chat-form__group">
                     <label class="chat-form__label">@Lang.T("chat.form.email")</label>
-                    <input class="chat-form__input" type="email" placeholder="email@example.com"
+                    <input class="chat-form__input @(!string.IsNullOrWhiteSpace(_email) && !IsValidEmail(_email) ? "chat-form__input--error" : "")"
+                           type="email" placeholder="email@example.com"
                            @bind="_email" @bind:event="oninput" />
+                    @if (!string.IsNullOrWhiteSpace(_email) && !IsValidEmail(_email))
+                    {
+                        <span class="chat-form__error">@Lang.T("chat.form.email.invalid")</span>
+                    }
                 </div>
 
                 <button class="chat-form__submit" @onclick="StartChat"
