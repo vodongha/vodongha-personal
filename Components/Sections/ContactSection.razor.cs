@@ -13,6 +13,12 @@ public partial class ContactSection : ComponentBase, IDisposable
     private bool _sending;
     private bool _sent;
 
+    private bool CanSend =>
+        !string.IsNullOrWhiteSpace(_model.Name) &&
+        !string.IsNullOrWhiteSpace(_model.Subject) &&
+        !string.IsNullOrWhiteSpace(_model.Message) &&
+        IsValidEmail(_model.Email);
+
     // Per-field error messages (null = no error shown yet)
     private string? NameError;
     private string? EmailError;
