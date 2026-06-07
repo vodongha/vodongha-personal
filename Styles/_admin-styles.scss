@@ -2042,3 +2042,237 @@ tr.admin-row--dragover td {
         &--light-blue  { background: #93c5fd; }
     }
 }
+
+// ── Template 1: Minimal preview ───────────────────────────────────────────
+.cv-minimal-preview {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,.3);
+    font-family: 'Noto Sans', sans-serif;
+    color: #111827;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem 1rem;
+        background: #fff;
+        border-bottom: 2px solid #059669;
+    }
+
+    &__header-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1.2;
+    }
+
+    &__title {
+        font-size: 0.85rem;
+        color: #059669;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    &__contacts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+        margin-top: 0.25rem;
+    }
+
+    &__contact-item {
+        font-size: 0.72rem;
+        color: #4b5563;
+        i { color: #059669; margin-right: 3px; }
+    }
+
+    &__divider {
+        height: 0;
+    }
+
+    &__body {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        min-height: 300px;
+    }
+
+    &__skills {
+        background: #f8fafc;
+        border-right: 1px solid #e5e7eb;
+        padding: 1rem 0.75rem;
+    }
+
+    &__content {
+        padding: 1rem 1.25rem;
+        background: #fff;
+    }
+}
+
+.cv-min-preview__skill-cat {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #059669;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin: 0.5rem 0 0.2rem;
+    &:first-child { margin-top: 0; }
+}
+.cv-min-preview__skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+}
+.cv-min-preview__skill-tag {
+    font-size: 0.62rem;
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #d1fae5;
+    border-radius: 3px;
+    padding: 1px 5px;
+}
+.cv-min-preview__block-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #059669;
+    border-bottom: 1.5px solid #059669;
+    padding-bottom: 2px;
+    margin: 0.75rem 0 0.4rem;
+    &:first-child { margin-top: 0; }
+}
+.cv-min-preview__entry-sub {
+    font-size: 0.72rem;
+    color: #059669;
+    font-style: italic;
+}
+
+// ── Template 2: Professional preview ─────────────────────────────────────
+.cv-pro-preview {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,.3);
+    font-family: 'Noto Sans', sans-serif;
+    color: #111827;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem 1rem;
+        background: #1e3a5f;
+    }
+
+    &__header-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.2;
+    }
+
+    &__title {
+        font-size: 0.85rem;
+        color: #93c5fd;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    &__contacts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+        margin-top: 0.25rem;
+    }
+
+    &__contact-item {
+        font-size: 0.72rem;
+        color: #bfdbfe;
+        i { color: #93c5fd; margin-right: 3px; }
+    }
+
+    &__stripe {
+        height: 4px;
+        background: #3b82f6;
+    }
+
+    &__body {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        min-height: 300px;
+    }
+
+    &__skills {
+        background: #eff6ff;
+        border-right: 1px solid #bfdbfe;
+        padding: 1rem 0.75rem;
+    }
+
+    &__content {
+        padding: 1rem 1.25rem;
+        background: #fff;
+    }
+}
+
+.cv-pro-preview__skill-cat {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #3b82f6;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin: 0.5rem 0 0.2rem;
+    &:first-child { margin-top: 0; }
+}
+.cv-pro-preview__skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+}
+.cv-pro-preview__skill-tag {
+    font-size: 0.62rem;
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+    border-radius: 3px;
+    padding: 1px 5px;
+}
+.cv-pro-preview__block-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #3b82f6;
+    border-bottom: 1.5px solid #3b82f6;
+    padding-bottom: 2px;
+    margin: 0.75rem 0 0.4rem;
+    &:first-child { margin-top: 0; }
+}
+.cv-pro-preview__entry-sub {
+    font-size: 0.72rem;
+    color: #3b82f6;
+    font-style: italic;
+}
+
+// ── Avatar size modifier for template headers ─────────────────────────────
+.cv-preview__avatar--sm {
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px;
+    font-size: 1rem !important;
+    flex-shrink: 0;
+}
+.cv-preview__avatar--blue {
+    border-color: #3b82f6 !important;
+}
