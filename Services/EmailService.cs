@@ -2,11 +2,11 @@ using Resend;
 
 namespace vodongha.Services;
 
-public class EmailService(IResend resend, IConfiguration config, ILogger<EmailService> logger)
+public class EmailService(IResend resend, AppSecretsService secrets, ILogger<EmailService> logger)
 {
     public async Task SendContactNotificationAsync(string senderName, string senderEmail, string subject, string message)
     {
-        string? apiKey = config["Email:ResendApiKey"];
+        string? apiKey = await secrets.GetValueAsync("Email:ResendApiKey");
         if (string.IsNullOrEmpty(apiKey))
         {
             logger.LogWarning("Resend API key missing — skipping email notification.");
@@ -15,7 +15,7 @@ public class EmailService(IResend resend, IConfiguration config, ILogger<EmailSe
 
         try
         {
-            string notifyTo = config["Email:NotifyTo"] ?? "vodongha@hotmail.com";
+            string notifyTo = await secrets.GetValueAsync("Email:NotifyTo") ?? "vodongha@hotmail.com";
 
             EmailMessage email = new()
             {

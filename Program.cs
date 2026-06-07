@@ -59,10 +59,12 @@ builder.Services.AddScoped<LanguageService>();
 builder.Services.AddScoped<SiteSettingService>();
 builder.Services.AddScoped<VisitorService>();
 builder.Services.AddScoped<ToastService>();
-builder.Services.AddHttpClient<TelegramService>();
+builder.Services.AddHttpClient<TelegramService>()
+    .AddTypedClient((http, sp) => new TelegramService(http, sp.GetRequiredService<AppSecretsService>()));
 builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<AdminLocalizationService>();
 builder.Services.AddScoped<TimezoneService>();
+builder.Services.AddSingleton<AppSecretsService>();
 builder.Services.AddSingleton<HealthMonitorService>();
 builder.Services.AddSingleton<CostMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
