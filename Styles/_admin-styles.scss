@@ -576,13 +576,16 @@ tr.admin-row--dragover td {
 // ── Mobile responsive ────────────────────────────────────────────
 @media (max-width: 768px) {
 
+    // Prevent horizontal scroll at page level.
+    // overflow-x:hidden on body does NOT clip position:fixed children (unlike on other elements).
+    body { overflow-x: hidden; }
+
     // Shell → block, kills flex layout entirely so sidebar can't reserve column space
     .admin-shell {
         display: block !important;
         flex-direction: unset !important;
-        overflow-x: hidden !important;   // prevent horizontal overflow bleeding past viewport
         width: 100% !important;
-        max-width: 100vw !important;
+        max-width: 100% !important;
         box-sizing: border-box !important;
     }
 
@@ -662,7 +665,6 @@ tr.admin-row--dragover td {
         max-width: 100% !important;
         min-width: 0 !important;
         box-sizing: border-box !important;
-        overflow-x: hidden !important;
         padding: 1rem 0.75rem 5rem !important;
     }
 
