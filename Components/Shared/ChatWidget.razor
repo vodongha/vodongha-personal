@@ -7,11 +7,11 @@
             <div class="chat-header__info">
                 <div class="chat-header__avatar"><i class="bi bi-person-circle"></i></div>
                 <div>
-                    <div class="chat-header__name">Võ Đông Hà</div>
-                    <div class="chat-header__status">● Online</div>
+                    <div class="chat-header__name">@Lang.T("chat.title")</div>
+                    <div class="chat-header__status">@Lang.T("chat.status")</div>
                 </div>
             </div>
-            <button class="chat-header__close" @onclick="Close" title="Đóng">
+            <button class="chat-header__close" @onclick="Close" title="@Lang.T("chat.close")">
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
@@ -19,21 +19,21 @@
         @if (_state == ChatState.Form)
         {
             <div class="chat-form">
-                <div class="chat-form__title">Bắt đầu cuộc trò chuyện</div>
-                <div class="chat-form__subtitle">Điền thông tin để mình có thể liên hệ lại với bạn.</div>
+                <div class="chat-form__title">@Lang.T("chat.form.title")</div>
+                <div class="chat-form__subtitle">@Lang.T("chat.form.subtitle")</div>
 
                 <div class="chat-form__group">
-                    <label class="chat-form__label">Họ tên *</label>
-                    <input class="chat-form__input" type="text" placeholder="Nguyễn Văn A"
+                    <label class="chat-form__label">@Lang.T("chat.form.name")</label>
+                    <input class="chat-form__input" type="text" placeholder="@Lang.T("chat.form.name.placeholder")"
                            @bind="_name" @bind:event="oninput" />
                 </div>
                 <div class="chat-form__group">
-                    <label class="chat-form__label">Số điện thoại</label>
-                    <input class="chat-form__input" type="tel" placeholder="09xxxxxxxx"
+                    <label class="chat-form__label">@Lang.T("chat.form.phone")</label>
+                    <input class="chat-form__input" type="tel" placeholder="@Lang.T("chat.form.phone.placeholder")"
                            @bind="_phone" @bind:event="oninput" />
                 </div>
                 <div class="chat-form__group">
-                    <label class="chat-form__label">Email *</label>
+                    <label class="chat-form__label">@Lang.T("chat.form.email")</label>
                     <input class="chat-form__input" type="email" placeholder="email@example.com"
                            @bind="_email" @bind:event="oninput" />
                 </div>
@@ -46,7 +46,7 @@
                     }
                     else
                     {
-                        <span>Bắt đầu chat <i class="bi bi-arrow-right"></i></span>
+                        <span>@Lang.T("chat.form.start") <i class="bi bi-arrow-right"></i></span>
                     }
                 </button>
             </div>
@@ -65,8 +65,8 @@
                     @if (showDate)
                     {
                         DateTime today = Tz.ToUserTime(DateTime.UtcNow).Date;
-                        string dateLabel = msgDay == today ? "Hôm nay"
-                            : msgDay == today.AddDays(-1) ? "Hôm qua"
+                        string dateLabel = msgDay == today ? Lang.T("chat.today")
+                            : msgDay == today.AddDays(-1) ? Lang.T("chat.yesterday")
                             : msgDay.ToString("dd/MM/yyyy");
                         <div class="chat-date-divider"><span>@dateLabel</span></div>
                     }
@@ -74,7 +74,7 @@
                     @if (i == _unreadDividerIndex)
                     {
                         <div class="chat-unread-divider">
-                            <span>Tin nhắn mới</span>
+                            <span>@Lang.T("chat.new")</span>
                         </div>
                     }
 
@@ -86,11 +86,11 @@
                             {
                                 if (_adminReadUpToId > 0 && msg.Id <= _adminReadUpToId)
                                 {
-                                    <i class="bi bi-check-all chat-msg__ticks chat-msg__ticks--read" title="Đã đọc"></i>
+                                    <i class="bi bi-check-all chat-msg__ticks chat-msg__ticks--read" title="@Lang.T("chat.read")"></i>
                                 }
                                 else
                                 {
-                                    <i class="bi bi-check chat-msg__ticks" title="Đã gửi"></i>
+                                    <i class="bi bi-check chat-msg__ticks" title="@Lang.T("chat.sent")"></i>
                                 }
                             }
                         </div>
@@ -100,7 +100,7 @@
                 @if (_messages.Count == 0)
                 {
                     <div style="text-align:center; color:#6b7280; font-size:0.8rem; margin-top:1rem;">
-                        Gửi tin nhắn để bắt đầu cuộc trò chuyện 👋
+                        @Lang.T("chat.empty")
                     </div>
                 }
 
@@ -115,7 +115,7 @@
             </div>
 
             <div class="chat-input">
-                <textarea class="chat-input__field" rows="1" placeholder="Nhập tin nhắn..."
+                <textarea class="chat-input__field" rows="1" placeholder="@Lang.T("chat.placeholder")"
                           @bind="_inputText"
                           @bind:event="oninput"
                           @bind:after="OnTypingInput"
@@ -129,7 +129,7 @@
     </div>
 }
 
-<button class="chat-fab" @onclick="ToggleOpen" title="Chat với mình">
+<button class="chat-fab" @onclick="ToggleOpen" title="@Lang.T("chat.fab.title")">
     @if (_state == ChatState.Closed)
     {
         <i class="bi bi-chat-dots-fill"></i>

@@ -10,6 +10,7 @@ namespace vodongha.Components.Shared;
 public partial class ChatWidget : ComponentBase, IAsyncDisposable
 {
     [Inject] private ChatService ChatSvc { get; set; } = default!;
+    [Inject] private LanguageService Lang { get; set; } = default!;
     [Inject] private ProtectedLocalStorage LocalStorage { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
@@ -398,13 +399,16 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     protected override void OnInitialized()
     {
         Tz.OnTimezoneSet += OnTimezoneUpdated;
+        Lang.OnChange += OnLangChanged;
     }
 
     private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
+    private void OnLangChanged() => InvokeAsync(StateHasChanged);
 
     public async ValueTask DisposeAsync()
     {
         Tz.OnTimezoneSet -= OnTimezoneUpdated;
+        Lang.OnChange -= OnLangChanged;
         _typingCts?.Cancel();
         if (_hubConnection != null)
         {
