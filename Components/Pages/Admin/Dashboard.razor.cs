@@ -32,12 +32,16 @@ public partial class Dashboard : ComponentBase, IAsyncDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender) return;
+        try
         {
             _menuOrder = await Secrets.GetValueAsync(MenuPrefKey) ?? "[]";
             await InvokeAsync(StateHasChanged);   // update data-saved-order in DOM before JS reads it
             await JS.InvokeVoidAsync("initSortableCards", "admin-dash-cards", _dotNetRef, MenuPrefKey);
         }
+        catch (JSDisconnectedException) { /* user navigated away */ }
+        catch (ObjectDisposedException) { /* component disposed */ }
+        catch (OperationCanceledException) { /* cancelled */ }
     }
 
     /// <summary>Called by JS when user finishes dragging a card.</summary>

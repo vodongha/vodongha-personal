@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -25,10 +26,14 @@ public partial class AdminCv : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender) return;
+        try
         {
             await LoadAsync();
         }
+        catch (JSDisconnectedException) { /* user navigated away */ }
+        catch (ObjectDisposedException) { /* component disposed */ }
+        catch (OperationCanceledException) { /* cancelled */ }
     }
 
     private async Task LoadAsync()
