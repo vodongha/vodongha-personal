@@ -31,18 +31,24 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private static List<Country> BuildCountryList()
     {
         var util = PhoneNumberUtil.GetInstance();
-        var all = util.GetSupportedRegions()
-            .Select(region =>
+        var all = new List<Country>();
+
+        foreach (string region in util.GetSupportedRegions())
+        {
+            try
             {
                 int dialCode = util.GetCountryCodeForRegion(region);
-                string flag = RegionToFlag(region);
                 string name = new System.Globalization.RegionInfo(region).EnglishName;
-                return new Country(flag, region, $"+{dialCode}", name);
-            })
-            .OrderBy(c => c.Name)
-            .ToList();
+                all.Add(new Country(RegionToFlag(region), region, $"+{dialCode}", name));
+            }
+            catch
+            {
+                // Skip unsupported regions (e.g. "001", "AC", "TA")
+            }
+        }
 
-        // Move priority regions to top
+        all = [.. all.OrderBy(c => c.Name)];
+
         var priority = PriorityRegions
             .Select(r => all.FirstOrDefault(c => c.RegionCode == r))
             .Where(c => c != null)
