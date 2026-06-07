@@ -167,7 +167,8 @@ public class ChatService
         };
 
         session.LastMessageAt = DateTime.UtcNow;
-        session.HasUnread = true;
+        // Admin replied from Telegram — they clearly read the conversation, so mark as read
+        session.HasUnread = false;
         db.ChatMessages.Add(message);
         await db.SaveChangesAsync();
 
@@ -216,6 +217,16 @@ public class ChatService
         {
             session.HasUnread = false;
             await db.SaveChangesAsync();
+        }
+    }
+
+    public async Task SendTypingToTelegramAsync(int sessionId)
+    {
+        await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
+        ChatSession? session = await db.ChatSessions.FindAsync(sessionId);
+        if (session?.TelegramTopicId != null)
+        {
+            await _telegram.SendTypingAsync(session.TelegramTopicId.Value);
         }
     }
 
