@@ -1,0 +1,152 @@
+@page "/admin/health"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@inject AdminLocalizationService Loc
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">@Loc.T("Server Status")</h1>
+            <div class="health-refresh">
+                <span class="health-refresh__label">@Loc.T("Auto-refresh"): @_countdown s</span>
+                <button class="admin-btn admin-btn--ghost admin-btn--sm" @onclick="Refresh">
+                    <i class="bi bi-arrow-clockwise @(_isRefreshing ? "admin-spin" : "")"></i> @Loc.T("Refresh")
+                </button>
+            </div>
+        </header>
+
+        <!-- Status cards -->
+        <div class="health-cards">
+            <div class="health-card @(_latest?.DbHealthy == true ? "health-card--ok" : "health-card--error")">
+                <div class="health-card__icon">
+                    <i class="bi @(_latest?.DbHealthy == true ? "bi-server" : "bi-exclamation-triangle")"></i>
+                </div>
+                <div class="health-card__body">
+                    <div class="health-card__label">@Loc.T("Server")</div>
+                    <div class="health-card__value">@(_latest != null ? Loc.T("Online") : "—")</div>
+                </div>
+                <div class="health-card__dot health-card__dot--@(_latest?.DbHealthy == true ? "ok" : "error")"></div>
+            </div>
+
+            <div class="health-card @(_latest?.DbHealthy == true ? "health-card--ok" : "health-card--error")">
+                <div class="health-card__icon">
+                    <i class="bi bi-database@(_latest?.DbHealthy == true ? "-check" : "-x")"></i>
+                </div>
+                <div class="health-card__body">
+                    <div class="health-card__label">@Loc.T("Database")</div>
+                    <div class="health-card__value">
+                        @if (_latest?.DbHealthy == true)
+                        {
+                            <span>@_latest.DbPingMs ms</span>
+                        }
+                        else
+                        {
+                            <span>@Loc.T("Unreachable")</span>
+                        }
+                    </div>
+                </div>
+                <div class="health-card__dot health-card__dot--@(_latest?.DbHealthy == true ? "ok" : "error")"></div>
+            </div>
+
+            <div class="health-card">
+                <div class="health-card__icon"><i class="bi bi-clock-history"></i></div>
+                <div class="health-card__body">
+                    <div class="health-card__label">@Loc.T("Uptime")</div>
+                    <div class="health-card__value">@FormatUptime(_uptime)</div>
+                </div>
+            </div>
+
+            <div class="health-card">
+                <div class="health-card__icon"><i class="bi bi-memory"></i></div>
+                <div class="health-card__body">
+                    <div class="health-card__label">@Loc.T("Memory")</div>
+                    <div class="health-card__value">@(_latest != null ? $"{_latest.MemoryMb} MB" : "—")</div>
+                </div>
+            </div>
+
+            <div class="health-card">
+                <div class="health-card__icon"><i class="bi bi-cpu"></i></div>
+                <div class="health-card__body">
+                    <div class="health-card__label">@Loc.T("Threads")</div>
+                    <div class="health-card__value">@(_latest?.ThreadCount.ToString() ?? "—")</div>
+                </div>
+            </div>
+
+            <div class="health-card">
+                <div class="health-card__icon"><i class="bi bi-calendar3"></i></div>
+                <div class="health-card__body">
+                    <div class="health-card__label">@Loc.T("Started at")</div>
+                    <div class="health-card__value health-card__value--sm">@_startedAt.ToLocalTime().ToString("dd/MM HH:mm")</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="health-charts">
+            <div class="health-chart-card">
+                <div class="health-chart-card__header">
+                    <span class="health-chart-card__title">
+                        <i class="bi bi-memory"></i> @Loc.T("Memory Usage")
+                    </span>
+                    <span class="health-chart-card__unit">MB</span>
+                </div>
+                <div class="health-chart-card__body">
+                    <canvas id="chart-memory"></canvas>
+                </div>
+            </div>
+
+            <div class="health-chart-card">
+                <div class="health-chart-card__header">
+                    <span class="health-chart-card__title">
+                        <i class="bi bi-database"></i> @Loc.T("DB Response Time")
+                    </span>
+                    <span class="health-chart-card__unit">ms</span>
+                </div>
+                <div class="health-chart-card__body">
+                    <canvas id="chart-db"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Snapshot table -->
+        <div class="health-table-wrap">
+            <div class="health-section-title">@Loc.T("Recent snapshots")</div>
+            <table class="quickgrid">
+                <thead>
+                    <tr>
+                        <th>@Loc.T("Time")</th>
+                        <th>@Loc.T("Memory")</th>
+                        <th>@Loc.T("DB Ping")</th>
+                        <th>@Loc.T("Threads")</th>
+                        <th>@Loc.T("Status")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (HealthMetricSnapshot snap in _snapshots.OrderByDescending(s => s.Timestamp))
+                    {
+                        <tr>
+                            <td style="color:#6b7280;font-size:.8rem">@snap.Timestamp.ToLocalTime().ToString("HH:mm:ss")</td>
+                            <td>@snap.MemoryMb MB</td>
+                            <td>@(snap.DbHealthy ? $"{snap.DbPingMs} ms" : "—")</td>
+                            <td>@snap.ThreadCount</td>
+                            <td>
+                                @if (snap.DbHealthy)
+                                {
+                                    <span class="health-badge health-badge--ok"><i class="bi bi-check-circle-fill"></i> OK</span>
+                                }
+                                else
+                                {
+                                    <span class="health-badge health-badge--error"><i class="bi bi-x-circle-fill"></i> Error</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>

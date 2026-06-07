@@ -132,6 +132,25 @@ public class AdminLocalizationService
         ["User"] = "User",
         ["Admin"] = "Admin",
 
+        // Health Monitor
+        ["Server Status"] = "Trạng thái Server",
+        ["Health"] = "Monitor",
+        ["Auto-refresh"] = "Tự động làm mới",
+        ["Refresh"] = "Làm mới",
+        ["Server"] = "Server",
+        ["Database"] = "Cơ sở dữ liệu",
+        ["Uptime"] = "Thời gian hoạt động",
+        ["Memory"] = "Bộ nhớ",
+        ["Threads"] = "Luồng",
+        ["Started at"] = "Khởi động lúc",
+        ["Online"] = "Hoạt động",
+        ["Unreachable"] = "Không kết nối",
+        ["Memory Usage"] = "Sử dụng bộ nhớ",
+        ["DB Response Time"] = "Thời gian phản hồi DB",
+        ["Recent snapshots"] = "Lịch sử gần đây",
+        ["Time"] = "Thời gian",
+        ["DB Ping"] = "DB Ping",
+
         // Settings
         ["Personal information"] = "Thông tin cá nhân",
         ["Introduction"] = "Giới thiệu",
