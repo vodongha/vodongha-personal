@@ -16,6 +16,45 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     private bool _isRefreshing;
     private int _countdown = 30;
 
+    // Table sort + pagination
+    private string _sortCol = "Time";
+    private bool _sortAsc = false;  // newest first by default
+    private int _page = 0;
+    private int _pageSize = 10;
+
+    private IEnumerable<HealthMetricSnapshot> Sorted => _sortCol switch
+    {
+        "Memory"  => _sortAsc ? _snapshots.OrderBy(s => s.MemoryMb)  : _snapshots.OrderByDescending(s => s.MemoryMb),
+        "DB Ping" => _sortAsc ? _snapshots.OrderBy(s => s.DbPingMs)  : _snapshots.OrderByDescending(s => s.DbPingMs),
+        "Threads" => _sortAsc ? _snapshots.OrderBy(s => s.ThreadCount) : _snapshots.OrderByDescending(s => s.ThreadCount),
+        "Status"  => _sortAsc ? _snapshots.OrderBy(s => s.DbHealthy)  : _snapshots.OrderByDescending(s => s.DbHealthy),
+        _         => _sortAsc ? _snapshots.OrderBy(s => s.Timestamp)  : _snapshots.OrderByDescending(s => s.Timestamp),
+    };
+
+    private List<HealthMetricSnapshot> Paged => Sorted.Skip(_page * _pageSize).Take(_pageSize).ToList();
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(_snapshots.Count / (double)_pageSize));
+
+    private void SortBy(string col)
+    {
+        if (_sortCol == col) { _sortAsc = !_sortAsc; }
+        else { _sortCol = col; _sortAsc = col != "Time"; }
+        _page = 0;
+    }
+
+    private string SortIcon(string col)
+    {
+        if (_sortCol != col) return "bi-chevron-expand";
+        return _sortAsc ? "bi-chevron-up" : "bi-chevron-down";
+    }
+
+    private void GoPage(int p) => _page = Math.Clamp(p, 0, TotalPages - 1);
+
+    private void OnPageSizeChange(ChangeEventArgs e)
+    {
+        _pageSize = int.TryParse(e.Value?.ToString(), out int v) ? v : 10;
+        _page = 0;
+    }
+
     private CancellationTokenSource _cts = new();
 
     protected override void OnInitialized()

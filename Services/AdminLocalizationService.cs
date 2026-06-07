@@ -150,6 +150,8 @@ public class AdminLocalizationService
         ["Recent snapshots"] = "Lịch sử gần đây",
         ["Time"] = "Thời gian",
         ["DB Ping"] = "DB Ping",
+        ["items"] = "mục",
+        ["Page"] = "Trang",
 
         // Settings
         ["Personal information"] = "Thông tin cá nhân",

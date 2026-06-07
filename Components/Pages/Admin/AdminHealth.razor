@@ -114,22 +114,43 @@
 
         <!-- Snapshot table -->
         <div class="health-table-wrap">
-            <div class="health-section-title">@Loc.T("Recent snapshots")</div>
+            <div class="admin-toolbar">
+                <div class="health-section-title" style="margin:0">@Loc.T("Recent snapshots")</div>
+                <div class="admin-select-wrap">
+                    <select class="admin-page-size" value="@_pageSize" @onchange="OnPageSizeChange">
+                        <option value="5">5 / @Loc.T("page")</option>
+                        <option value="10" selected>10 / @Loc.T("page")</option>
+                        <option value="20">20 / @Loc.T("page")</option>
+                        <option value="50">50 / @Loc.T("page")</option>
+                    </select>
+                </div>
+            </div>
+
             <table class="quickgrid">
                 <thead>
                     <tr>
-                        <th>@Loc.T("Time")</th>
-                        <th>@Loc.T("Memory")</th>
-                        <th>@Loc.T("DB Ping")</th>
-                        <th>@Loc.T("Threads")</th>
-                        <th>@Loc.T("Status")</th>
+                        <th class="sortable" @onclick='() => SortBy("Time")'>
+                            @Loc.T("Time") <i class="bi @SortIcon("Time")"></i>
+                        </th>
+                        <th class="sortable" @onclick='() => SortBy("Memory")'>
+                            @Loc.T("Memory") <i class="bi @SortIcon("Memory")"></i>
+                        </th>
+                        <th class="sortable" @onclick='() => SortBy("DB Ping")'>
+                            @Loc.T("DB Ping") <i class="bi @SortIcon("DB Ping")"></i>
+                        </th>
+                        <th class="sortable" @onclick='() => SortBy("Threads")'>
+                            @Loc.T("Threads") <i class="bi @SortIcon("Threads")"></i>
+                        </th>
+                        <th class="sortable" @onclick='() => SortBy("Status")'>
+                            @Loc.T("Status") <i class="bi @SortIcon("Status")"></i>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (HealthMetricSnapshot snap in _snapshots.OrderByDescending(s => s.Timestamp))
+                    @foreach (HealthMetricSnapshot snap in Paged)
                     {
                         <tr>
-                            <td style="color:#6b7280;font-size:.8rem">@snap.Timestamp.ToLocalTime().ToString("HH:mm:ss")</td>
+                            <td style="color:#6b7280;font-size:.8rem;font-variant-numeric:tabular-nums">@snap.Timestamp.ToLocalTime().ToString("HH:mm:ss")</td>
                             <td>@snap.MemoryMb MB</td>
                             <td>@(snap.DbHealthy ? $"{snap.DbPingMs} ms" : "—")</td>
                             <td>@snap.ThreadCount</td>
@@ -147,6 +168,17 @@
                     }
                 </tbody>
             </table>
+
+            <div class="paginator">
+                <span class="paginator-summary">@_snapshots.Count @Loc.T("items")</span>
+                <nav>
+                    <button @onclick="() => GoPage(0)" disabled="@(_page == 0)">«</button>
+                    <button @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">‹</button>
+                    <span>@Loc.T("Page") @(_page + 1) / @TotalPages</span>
+                    <button @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">›</button>
+                    <button @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">»</button>
+                </nav>
+            </div>
         </div>
     </main>
 </div>
