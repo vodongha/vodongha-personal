@@ -83,11 +83,18 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         _phone = new string(raw.Where(c => char.IsDigit(c) || c == ' ' || c == '-').ToArray());
     }
 
-    private static bool IsValidPhone(string phone)
+    private bool IsValidPhone(string phone)
     {
         if (string.IsNullOrWhiteSpace(phone)) return false;
-        string digits = new string(phone.Where(char.IsDigit).ToArray());
-        return digits.Length >= 6 && digits.Length <= 15;
+        try
+        {
+            PhoneNumber parsed = PhoneUtil.Parse(phone, _selectedRegion);
+            return PhoneUtil.IsValidNumberForRegion(parsed, _selectedRegion);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private string FullPhone => $"{SelectedCountry.Dial}{new string(_phone.Where(char.IsDigit).ToArray())}";
