@@ -241,6 +241,16 @@ public class ChatService
         }
     }
 
+    public async Task DeleteSessionAsync(int sessionId)
+    {
+        await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
+        await db.ChatMessages.Where(m => m.ChatSessionId == sessionId).ExecuteDeleteAsync();
+        await db.ChatSessions.Where(s => s.Id == sessionId).ExecuteDeleteAsync();
+
+        // Notify admin group so the session card disappears in real-time for all admin tabs
+        await _hub.Clients.Group("admin").SendAsync("SessionDeleted", sessionId);
+    }
+
     public async Task<int> GetUnreadCountAsync()
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();

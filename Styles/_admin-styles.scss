@@ -808,9 +808,27 @@ tr.admin-row--dragover td {
     }
 
     &__info { flex: 1; min-width: 0; }
-    &__name { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.15rem; }
+    &__name { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.15rem; display: flex; align-items: center; gap: 0.4rem; }
     &__meta { font-size: 0.75rem; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    &__time { font-size: 0.7rem; color: #6b7280; flex-shrink: 0; }
+
+    &__right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+
+    &__time { font-size: 0.7rem; color: #6b7280; }
+
+    &__delete {
+        opacity: 0;
+        transition: opacity 150ms;
+        padding: 0.2rem 0.4rem !important;
+        font-size: 0.75rem !important;
+    }
+
+    &:hover &__delete { opacity: 1; }
 }
 
 .chat-admin-window {
