@@ -80,7 +80,7 @@
                 <div class="health-card__icon"><i class="bi bi-calendar3"></i></div>
                 <div class="health-card__body">
                     <div class="health-card__label">@Loc.T("Started at")</div>
-                    <div class="health-card__value health-card__value--sm">@_startedAt.ToLocalTime().ToString("dd/MM HH:mm")</div>
+                    <div class="health-card__value health-card__value--sm">@Tz.ToUserTime(_startedAt).ToString("dd/MM HH:mm")</div>
                 </div>
             </div>
         </div>
@@ -150,7 +150,7 @@
                     @foreach (HealthMetricSnapshot snap in Paged)
                     {
                         <tr>
-                            <td style="color:#6b7280;font-size:.8rem;font-variant-numeric:tabular-nums">@snap.Timestamp.ToLocalTime().ToString("HH:mm:ss")</td>
+                            <td style="color:#6b7280;font-size:.8rem;font-variant-numeric:tabular-nums">@Tz.ToUserTime(snap.Timestamp).ToString("HH:mm:ss")</td>
                             <td>@snap.MemoryMb MB</td>
                             <td>@(snap.DbHealthy ? $"{snap.DbPingMs} ms" : "—")</td>
                             <td>@snap.ThreadCount</td>

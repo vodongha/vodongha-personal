@@ -13,6 +13,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private ToastService Toast { get; set; } = default!;
+    [Inject] private TimezoneService Tz { get; set; } = default!;
 
     private List<ChatSession> _sessions = [];
     private List<ChatMessage> _messages = [];

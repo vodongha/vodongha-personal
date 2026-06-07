@@ -1,0 +1,25 @@
+@* Renders nothing — detects the browser's IANA timezone via JS and stores it in the
+   scoped TimezoneService so all components can convert UTC datetimes to the user's local time. *@
+@rendermode InteractiveServer
+@inject TimezoneService TzService
+@inject IJSRuntime JS
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || TzService.IsSet)
+        {
+            return;
+        }
+
+        try
+        {
+            string tz = await JS.InvokeAsync<string>("getTimezone");
+            TzService.Set(tz);
+        }
+        catch
+        {
+            // JS not available (e.g. pre-render) — will stay UTC
+        }
+    }
+}

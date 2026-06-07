@@ -8,6 +8,7 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
 {
     [Inject] private HealthMonitorService Monitor { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private TimezoneService Tz { get; set; } = default!;
 
     private IReadOnlyList<HealthMetricSnapshot> _snapshots = [];
     private HealthMetricSnapshot? _latest;

@@ -40,10 +40,10 @@ else
         <header class="blog-post__header">
             <h1 class="blog-post__title">@DisplayTitle</h1>
             <div class="blog-post__meta">
-                <span><i class="bi bi-calendar3"></i> @_post.CreatedAt.ToString("dd/MM/yyyy")</span>
+                <span><i class="bi bi-calendar3"></i> @Tz.ToUserTime(_post.CreatedAt).ToString("dd/MM/yyyy")</span>
                 @if (_post.UpdatedAt.HasValue)
                 {
-                    <span>· Cập nhật @_post.UpdatedAt.Value.ToString("dd/MM/yyyy")</span>
+                    <span>· Cập nhật @Tz.ToUserTime(_post.UpdatedAt.Value).ToString("dd/MM/yyyy")</span>
                 }
             </div>
 
