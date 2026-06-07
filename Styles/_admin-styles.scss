@@ -633,6 +633,11 @@ tr.admin-row--dragover td {
         &[aria-sort="none"]    button::after { content: '↕'; }
         &.col-sort-asc         button::after { content: '↑'; color: $color-primary; opacity: 1; }
         &.col-sort-desc        button::after { content: '↓'; color: $color-primary; opacity: 1; }
+
+        // Manual sort arrows (used in Health page — no QuickGrid button wrapper)
+        .sort-arrow { font-style: normal; opacity: 0.35; font-size: 0.8em; margin-left: 0.3em; }
+        &.col-sort-asc  .sort-arrow { color: $color-primary; opacity: 1; }
+        &.col-sort-desc .sort-arrow { color: $color-primary; opacity: 1; }
     }
 
     td {
