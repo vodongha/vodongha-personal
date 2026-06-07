@@ -186,9 +186,12 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             _sessionId = session.Id;
             await LocalStorage.SetAsync("chatSessionId", session.Id);
             _state = ChatState.Chat;
-            _messages = [];
             _unreadCount = 0;
             await ConnectHubAsync();
+            // Load messages from DB so the auto welcome message is visible immediately
+            _messages = (await ChatSvc.GetMessagesAsync(session.Id))
+                .Select(m => new ChatMessageDto(m.Id, m.Content, m.IsFromUser, m.SentAt))
+                .ToList();
         }
         finally
         {
