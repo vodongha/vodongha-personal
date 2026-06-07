@@ -44,7 +44,7 @@ public class CvPdfService
             {
                 page.Size(PageSizes.A4);
                 page.Margin(0);
-                page.DefaultTextStyle(ts => ts.FontFamily("Arial").FontSize(9).FontColor(MainText));
+                page.DefaultTextStyle(ts => ts.FontFamily("Liberation Sans").FontSize(9).FontColor(MainText));
 
                 page.Content().Row(row =>
                 {
