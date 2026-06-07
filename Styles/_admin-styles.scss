@@ -1140,7 +1140,15 @@ tr.admin-row--dragover td {
         overflow: hidden;
         text-overflow: ellipsis;
 
-        &--sm { font-size: 0.85rem; }
+        &--sm   { font-size: 0.85rem; }
+
+        // Allow wrapping — use on cost cards where full text must be visible
+        &--wrap {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+            word-break: break-word;
+        }
     }
 
     &__dot {
@@ -1271,34 +1279,72 @@ tr.admin-row--dragover td {
     border-radius: 12px;
     padding: 1.5rem 2rem;
     margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
 
-    &__label {
-        font-size: 0.8rem;
+    &__cols {
+        display: flex;
+        align-items: stretch;
+        gap: 0;
+        flex-wrap: wrap;
+    }
+
+    &__col {
+        flex: 1;
+        min-width: 160px;
+        padding: 0.25rem 1.5rem 0.25rem 0;
+
+        &:last-child { padding-right: 0; padding-left: 1.5rem; }
+    }
+
+    &__divider {
+        width: 1px;
+        background: #2d3748;
+        align-self: stretch;
+        flex-shrink: 0;
+
+        @media (max-width: 480px) { display: none; }
+    }
+
+    &__col-label {
+        font-size: 0.75rem;
         color: #9ca3af;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        flex-basis: 100%;
+        margin-bottom: 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+
+        i { font-size: 0.8rem; }
     }
 
-    &__value {
-        font-size: 2rem;
+    &__col-value {
+        font-size: 1.9rem;
         font-weight: 700;
         color: #f9fafb;
         font-variant-numeric: tabular-nums;
+        line-height: 1.1;
+
+        &--actual { color: $color-primary; }
+        &--na     { color: #6b7280; font-size: 1.4rem; }
     }
 
-    &__note {
-        font-size: 1rem;
+    &__col-sub {
+        font-size: 0.72rem;
         color: #6b7280;
-        margin-left: 0.25rem;
+        margin-top: 0.25rem;
+    }
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #2d3748;
     }
 
     &__updated {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         color: #4b5563;
         margin-left: auto;
     }
@@ -1399,19 +1445,21 @@ tr.admin-row--dragover td {
 }
 
 .cost-restart-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    gap: 0.3rem;
+    padding: 0.35rem 0.75rem;
     border: 1px solid #374151;
     border-radius: 6px;
     background: transparent;
     color: #9ca3af;
+    font-size: 0.75rem;
+    font-weight: 500;
     cursor: pointer;
     flex-shrink: 0;
     transition: color 150ms, border-color 150ms, background 150ms;
-    margin-left: auto;
+    white-space: nowrap;
 
     &:hover:not(:disabled) {
         color: $color-primary;
@@ -1426,8 +1474,35 @@ tr.admin-row--dragover td {
         border-color: $color-primary;
     }
 
-    i { font-size: 0.85rem; }
+    i { font-size: 0.8rem; }
+    span { display: inline; }
 }
+
+// Wider grid for cost cards so text has room
+.cost-cards {
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+}
+
+// Machine card: stack vertically so restart button has its own row
+.cost-machine-card {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .cost-restart-btn {
+        margin-top: 0.25rem;
+        margin-left: auto;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.cost-machine-label {
+    white-space: normal !important;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.cost-blue { color: #60a5fa !important; }
 
 // Modal warn icon variant
 .admin-modal__icon--warn {
