@@ -115,7 +115,7 @@
 
                         <div class="chat-admin-input">
                             <textarea rows="2" placeholder="Nhập tin nhắn trả lời..."
-                                      value="@_replyText"
+                                      @bind="_replyText"
                                       @oninput="OnReplyInput"
                                       @onkeydown="OnReplyKeyDown"></textarea>
                             <button class="admin-btn admin-btn--primary"
