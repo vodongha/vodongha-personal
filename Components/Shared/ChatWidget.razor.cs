@@ -16,7 +16,6 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
-    [Inject] private GeoIpService GeoIp { get; set; } = default!;
 
     private enum ChatState { Closed, Form, Chat }
 
@@ -539,10 +538,9 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     {
         try
         {
-            // Read the IP that was embedded in the page during SSR (App.razor window.__clientIp)
-            string ip = await JS.InvokeAsync<string>("eval", "window.__clientIp || ''");
-            string? code = await GeoIp.GetCountryCodeAsync(ip);
-            if (code != null && Countries.Any(c => c.RegionCode == code))
+            // Call ipinfo.io from the browser (user's own IP — avoids server-side proxy issues)
+            string code = await JS.InvokeAsync<string>("chatUtils.detectCountry");
+            if (!string.IsNullOrWhiteSpace(code) && Countries.Any(c => c.RegionCode == code))
             {
                 _selectedRegion = code;
                 await InvokeAsync(StateHasChanged);
