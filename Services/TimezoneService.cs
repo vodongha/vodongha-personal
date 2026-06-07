@@ -9,6 +9,9 @@ public class TimezoneService
     public TimeZoneInfo Timezone { get; private set; } = TimeZoneInfo.Utc;
     public bool IsSet { get; private set; }
 
+    /// <summary>Fired on the circuit thread after the timezone is resolved from the browser.</summary>
+    public event Action? OnTimezoneSet;
+
     public void Set(string ianaOrWindowsId)
     {
         if (string.IsNullOrWhiteSpace(ianaOrWindowsId))
@@ -20,6 +23,7 @@ public class TimezoneService
         {
             Timezone = TimeZoneInfo.FindSystemTimeZoneById(ianaOrWindowsId);
             IsSet = true;
+            OnTimezoneSet?.Invoke();
         }
         catch
         {

@@ -25,5 +25,16 @@ public partial class BlogPostPage : ComponentBase, IDisposable
         Lang.OnChange += StateHasChanged;
     }
 
-    public void Dispose() => Lang.OnChange -= StateHasChanged;
+    protected override void OnInitialized()
+    {
+        Tz.OnTimezoneSet += OnTimezoneUpdated;
+    }
+
+    private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Lang.OnChange -= StateHasChanged;
+        Tz.OnTimezoneSet -= OnTimezoneUpdated;
+    }
 }

@@ -365,8 +365,16 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         await _hubConnection.InvokeAsync("JoinSession", _sessionId.Value.ToString());
     }
 
+    protected override void OnInitialized()
+    {
+        Tz.OnTimezoneSet += OnTimezoneUpdated;
+    }
+
+    private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
+
     public async ValueTask DisposeAsync()
     {
+        Tz.OnTimezoneSet -= OnTimezoneUpdated;
         _typingCts?.Cancel();
         if (_hubConnection != null)
         {
