@@ -22,6 +22,8 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 | Chat | Telegram Bot API + SignalR (`Microsoft.AspNetCore.SignalR.Client`). Secrets: `Telegram__BotToken`, `Telegram__ChatId`, `Telegram__WebhookSecret` |
 | Real-time | ASP.NET Core SignalR (`ChatHub`) — session groups, admin group, typing events |
 | Charts | Chart.js 4.4 via CDN — wrapped in `wwwroot/js/healthChart.js` |
+| PDF generation | QuestPDF 2026.5.0 Community — `CvPdfService.Generate(cv, template, avatarBytes)` dispatches to 3 template methods; `QuestPDF.Settings.License = LicenseType.Community` set at call site |
+| Image processing | SkiaSharp 3.116.1 — `CropSquareTop(byte[])` crops image to square (center-horizontal, top-vertical) before QuestPDF so `FitArea()` fills the circle without letterboxing |
 | Phone validation | `libphonenumber-csharp` — validates per country's numbering plan (`IsValidNumberForRegion`) |
 | Geo IP | ipinfo.io — called from browser JS (`chatUtils.detectCountry`) for country code detection |
 | Deploy | Fly.io, app `vodongha`, region `sin`, `auto_stop_machines = "suspend"`. Merge PR to `master` → auto-deploy (~2 min) |
@@ -98,7 +100,8 @@ vodongha-personal/
 │   │   │   ├── AdminContacts.razor + .cs    # unread badge, mark read, reply
 │   │   │   ├── AdminChats.razor + .cs       # live chat sessions, real-time messages, typing, read receipts
 │   │   │   ├── AdminHealth.razor + .cs      # server health: memory + DB ping charts, snapshot table
-│   │   │   └── AdminSettings.razor + .cs    # avatar upload, social links, bio
+│   │   │   ├── AdminSettings.razor + .cs    # avatar upload, social links, bio
+│   │   │   └── AdminCv.razor + .cs          # CV PDF download — template picker, live preview per template
 │   │   ├── Error.razor
 │   │   └── NotFound.razor
 │   ├── Sections/                     # One file per landing page section
@@ -141,7 +144,8 @@ vodongha-personal/
 │   ├── ChatService.cs                # Sessions, messages, Telegram webhook handler, SignalR push
 │   ├── TelegramService.cs            # Bot API: CreateTopicAsync, SendMessageAsync (returns TopicDeleted flag), DeleteTopicAsync, SendTypingAsync
 │   ├── HealthMonitorService.cs       # Singleton + IHostedService — collects metrics every 30s, 24-snapshot circular buffer
-│   └── TimezoneService.cs            # Scoped — stores browser IANA timezone; ToUserTime(DateTime utc); fires OnTimezoneSet event for component re-render
+│   ├── TimezoneService.cs            # Scoped — stores browser IANA timezone; ToUserTime(DateTime utc); fires OnTimezoneSet event for component re-render
+│   └── CvPdfService.cs               # QuestPDF: Generate(CvData, template, avatarBytes?) → byte[]; 3 templates (0=DarkSidebar 1=Minimal 2=Professional); CropSquareTop() via SkiaSharp
 ├── Styles/
 │   ├── app.scss                      # Public site entry point — imports all _*.scss partials
 │   ├── admin.scss                    # Admin entry point — imports _admin-styles.scss
@@ -341,6 +345,44 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 builder.Services.AddSingleton<HealthMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 ```
+
+## CV PDF
+
+`CvPdfService` generates an A4 PDF CV from live database data. Registered as `AddScoped<CvPdfService>()`.
+
+### Endpoint
+
+`GET /api/cv/download?template={0|1|2}` — requires auth (`.RequireAuthorization()`). Loads `SiteSettings` + all Skills/Experiences/Educations/Projects, reads avatar bytes directly from `env.WebRootPath` filesystem (not via HTTP self-request which fails on Fly.io), calls `CvPdfService.Generate()`, returns `application/pdf`.
+
+### Templates
+
+| # | Name | Layout |
+|---|---|---|
+| 0 | Dark Sidebar | Dark `#0f1923` sidebar (175pt) + white main; green `#6ee7b7` accents |
+| 1 | Minimal | White full-width header (avatar + name + contacts) + green divider + 2-col body (160pt skills left, content right) |
+| 2 | Professional | Navy `#1e3a5f` full-width header + blue `#3b82f6` 4pt stripe + 2-col body (170pt skills left, content right) |
+
+### Avatar pipeline
+
+1. `Program.cs`: reads avatar from `wwwroot` filesystem for relative URLs; HTTP download for absolute URLs
+2. `CvPdfService.CropSquareTop(byte[])`: SkiaSharp — crops to square (center-X, `y=0` top-anchor to show face), returns JPEG bytes
+3. QuestPDF: `AutoItem().AlignMiddle().Width(N).Height(N).CornerRadius(N/2).AlignCenter().AlignMiddle().Image(bytes).FitArea()` — `AutoItem` instead of `ConstantItem` ensures square container so `FitArea()` centers correctly
+
+### QuestPDF rules
+
+- Always use `FitArea()` not `FitWidth()` — `FitWidth()` can overflow height constraints
+- Skills use `Inlined` container (not `Row` + `AutoItem`) — `Row` doesn't wrap and causes overflow crash
+- Font: `FontFamily("Noto Sans")` — requires `fonts-noto` + `fonts-liberation` + `libfontconfig1` in Dockerfile for Vietnamese diacritic support on Linux
+- `QuestPDF.Settings.License = LicenseType.Community` must be set before every `Document.Create()` call
+
+### Admin preview
+
+`AdminCv.razor` shows a live HTML preview that matches each PDF layout:
+- Template 0: uses existing `.cv-preview` (dark sidebar CSS)
+- Template 1: uses `.cv-minimal-preview` (white header row + green 2-col)
+- Template 2: uses `.cv-pro-preview` (navy header + blue 2-col)
+
+CSS: `.cv-preview__entry-link`, `.cv-preview__tech`, `.cv-preview__entry-sub` overridden per theme inside `.cv-pro-preview { }` wrapper to use blue instead of the site's default green.
 
 ## Timezone detection
 

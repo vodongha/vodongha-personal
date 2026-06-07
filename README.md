@@ -45,6 +45,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Chats** — live chat sessions with real-time messages, typing indicator, read receipts
 - **Server Health** — live memory + DB response time charts (Chart.js), auto-refresh every 30s
 - **Settings** — bio (VI/EN), social links, avatar upload
+- **CV / Resume PDF** — generate a polished PDF CV from live DB data; 3 modern templates (Dark Sidebar, Minimal, Professional); template picker with live preview that matches PDF layout; avatar center-cropped via SkiaSharp; Vietnamese text via Noto Sans font
 - **Mobile responsive** — fixed bottom navigation bar on screens ≤ 768px
 
 ---
@@ -61,6 +62,8 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | Charts | Chart.js 4.4 |
 | Email | [Resend](https://resend.com) API |
 | Chat backend | Telegram Bot API (forum topics per session) |
+| PDF generation | [QuestPDF](https://www.questpdf.com) (Community) |
+| Image processing | SkiaSharp — avatar square-crop before PDF rendering |
 | Phone validation | Google libphonenumber (`libphonenumber-csharp`) |
 | Geo IP | ipinfo.io (browser-side, free tier) |
 | Deploy | [Fly.io](https://fly.io), region Singapore (`suspend` mode) |
