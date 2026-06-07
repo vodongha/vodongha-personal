@@ -22,11 +22,12 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 
 ### Live chat widget
 - Floating chat button on all public pages
-- Visitor fills a contact form (name, email, phone) then chats in real-time
+- Visitor fills a contact form (name *, phone *, email *) then chats in real-time
 - Auto welcome message on session start
 - Real-time typing indicators (both sides)
 - Read receipts: ✓ sent, ✓✓ read
-- Date dividers ("Hôm nay" / "Hôm qua" / dd/MM/yyyy) between messages on different days
+- Date dividers (Today / Hôm nay / Yesterday / Hôm qua / dd/MM/yyyy) — fully translated VI/EN
+- All chat widget strings translated (VI/EN), re-renders instantly on language switch
 - Unread badge on FAB; "New messages" divider when reopening with unread messages
 - Messages forwarded to a Telegram group — one forum topic per session
 - Telegram topic auto-recreated if deleted; session delete synced with Telegram

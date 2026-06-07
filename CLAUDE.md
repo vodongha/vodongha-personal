@@ -300,13 +300,15 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 
 ### Chat features
 
+- **Contact form** — name, phone, and email are all required (`CanStartChat` checks all three)
 - **Optimistic UI** — messages appear instantly; replaced with real DB ID on server response
 - **Typing indicator** — `StartTyping` / `StopTyping` SignalR events, auto-stop after 2s idle
 - **Read receipts** — `MarkRead` SignalR event; ✓ = sent, ✓✓ = admin/user read
-- **Date dividers** — "Hôm nay" / "Hôm qua" / "dd/MM/yyyy" between messages on different days (user timezone)
+- **Date dividers** — "Today" / "Yesterday" / "dd/MM/yyyy" between messages on different days (user timezone, translated VI/EN)
 - **Unread divider** — "New messages" divider on reopen; badge count on FAB
 - **Auto welcome** — `CreateSessionAsync` saves a greeting `ChatMessage (IsFromUser=false)` immediately after session creation
 - **Telegram topic lifecycle** — topic created on first user message; auto-recreated with contact re-pin if deleted on Telegram side; `DeleteSessionAsync` calls `DeleteTopicAsync` before DB delete
+- **Full i18n** — all chat widget UI strings use `Lang.T("chat.*")` keys; widget re-renders on `Lang.OnChange`; `placeholder="email@example.com"` kept as-is (universal)
 
 ### Telegram setup
 
