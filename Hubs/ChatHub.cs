@@ -14,6 +14,11 @@ public class ChatHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"session_{sessionId}");
     }
 
+    public async Task JoinAdminGroup()
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, "admin");
+    }
+
     public async Task StartTyping(string sessionId)
     {
         await Clients.OthersInGroup($"session_{sessionId}").SendAsync("TypingStarted");

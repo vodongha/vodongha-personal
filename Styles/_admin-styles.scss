@@ -299,6 +299,15 @@
     height: 8px;
     border-radius: 50%;
     background: $color-primary;
+    vertical-align: middle;
+    margin-right: 4px;
+    flex-shrink: 0;
+    animation: unread-pulse 2s ease-in-out infinite;
+}
+
+@keyframes unread-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(110, 231, 183, 0.6); }
+    50%       { box-shadow: 0 0 0 4px rgba(110, 231, 183, 0); }
 }
 
 .admin-table__row--unread td { font-weight: 500; }
@@ -774,7 +783,13 @@ tr.admin-row--dragover td {
 
     &:hover { border-color: #3a3a3a; }
     &--active { border-color: rgba($color-primary, 0.5) !important; background: rgba($color-primary, 0.04); }
-    &--unread { border-color: rgba($color-primary, 0.25); }
+
+    &--unread {
+        border-color: rgba($color-primary, 0.5);
+        background: rgba($color-primary, 0.06);
+
+        .chat-session-card__name { color: #fff; }
+    }
 
     &__info { flex: 1; min-width: 0; }
     &__name { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.15rem; }
