@@ -51,6 +51,26 @@
                 <i class="bi bi-file-text admin-card__icon"></i>
                 <span class="admin-card__label">Blog</span>
             </a>
+            <a href="/admin/contacts" class="admin-card @(_unreadMessagesCount > 0 ? "admin-card--unread" : "")">
+                <div class="admin-card__icon-wrap">
+                    <i class="bi bi-envelope admin-card__icon"></i>
+                    @if (_unreadMessagesCount > 0)
+                    {
+                        <span class="admin-card__badge">@(_unreadMessagesCount > 99 ? "99+" : _unreadMessagesCount.ToString())</span>
+                    }
+                </div>
+                <span class="admin-card__label">Messages</span>
+            </a>
+            <a href="/admin/chats" class="admin-card @(_unreadChatCount > 0 ? "admin-card--unread" : "")">
+                <div class="admin-card__icon-wrap">
+                    <i class="bi bi-chat-dots admin-card__icon"></i>
+                    @if (_unreadChatCount > 0)
+                    {
+                        <span class="admin-card__badge">@(_unreadChatCount > 99 ? "99+" : _unreadChatCount.ToString())</span>
+                    }
+                </div>
+                <span class="admin-card__label">Chats</span>
+            </a>
             <a href="/admin/settings" class="admin-card">
                 <i class="bi bi-gear admin-card__icon"></i>
                 <span class="admin-card__label">Thông tin</span>
