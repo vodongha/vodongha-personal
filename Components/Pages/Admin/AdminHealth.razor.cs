@@ -83,6 +83,7 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
         {
             _statOrder  = await Secrets.GetValueAsync(StatPrefKey)  ?? "[]";
             _chartOrder = await Secrets.GetValueAsync(ChartPrefKey) ?? "[]";
+            await InvokeAsync(StateHasChanged);   // update data-saved-order in DOM before JS reads it
 
             await InitCharts();
             await JS.InvokeVoidAsync("initSortableCards", "health-stat-cards",   _dotNetRef, StatPrefKey);
