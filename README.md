@@ -4,19 +4,44 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 
 **Live:** [https://vodongha.id.vn](https://vodongha.id.vn) | **Admin:** [https://vodongha.id.vn/admin/login](https://vodongha.id.vn/admin/login)
 
+[![CI](https://github.com/vodongha/vodongha-personal/actions/workflows/ci.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/ci.yml)
+[![Deploy](https://github.com/vodongha/vodongha-personal/actions/workflows/deploy.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/deploy.yml)
+
 ---
 
 ## Features
 
+### Public site
 - **Landing page** — Hero, Skills & Technologies, Featured Projects, Work Experience, Education, Blog, Contact
 - **Bilingual (VI / EN)** — toggle on every page; all content models have dual-language fields
-- **Expand / collapse** — each section shows 2 items by default; "Show more" to reveal the rest
+- **Expand / collapse** — each section shows 2 items by default with "Show more"
 - **Blog** — full posts with bilingual content, per-page Open Graph + Twitter Card meta tags
 - **Contact form** — messages saved to DB + email notification via Resend
 - **Visitor counter** — unique visitors tracked by IP, displayed in the footer
-- **Admin panel** — manage Skills, Projects, Blog, Experience, Education, Contact Messages, Chat sessions, and site settings
-- **Mobile responsive** — admin panel has bottom navigation bar on screens ≤ 768px
-- **Live chat widget** — floating chat button on all public pages; visitors fill a contact form then chat in real-time; messages forwarded to a Telegram group (one topic per session); admin replies from Telegram or the admin panel
+- **Browser timezone** — all timestamps display in the visitor's local timezone (detected via browser JS)
+
+### Live chat widget
+- Floating chat button on all public pages
+- Visitor fills a contact form (name, email, phone) then chats in real-time
+- Auto welcome message on session start
+- Real-time typing indicators (both sides)
+- Read receipts: ✓ sent, ✓✓ read
+- Date dividers ("Hôm nay" / "Hôm qua" / dd/MM/yyyy) between messages on different days
+- Unread badge on FAB; "New messages" divider when reopening with unread messages
+- Messages forwarded to a Telegram group — one forum topic per session
+- Telegram topic auto-recreated if deleted; session delete synced with Telegram
+
+### Admin panel
+- **Dashboard** — overview stats (visitors, messages, chats, server health)
+- **Skills** — add/edit/delete with proficiency and devicon class
+- **Projects** — add/edit/delete (VI + EN), drag-to-reorder, paginated
+- **Blog** — write and publish posts (VI + EN), auto-slug from Vietnamese title
+- **Education / Experience** — manage timeline entries
+- **Messages** — contact form submissions with unread badge, mark read, delete, reply
+- **Chats** — live chat sessions with real-time messages, typing indicator, read receipts
+- **Server Health** — live memory + DB response time charts (Chart.js), auto-refresh every 30s
+- **Settings** — bio (VI/EN), social links, avatar upload
+- **Mobile responsive** — fixed bottom navigation bar on screens ≤ 768px
 
 ---
 
@@ -27,11 +52,13 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | Framework | Blazor Web App (.NET 10, Interactive Server) |
 | Database | PostgreSQL via [Neon](https://neon.tech) (Singapore) |
 | ORM | Entity Framework Core |
-| Styling | SCSS compiled by `AspNetCore.SassCompiler` — `Styles/app.scss` → public, `Styles/admin.scss` → admin |
+| Styling | SCSS — `Styles/app.scss` → public, `Styles/admin.scss` → admin |
+| Real-time | ASP.NET Core SignalR |
+| Charts | Chart.js 4.4 |
 | Email | [Resend](https://resend.com) API |
-| Chat | Telegram Bot API + SignalR — real-time two-way chat widget |
-| Deploy | [Fly.io](https://fly.io), app `vodongha`, region Singapore |
-| CI/CD | Merge PR to `master` → auto-deploy |
+| Chat backend | Telegram Bot API (forum topics per session) |
+| Deploy | [Fly.io](https://fly.io), region Singapore |
+| CI/CD | GitHub Actions — build on `develop`/PRs, deploy on merge to `master` |
 
 ---
 
@@ -39,33 +66,46 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 
 ```
 vodongha-personal/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml              # Build check on develop push and PRs
+│       └── deploy.yml          # Fly.io deploy on merge to master
 ├── Components/
-│   ├── App.razor               # HTML root — SEO meta tags (OG, Twitter, canonical), scripts
+│   ├── App.razor               # HTML root — SEO meta tags, scripts
 │   ├── Layout/                 # NavBar, MainLayout, FooterSection, AdminLayout
 │   ├── Pages/
-│   │   ├── Home.razor          # Landing page
-│   │   ├── Blog/               # BlogPostPage (per-post dynamic SEO)
+│   │   ├── Home.razor          # Landing page (InteractiveServer)
+│   │   ├── Blog/               # BlogPostPage (dynamic SEO per post)
 │   │   └── Admin/              # Login, Dashboard, Skills, Projects, Blog,
-│   │                           #   Education, Experience, Contacts, Settings
-│   │                           #   (each page: .razor + .razor.cs code-behind)
+│   │                           #   Education, Experience, Contacts, Chats,
+│   │                           #   Health, Settings (each: .razor + .razor.cs)
 │   ├── Sections/               # HeroSection, SkillsSection, ProjectsSection,
 │   │                           #   ExperienceSection, EducationSection,
 │   │                           #   BlogSection, ContactSection
-│   └── Shared/                 # ProjectCard, BlogCard, ConfirmDialog
+│   └── Shared/                 # ChatWidget, TimezoneDetector, BlogCard,
+│                               #   ProjectCard, AdminNav, ConfirmDialog
 ├── Data/
-│   ├── AppDbContext.cs          # EF context + seed data
+│   ├── AppDbContext.cs
 │   └── Models/                 # Skill, Project, BlogPost, Experience, Education,
-│                               #   ContactMessage, SiteSetting, VisitorLog
-├── Services/                   # Blog, Project, Skill, Experience, Education,
-│                               #   Contact, Email, Language, SiteSetting, Visitor
+│                               #   ContactMessage, SiteSetting, VisitorLog,
+│                               #   ChatSession, ChatMessage
+├── Hubs/
+│   └── ChatHub.cs              # SignalR hub — session groups, typing events
+├── Services/
+│   ├── ChatService.cs          # Chat sessions, messages, Telegram webhook handler
+│   ├── TelegramService.cs      # Telegram Bot API — topics, messages, typing
+│   ├── HealthMonitorService.cs # Singleton — collects server metrics every 30s
+│   ├── TimezoneService.cs      # Scoped — browser timezone for datetime conversion
+│   └── ...                     # Blog, Project, Skill, Email, Language, etc.
 ├── Styles/
-│   ├── app.scss                # Entry point for public site → wwwroot/app.css
-│   ├── admin.scss              # Entry point for admin panel → wwwroot/admin.css
-│   ├── _admin-styles.scss      # All admin panel styles (imported by admin.scss)
-│   └── _*.scss                 # Public site partials (variables, base, nav, hero, ...)
-├── wwwroot/
-│   └── js/admin.js             # Event delegation for admin UI (select arrow toggle)
-├── Migrations/                 # EF Core migrations
+│   ├── app.scss                # Public site → wwwroot/app.css
+│   ├── admin.scss              # Admin → wwwroot/admin.css
+│   └── _*.scss                 # Partials (variables, base, nav, chat, ...)
+├── wwwroot/js/
+│   ├── admin.js                # Event delegation for admin UI
+│   ├── chat.js                 # chatUtils.scrollToBottom / scrollToUnread
+│   └── healthChart.js          # Chart.js init/update/destroy wrappers
+├── Migrations/
 ├── Dockerfile
 ├── fly.toml
 └── vodongha-personal.csproj
@@ -80,6 +120,7 @@ vodongha-personal/
 ```bash
 git clone https://github.com/vodongha/vodongha-personal.git
 cd vodongha-personal
+git checkout develop
 ```
 
 Create `appsettings.Development.json`:
@@ -89,13 +130,9 @@ Create `appsettings.Development.json`:
   "ConnectionStrings": {
     "DefaultConnection": "Host=...;Database=...;Username=...;Password=..."
   },
-  "Admin": {
-    "Username": "admin",
-    "Password": "changeme"
-  },
-  "Email": {
-    "ResendApiKey": ""
-  }
+  "Admin": { "Username": "admin", "Password": "changeme" },
+  "Email": { "ResendApiKey": "" },
+  "Telegram": { "BotToken": "", "ChatId": "", "WebhookSecret": "" }
 }
 ```
 
@@ -103,92 +140,49 @@ Create `appsettings.Development.json`:
 dotnet run
 ```
 
-EF Core migrations run automatically on startup. The app is available at `https://localhost:5001`.
+EF Core migrations apply automatically on startup.
 
 ### SCSS
 
-Two separate CSS pipelines:
+Compiled CSS is **not committed**. `dotnet build` compiles automatically via `AspNetCore.SassCompiler`.
 
-| Source | Output | Used by |
-|---|---|---|
-| `Styles/app.scss` | `wwwroot/app.css` | Public pages |
-| `Styles/admin.scss` | `wwwroot/admin.css` | Admin panel |
-
-Compiled CSS is **not committed** — listed in `.gitignore`. `dotnet build` compiles SCSS automatically via `AspNetCore.SassCompiler`. Docker also compiles from scratch (CSS excluded from `.dockerignore`).
-
----
-
-## Admin panel
-
-URL: `/admin/login`
-
-| Page | Path | Purpose |
-|---|---|---|
-| Dashboard | `/admin` | Overview stats |
-| Skills | `/admin/skills` | Add/edit/delete skills with proficiency and devicon class |
-| Projects | `/admin/projects` | Add/edit/delete projects (VI + EN), drag-to-reorder, paginated |
-| Blog | `/admin/blog` | Write and publish posts (VI + EN, auto-slug from Vietnamese title) |
-| Education | `/admin/education` | Manage education entries |
-| Experience | `/admin/experience` | Manage work experience entries |
-| Messages | `/admin/contacts` | View contact form submissions — unread badge, mark read, delete, reply |
-| Chats | `/admin/chats` | View live chat sessions, read conversation history, reply directly |
-| Settings | `/admin/settings` | Bio (VI/EN), social links (GitHub, LinkedIn, Facebook), avatar upload |
+| Source | Output |
+|---|---|
+| `Styles/app.scss` | `wwwroot/app.css` |
+| `Styles/admin.scss` | `wwwroot/admin.css` |
 
 ---
 
 ## Git workflow
 
-All work is done on the `develop` branch. Changes are merged into `master` via Pull Request.
+```
+develop  →  PR  →  master  →  Fly.io auto-deploy (~2 min)
+```
+
+`master` is branch-protected — no direct push. All changes via `develop` → PR.
 
 ```bash
-# Always work on develop
 git checkout develop
-
-# Make changes, commit
+# make changes...
 git add <files>
 git commit -m "describe the change"
 git push origin develop
-
-# Open a PR: develop → master
-gh pr create --title "PR title" --body "description" --base master --head develop
-
-# After merge, master deploys automatically to Fly.io
+gh pr create --title "..." --base master --head develop
 ```
-
-`master` is production — Fly.io deploys automatically on every merge to `master`.
 
 ---
 
-## Deploy
-
-Merging a PR into `master` triggers Fly.io auto-deploy (~2 minutes). Secrets managed via `flyctl secrets set KEY=VALUE` — never committed.
-
-### Fly.io secrets
+## Fly.io secrets
 
 | Secret | Purpose |
 |---|---|
-| `ConnectionStrings__DefaultConnection` | Neon PostgreSQL connection string |
-| `Admin__Username` | Admin panel username |
-| `Admin__Password` | Admin panel password |
+| `ConnectionStrings__DefaultConnection` | Neon PostgreSQL |
+| `Admin__Username` / `Admin__Password` | Admin panel credentials |
 | `Email__ResendApiKey` | Resend API key |
-| `Telegram__BotToken` | Telegram bot token (from @BotFather) |
+| `Telegram__BotToken` | Telegram bot token |
 | `Telegram__ChatId` | Telegram group chat ID |
-| `Telegram__WebhookSecret` | Secret token to verify webhook calls |
-
----
-
-## Visitor counter
-
-Unique visitors tracked server-side by IP via middleware in `Program.cs`. Each IP stored once in `VisitorLogs`. Localhost and private IPs excluded. Count displayed in footer.
-
----
-
-## i18n
-
-Language toggle (VI / EN) via `LanguageService`. Default: **English**.
-
-- UI strings: `Lang.T("key")`
-- Bilingual content: `Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description)`
+| `Telegram__WebhookSecret` | Webhook verification token |
+| `FLY_API_TOKEN` | GitHub Actions deploy secret |
 
 ---
 
