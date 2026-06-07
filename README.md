@@ -23,8 +23,9 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 ### Live chat widget
 - Floating chat button on all public pages
 - Visitor fills a contact form (name *, phone *, email *) then chats in real-time
-- Country code dropdown with flag emoji (full list via Google libphonenumber), auto-detected from browser timezone
-- Phone and email validated on blur with i18n error messages
+- Country code dropdown with flag emoji (full list via Google libphonenumber), **auto-detected from visitor's IP** via ipinfo.io (browser-side call); falls back to timezone
+- Phone validated per country's numbering plan (libphonenumber); email validated on blur
+- Name, phone, email all show inline blur-validation errors with i18n messages
 - Auto welcome message on session start
 - Real-time typing indicators (both sides)
 - Read receipts: ✓ sent, ✓✓ read
@@ -60,8 +61,10 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | Charts | Chart.js 4.4 |
 | Email | [Resend](https://resend.com) API |
 | Chat backend | Telegram Bot API (forum topics per session) |
-| Deploy | [Fly.io](https://fly.io), region Singapore |
-| CI/CD | GitHub Actions — build on `develop`/PRs, deploy on merge to `master` |
+| Phone validation | Google libphonenumber (`libphonenumber-csharp`) |
+| Geo IP | ipinfo.io (browser-side, free tier) |
+| Deploy | [Fly.io](https://fly.io), region Singapore (`suspend` mode) |
+| CI/CD | GitHub Actions — CI on `develop`/PRs, deploy on merge to `master`, sync `develop` ← `master` after each merge |
 
 ---
 
@@ -72,9 +75,11 @@ vodongha-personal/
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml              # Build check on develop push and PRs
-│       └── deploy.yml          # Fly.io deploy on merge to master
+│       ├── deploy.yml          # Fly.io deploy on merge to master
+│       ├── pr-setup.yml        # Auto-assign, label, milestone, reviewer on PR open
+│       └── sync-develop.yml    # Merge master → develop after every merge
 ├── Components/
-│   ├── App.razor               # HTML root — SEO meta tags, scripts
+│   ├── App.razor               # HTML root — SEO meta tags, client IP embedding, scripts
 │   ├── Layout/                 # NavBar, MainLayout, FooterSection, AdminLayout
 │   ├── Pages/
 │   │   ├── Home.razor          # Landing page (InteractiveServer)
@@ -106,7 +111,7 @@ vodongha-personal/
 │   └── _*.scss                 # Partials (variables, base, nav, chat, ...)
 ├── wwwroot/js/
 │   ├── admin.js                # Event delegation for admin UI
-│   ├── chat.js                 # chatUtils.scrollToBottom / scrollToUnread
+│   ├── chat.js                 # chatUtils — scroll, country detection (ipinfo.io)
 │   └── healthChart.js          # Chart.js init/update/destroy wrappers
 ├── Migrations/
 ├── Dockerfile
@@ -160,9 +165,11 @@ Compiled CSS is **not committed**. `dotnet build` compiles automatically via `As
 
 ```
 develop  →  PR  →  master  →  Fly.io auto-deploy (~2 min)
+                      ↓
+                  develop  ← auto-synced by sync-develop.yml
 ```
 
-`master` is branch-protected — no direct push. All changes via `develop` → PR.
+`master` is branch-protected — no direct push. All changes via `develop` → PR. After merge, `develop` is automatically synced from `master` via the `sync-develop` workflow.
 
 ```bash
 git checkout develop
