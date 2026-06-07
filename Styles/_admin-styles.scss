@@ -90,6 +90,7 @@ html { color-scheme: dark; }
 }
 
 .admin-card {
+    position: relative;
     background: #141414;
     border: 1px solid #2a2a2a;
     border-radius: 12px;
@@ -139,6 +140,8 @@ html { color-scheme: dark; }
         pointer-events: none;
     }
 }
+
+.admin-card:hover .cost-card-drag-handle { color: #6b7280; }
 
 // ── Table ─────────────────────────────────────────────────────────
 .admin-table-wrap { overflow-x: auto; }
