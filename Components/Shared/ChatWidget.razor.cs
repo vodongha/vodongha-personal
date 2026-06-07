@@ -35,12 +35,19 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private int _adminReadUpToId;      // last user message ID the admin has read (for ✓✓ on user's outgoing)
     private int _unreadDividerIndex = -1;  // index in _messages where the "new messages" divider is shown
 
+    private bool _pendingScrollToUnread;
+
     private bool CanStartChat => !string.IsNullOrWhiteSpace(_name) && !string.IsNullOrWhiteSpace(_email);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
         {
+            if (_pendingScrollToUnread)
+            {
+                _pendingScrollToUnread = false;
+                await JS.InvokeVoidAsync("chatUtils.scrollToUnread", "chatMessages");
+            }
             return;
         }
 
@@ -110,6 +117,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             {
                 SetUnreadDivider();
                 await MarkAllReadAsync();
+                // If there are unread messages, scroll to the divider; otherwise scroll to bottom
+                _pendingScrollToUnread = true;
             }
         }
         else
