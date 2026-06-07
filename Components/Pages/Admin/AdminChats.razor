@@ -98,7 +98,7 @@
                                     </div>
                                 }
 
-                                <div class="chat-msg @(msg.IsFromUser ? "chat-msg--admin" : "chat-msg--user") @(isUnread ? "chat-msg--unread" : "")">
+                                <div class="chat-msg @(msg.IsFromUser ? "chat-msg--admin" : "chat-msg--user") @(isUnread ? "chat-msg--unread" : "") @(msg.Id == 0 ? "chat-msg--pending" : "")">
                                     <div class="chat-msg__bubble">@msg.Content</div>
                                     <div class="chat-msg__time">
                                         @(msg.IsFromUser ? "User" : "Admin") · @msg.SentAt.ToLocalTime().ToString("HH:mm")

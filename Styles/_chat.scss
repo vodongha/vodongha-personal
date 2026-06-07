@@ -278,6 +278,15 @@
             color: $color-primary;
         }
     }
+
+    // Optimistic placeholder (Id = 0) — slightly faded while awaiting server confirmation
+    &--pending {
+        opacity: 0.65;
+
+        .chat-msg__bubble {
+            background: rgba($color-primary, 0.55) !important;
+        }
+    }
 }
 
 .chat-unread-divider {

@@ -206,14 +206,30 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         await StopTypingAsync();
 
         string content = _inputText.Trim();
-        _inputText = "";
+        _inputText = "";    // Clear input immediately for snappy UX
         _sending = true;
+
+        // Optimistic: show message instantly before the API responds
+        ChatMessageDto optimistic = new(0, content, true, DateTime.UtcNow);
+        _messages.Add(optimistic);
+        StateHasChanged();
+        await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "chatMessages");
 
         try
         {
             ChatMessage msg = await ChatSvc.SendUserMessageAsync(_sessionId.Value, content);
-            _messages.Add(new ChatMessageDto(msg.Id, msg.Content, msg.IsFromUser, msg.SentAt));
-            await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "chatMessages");
+            // Replace optimistic placeholder with real message (gets its DB Id for read receipts)
+            int idx = _messages.FindIndex(m => m.Id == 0 && m.Content == content && m.IsFromUser);
+            if (idx >= 0)
+            {
+                _messages[idx] = new ChatMessageDto(msg.Id, msg.Content, msg.IsFromUser, msg.SentAt);
+            }
+        }
+        catch
+        {
+            // Revert on failure
+            _messages.Remove(optimistic);
+            _inputText = content;
         }
         finally
         {
