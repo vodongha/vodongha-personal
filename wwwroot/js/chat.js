@@ -12,15 +12,5 @@ window.chatUtils = {
         } else {
             container.scrollTop = container.scrollHeight;
         }
-    },
-    getCountryCode: async function () {
-        try {
-            var res = await fetch('https://ipapi.co/country/', { signal: AbortSignal.timeout(3000) });
-            if (!res.ok) return null;
-            var code = (await res.text()).trim();
-            return code.length === 2 ? code : null;
-        } catch {
-            return null;
-        }
     }
 };
