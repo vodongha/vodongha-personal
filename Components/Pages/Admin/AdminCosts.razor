@@ -56,21 +56,50 @@
         }
         else
         {
-            <!-- Summary banner -->
+            <!-- Summary banner — 2 columns: actual MTD + estimated max -->
             <div class="cost-summary-banner">
-                <div class="cost-summary-banner__label">@Loc.T("Estimated monthly cost")</div>
-                <div class="cost-summary-banner__value">
-                    @FormatUsd(TotalEstimated)
-                    <span class="cost-summary-banner__note">/ @Loc.T("month")</span>
-                </div>
-                @if (TotalEstimated == 0)
-                {
-                    <div class="cost-badge cost-badge--free">
-                        <i class="bi bi-gift"></i> @Loc.T("Free tier")
+                <div class="cost-summary-banner__cols">
+                    <!-- Actual MTD -->
+                    <div class="cost-summary-banner__col">
+                        <div class="cost-summary-banner__col-label">
+                            <i class="bi bi-receipt"></i> @Loc.T("Actual this month")
+                        </div>
+                        @if (_summary.Fly?.ActualMtdDollars != null)
+                        {
+                            <div class="cost-summary-banner__col-value cost-summary-banner__col-value--actual">
+                                @FormatUsd(_summary.Fly.ActualMtdDollars.Value)
+                            </div>
+                            <div class="cost-summary-banner__col-sub">@Loc.T("Real billing from Fly.io")</div>
+                        }
+                        else
+                        {
+                            <div class="cost-summary-banner__col-value cost-summary-banner__col-value--na">N/A</div>
+                            <div class="cost-summary-banner__col-sub">@Loc.T("GraphQL billing unavailable")</div>
+                        }
                     </div>
-                }
-                <div class="cost-summary-banner__updated">
-                    @Loc.T("Updated"): @_summary.FetchedAt.ToString("HH:mm:ss") UTC
+
+                    <div class="cost-summary-banner__divider"></div>
+
+                    <!-- Estimated max -->
+                    <div class="cost-summary-banner__col">
+                        <div class="cost-summary-banner__col-label">
+                            <i class="bi bi-calculator"></i> @Loc.T("Estimated max / month")
+                        </div>
+                        <div class="cost-summary-banner__col-value">
+                            @FormatUsd(TotalEstimated)
+                        </div>
+                        <div class="cost-summary-banner__col-sub">@Loc.T("Theoretical 24/7 max")</div>
+                    </div>
+                </div>
+
+                <div class="cost-summary-banner__footer">
+                    @if (TotalEstimated == 0)
+                    {
+                        <div class="cost-badge cost-badge--free"><i class="bi bi-gift"></i> @Loc.T("Free tier")</div>
+                    }
+                    <span class="cost-summary-banner__updated">
+                        @Loc.T("Updated"): @_summary.FetchedAt.ToString("HH:mm:ss") UTC
+                    </span>
                 </div>
             </div>
 
@@ -94,26 +123,28 @@
                 }
                 else
                 {
-                    <div class="health-cards">
+                    <div class="health-cards cost-cards">
                         <!-- App -->
                         <div class="health-card health-card--ok">
                             <div class="health-card__icon"><i class="bi bi-airplane-fill"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">App</div>
-                                <div class="health-card__value">@_summary.Fly.AppName</div>
+                                <div class="health-card__value health-card__value--wrap">@_summary.Fly.AppName</div>
                             </div>
                         </div>
 
                         <!-- Machines -->
                         @foreach (FlyMachine m in _summary.Fly.Machines)
                         {
-                            <div class="health-card @MachineCardClass(m.State)">
+                            <div class="health-card cost-machine-card @MachineCardClass(m.State)">
                                 <div class="health-card__icon">
                                     <i class="bi @MachineIcon(m.State)"></i>
                                 </div>
                                 <div class="health-card__body">
-                                    <div class="health-card__label">@m.Size · @m.MemoryMb MB · @m.Region</div>
-                                    <div class="health-card__value">@MachinStateLabel(m.State)</div>
+                                    <div class="health-card__label cost-machine-label">
+                                        @m.Size · @m.MemoryMb MB · @m.Region
+                                    </div>
+                                    <div class="health-card__value health-card__value--wrap">@MachinStateLabel(m.State)</div>
                                 </div>
                                 <div class="health-card__dot health-card__dot--@(m.State == "started" ? "ok" : "warn")"></div>
                                 <button class="cost-restart-btn @(_restartingId == m.Id ? "cost-restart-btn--loading" : "")"
@@ -121,6 +152,7 @@
                                         disabled="@(_restartingId != null)"
                                         title="@Loc.T("Restart machine")">
                                     <i class="bi bi-arrow-clockwise @(_restartingId == m.Id ? "admin-spin" : "")"></i>
+                                    <span>@Loc.T("Restart")</span>
                                 </button>
                             </div>
                         }
@@ -130,7 +162,7 @@
                             <div class="health-card__icon"><i class="bi bi-cpu"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Compute rate")</div>
-                                <div class="health-card__value">@FormatUsd(_summary.Fly.ComputePerHour) / h</div>
+                                <div class="health-card__value health-card__value--wrap">@FormatUsd(_summary.Fly.ComputePerHour) / h</div>
                             </div>
                         </div>
 
@@ -138,8 +170,9 @@
                         <div class="health-card">
                             <div class="health-card__icon"><i class="bi bi-calculator"></i></div>
                             <div class="health-card__body">
-                                <div class="health-card__label">@Loc.T("Compute 24/7 × 30d")</div>
-                                <div class="health-card__value">@FormatUsd(_summary.Fly.ComputePerMonth24h)</div>
+                                <div class="health-card__label">@Loc.T("Max compute / month")</div>
+                                <div class="health-card__value health-card__value--wrap">@FormatUsd(_summary.Fly.ComputePerMonth24h)</div>
+                                <div class="cost-sub">24/7 × 30d</div>
                             </div>
                         </div>
 
@@ -148,7 +181,7 @@
                             <div class="health-card__icon"><i class="bi bi-diagram-3"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">IPv4 @Loc.T("(dedicated)")</div>
-                                <div class="health-card__value">@FormatUsd(_summary.Fly.Ipv4PerMonth)</div>
+                                <div class="health-card__value health-card__value--wrap">@FormatUsd(_summary.Fly.Ipv4PerMonth)</div>
                             </div>
                         </div>
 
@@ -157,27 +190,42 @@
                             <div class="health-card__icon"><i class="bi bi-gift"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Free allowance")</div>
-                                <div class="health-card__value cost-green">−@FormatUsd(_summary.Fly.FreeAllowance)</div>
+                                <div class="health-card__value health-card__value--wrap cost-green">−@FormatUsd(_summary.Fly.FreeAllowance)</div>
                             </div>
                         </div>
 
-                        <!-- Billable -->
+                        <!-- Est. billable (max) -->
                         <div class="health-card @(_summary.Fly.EstimatedBillable == 0 ? "health-card--ok" : "")">
                             <div class="health-card__icon"><i class="bi bi-receipt"></i></div>
                             <div class="health-card__body">
-                                <div class="health-card__label">@Loc.T("Est. billable / month")</div>
-                                <div class="health-card__value @(_summary.Fly.EstimatedBillable == 0 ? "cost-green" : "cost-yellow")">
+                                <div class="health-card__label">@Loc.T("Est. max billable")</div>
+                                <div class="health-card__value health-card__value--wrap @(_summary.Fly.EstimatedBillable == 0 ? "cost-green" : "cost-yellow")">
                                     @(_summary.Fly.EstimatedBillable == 0 ? "FREE" : FormatUsd(_summary.Fly.EstimatedBillable))
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Actual MTD -->
+                        @if (_summary.Fly.ActualMtdDollars != null)
+                        {
+                            <div class="health-card @(_summary.Fly.ActualMtdDollars.Value == 0 ? "health-card--ok" : "")">
+                                <div class="health-card__icon"><i class="bi bi-cash-stack"></i></div>
+                                <div class="health-card__body">
+                                    <div class="health-card__label">@Loc.T("Actual this month")</div>
+                                    <div class="health-card__value health-card__value--wrap @(_summary.Fly.ActualMtdDollars.Value == 0 ? "cost-green" : "cost-blue")">
+                                        @(_summary.Fly.ActualMtdDollars.Value == 0 ? "FREE" : FormatUsd(_summary.Fly.ActualMtdDollars.Value))
+                                    </div>
+                                    <div class="cost-sub">@Loc.T("Real billing")</div>
+                                </div>
+                            </div>
+                        }
                     </div>
 
                     <p class="cost-note">
                         <i class="bi bi-info-circle"></i>
-                        @Loc.T("Compute cost shown is theoretical maximum (24/7). With")
+                        @Loc.T("Estimated max is theoretical (24/7). With")
                         <code>auto_stop_machines = \"suspend\"</code>
-                        @Loc.T("and low traffic, actual cost is significantly lower.")
+                        @Loc.T("actual cost is significantly lower.")
                     </p>
                 }
             </div>
@@ -202,13 +250,13 @@
                 }
                 else
                 {
-                    <div class="health-cards">
+                    <div class="health-cards cost-cards">
                         <!-- Project -->
                         <div class="health-card health-card--ok">
                             <div class="health-card__icon"><i class="bi bi-database-fill"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Project")</div>
-                                <div class="health-card__value">@_summary.Neon.Name</div>
+                                <div class="health-card__value health-card__value--wrap">@_summary.Neon.Name</div>
                             </div>
                         </div>
 
@@ -217,7 +265,7 @@
                             <div class="health-card__icon"><i class="bi bi-patch-check"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Plan")</div>
-                                <div class="health-card__value" style="text-transform:capitalize">
+                                <div class="health-card__value health-card__value--wrap" style="text-transform:capitalize">
                                     @_summary.Neon.Plan
                                     @if (_summary.Neon.Plan == "free")
                                     {
@@ -232,7 +280,7 @@
                             <div class="health-card__icon"><i class="bi bi-geo-alt"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Region")</div>
-                                <div class="health-card__value">@_summary.Neon.Region</div>
+                                <div class="health-card__value health-card__value--wrap">@_summary.Neon.Region</div>
                             </div>
                         </div>
 
@@ -241,7 +289,7 @@
                             <div class="health-card__icon"><i class="bi bi-hdd"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Storage used")</div>
-                                <div class="health-card__value">
+                                <div class="health-card__value health-card__value--wrap">
                                     @if (_summary.Neon.StorageMb >= 1024)
                                     {
                                         @($"{_summary.Neon.StorageGb:F2} GB")
@@ -262,7 +310,7 @@
                                 <div class="cost-progress-wrap">
                                     <div class="cost-progress">
                                         <div class="cost-progress__bar"
-                                             style="width:@Math.Min(100, _summary.Neon.StorageMb / 512.0 * 100):F1}%"></div>
+                                             style="width:@($"{Math.Min(100, _summary.Neon.StorageMb / 512.0 * 100):F1}")%"></div>
                                     </div>
                                     <span class="cost-progress__pct">@($"{_summary.Neon.StorageMb / 512.0 * 100:F1}")%</span>
                                 </div>
@@ -274,7 +322,7 @@
                             <div class="health-card__icon"><i class="bi bi-server"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">PostgreSQL</div>
-                                <div class="health-card__value">v@(_summary.Neon.PgVersion)</div>
+                                <div class="health-card__value health-card__value--wrap">v@(_summary.Neon.PgVersion)</div>
                             </div>
                         </div>
 
@@ -283,7 +331,7 @@
                             <div class="health-card__icon"><i class="bi bi-receipt"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Est. cost / month")</div>
-                                <div class="health-card__value @(_summary.Neon.EstimatedMonthlyCost == 0 ? "cost-green" : "cost-yellow")">
+                                <div class="health-card__value health-card__value--wrap @(_summary.Neon.EstimatedMonthlyCost == 0 ? "cost-green" : "cost-yellow")">
                                     @(_summary.Neon.EstimatedMonthlyCost == 0 ? "FREE" : FormatUsd(_summary.Neon.EstimatedMonthlyCost))
                                 </div>
                             </div>
