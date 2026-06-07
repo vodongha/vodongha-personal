@@ -12,6 +12,12 @@ RUN dotnet publish -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
+# Install fonts required by QuestPDF/SkiaSharp on Linux
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    fonts-liberation \
+    libfontconfig1 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /app/publish .
 
 RUN useradd -m appuser && chown -R appuser /app
