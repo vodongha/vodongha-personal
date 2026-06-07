@@ -14,28 +14,34 @@
             <a href="/" target="_blank" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-up-right"></i> @Loc.T("View website")</a>
         </header>
 
-        <div class="admin-cards">
-            <a href="/admin/skills" class="admin-card">
+        <div id="admin-dash-cards" class="admin-cards" data-saved-order="@_menuOrder">
+            <a href="/admin/skills" class="admin-card" data-card-id="dash-skills">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <i class="bi bi-bar-chart admin-card__icon"></i>
                 <span class="admin-card__label">@Loc.T("Skills")</span>
             </a>
-            <a href="/admin/projects" class="admin-card">
+            <a href="/admin/projects" class="admin-card" data-card-id="dash-projects">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <i class="bi bi-folder2 admin-card__icon"></i>
                 <span class="admin-card__label">@Loc.T("Projects")</span>
             </a>
-            <a href="/admin/education" class="admin-card">
+            <a href="/admin/education" class="admin-card" data-card-id="dash-education">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <i class="bi bi-mortarboard admin-card__icon"></i>
                 <span class="admin-card__label">@Loc.T("Education")</span>
             </a>
-            <a href="/admin/experience" class="admin-card">
+            <a href="/admin/experience" class="admin-card" data-card-id="dash-experience">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <i class="bi bi-briefcase admin-card__icon"></i>
                 <span class="admin-card__label">@Loc.T("Experience")</span>
             </a>
-            <a href="/admin/blog" class="admin-card">
+            <a href="/admin/blog" class="admin-card" data-card-id="dash-blog">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <i class="bi bi-file-text admin-card__icon"></i>
                 <span class="admin-card__label">@Loc.T("Blog")</span>
             </a>
-            <a href="/admin/contacts" class="admin-card @(_unreadMessagesCount > 0 ? "admin-card--unread" : "")">
+            <a href="/admin/contacts" class="admin-card @(_unreadMessagesCount > 0 ? "admin-card--unread" : "")" data-card-id="dash-messages">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <div class="admin-card__icon-wrap">
                     <i class="bi bi-envelope admin-card__icon"></i>
                     @if (_unreadMessagesCount > 0)
@@ -45,7 +51,8 @@
                 </div>
                 <span class="admin-card__label">@Loc.T("Messages")</span>
             </a>
-            <a href="/admin/chats" class="admin-card @(_unreadChatCount > 0 ? "admin-card--unread" : "")">
+            <a href="/admin/chats" class="admin-card @(_unreadChatCount > 0 ? "admin-card--unread" : "")" data-card-id="dash-chats">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <div class="admin-card__icon-wrap">
                     <i class="bi bi-chat-dots admin-card__icon"></i>
                     @if (_unreadChatCount > 0)
@@ -55,19 +62,23 @@
                 </div>
                 <span class="admin-card__label">@Loc.T("Chats")</span>
             </a>
-            <a href="/admin/health" class="admin-card">
+            <a href="/admin/health" class="admin-card" data-card-id="dash-health">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <i class="bi bi-activity admin-card__icon"></i>
                 <span class="admin-card__label">@Loc.T("Health")</span>
             </a>
-            <a href="/admin/costs" class="admin-card">
+            <a href="/admin/costs" class="admin-card" data-card-id="dash-costs">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <i class="bi bi-currency-dollar admin-card__icon"></i>
                 <span class="admin-card__label">@Loc.T("Costs")</span>
             </a>
-            <a href="/admin/api-keys" class="admin-card">
+            <a href="/admin/api-keys" class="admin-card" data-card-id="dash-api-keys">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <i class="bi bi-key admin-card__icon"></i>
                 <span class="admin-card__label">@Loc.T("API Keys")</span>
             </a>
-            <a href="/admin/settings" class="admin-card">
+            <a href="/admin/settings" class="admin-card" data-card-id="dash-settings">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <i class="bi bi-gear admin-card__icon"></i>
                 <span class="admin-card__label">@Loc.T("Settings")</span>
             </a>
