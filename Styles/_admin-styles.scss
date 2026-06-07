@@ -2265,14 +2265,29 @@ tr.admin-row--dragover td {
     font-style: italic;
 }
 
-// ── Avatar size modifier for template headers ─────────────────────────────
+// ── Avatar size modifier for template headers (templates 1 & 2) ───────────
 .cv-preview__avatar--sm {
-    width: 72px !important;
-    height: 72px !important;
-    min-width: 72px;
+    width: 68px !important;
+    height: 68px !important;
+    min-width: 68px;
     font-size: 1rem !important;
     flex-shrink: 0;
+    margin: 0 !important;  // reset the sidebar-specific negative top margin
 }
 .cv-preview__avatar--blue {
-    border-color: #3b82f6 !important;
+    background: #3b82f6 !important;  // initials fallback bg
+}
+
+// ── Template 3 (Professional) preview — override shared entry colors to blue
+.cv-pro-preview {
+    .cv-preview__entry-link { color: #3b82f6; }
+    .cv-preview__tech       { color: #3b82f6; }
+    .cv-preview__entry-sub  { color: #3b82f6; }  // fallback if class not overridden
+    .cv-preview__block-title { color: #3b82f6; border-color: #3b82f6; }
+}
+
+// ── Template 2 (Minimal) preview — override shared entry colors to green
+.cv-minimal-preview {
+    .cv-preview__entry-link { color: #059669; }
+    .cv-preview__tech       { color: #059669; }
 }
