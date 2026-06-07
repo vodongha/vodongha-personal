@@ -20,7 +20,10 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 | SCSS | Two entry points compiled by `AspNetCore.SassCompiler` on `dotnet build`: `Styles/app.scss` → `wwwroot/app.css` (public), `Styles/admin.scss` → `wwwroot/admin.css` (admin). Compiled CSS is **gitignored** — never commit `wwwroot/app.css` or `wwwroot/admin.css`. |
 | Email | Resend API (`Email__ResendApiKey`). Sender: `no-reply@vodongha.id.vn`, recipient: `vodongha@hotmail.com` |
 | Chat | Telegram Bot API + SignalR (`Microsoft.AspNetCore.SignalR.Client`). Secrets: `Telegram__BotToken`, `Telegram__ChatId`, `Telegram__WebhookSecret` |
+| Real-time | ASP.NET Core SignalR (`ChatHub`) — session groups, admin group, typing events |
+| Charts | Chart.js 4.4 via CDN — wrapped in `wwwroot/js/healthChart.js` |
 | Deploy | Fly.io, app `vodongha`, region `sin`. Merge PR to `master` → auto-deploy (~2 min) |
+| CI | GitHub Actions `ci.yml` — `dotnet build` on every push to `develop` and on PRs to `master` |
 | Migrations | EF Core, applied automatically on startup via `MigrateAsync()` in `Program.cs` |
 
 ## Git workflow
@@ -89,6 +92,8 @@ vodongha-personal/
 │   │   │   ├── AdminEducation.razor + .cs
 │   │   │   ├── AdminExperience.razor + .cs
 │   │   │   ├── AdminContacts.razor + .cs    # unread badge, mark read, reply
+│   │   │   ├── AdminChats.razor + .cs       # live chat sessions, real-time messages, typing, read receipts
+│   │   │   ├── AdminHealth.razor + .cs      # server health: memory + DB ping charts, snapshot table
 │   │   │   └── AdminSettings.razor + .cs    # avatar upload, social links, bio
 │   │   ├── Error.razor
 │   │   └── NotFound.razor
@@ -103,7 +108,10 @@ vodongha-personal/
 │   └── Shared/
 │       ├── ProjectCard.razor         # Reusable project card
 │       ├── BlogCard.razor            # Reusable blog post card
-│       └── ConfirmDialog.razor       # Delete confirmation modal (type "Delete" to enable button)
+│       ├── ConfirmDialog.razor       # Delete confirmation modal (type "Delete" to enable button)
+│       ├── ChatWidget.razor + .cs    # Floating chat button on all public pages (InteractiveServer)
+│       ├── AdminNav.razor + .cs      # Shared admin sidebar / mobile bottom nav with unread badges
+│       └── TimezoneDetector.razor    # Invisible InteractiveServer component — reads browser IANA timezone via JS on first render, stores in TimezoneService
 ├── Data/
 │   ├── AppDbContext.cs               # EF context + seed data (Skills, Projects, Experience, Education, SiteSettings, BlogPost)
 │   └── Models/
@@ -125,7 +133,11 @@ vodongha-personal/
 │   ├── EmailService.cs
 │   ├── LanguageService.cs            # VI/EN toggle; T("key") for UI strings; OnChange event
 │   ├── SiteSettingService.cs
-│   └── VisitorService.cs             # LogAsync(ip) — deduplicated by IP; GetCountAsync()
+│   ├── VisitorService.cs             # LogAsync(ip) — deduplicated by IP; GetCountAsync()
+│   ├── ChatService.cs                # Sessions, messages, Telegram webhook handler, SignalR push
+│   ├── TelegramService.cs            # Bot API: CreateTopicAsync, SendMessageAsync (returns TopicDeleted flag), DeleteTopicAsync, SendTypingAsync
+│   ├── HealthMonitorService.cs       # Singleton + IHostedService — collects metrics every 30s, 24-snapshot circular buffer
+│   └── TimezoneService.cs            # Scoped — stores browser IANA timezone; ToUserTime(DateTime utc); fires OnTimezoneSet event for component re-render
 ├── Styles/
 │   ├── app.scss                      # Public site entry point — imports all _*.scss partials
 │   ├── admin.scss                    # Admin entry point — imports _admin-styles.scss
@@ -141,8 +153,13 @@ vodongha-personal/
 │   ├── _contact.scss
 │   ├── _footer.scss
 │   └── _reconnect.scss
+├── Hubs/
+│   └── ChatHub.cs                    # SignalR: JoinSession, LeaveSession, JoinAdminGroup, StartTyping, StopTyping, MarkRead
 ├── wwwroot/
-│   └── js/admin.js                   # Event delegation for admin UI (select arrow open/close)
+│   └── js/
+│       ├── admin.js                  # Event delegation for admin UI (select arrow open/close)
+│       ├── chat.js                   # chatUtils.scrollToBottom(id), chatUtils.scrollToUnread(id)
+│       └── healthChart.js            # healthChart.init/update/destroy — Chart.js wrappers
 ├── Migrations/                       # EF Core — never modify existing migrations
 ├── Program.cs                        # DI, middleware (visitor tracking), auth, routes
 ├── Dockerfile
@@ -270,16 +287,26 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 
 | File | Role |
 |---|---|
-| `Hubs/ChatHub.cs` | SignalR hub — `JoinSession(sessionId)` adds client to group |
-| `Services/TelegramService.cs` | Bot API calls: `CreateTopicAsync`, `SendMessageAsync` |
-| `Services/ChatService.cs` | Business logic: sessions, messages, webhook handler, SignalR push |
-| `Components/Shared/ChatWidget.razor` + `.cs` | Public chat widget (floating button, form, chat window) |
-| `Components/Pages/Admin/AdminChats.razor` + `.cs` | Admin chat management page |
-| `wwwroot/js/chat.js` | `chatUtils.scrollToBottom(elementId)` — called from C# via IJSRuntime |
+| `Hubs/ChatHub.cs` | SignalR hub — `JoinSession`, `LeaveSession`, `JoinAdminGroup`, `StartTyping`, `StopTyping`, `MarkRead` |
+| `Services/TelegramService.cs` | `CreateTopicAsync`, `SendMessageAsync` (returns `(MessageId, TopicDeleted)` tuple), `DeleteTopicAsync`, `SendTypingAsync` |
+| `Services/ChatService.cs` | Sessions, messages, auto welcome, webhook handler, Telegram topic recreation on 404, SignalR push |
+| `Components/Shared/ChatWidget.razor` + `.cs` | Public chat widget — form, chat state, typing, read receipts, date dividers, optimistic UI |
+| `Components/Pages/Admin/AdminChats.razor` + `.cs` | Admin chat management — live updates, typing, read receipts, delete with Telegram sync |
+| `wwwroot/js/chat.js` | `chatUtils.scrollToBottom(id)`, `chatUtils.scrollToUnread(id)` |
 
 ### Session persistence
 
-`ProtectedLocalStorage` stores `chatSessionId` in the browser. On page reload, the widget restores the session and reconnects to the SignalR group.
+`ProtectedLocalStorage` stores `chatSessionId`, `chatLastReadId`, `chatAdminReadId` in the browser. On reload the widget restores the session, reconnects SignalR, and recomputes unread count.
+
+### Chat features
+
+- **Optimistic UI** — messages appear instantly; replaced with real DB ID on server response
+- **Typing indicator** — `StartTyping` / `StopTyping` SignalR events, auto-stop after 2s idle
+- **Read receipts** — `MarkRead` SignalR event; ✓ = sent, ✓✓ = admin/user read
+- **Date dividers** — "Hôm nay" / "Hôm qua" / "dd/MM/yyyy" between messages on different days (user timezone)
+- **Unread divider** — "New messages" divider on reopen; badge count on FAB
+- **Auto welcome** — `CreateSessionAsync` saves a greeting `ChatMessage (IsFromUser=false)` immediately after session creation
+- **Telegram topic lifecycle** — topic created on first user message; auto-recreated with contact re-pin if deleted on Telegram side; `DeleteSessionAsync` calls `DeleteTopicAsync` before DB delete
 
 ### Telegram setup
 
@@ -289,6 +316,32 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 - Fly.io secrets: `Telegram__BotToken`, `Telegram__ChatId`, `Telegram__WebhookSecret`
 
 **Note:** `vodongha.id.vn` may fail DNS resolution from Telegram servers — use `vodongha.fly.dev` for the webhook URL.
+
+## Server health monitor
+
+`HealthMonitorService` is a **singleton + `IHostedService`**. It collects metrics every 30 seconds into a 24-entry circular `LinkedList<HealthMetricSnapshot>`:
+- `MemoryMb` — `Process.GetCurrentProcess().WorkingSet64`
+- `DbPingMs` — ADO.NET `SELECT 1` round-trip time
+- `DbHealthy` — whether the DB ping succeeded
+- `ThreadCount` — `Process.GetCurrentProcess().Threads.Count`
+
+`AdminHealth.razor` shows stat cards (Uptime, Memory, Threads, DB Status, Started At), two Chart.js line charts (memory + DB ping), and a sortable/paginated snapshot table. Auto-refreshes every 30 seconds via a background loop.
+
+**Registration:** singleton + hosted service share the same instance:
+```csharp
+builder.Services.AddSingleton<HealthMonitorService>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
+```
+
+## Timezone detection
+
+`TimezoneService` is **scoped per Blazor circuit**. `TimezoneDetector.razor` (`@rendermode InteractiveServer`) reads `Intl.DateTimeFormat().resolvedOptions().timeZone` via JS on first render and calls `TzService.Set(ianaId)`.
+
+After `Set()`, the service fires `OnTimezoneSet` — all components that display times subscribe in `OnInitialized` and call `InvokeAsync(StateHasChanged)` to re-render with the correct timezone.
+
+`TimezoneDetector` is embedded in both `MainLayout.razor` and `AdminLayout.razor`.
+
+**Usage:** `Tz.ToUserTime(utcDateTime).ToString("HH:mm")` — never use `.ToLocalTime()` (converts to server timezone).
 
 ## Coding conventions
 
