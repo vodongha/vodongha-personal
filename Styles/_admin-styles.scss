@@ -664,6 +664,9 @@ tr.admin-row--dragover td {
         overflow: visible !important;
     }
 
+    // Only Dashboard stays visible in bottom bar; everything else hidden
+    .admin-nav__item:not(.admin-nav__item--pinned) { display: none !important; }
+
     // All nav items
     .admin-nav__item {
         flex-direction: column !important;
