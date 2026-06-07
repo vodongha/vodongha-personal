@@ -212,4 +212,4 @@ gh pr create --title "..." --base master --head develop
 
 ## Built with
 
-[Claude Code](https://claude.ai/code) by Anthropic — AI pair programmer throughout.
+[Claude Code](https://claude.ai/code) by Anthropic.
