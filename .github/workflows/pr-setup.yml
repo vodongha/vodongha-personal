@@ -12,13 +12,15 @@ jobs:
       issues: write
 
     steps:
-      - name: Auto-assign creator, add label & milestone
+      - name: Auto-assign, label & milestone
         uses: actions/github-script@v7
         with:
           script: |
             const pr = context.payload.pull_request;
             const { owner, repo } = context.repo;
             const issue_number = pr.number;
+            const branch = pr.head.ref;
+            const title = pr.title.toLowerCase();
 
             // 1. Assignee = PR creator
             await github.rest.issues.addAssignees({
@@ -26,22 +28,22 @@ jobs:
               assignees: [pr.user.login]
             });
 
-            // 2. Label based on branch name
-            const branch = pr.head.ref;
-            const labels = ['needs-review'];
-            if (branch.startsWith('feature/'))     labels.push('enhancement');
-            else if (branch.startsWith('bugfix/')) labels.push('bug');
-            else if (branch.startsWith('docs/'))   labels.push('documentation');
-            else if (branch.startsWith('style/'))  labels.push('style');
-            else if (branch.startsWith('ci/'))     labels.push('ci');
+            // 2. Label — branch prefix takes priority, then title keywords
+            let label = 'enhancement';
+            if      (branch.startsWith('bugfix/') || branch.startsWith('hotfix/')) label = 'bug';
+            else if (branch.startsWith('docs/'))    label = 'documentation';
+            else if (branch.startsWith('style/'))   label = 'style';
+            else if (branch.startsWith('ci/'))      label = 'ci';
+            else if (branch.startsWith('feature/')) label = 'enhancement';
+            else if (title.startsWith('fix') || title.startsWith('revert') || title.startsWith('hotfix')) label = 'bug';
+            else if (title.startsWith('ci') || title.startsWith('workflow')) label = 'ci';
+            else if (title.startsWith('docs') || title.startsWith('update doc') || title.startsWith('update readme') || title.startsWith('update claude')) label = 'documentation';
+            else if (title.includes('style') || title.includes('css') || title.includes('scss')) label = 'style';
 
-            await github.rest.issues.addLabels({ owner, repo, issue_number, labels });
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [label] });
 
             // 3. Milestone
-            await github.rest.issues.update({
-              owner, repo, issue_number,
-              milestone: 1
-            });
+            await github.rest.issues.update({ owner, repo, issue_number, milestone: 1 });
 
       - name: Request reviewers
         uses: actions/github-script@v7
@@ -52,11 +54,8 @@ jobs:
             const creator = context.payload.pull_request.user.login;
 
             const reviewers = ['vodongha', 'copilot'].filter(r => r !== creator);
-
             try {
-              await github.rest.pulls.requestReviewers({
-                owner, repo, pull_number, reviewers
-              });
+              await github.rest.pulls.requestReviewers({ owner, repo, pull_number, reviewers });
               console.log('Reviewers requested:', reviewers);
             } catch (e) {
               console.log('Could not request some reviewers:', e.message);
