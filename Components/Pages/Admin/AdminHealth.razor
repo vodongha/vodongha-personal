@@ -137,20 +137,20 @@
             <table class="quickgrid">
                 <thead>
                     <tr>
-                        <th class="sortable" @onclick='() => SortBy("Time")'>
-                            @Loc.T("Time") <i class="bi @SortIcon("Time")"></i>
+                        <th class="sortable @(_sortCol == "Time"    ? (_sortAsc ? "col-sort-asc" : "col-sort-desc") : "")" @onclick='() => SortBy("Time")'>
+                            @Loc.T("Time") <span class="sort-arrow">@SortIcon("Time")</span>
                         </th>
-                        <th class="sortable" @onclick='() => SortBy("Memory")'>
-                            @Loc.T("Memory") <i class="bi @SortIcon("Memory")"></i>
+                        <th class="sortable @(_sortCol == "Memory"  ? (_sortAsc ? "col-sort-asc" : "col-sort-desc") : "")" @onclick='() => SortBy("Memory")'>
+                            @Loc.T("Memory") <span class="sort-arrow">@SortIcon("Memory")</span>
                         </th>
-                        <th class="sortable" @onclick='() => SortBy("DB Ping")'>
-                            @Loc.T("DB Ping") <i class="bi @SortIcon("DB Ping")"></i>
+                        <th class="sortable @(_sortCol == "DB Ping" ? (_sortAsc ? "col-sort-asc" : "col-sort-desc") : "")" @onclick='() => SortBy("DB Ping")'>
+                            @Loc.T("DB Ping") <span class="sort-arrow">@SortIcon("DB Ping")</span>
                         </th>
-                        <th class="sortable" @onclick='() => SortBy("Threads")'>
-                            @Loc.T("Threads") <i class="bi @SortIcon("Threads")"></i>
+                        <th class="sortable @(_sortCol == "Threads" ? (_sortAsc ? "col-sort-asc" : "col-sort-desc") : "")" @onclick='() => SortBy("Threads")'>
+                            @Loc.T("Threads") <span class="sort-arrow">@SortIcon("Threads")</span>
                         </th>
-                        <th class="sortable" @onclick='() => SortBy("Status")'>
-                            @Loc.T("Status") <i class="bi @SortIcon("Status")"></i>
+                        <th class="sortable @(_sortCol == "Status"  ? (_sortAsc ? "col-sort-asc" : "col-sort-desc") : "")" @onclick='() => SortBy("Status")'>
+                            @Loc.T("Status") <span class="sort-arrow">@SortIcon("Status")</span>
                         </th>
                     </tr>
                 </thead>

@@ -52,8 +52,8 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
 
     private string SortIcon(string col)
     {
-        if (_sortCol != col) return "bi-chevron-expand";
-        return _sortAsc ? "bi-chevron-up" : "bi-chevron-down";
+        if (_sortCol != col) return "↕";
+        return _sortAsc ? "↑" : "↓";
     }
 
     private void GoPage(int p) => _page = Math.Clamp(p, 0, TotalPages - 1);
