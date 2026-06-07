@@ -35,7 +35,8 @@ public partial class AdminCosts : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender) return;
+        try
         {
             // Load saved orders before loading data so grids render with correct order
             _flyOrder  = await Secrets.GetValueAsync(FlyPrefKey)  ?? "[]";
@@ -43,6 +44,9 @@ public partial class AdminCosts : ComponentBase, IDisposable
 
             await LoadAsync();
         }
+        catch (JSDisconnectedException) { /* user navigated away */ }
+        catch (ObjectDisposedException) { /* component disposed */ }
+        catch (OperationCanceledException) { /* cancelled */ }
     }
 
     private async Task LoadAsync()
@@ -54,8 +58,13 @@ public partial class AdminCosts : ComponentBase, IDisposable
         await InvokeAsync(StateHasChanged);
 
         // Init SortableJS after cards are rendered
-        await JS.InvokeVoidAsync("initSortableCards", "fly-cards-grid",  _dotNetRef, FlyPrefKey);
-        await JS.InvokeVoidAsync("initSortableCards", "neon-cards-grid", _dotNetRef, NeonPrefKey);
+        try
+        {
+            await JS.InvokeVoidAsync("initSortableCards", "fly-cards-grid",  _dotNetRef, FlyPrefKey);
+            await JS.InvokeVoidAsync("initSortableCards", "neon-cards-grid", _dotNetRef, NeonPrefKey);
+        }
+        catch (JSDisconnectedException) { }
+        catch (ObjectDisposedException) { }
     }
 
     private async Task Refresh()
