@@ -193,9 +193,7 @@
 
                     <p class="cost-note">
                         <i class="bi bi-info-circle"></i>
-                        @Loc.T("Estimated max is theoretical (24/7). With")
-                        <code>auto_stop_machines = \"suspend\"</code>
-                        @Loc.T("actual cost is significantly lower.")
+                        @((MarkupString)Loc.T("Estimated max is theoretical (24/7). With <code>auto_stop_machines = &quot;suspend&quot;</code> actual cost is significantly lower."))
                     </p>
                 }
             </div>
