@@ -1,5 +1,59 @@
-﻿@page "/not-found"
+@page "/not-found"
 @layout MainLayout
+@inject LanguageService Lang
+@inject IJSRuntime JS
+@implements IDisposable
 
-<h3>Not Found</h3>
-<p>Sorry, the content you are looking for does not exist.</p>
+<PageTitle>404 — @(Lang.IsVi ? "Không tìm thấy trang" : "Page Not Found")</PageTitle>
+
+<div class="not-found">
+    <div class="not-found__glow"></div>
+
+    <div class="not-found__code">
+        <span class="not-found__digit">4</span>
+        <span class="not-found__zero">
+            <span class="not-found__zero-inner">0</span>
+        </span>
+        <span class="not-found__digit">4</span>
+    </div>
+
+    <h1 class="not-found__title">
+        @(Lang.IsVi ? "Trang không tồn tại" : "Page not found")
+    </h1>
+
+    <p class="not-found__desc">
+        @if (Lang.IsVi)
+        {
+            <span>Trang bạn đang tìm kiếm đã bị xóa, đổi tên,</span>
+            <br />
+            <span>hoặc chưa bao giờ tồn tại.</span>
+        }
+        else
+        {
+            <span>The page you're looking for was removed, renamed,</span>
+            <br />
+            <span>or never existed.</span>
+        }
+    </p>
+
+    <div class="not-found__actions">
+        <a href="/" class="not-found__btn not-found__btn--primary">
+            <i class="bi bi-house"></i>
+            @(Lang.IsVi ? "Về trang chủ" : "Back to home")
+        </a>
+        <button class="not-found__btn not-found__btn--ghost" @onclick="GoBack">
+            <i class="bi bi-arrow-left"></i>
+            @(Lang.IsVi ? "Quay lại" : "Go back")
+        </button>
+    </div>
+
+    <p class="not-found__hint">
+        <span class="not-found__mono">HTTP 404</span>
+    </p>
+</div>
+
+@code {
+    protected override void OnInitialized() => Lang.OnChange += StateHasChanged;
+    public void Dispose() => Lang.OnChange -= StateHasChanged;
+    private async Task GoBack() => await JS.InvokeVoidAsync("history.back");
+}
