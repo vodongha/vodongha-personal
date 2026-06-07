@@ -21,7 +21,8 @@ public record FlyAppData(
     double ComputePerMonth24h,    // USD, theoretical 24/7 max
     double Ipv4PerMonth,
     double FreeAllowance,
-    double EstimatedBillable      // after free allowance
+    double EstimatedBillable,     // after free allowance
+    double? ActualMtdDollars      // real month-to-date from Fly.io GraphQL billing
 );
 
 public record NeonProjectData(
@@ -76,7 +77,7 @@ public class CostMonitorService
             return _cache;
         }
 
-        FlyAppData? fly = await FetchFlyAsync();
+        FlyAppData? fly  = await FetchFlyAsync();
         NeonProjectData? neon = await FetchNeonAsync();
 
         _cache = new CostSummary(fly, neon, DateTime.UtcNow);
@@ -184,12 +185,79 @@ public class CostMonitorService
             double totalWithIpv4   = computePerMonth + FlyIpv4PerMonth;
             double billable        = Math.Max(0, totalWithIpv4 - FlyFreeAllowance);
 
+            double? actualMtd = await FetchFlyBillingAsync(token);
+
             return new FlyAppData(appName, machines, computePerHour, computePerMonth,
-                FlyIpv4PerMonth, FlyFreeAllowance, billable);
+                FlyIpv4PerMonth, FlyFreeAllowance, billable, actualMtd);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to fetch Fly.io data");
+            return null;
+        }
+    }
+
+    // ─── Fly.io GraphQL billing (actual MTD) ─────────────────────────────────
+
+    private async Task<double?> FetchFlyBillingAsync(string token)
+    {
+        const string query = """
+            {
+              viewer {
+                organizations {
+                  nodes {
+                    billableUsage {
+                      totalDollars
+                    }
+                  }
+                }
+              }
+            }
+            """;
+
+        try
+        {
+            using HttpClient client = _httpFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.Timeout = TimeSpan.FromSeconds(10);
+
+            string body = JsonSerializer.Serialize(new { query });
+            using StringContent content = new(body, System.Text.Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PostAsync("https://api.fly.io/graphql", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Fly.io GraphQL returned {Status}", response.StatusCode);
+                return null;
+            }
+
+            string json = await response.Content.ReadAsStringAsync();
+            using JsonDocument doc = JsonDocument.Parse(json);
+
+            if (!doc.RootElement.TryGetProperty("data", out JsonElement data))
+            {
+                return null;
+            }
+
+            // Traverse: data.viewer.organizations.nodes[0].billableUsage.totalDollars
+            if (!data.TryGetProperty("viewer",        out JsonElement viewer))   return null;
+            if (!viewer.TryGetProperty("organizations", out JsonElement orgs))   return null;
+            if (!orgs.TryGetProperty("nodes",          out JsonElement nodes))   return null;
+
+            foreach (JsonElement node in nodes.EnumerateArray())
+            {
+                if (node.TryGetProperty("billableUsage", out JsonElement usage) &&
+                    usage.TryGetProperty("totalDollars", out JsonElement total))
+                {
+                    return total.GetDouble();
+                }
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not fetch Fly.io billing data via GraphQL");
             return null;
         }
     }
