@@ -33,7 +33,7 @@
                         <select class="chat-phone__dial" @onchange="OnDialChanged">
                             @foreach (Country c in Countries)
                             {
-                                <option value="@c.Dial" selected="@(c.Dial == _selectedDial)">
+                                <option value="@c.RegionCode" selected="@(c.RegionCode == _selectedRegion)">
                                     @c.Flag @c.Dial
                                 </option>
                             }
