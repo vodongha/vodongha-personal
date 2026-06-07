@@ -1445,18 +1445,13 @@ tr.admin-row--dragover td {
 
 .health-card:hover .cost-card-drag-handle { color: #6b7280; }
 
-// Chart card drag handle (inline in header row)
-.health-chart-drag-handle {
-    color: #2d3748;
-    font-size: 0.9rem;
-    cursor: grab;
-    transition: color 0.15s;
+.health-chart-card .cost-card-drag-handle {
+    position: static;  // override absolute — sits inline in header flex row
     flex-shrink: 0;
-
-    &:active { cursor: grabbing; }
+    font-size: 0.9rem;
 }
 
-.health-chart-card:hover .health-chart-drag-handle { color: #6b7280; }
+.health-chart-card:hover .cost-card-drag-handle { color: #6b7280; }
 
 .cost-card-ghost {
     opacity: 0.4;
