@@ -22,13 +22,15 @@
         </a>
         <a href="/admin/settings" class="admin-nav__item @(IsActive("/admin/settings") ? "admin-nav__item--active" : "")"><i class="bi bi-gear"></i> @Loc.T("Settings")</a>
     </nav>
+    <button class="admin-lang-toggle" @onclick="ToggleLang" title="Switch language">
+        <i class="bi bi-translate admin-lang-toggle__icon"></i>
+        <span class="admin-lang-toggle__label">
+            <span class="@(Loc.Lang == "VI" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">VI</span>
+            <span class="admin-lang-toggle__sep">|</span>
+            <span class="@(Loc.Lang == "EN" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">EN</span>
+        </span>
+    </button>
     <form method="post" action="/admin/logout" class="admin-sidebar__logout">
         <button type="submit" class="admin-nav__item admin-nav__item--logout"><i class="bi bi-box-arrow-left"></i> @Loc.T("Logout")</button>
     </form>
 </aside>
-
-<button class="admin-lang-toggle" @onclick="ToggleLang" title="Switch language">
-    <span class="@(Loc.Lang == "VI" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">VI</span>
-    <span class="admin-lang-toggle__sep">|</span>
-    <span class="@(Loc.Lang == "EN" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">EN</span>
-</button>
