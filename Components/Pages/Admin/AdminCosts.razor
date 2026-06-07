@@ -103,9 +103,9 @@
                 }
                 else
                 {
-                    <div class="health-cards cost-cards">
-                        <!-- App -->
-                        <div class="health-card health-card--ok">
+                    <div id="fly-cards-grid" class="health-cards cost-cards" data-saved-order="@_flyOrder">
+                        <div class="health-card health-card--ok" data-card-id="fly-app">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-airplane-fill"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">App</div>
@@ -113,25 +113,21 @@
                             </div>
                         </div>
 
-                        <!-- Machines -->
                         @foreach (FlyMachine m in _summary.Fly.Machines)
                         {
-                            <div class="health-card @MachineCardClass(m.State)">
-                                <div class="health-card__icon">
-                                    <i class="bi @MachineIcon(m.State)"></i>
-                                </div>
+                            <div class="health-card @MachineCardClass(m.State)" data-card-id="fly-machine-@m.Id">
+                                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
+                                <div class="health-card__icon"><i class="bi @MachineIcon(m.State)"></i></div>
                                 <div class="health-card__body">
-                                    <div class="health-card__label">
-                                        @m.Size · @m.MemoryMb MB · @m.Region
-                                    </div>
+                                    <div class="health-card__label">@m.Size · @m.MemoryMb MB · @m.Region</div>
                                     <div class="health-card__value health-card__value--wrap">@MachinStateLabel(m.State)</div>
                                 </div>
                                 <div class="health-card__dot health-card__dot--@(m.State == "started" ? "ok" : "warn")"></div>
                             </div>
                         }
 
-                        <!-- Compute/hr -->
-                        <div class="health-card">
+                        <div class="health-card" data-card-id="fly-compute">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-cpu"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Compute rate")</div>
@@ -139,8 +135,8 @@
                             </div>
                         </div>
 
-                        <!-- 24/7 compute -->
-                        <div class="health-card">
+                        <div class="health-card" data-card-id="fly-maxcompute">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-calculator"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Max compute / month")</div>
@@ -149,8 +145,8 @@
                             </div>
                         </div>
 
-                        <!-- IPv4 -->
-                        <div class="health-card">
+                        <div class="health-card" data-card-id="fly-ipv4">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-diagram-3"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">IPv4 @Loc.T("(dedicated)")</div>
@@ -158,8 +154,8 @@
                             </div>
                         </div>
 
-                        <!-- Free allowance -->
-                        <div class="health-card">
+                        <div class="health-card" data-card-id="fly-free">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-gift"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Free allowance")</div>
@@ -167,8 +163,8 @@
                             </div>
                         </div>
 
-                        <!-- Est. billable (max) -->
-                        <div class="health-card @(_summary.Fly.EstimatedBillable == 0 ? "health-card--ok" : "")">
+                        <div class="health-card @(_summary.Fly.EstimatedBillable == 0 ? "health-card--ok" : "")" data-card-id="fly-maxbill">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-receipt"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Est. max billable")</div>
@@ -178,8 +174,8 @@
                             </div>
                         </div>
 
-                        <!-- Estimated MTD -->
-                        <div class="health-card @(_summary.Fly.EstimatedMtdDollars == 0 ? "health-card--ok" : "")">
+                        <div class="health-card @(_summary.Fly.EstimatedMtdDollars == 0 ? "health-card--ok" : "")" data-card-id="fly-mtd">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-cash-stack"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Est. this month")</div>
@@ -218,9 +214,9 @@
                 }
                 else
                 {
-                    <div class="health-cards cost-cards">
-                        <!-- Project -->
-                        <div class="health-card health-card--ok">
+                    <div id="neon-cards-grid" class="health-cards cost-cards" data-saved-order="@_neonOrder">
+                        <div class="health-card health-card--ok" data-card-id="neon-project">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-database-fill"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Project")</div>
@@ -228,8 +224,8 @@
                             </div>
                         </div>
 
-                        <!-- Plan -->
-                        <div class="health-card @(_summary.Neon.Plan == "free" ? "health-card--ok" : "")">
+                        <div class="health-card @(_summary.Neon.Plan == "free" ? "health-card--ok" : "")" data-card-id="neon-plan">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-patch-check"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Plan")</div>
@@ -243,8 +239,8 @@
                             </div>
                         </div>
 
-                        <!-- Region -->
-                        <div class="health-card">
+                        <div class="health-card" data-card-id="neon-region">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-geo-alt"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Region")</div>
@@ -252,8 +248,8 @@
                             </div>
                         </div>
 
-                        <!-- Storage -->
-                        <div class="health-card">
+                        <div class="health-card" data-card-id="neon-storage">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-hdd"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Storage used")</div>
@@ -271,8 +267,8 @@
                             </div>
                         </div>
 
-                        <!-- PostgreSQL -->
-                        <div class="health-card">
+                        <div class="health-card" data-card-id="neon-pg">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-server"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">PostgreSQL</div>
@@ -280,8 +276,8 @@
                             </div>
                         </div>
 
-                        <!-- Storage bar -->
-                        <div class="health-card cost-card--wide">
+                        <div class="health-card cost-card--wide" data-card-id="neon-bar">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__body" style="width:100%">
                                 <div class="health-card__label">@Loc.T("Storage usage")</div>
                                 <div class="cost-progress-wrap">
@@ -294,8 +290,8 @@
                             </div>
                         </div>
 
-                        <!-- Monthly cost -->
-                        <div class="health-card @(_summary.Neon.EstimatedMonthlyCost == 0 ? "health-card--ok" : "")">
+                        <div class="health-card @(_summary.Neon.EstimatedMonthlyCost == 0 ? "health-card--ok" : "")" data-card-id="neon-cost">
+                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                             <div class="health-card__icon"><i class="bi bi-receipt"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Est. cost / month")</div>
