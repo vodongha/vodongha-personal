@@ -65,6 +65,7 @@ builder.Services.AddScoped<AdminLocalizationService>();
 builder.Services.AddScoped<TimezoneService>();
 builder.Services.AddSingleton<HealthMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
+builder.Services.AddHttpContextAccessor();
 
 WebApplication app = builder.Build();
 
