@@ -81,6 +81,15 @@
         font-size: $text-sm;
         font-weight: 500;
         color: $color-text-dim;
+
+        .required { color: #ef4444; margin-left: 2px; }
+    }
+
+    // Blazor DataAnnotationsValidator error messages
+    .validation-message {
+        font-size: 0.72rem;
+        color: #ef4444;
+        margin-top: -$space-1;
     }
 
     &__input,
