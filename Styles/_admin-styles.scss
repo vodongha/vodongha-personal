@@ -1826,3 +1826,143 @@ tr.admin-row--dragover td {
         &__main { background: #fff; }
     }
 }
+
+// ── CV page layout (preview + template picker) ────────────────────────────
+.cv-page-layout {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 1.5rem;
+    align-items: start;
+    max-width: 1100px;
+
+    @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+// ── Template picker ───────────────────────────────────────────────────────
+.cv-template-picker {
+    &__title { font-size: 0.9rem; font-weight: 600; color: #fff; margin: 0 0 0.25rem; }
+    &__hint  { font-size: 0.72rem; color: #6b7280; margin: 0 0 1rem; }
+}
+
+.cv-tpl-card {
+    border: 2px solid #2a2a2a;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    margin-bottom: 0.875rem;
+    transition: border-color 0.15s, transform 0.1s;
+
+    &:hover { border-color: #4b5563; transform: translateY(-1px); }
+    &--active { border-color: $color-primary !important; }
+
+    &__label {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem; font-weight: 600; color: #d1d5db;
+        background: #1a1a1a;
+        display: flex; align-items: center; gap: 0.35rem;
+        i { color: $color-primary; }
+    }
+}
+
+// ── Template thumbnails ───────────────────────────────────────────────────
+.cv-tpl-thumb {
+    height: 130px;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+
+    // Template 0 – Dark Sidebar
+    &--dark {
+        background: #fff;
+        .cv-tpl-thumb__sidebar {
+            width: 52px; background: #0f1923;
+            padding: 8px 6px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0;
+        }
+        .cv-tpl-thumb__main {
+            flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 3px;
+        }
+    }
+
+    // Template 1 – Minimal
+    &--minimal {
+        background: #fff;
+        flex-direction: column;
+        padding: 8px;
+        gap: 5px;
+    }
+
+    // Template 2 – Professional
+    &--pro {
+        background: #fff;
+        flex-direction: column;
+        .cv-tpl-thumb__pro-header {
+            background: #1e3a5f;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .cv-tpl-thumb__pro-stripe {
+            height: 3px; background: #3b82f6; flex-shrink: 0;
+        }
+    }
+
+    &__avatar {
+        width: 20px; height: 20px; border-radius: 50%;
+        background: $color-primary; flex-shrink: 0; align-self: center; margin: 0 auto 4px;
+        &--green { background: #059669; }
+        &--blue  { background: #3b82f6; flex-shrink: 0; }
+    }
+
+    &__header-row {
+        display: flex; align-items: center; gap: 4px; flex-shrink: 0;
+    }
+
+    &__divider {
+        height: 1.5px; background: #d1d5db; margin: 2px 0; flex-shrink: 0;
+        &--green { background: #059669; }
+    }
+
+    &__skills-col {
+        width: 56px; flex-shrink: 0; padding: 6px 4px;
+        background: #f8fafc;
+        &--blue { background: #eff6ff; }
+    }
+
+    &__section-title {
+        height: 3px; border-radius: 1px; margin-bottom: 3px; width: 40%;
+        &--green { background: #059669; }
+        &--blue  { background: #3b82f6; }
+    }
+
+    &__skill-tag {
+        height: 7px; border-radius: 2px; margin-bottom: 3px; width: 70%;
+        background: #d1fae5; border: 1px solid #a7f3d0;
+        &--blue { background: #dbeafe; border-color: #bfdbfe; }
+    }
+
+    &__gap { height: 6px; flex-shrink: 0; }
+
+    // Line styles
+    &__line {
+        height: 4px; border-radius: 2px; margin-bottom: 3px; flex-shrink: 0;
+        background: #374151;
+
+        &--w90 { width: 90%; }
+        &--w80 { width: 80%; }
+        &--w70 { width: 70%; }
+        &--w60 { width: 60%; }
+        &--w50 { width: 50%; }
+        &--w40 { width: 40%; }
+
+        &--accent      { background: $color-primary; }
+        &--muted       { background: #334155; }
+        &--dark        { background: #1e293b; }
+        &--bold        { height: 6px; }
+        &--muted-dark  { background: #94a3b8; }
+        &--green-accent { background: #059669; }
+        &--blue-accent  { background: #3b82f6; }
+        &--white       { background: #fff; }
+        &--light-blue  { background: #93c5fd; }
+    }
+}
