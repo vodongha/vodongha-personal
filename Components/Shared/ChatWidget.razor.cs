@@ -203,11 +203,12 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-        await StopTypingAsync();
-
         string content = _inputText.Trim();
-        _inputText = "";    // Clear input immediately for snappy UX
+        _inputText = "";    // Clear input immediately
         _sending = true;
+
+        // Stop typing indicator — fire-and-forget, no need to await
+        _ = StopTypingAsync();
 
         // Optimistic: show message instantly before the API responds
         ChatMessageDto optimistic = new(0, content, true, DateTime.UtcNow);
@@ -237,7 +238,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
-    private async Task OnTypingInput(Microsoft.AspNetCore.Components.ChangeEventArgs e)
+    private void OnTypingInput(Microsoft.AspNetCore.Components.ChangeEventArgs e)
     {
         _inputText = e.Value?.ToString() ?? "";
 
@@ -246,15 +247,22 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
+        // Cancel previous debounce timer
         _typingCts?.Cancel();
         _typingCts = new CancellationTokenSource();
 
-        await _hubConnection.InvokeAsync("StartTyping", _sessionId.Value.ToString());
+        // Fire-and-forget — never await SignalR inside an oninput handler (blocks keypress queue)
+        _ = SendTypingSignalsAsync(_typingCts.Token);
+    }
 
+    private async Task SendTypingSignalsAsync(CancellationToken ct)
+    {
+        if (_hubConnection == null || !_sessionId.HasValue) return;
         try
         {
-            await Task.Delay(2000, _typingCts.Token);
-            await StopTypingAsync();
+            _ = _hubConnection.InvokeAsync("StartTyping", _sessionId.Value.ToString(), ct);
+            await Task.Delay(2000, ct);
+            _ = _hubConnection.InvokeAsync("StopTyping", _sessionId.Value.ToString());
         }
         catch (OperationCanceledException)
         {
@@ -262,13 +270,15 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
-    private async Task StopTypingAsync()
+    private Task StopTypingAsync()
     {
         _typingCts?.Cancel();
         if (_hubConnection != null && _sessionId.HasValue)
         {
-            await _hubConnection.InvokeAsync("StopTyping", _sessionId.Value.ToString());
+            // Fire-and-forget — caller does not need to await
+            _ = _hubConnection.InvokeAsync("StopTyping", _sessionId.Value.ToString());
         }
+        return Task.CompletedTask;
     }
 
     private async Task OnKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
