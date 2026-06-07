@@ -9,6 +9,7 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     [Inject] private HealthMonitorService Monitor { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
+    [Inject] private AppSecretsService Secrets { get; set; } = default!;
 
     private IReadOnlyList<HealthMetricSnapshot> _snapshots = [];
     private HealthMetricSnapshot? _latest;
@@ -16,6 +17,13 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     private DateTime _startedAt;
     private bool _isRefreshing;
     private int _countdown = 30;
+
+    private string _statOrder  = "[]";
+    private string _chartOrder = "[]";
+    private DotNetObjectReference<AdminHealth>? _dotNetRef;
+
+    private const string StatPrefKey   = "_pref.health.stats";
+    private const string ChartPrefKey  = "_pref.health.charts";
 
     // Table sort + pagination
     private string _sortCol = "Time";
@@ -62,6 +70,7 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     {
         Loc.OnChanged += OnLangChanged;
         Tz.OnTimezoneSet += OnTimezoneUpdated;
+        _dotNetRef = DotNetObjectReference.Create(this);
         _startedAt = Monitor.StartedAt;
         LoadData();
     }
@@ -72,10 +81,24 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     {
         if (firstRender)
         {
+            _statOrder  = await Secrets.GetValueAsync(StatPrefKey)  ?? "[]";
+            _chartOrder = await Secrets.GetValueAsync(ChartPrefKey) ?? "[]";
+
             await InitCharts();
+            await JS.InvokeVoidAsync("initSortableCards", "health-stat-cards",   _dotNetRef, StatPrefKey);
+            await JS.InvokeVoidAsync("initSortableCards", "health-chart-cards",  _dotNetRef, ChartPrefKey);
+
             // Background loop: update every 30 seconds, countdown every second
             _ = RunRefreshLoopAsync(_cts.Token);
         }
+    }
+
+    /// <summary>Called by JS when user finishes dragging a card.</summary>
+    [JSInvokable]
+    public async Task SaveCardOrder(string prefKey, string[] ids)
+    {
+        string json = System.Text.Json.JsonSerializer.Serialize(ids);
+        await Secrets.SaveAsync(prefKey, json);
     }
 
     private void LoadData()
@@ -169,6 +192,7 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     {
         Loc.OnChanged -= OnLangChanged;
         Tz.OnTimezoneSet -= OnTimezoneUpdated;
+        _dotNetRef?.Dispose();
         await _cts.CancelAsync();
         _cts.Dispose();
 
