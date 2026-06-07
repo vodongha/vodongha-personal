@@ -263,6 +263,20 @@
         color: #4b5563;
         margin-top: 0.2rem;
         padding: 0 0.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.15rem;
+    }
+
+    &__ticks {
+        font-size: 0.72rem;
+        color: #4b5563;
+        line-height: 1;
+        flex-shrink: 0;
+
+        &--read {
+            color: $color-primary;
+        }
     }
 }
 

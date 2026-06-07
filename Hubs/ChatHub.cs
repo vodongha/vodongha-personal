@@ -27,6 +27,15 @@ public class ChatHub : Hub
         await Groups.AddToGroupAsync(Context.ConnectionId, "admin");
     }
 
+    /// <summary>
+    /// Called by the reader to notify the sender their messages have been read.
+    /// lastReadId = the highest message ID the caller has now seen.
+    /// </summary>
+    public async Task MarkRead(string sessionId, int lastReadId)
+    {
+        await Clients.OthersInGroup($"session_{sessionId}").SendAsync("MessagesRead", lastReadId);
+    }
+
     public async Task StartTyping(string sessionId)
     {
         await Clients.OthersInGroup($"session_{sessionId}").SendAsync("TypingStarted");
