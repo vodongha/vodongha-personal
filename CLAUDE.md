@@ -300,7 +300,7 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 
 ### Chat features
 
-- **Contact form** — name, phone, and email are all required (`CanStartChat` checks all three)
+- **Contact form** — name, phone, and email are all required (`CanStartChat` checks all three); blur validation with i18n error messages
 - **Optimistic UI** — messages appear instantly; replaced with real DB ID on server response
 - **Typing indicator** — `StartTyping` / `StopTyping` SignalR events, auto-stop after 2s idle
 - **Read receipts** — `MarkRead` SignalR event; ✓ = sent, ✓✓ = admin/user read
@@ -309,6 +309,9 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 - **Auto welcome** — `CreateSessionAsync` saves a greeting `ChatMessage (IsFromUser=false)` immediately after session creation
 - **Telegram topic lifecycle** — topic created on first user message; auto-recreated with contact re-pin if deleted on Telegram side; `DeleteSessionAsync` calls `DeleteTopicAsync` before DB delete
 - **Full i18n** — all chat widget UI strings use `Lang.T("chat.*")` keys; widget re-renders on `Lang.OnChange`; `placeholder="email@example.com"` kept as-is (universal)
+- **Country code dropdown** — full country list from `libphonenumber-csharp` (Google libphonenumber); flag emoji auto-generated from ISO region code; auto-selected from browser timezone via `TimezoneService`
+- **Phone validation** — 6–15 digits, shown on blur; leading `0` auto-stripped, country dial code prepended on submit
+- **Blur validation** — errors shown only after user leaves the field (`@onblur`), not on page load
 
 ### Telegram setup
 
