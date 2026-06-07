@@ -86,42 +86,6 @@ public class CostMonitorService
 
     public void InvalidateCache() => _cache = null;
 
-    public async Task<bool> RestartMachineAsync(string machineId)
-    {
-        string? token   = await _secrets.GetValueAsync("Fly:ApiToken");
-        string  appName = await _secrets.GetValueAsync("Fly:AppName") ?? "vodongha";
-
-        if (string.IsNullOrEmpty(token))
-        {
-            return false;
-        }
-
-        try
-        {
-            using HttpClient client = _httpFactory.CreateClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            client.Timeout = TimeSpan.FromSeconds(15);
-
-            HttpResponseMessage response = await client.PostAsync(
-                $"https://api.machines.dev/v1/apps/{appName}/machines/{machineId}/restart",
-                content: null);
-
-            if (response.IsSuccessStatusCode)
-            {
-                InvalidateCache(); // force re-fetch state after restart
-                return true;
-            }
-
-            _logger.LogWarning("Fly.io restart returned {Status}", response.StatusCode);
-            return false;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to restart machine {MachineId}", machineId);
-            return false;
-        }
-    }
-
     // ─── Fly.io ──────────────────────────────────────────────────────────────
 
     private async Task<FlyAppData?> FetchFlyAsync()
@@ -231,14 +195,22 @@ public class CostMonitorService
             }
 
             string json = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("Neon project raw JSON: {Json}", json);
             using JsonDocument doc = JsonDocument.Parse(json);
             JsonElement p = doc.RootElement.GetProperty("project");
 
             string name      = p.TryGetProperty("name",      out JsonElement en)  ? en.GetString()  ?? "" : "";
             string plan      = p.TryGetProperty("plan",      out JsonElement epl) ? epl.GetString() ?? "free" : "free";
             string region    = p.TryGetProperty("region_id", out JsonElement er)  ? er.GetString()  ?? "" : "";
-            long   storeBytes= p.TryGetProperty("store_bytes",out JsonElement es) ? es.GetInt64()   : 0;
             int    pgVersion = p.TryGetProperty("pg_version", out JsonElement epg)? epg.GetInt32()  : 16;
+
+            // Try multiple possible field names for storage
+            long storeBytes = 0;
+            if      (p.TryGetProperty("data_storage_bytes_hour", out JsonElement ef1)) storeBytes = ef1.GetInt64();
+            else if (p.TryGetProperty("store_bytes",             out JsonElement ef2)) storeBytes = ef2.GetInt64();
+            else if (p.TryGetProperty("storage_size",            out JsonElement ef3)) storeBytes = ef3.GetInt64();
+            else if (p.TryGetProperty("data_bytes",              out JsonElement ef4)) storeBytes = ef4.GetInt64();
+            _logger.LogInformation("Neon storage bytes resolved: {Bytes}", storeBytes);
 
             double storageMb = storeBytes / 1024.0 / 1024.0;
             double storageGb = storageMb  / 1024.0;
