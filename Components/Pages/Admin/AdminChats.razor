@@ -73,9 +73,24 @@
                         </div>
 
                         <div class="chat-admin-messages" id="adminChatMessages">
-                            @foreach (ChatMessage msg in _messages)
+                            @{
+                                @* User messages after admin's last message = unread (admin hasn't replied yet) *@
+                                DateTime? lastAdminMsgTime = _messages.Where(m => !m.IsFromUser).Select(m => (DateTime?)m.SentAt).Max();
+                                int firstUnreadIdx = _messages.FindIndex(m => m.IsFromUser && (lastAdminMsgTime == null || m.SentAt > lastAdminMsgTime));
+                            }
+                            @for (int i = 0; i < _messages.Count; i++)
                             {
-                                <div class="chat-msg @(msg.IsFromUser ? "chat-msg--admin" : "chat-msg--user")">
+                                ChatMessage msg = _messages[i];
+                                bool isUnread = msg.IsFromUser && (lastAdminMsgTime == null || msg.SentAt > lastAdminMsgTime);
+
+                                @if (i == firstUnreadIdx)
+                                {
+                                    <div class="chat-unread-divider chat-unread-divider--admin">
+                                        <span>Chưa trả lời</span>
+                                    </div>
+                                }
+
+                                <div class="chat-msg @(msg.IsFromUser ? "chat-msg--admin" : "chat-msg--user") @(isUnread ? "chat-msg--unread" : "")">
                                     <div class="chat-msg__bubble">@msg.Content</div>
                                     <div class="chat-msg__time">
                                         @(msg.IsFromUser ? "User" : "Admin") · @msg.SentAt.ToLocalTime().ToString("HH:mm")
