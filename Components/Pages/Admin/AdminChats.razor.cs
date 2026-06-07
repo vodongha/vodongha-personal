@@ -28,7 +28,23 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     {
         _sessions = await ChatSvc.GetSessionsAsync();
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
-        await ConnectHubAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            await ConnectHubAsync();
+        }
+        catch
+        {
+            // Hub not available during SSR — ignore
+        }
     }
 
     private async Task ConnectHubAsync()
