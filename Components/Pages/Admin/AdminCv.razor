@@ -1,0 +1,177 @@
+@page "/admin/cv"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">
+                <i class="bi bi-file-earmark-person"></i> @Loc.T("CV / Resume")
+            </h1>
+            <button class="admin-btn admin-btn--primary" @onclick="Download" disabled="@_loading">
+                @if (_loading)
+                {
+                    <i class="bi bi-arrow-clockwise admin-spin"></i>
+                }
+                else
+                {
+                    <i class="bi bi-download"></i>
+                }
+                @Loc.T("Download PDF")
+            </button>
+        </header>
+
+        @if (_loading)
+        {
+            <div class="cost-loading">
+                <i class="bi bi-arrow-clockwise admin-spin"></i> @Loc.T("Generating PDF...")
+            </div>
+        }
+        else if (_data != null)
+        {
+            <!-- Preview card -->
+            <div class="cv-preview">
+                <!-- Sidebar preview -->
+                <div class="cv-preview__sidebar">
+                    <div class="cv-preview__avatar">
+                        @if (!string.IsNullOrEmpty(_data.AvatarUrl))
+                        {
+                            <img src="@_data.AvatarUrl" alt="Avatar" />
+                        }
+                        else
+                        {
+                            <span>@Initials(_data.Name)</span>
+                        }
+                    </div>
+                    <div class="cv-preview__name">@_data.Name</div>
+                    <div class="cv-preview__title">@_data.Title</div>
+
+                    <div class="cv-preview__section-label">Contact</div>
+                    @if (!string.IsNullOrEmpty(_data.Email))
+                    {
+                        <div class="cv-preview__contact-row"><i class="bi bi-envelope"></i> @_data.Email</div>
+                    }
+                    @if (!string.IsNullOrEmpty(_data.Phone))
+                    {
+                        <div class="cv-preview__contact-row"><i class="bi bi-telephone"></i> @_data.Phone</div>
+                    }
+                    @if (!string.IsNullOrEmpty(_data.Location))
+                    {
+                        <div class="cv-preview__contact-row"><i class="bi bi-geo-alt"></i> @_data.Location</div>
+                    }
+                    @if (!string.IsNullOrEmpty(_data.GitHub))
+                    {
+                        <div class="cv-preview__contact-row"><i class="bi bi-github"></i> @_data.GitHub.Replace("https://github.com/", "")</div>
+                    }
+                    @if (!string.IsNullOrEmpty(_data.LinkedIn))
+                    {
+                        <div class="cv-preview__contact-row"><i class="bi bi-linkedin"></i> @_data.LinkedIn.Replace("https://linkedin.com/in/", "").Replace("https://www.linkedin.com/in/", "")</div>
+                    }
+
+                    @if (_data.Skills.Count > 0)
+                    {
+                        <div class="cv-preview__section-label" style="margin-top:1rem">Skills</div>
+                        @foreach (var group in _data.Skills.GroupBy(s => s.Category))
+                        {
+                            <div class="cv-preview__skill-cat">@group.Key</div>
+                            <div class="cv-preview__skill-tags">
+                                @foreach (var skill in group)
+                                {
+                                    <span class="cv-preview__skill-tag">@skill.Name</span>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- Main preview -->
+                <div class="cv-preview__main">
+                    @if (!string.IsNullOrWhiteSpace(_data.Bio))
+                    {
+                        <div class="cv-preview__block">
+                            <div class="cv-preview__block-title">Profile</div>
+                            <p class="cv-preview__bio">@_data.Bio</p>
+                        </div>
+                    }
+
+                    @if (_data.Experiences.Count > 0)
+                    {
+                        <div class="cv-preview__block">
+                            <div class="cv-preview__block-title">Experience</div>
+                            @foreach (var exp in _data.Experiences.OrderBy(e => e.Order))
+                            {
+                                <div class="cv-preview__entry">
+                                    <div class="cv-preview__entry-header">
+                                        <span class="cv-preview__entry-role">@exp.Role</span>
+                                        <span class="cv-preview__entry-date">@DateRange(exp)</span>
+                                    </div>
+                                    <div class="cv-preview__entry-sub">@exp.Company @(string.IsNullOrEmpty(exp.Location) ? "" : $"· {exp.Location}")</div>
+                                    @if (!string.IsNullOrWhiteSpace(exp.DescriptionEn ?? exp.Description))
+                                    {
+                                        <p class="cv-preview__entry-desc">@(exp.DescriptionEn ?? exp.Description)</p>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @if (_data.Educations.Count > 0)
+                    {
+                        <div class="cv-preview__block">
+                            <div class="cv-preview__block-title">Education</div>
+                            @foreach (var edu in _data.Educations.OrderBy(e => e.Order))
+                            {
+                                <div class="cv-preview__entry">
+                                    <div class="cv-preview__entry-header">
+                                        <span class="cv-preview__entry-role">@edu.Degree — @edu.Field</span>
+                                        <span class="cv-preview__entry-date">@edu.StartYear – @(edu.EndYear?.ToString() ?? "Present")</span>
+                                    </div>
+                                    <div class="cv-preview__entry-sub">@edu.School</div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @{
+                        var featured = _data.Projects.Where(p => p.IsFeatured).OrderBy(p => p.Order).Take(4).ToList();
+                    }
+                    @if (featured.Count > 0)
+                    {
+                        <div class="cv-preview__block">
+                            <div class="cv-preview__block-title">Featured Projects</div>
+                            @foreach (var proj in featured)
+                            {
+                                <div class="cv-preview__entry">
+                                    <div class="cv-preview__entry-header">
+                                        <span class="cv-preview__entry-role">@proj.Title</span>
+                                        @if (!string.IsNullOrEmpty(proj.LiveUrl))
+                                        {
+                                            <a href="@proj.LiveUrl" target="_blank" class="cv-preview__entry-link">@proj.LiveUrl</a>
+                                        }
+                                    </div>
+                                    @if (!string.IsNullOrWhiteSpace(proj.DescriptionEn ?? proj.Description))
+                                    {
+                                        <p class="cv-preview__entry-desc">@(proj.DescriptionEn ?? proj.Description)</p>
+                                    }
+                                    @if (!string.IsNullOrEmpty(proj.Technologies))
+                                    {
+                                        <div class="cv-preview__tech">@proj.Technologies</div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <p class="cost-note" style="margin-top:1rem">
+                <i class="bi bi-info-circle"></i>
+                @Loc.T("Preview shows data that will be included in the PDF. Edit content in Settings, Skills, Experience, Education and Projects pages.")
+            </p>
+        }
+    </main>
+</div>

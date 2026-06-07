@@ -1725,3 +1725,104 @@ tr.admin-row--dragover td {
         &__actions { justify-content: flex-end; }
     }
 }
+
+// ── CV Preview ────────────────────────────────────────────────────
+.cv-preview {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #2a2a2a;
+    max-width: 860px;
+
+    &__sidebar {
+        background: #0f1923;
+        padding: 1.5rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    &__avatar {
+        width: 72px; height: 72px;
+        border-radius: 50%;
+        background: $color-primary;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.6rem; font-weight: 700; color: #0f1923;
+        margin: 0 auto 0.5rem;
+        overflow: hidden;
+
+        img { width: 100%; height: 100%; object-fit: cover; }
+    }
+
+    &__name  { text-align: center; font-weight: 700; font-size: 1rem; color: #fff; }
+    &__title { text-align: center; font-size: 0.78rem; color: $color-primary; font-style: italic; margin-bottom: 0.5rem; }
+
+    &__section-label {
+        font-size: 0.68rem; font-weight: 700; color: $color-primary;
+        letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.75rem;
+    }
+
+    &__contact-row {
+        display: flex; align-items: center; gap: 0.5rem;
+        font-size: 0.75rem; color: #cbd5e1;
+        i { color: $color-primary; font-size: 0.75rem; flex-shrink: 0; }
+    }
+
+    &__skill-cat {
+        font-size: 0.68rem; font-weight: 600; color: $color-primary;
+        text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.4rem;
+    }
+
+    &__skill-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.25rem; }
+
+    &__skill-tag {
+        background: #1a2a3a; border: 1px solid #2d4a5a;
+        border-radius: 4px; padding: 0.1rem 0.45rem;
+        font-size: 0.68rem; color: #94a3b8;
+    }
+
+    &__main {
+        background: #fafafa;
+        padding: 1.5rem 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    &__block {}
+
+    &__block-title {
+        font-size: 0.7rem; font-weight: 700; color: $color-primary;
+        text-transform: uppercase; letter-spacing: 0.1em;
+        border-bottom: 1.5px solid $color-primary;
+        padding-bottom: 0.25rem; margin-bottom: 0.75rem;
+    }
+
+    &__bio { font-size: 0.82rem; color: #475569; line-height: 1.6; margin: 0; }
+
+    &__entry {
+        margin-bottom: 0.875rem;
+        padding-bottom: 0.875rem;
+        border-bottom: 1px solid #e2e8f0;
+        &:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    }
+
+    &__entry-header {
+        display: flex; justify-content: space-between; align-items: baseline;
+        gap: 0.5rem; flex-wrap: wrap;
+    }
+
+    &__entry-role  { font-weight: 600; font-size: 0.9rem; color: #1e293b; }
+    &__entry-date  { font-size: 0.75rem; color: #94a3b8; font-style: italic; white-space: nowrap; }
+    &__entry-link  { font-size: 0.72rem; color: $color-primary; white-space: nowrap; }
+    &__entry-sub   { font-size: 0.8rem; font-weight: 600; color: $color-primary; margin-top: 0.1rem; }
+    &__entry-desc  { font-size: 0.78rem; color: #64748b; line-height: 1.5; margin: 0.35rem 0 0; }
+    &__tech        { font-size: 0.72rem; color: $color-primary; margin-top: 0.3rem; font-style: italic; }
+
+    @media (max-width: 700px) {
+        grid-template-columns: 1fr;
+        &__sidebar { padding: 1.25rem; }
+        &__main { background: #fff; }
+    }
+}
