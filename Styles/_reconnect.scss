@@ -57,6 +57,19 @@
     gap: $space-4;
 }
 
+.reconnect-sub {
+    display: block;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.35);
+    margin-top: 0.25rem;
+}
+
+.reconnect-icon {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
 // ── Blazor Error UI ─────────────────────────────────────────
 #blazor-error-ui {
     background: $color-bg-elevated;

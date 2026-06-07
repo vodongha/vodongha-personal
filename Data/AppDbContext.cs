@@ -73,13 +73,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 new BlogPost
                 {
                     Id = 1,
-                    Title = "Lập trình với AI: Trải nghiệm thực tế khi làm việc cùng Claude Code",
-                    TitleEn = "Building with AI: A Developer's Real Experience with Claude Code",
+                    Title = "Claude Code thực tế: 1 năm dùng AI trên .NET enterprise",
+                    TitleEn = "Claude Code in Practice: 1 Year Using AI on .NET Enterprise",
                     Slug = "building-with-ai-experience-with-claude-code",
-                    Summary = "Hơn một năm dùng Claude Code hàng ngày trên codebase enterprise .NET — đây là những gì tôi học được về debug, viết test, refactor và giới hạn thực sự của AI coding assistant.",
-                    SummaryEn = "Over a year using Claude Code daily on an enterprise .NET codebase — here is what I learned about debugging, writing tests, refactoring, and the real limits of AI coding assistants.",
+                    Summary = "Hơn một năm dùng Claude Code hàng ngày trên codebase .NET enterprise — những bài học thực tế về debug, test và giới hạn của AI. Đọc ngay.",
+                    SummaryEn = "Over a year using Claude Code daily on a .NET enterprise codebase — real lessons on debugging, testing, refactoring, and AI limits. Read my experience.",
                     CoverImageUrl = "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&auto=format&fit=crop&q=80",
-                    Tags = "AI,Claude Code,Developer Experience,.NET,Blazor,Productivity",
+                    Tags = "AI,Claude Code,Developer Experience,.NET,Blazor,Productivity,AI Coding Assistant",
                     IsPublished = true,
                     CreatedAt = new DateTime(2026, 6, 6, 0, 0, 0, DateTimeKind.Utc),
                     Content = @"<p><img src=""https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&auto=format&fit=crop&q=80"" alt=""Lập trình với Claude Code AI assistant"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
@@ -197,10 +197,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                     Title = "Vibe Coding là gì? Khi lập trình viên 'cảm' thay vì 'gõ'",
                     TitleEn = "What Is Vibe Coding? When Developers Feel Instead of Type",
                     Slug = "vibe-coding-la-gi",
-                    Summary = "Vibe coding — xu hướng lập trình mới nơi bạn mô tả ý tưởng bằng ngôn ngữ tự nhiên và AI tạo ra code. Không còn gõ từng dòng, chỉ cần 'cảm' đúng hướng. Nhưng đây có phải tương lai của nghề lập trình?",
-                    SummaryEn = "Vibe coding is the emerging practice of describing your intent in natural language and letting AI write the code. No more typing line by line — just feel the direction. But is this really the future of software development?",
+                    Summary = "Vibe coding: lập trình bằng ngôn ngữ tự nhiên, để AI tạo code. Xu hướng mới hay tương lai thực sự của nghề developer? Khám phá góc nhìn thực tế tại đây.",
+                    SummaryEn = "Vibe coding means describing ideas in plain language and letting AI write the code. Is this just a trend or the real future of software development? Find out.",
                     CoverImageUrl = "https://cdn.sanity.io/images/bj34pdbp/migration/285b93a3e464a3cd61067037083f75f1b902f2a5-4800x2520.png?w=3840&q=75&fit=clip&auto=format",
-                    Tags = "Vibe Coding,AI,Developer Experience,Claude,Productivity",
+                    Tags = "Vibe Coding,AI,Developer Experience,Claude,Productivity,Future of Programming,AI Coding",
                     IsPublished = true,
                     CreatedAt = new DateTime(2026, 6, 7, 0, 0, 0, DateTimeKind.Utc),
                     Content = @"<p><img src=""https://cdn.sanity.io/images/bj34pdbp/migration/285b93a3e464a3cd61067037083f75f1b902f2a5-4800x2520.png?w=3840&q=75&fit=clip&auto=format"" alt=""Vibe Coding — lập trình cùng AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
@@ -403,13 +403,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 new BlogPost
                 {
                     Id = 2,
-                    Title = "AI Skills cho Developer: 5 Kỹ năng cốt lõi trong kỷ nguyên AI",
-                    TitleEn = "AI Skills for Developers: 5 Core Skills Every Developer Needs in the Age of AI",
+                    Title = "5 AI Skills cốt lõi mọi developer cần có năm 2025",
+                    TitleEn = "5 Core AI Skills Every Developer Needs in 2025",
                     Slug = "ai-skills-for-developers",
-                    Summary = "AI không thay thế developer — nhưng developer biết dùng AI sẽ thay thế người không biết. Đây là 5 kỹ năng thực tế giúp bạn làm việc hiệu quả với AI coding assistant trong công việc hàng ngày.",
-                    SummaryEn = "AI won't replace developers — but developers who use AI effectively will outpace those who don't. Here are 5 practical skills to work with AI coding assistants productively every day.",
+                    Summary = "AI không thay developer — nhưng developer biết dùng AI sẽ thay người không biết. 5 kỹ năng thực tế giúp bạn làm việc hiệu quả với AI ngay hôm nay.",
+                    SummaryEn = "AI won't replace developers — but developers who use AI will replace those who don't. 5 practical skills to work effectively with AI coding tools today.",
                     CoverImageUrl = "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&auto=format&fit=crop&q=80",
-                    Tags = "AI,Claude Code,Developer Skills,Productivity,Prompt Engineering",
+                    Tags = "AI,Claude Code,Developer Skills,Productivity,Prompt Engineering,AI Tools,Career",
                     IsPublished = true,
                     CreatedAt = new DateTime(2026, 6, 10, 0, 0, 0, DateTimeKind.Utc),
                     Content = @"<p><img src=""https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&auto=format&fit=crop&q=80"" alt=""AI Skills cho Developer — làm việc cùng AI coding assistant"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
@@ -620,6 +620,693 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 <p>AI is an amplifier, not a replacement. The best developers in the AI era aren't the ones with the most AI tools — they're the ones who <strong>use them at the right time, in the right place, with the right level of trust</strong>.</p>
 
 <p>Want to see AI coding assistants in action in a real codebase? Read about <a href=""/blog/building-with-ai-experience-with-claude-code"">a year of using Claude Code on an enterprise .NET codebase</a>.</p>"
+                },
+                new BlogPost
+                {
+                    Id = 4,
+                    Title = "Deploy .NET 10 lên Fly.io 2025: Hướng dẫn từng bước",
+                    TitleEn = "Deploy .NET 10 to Fly.io 2025: Complete Step-by-Step Guide",
+                    Slug = "deploy-dotnet-fly-io-2025",
+                    Summary = "Hướng dẫn deploy .NET 10 Blazor lên Fly.io 2025 với Docker và PostgreSQL — kinh nghiệm thực tế từ việc triển khai vodongha.id.vn lên Singapore region.",
+                    SummaryEn = "Step-by-step guide to deploying .NET 10 Blazor on Fly.io 2025 with Docker and PostgreSQL — real experience deploying vodongha.id.vn to the Singapore region.",
+                    CoverImageUrl = "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=1200&auto=format&fit=crop&q=80",
+                    Tags = "Fly.io,.NET 10,Docker,Blazor,PostgreSQL,Deployment,DevOps",
+                    IsPublished = true,
+                    CreatedAt = new DateTime(2026, 6, 15, 0, 0, 0, DateTimeKind.Utc),
+                    Content = @"<p><img src=""https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=1200&auto=format&fit=crop&q=80"" alt=""Deploy .NET 10 lên Fly.io 2025"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+
+<p><strong>Fly.io</strong> là một trong những nền tảng deploy tốt nhất cho ứng dụng .NET — giá hợp lý, hỗ trợ Docker native, cho phép chọn region gần user (tôi chọn Singapore cho vodongha.id.vn), và free tier vừa đủ để chạy một side project thực sự. Bài viết này là hướng dẫn từng bước deploy .NET 10 Blazor Server lên Fly.io, tổng hợp từ kinh nghiệm thực tế.</p>
+
+<h2>Yêu cầu</h2>
+<ul>
+    <li>.NET 10 SDK</li>
+    <li>Docker Desktop</li>
+    <li>flyctl CLI (<code>winget install Fly.flyctl</code> hoặc <code>brew install flyctl</code>)</li>
+    <li>Tài khoản Fly.io (free tier đủ cho bắt đầu)</li>
+    <li>PostgreSQL — tôi dùng <a href=""https://neon.tech"" target=""_blank"" rel=""noopener"">Neon</a> (serverless, free tier 0.5GB)</li>
+</ul>
+
+<h2>Bước 1: Dockerfile cho .NET 10</h2>
+<p>Tạo file <code>Dockerfile</code> ở root project:</p>
+<pre><code>FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY *.csproj ./
+RUN dotnet restore
+COPY . .
+RUN dotnet publish -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+WORKDIR /app
+
+# Fonts for PDF generation (QuestPDF / SkiaSharp)
+RUN apt-get update && apt-get install -y \
+    fonts-noto fonts-liberation libfontconfig1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /app/publish .
+ENTRYPOINT [""dotnet"", ""yourapp.dll""]</code></pre>
+<p>Thay <code>yourapp.dll</code> bằng tên project của bạn.</p>
+
+<h2>Bước 2: Khởi tạo Fly.io app</h2>
+<pre><code>fly auth login
+fly launch --no-deploy</code></pre>
+<p>Fly.io sẽ detect Dockerfile và tạo file <code>fly.toml</code>. Chọn region <strong>sin</strong> (Singapore) hoặc region gần user nhất của bạn.</p>
+
+<h2>Bước 3: Cấu hình fly.toml</h2>
+<pre><code>[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = ""suspend""
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = ""256mb""
+  cpu_kind = ""shared""
+  cpus = 1</code></pre>
+<p><strong>Lưu ý quan trọng:</strong> <code>auto_stop_machines = ""suspend""</code> thay vì <code>""stop""</code> — suspend giữ memory state, cold start nhanh hơn (~500ms vs ~3s). Với free tier, đây là lựa chọn tốt nhất.</p>
+
+<h2>Bước 4: Cài đặt secrets</h2>
+<pre><code>fly secrets set ConnectionStrings__DefaultConnection=""Host=...;Database=...;Username=...;Password=...""
+fly secrets set Admin__Username=""admin""
+fly secrets set Admin__Password=""your-secure-password""</code></pre>
+<p>Fly.io inject secrets vào environment variables lúc runtime — không cần file .env, không lo lộ secrets trong image.</p>
+
+<h2>Bước 5: Deploy lần đầu</h2>
+<pre><code>fly deploy</code></pre>
+<p>Lần đầu mất khoảng 3-5 phút để build và push image. Các lần sau nhanh hơn nhờ Docker layer cache.</p>
+
+<h2>Bước 6: CI/CD với GitHub Actions</h2>
+<p>Tạo file <code>.github/workflows/deploy.yml</code>:</p>
+<pre><code>name: Deploy to Fly.io
+on:
+  push:
+    branches: [master]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: fly deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}</code></pre>
+<p>Thêm <code>FLY_API_TOKEN</code> vào GitHub Secrets: <code>fly tokens create deploy -x 999999h</code>.</p>
+
+<h2>EF Core migrations tự động lúc startup</h2>
+<p>Trong <code>Program.cs</code>, gọi migrate trước khi app chạy:</p>
+<pre><code>using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService&lt;AppDbContext&gt;();
+    await db.Database.MigrateAsync();
+}</code></pre>
+<p>Cách này đảm bảo mọi migration mới đều được apply tự động sau deploy, không cần chạy tay.</p>
+
+<h2>Troubleshooting thường gặp</h2>
+<ul>
+    <li><strong>App không start:</strong> Kiểm tra <code>fly logs</code> — thường là thiếu secret hoặc connection string sai.</li>
+    <li><strong>Cold start chậm:</strong> Đảm bảo dùng <code>suspend</code> thay <code>stop</code>; nếu vẫn chậm, set <code>min_machines_running = 1</code>.</li>
+    <li><strong>Build fail trong GitHub Actions:</strong> Thêm <code>--remote-only</code> để dùng Fly.io builder thay vì build local trên CI runner.</li>
+    <li><strong>Neon PostgreSQL timeout:</strong> Thêm <code>;Timeout=30;CommandTimeout=30</code> vào connection string.</li>
+</ul>
+
+<h2>FAQ</h2>
+
+<h3>Fly.io free tier có đủ để chạy .NET app không?</h3>
+<p>Đủ cho side project và portfolio. Free tier gồm 3 shared-cpu-1x machines với 256MB RAM, và Fly Postgres (hoặc Neon free tier 0.5GB). Với <code>auto_stop_machines = ""suspend""</code>, máy tự tắt khi không có traffic nên tiết kiệm tài nguyên.</p>
+
+<h3>Nên dùng Fly Postgres hay Neon?</h3>
+<p>Nếu muốn đơn giản: Fly Postgres (managed, cùng region). Nếu muốn serverless và scale-to-zero: Neon — tôi dùng Neon cho vodongha.id.vn vì free tier rộng hơn và không cần quản lý instance.</p>
+
+<h3>Deploy có downtime không?</h3>
+<p>Fly.io dùng rolling deployment — máy mới được khởi chạy trước khi máy cũ bị tắt. Với 1 machine (free tier), có downtime ~5-10 giây trong lúc swap. Để zero-downtime, cần 2+ machines.</p>
+
+<h3>Xem logs như thế nào?</h3>
+<p><code>fly logs</code> — xem realtime. <code>fly logs --instance &lt;id&gt;</code> — xem log của một instance cụ thể.</p>
+
+<h3>Scale lên production thế nào?</h3>
+<p>Tăng <code>min_machines_running = 1</code> để luôn có ít nhất 1 machine active. Tăng memory lên 512MB hoặc 1GB nếu cần. <code>fly scale count 2</code> để chạy 2 instances.</p>
+
+<h2>Kết luận</h2>
+<p>Fly.io + .NET 10 + Neon PostgreSQL là bộ stack deploy mạnh mẽ, chi phí thấp và developer experience tốt. Sau khi setup xong, mỗi lần merge PR vào master là app tự động deploy — không cần thao tác thêm.</p>
+
+<p>Nếu bạn cần setup PostgreSQL với EF Core đúng cách trước khi deploy, đọc thêm bài <a href=""/blog/postgresql-entity-framework-core-best-practices"">PostgreSQL + EF Core best practices</a>.</p>",
+                    ContentEn = @"<p><img src=""https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=1200&auto=format&fit=crop&q=80"" alt=""Deploy .NET 10 to Fly.io 2025"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+
+<p><strong>Fly.io</strong> is one of the best platforms for deploying .NET applications — reasonable pricing, native Docker support, flexible region selection (I chose Singapore for vodongha.id.vn), and a free tier that's actually sufficient for a real side project. This guide walks through every step to deploy a .NET 10 Blazor Server app to Fly.io, based on real experience.</p>
+
+<h2>Prerequisites</h2>
+<ul>
+    <li>.NET 10 SDK</li>
+    <li>Docker Desktop</li>
+    <li>flyctl CLI (<code>winget install Fly.flyctl</code> or <code>brew install flyctl</code>)</li>
+    <li>Fly.io account (free tier is enough to start)</li>
+    <li>PostgreSQL — I use <a href=""https://neon.tech"" target=""_blank"" rel=""noopener"">Neon</a> (serverless, free tier 0.5GB)</li>
+</ul>
+
+<h2>Step 1: Dockerfile for .NET 10</h2>
+<p>Create a <code>Dockerfile</code> at the project root:</p>
+<pre><code>FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY *.csproj ./
+RUN dotnet restore
+COPY . .
+RUN dotnet publish -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+WORKDIR /app
+
+# Fonts for PDF generation (QuestPDF / SkiaSharp)
+RUN apt-get update && apt-get install -y \
+    fonts-noto fonts-liberation libfontconfig1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /app/publish .
+ENTRYPOINT [""dotnet"", ""yourapp.dll""]</code></pre>
+<p>Replace <code>yourapp.dll</code> with your project name.</p>
+
+<h2>Step 2: Initialize the Fly.io App</h2>
+<pre><code>fly auth login
+fly launch --no-deploy</code></pre>
+<p>Fly.io detects the Dockerfile and creates <code>fly.toml</code>. Choose region <strong>sin</strong> (Singapore) or the region closest to your users.</p>
+
+<h2>Step 3: Configure fly.toml</h2>
+<pre><code>[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = ""suspend""
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = ""256mb""
+  cpu_kind = ""shared""
+  cpus = 1</code></pre>
+<p><strong>Important:</strong> Use <code>auto_stop_machines = ""suspend""</code> instead of <code>""stop""</code> — suspend preserves memory state so cold starts are faster (~500ms vs ~3s). On the free tier, this is the best option.</p>
+
+<h2>Step 4: Set Secrets</h2>
+<pre><code>fly secrets set ConnectionStrings__DefaultConnection=""Host=...;Database=...;Username=...;Password=...""
+fly secrets set Admin__Username=""admin""
+fly secrets set Admin__Password=""your-secure-password""</code></pre>
+<p>Fly.io injects secrets as environment variables at runtime — no .env files, no risk of exposing secrets in the image.</p>
+
+<h2>Step 5: First Deploy</h2>
+<pre><code>fly deploy</code></pre>
+<p>The first deploy takes about 3-5 minutes to build and push the image. Subsequent deploys are faster thanks to Docker layer caching.</p>
+
+<h2>Step 6: CI/CD with GitHub Actions</h2>
+<p>Create <code>.github/workflows/deploy.yml</code>:</p>
+<pre><code>name: Deploy to Fly.io
+on:
+  push:
+    branches: [master]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: fly deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}</code></pre>
+<p>Add <code>FLY_API_TOKEN</code> to GitHub Secrets: <code>fly tokens create deploy -x 999999h</code>.</p>
+
+<h2>EF Core Migrations on Startup</h2>
+<p>In <code>Program.cs</code>, run migrations before the app starts:</p>
+<pre><code>using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService&lt;AppDbContext&gt;();
+    await db.Database.MigrateAsync();
+}</code></pre>
+<p>This ensures all pending migrations are automatically applied after each deploy, without any manual steps.</p>
+
+<h2>Common Troubleshooting</h2>
+<ul>
+    <li><strong>App won't start:</strong> Check <code>fly logs</code> — usually a missing secret or wrong connection string.</li>
+    <li><strong>Slow cold start:</strong> Make sure you use <code>suspend</code> instead of <code>stop</code>; if still slow, set <code>min_machines_running = 1</code>.</li>
+    <li><strong>Build fails in GitHub Actions:</strong> Add <code>--remote-only</code> to use Fly.io's builder instead of building locally on the CI runner.</li>
+    <li><strong>Neon PostgreSQL timeout:</strong> Add <code>;Timeout=30;CommandTimeout=30</code> to the connection string.</li>
+</ul>
+
+<h2>FAQ</h2>
+
+<h3>Is Fly.io's free tier enough to run a .NET app?</h3>
+<p>Yes, for side projects and portfolios. The free tier includes 3 shared-cpu-1x machines with 256MB RAM, plus Fly Postgres or Neon's free tier (0.5GB). With <code>auto_stop_machines = ""suspend""</code>, the machine shuts down when there's no traffic, conserving resources.</p>
+
+<h3>Should I use Fly Postgres or Neon?</h3>
+<p>For simplicity: Fly Postgres (managed, same region). For serverless and scale-to-zero: Neon — I use Neon for vodongha.id.vn because the free tier is more generous and there's no instance to manage.</p>
+
+<h3>Is there downtime during deployment?</h3>
+<p>Fly.io uses rolling deployments — the new machine starts before the old one stops. With 1 machine (free tier), there's ~5-10 seconds of downtime during the swap. Zero-downtime requires 2+ machines.</p>
+
+<h3>How do I view logs?</h3>
+<p><code>fly logs</code> for realtime logs. <code>fly logs --instance &lt;id&gt;</code> for a specific instance.</p>
+
+<h3>How do I scale to production?</h3>
+<p>Set <code>min_machines_running = 1</code> to always keep at least one machine active. Increase memory to 512MB or 1GB as needed. Use <code>fly scale count 2</code> to run 2 instances.</p>
+
+<h2>Conclusion</h2>
+<p>Fly.io + .NET 10 + Neon PostgreSQL is a powerful, low-cost deployment stack with great developer experience. Once set up, merging a PR into master automatically deploys the app — no manual steps needed.</p>
+
+<p>If you need to set up PostgreSQL with EF Core correctly before deploying, read <a href=""/blog/postgresql-entity-framework-core-best-practices"">PostgreSQL + EF Core best practices</a>.</p>"
+                },
+                new BlogPost
+                {
+                    Id = 5,
+                    Title = "Blazor vs React 2025: Khi nào nên chọn Blazor?",
+                    TitleEn = "Blazor vs React 2025: When Should You Choose Blazor?",
+                    Slug = "blazor-vs-react-2025",
+                    Summary = "Blazor vs React 2025 — so sánh thực tế từ developer dùng cả hai. Khi nào Blazor WASM thắng? Khi nào React vẫn là lựa chọn tốt hơn? Tìm hiểu ngay.",
+                    SummaryEn = "Blazor vs React 2025 — a practical comparison from a developer using both professionally. When does Blazor WASM win, and when is React still the better choice?",
+                    CoverImageUrl = "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=1200&auto=format&fit=crop&q=80",
+                    Tags = "Blazor,React,Vue,.NET,Frontend,Blazor WASM,Web Development",
+                    IsPublished = true,
+                    CreatedAt = new DateTime(2026, 6, 20, 0, 0, 0, DateTimeKind.Utc),
+                    Content = @"<p><img src=""https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=1200&auto=format&fit=crop&q=80"" alt=""Blazor vs React 2025"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+
+<p>Câu hỏi tôi được hỏi nhiều nhất khi nói về stack kỹ thuật: <em>""Tại sao dùng Blazor mà không phải React?""</em>. Là developer dùng cả hai trong môi trường production — Blazor WASM/Server cho konfipay và vodongha.id.vn, React cho các project khác — tôi có góc nhìn thực tế để so sánh.</p>
+
+<p>Không có câu trả lời đúng tuyệt đối. Câu trả lời đúng phụ thuộc vào team, project và context của bạn.</p>
+
+<h2>1. Developer Experience</h2>
+
+<h3>Blazor — lợi thế khi team là .NET</h3>
+<p>Nếu team đã làm .NET, Blazor là lựa chọn tự nhiên. Cùng ngôn ngữ C# từ backend đến frontend, cùng IDE (Visual Studio / Rider), cùng ecosystem (NuGet). Không cần học JavaScript framework, không cần context switch giữa C# và JS. Với team nhỏ, đây là lợi thế lớn.</p>
+
+<h3>React — lợi thế về tooling và ecosystem</h3>
+<p>React có ecosystem khổng lồ: Vite, Next.js, TanStack Query, Zustand, Tailwind, shadcn/ui... Tooling nhanh, hot reload cực nhanh, và cộng đồng lớn nhất trong frontend. Nếu cần một tính năng nào đó, gần như chắc chắn đã có thư viện.</p>
+
+<h2>2. Hiệu năng</h2>
+
+<h3>Blazor WASM — initial load chậm</h3>
+<p>Điểm yếu lớn nhất của Blazor WASM: lần đầu tải download runtime .NET (~5-10MB). Sau đó cache tốt, nhưng lần đầu trải nghiệm tệ hơn React. Blazor Server tránh được vấn đề này (render server-side) nhưng đổi lại phụ thuộc vào latency mạng và không scale tốt bằng.</p>
+
+<h3>React — bundle nhỏ, hiệu năng cao</h3>
+<p>Bundle React thông thường 100-300KB (sau tree-shaking). Với Next.js + server-side rendering, First Contentful Paint có thể dưới 1 giây. Cho các ứng dụng public-facing cần SEO và performance, React (đặc biệt Next.js) vẫn là lựa chọn mạnh hơn.</p>
+
+<h2>3. SEO</h2>
+<p>Blazor WASM render phía client nên SEO rất kém — search engine crawler không chờ WASM load xong. Blazor Server tốt hơn nhưng phức tạp hơn để setup. React với Next.js (SSG/SSR) là lựa chọn tốt nhất cho SEO hiện tại.</p>
+
+<h2>4. Ecosystem và thư viện</h2>
+<p>React: hàng chục nghìn thư viện trên npm, component libraries phong phú (MUI, shadcn/ui, Ant Design). Blazor: ít thư viện hơn nhưng đang phát triển nhanh — Telerik Blazor, MudBlazor, Radzen là các lựa chọn enterprise tốt. Nếu cần nhiều UI components phức tạp, React vẫn có nhiều lựa chọn hơn.</p>
+
+<h2>5. Tuyển dụng và team</h2>
+<p>React developer: cực kỳ nhiều trên thị trường. Blazor developer: ít hơn nhưng thường là .NET developer có kinh nghiệm dày dặn hơn. Nếu đang tuyển dụng mở rộng team, React dễ tìm người hơn. Nếu đã có team .NET mạnh, Blazor giúp tận dụng tối đa kỹ năng sẵn có.</p>
+
+<h2>6. Chi phí phát triển</h2>
+<p>Với team .NET: Blazor tiết kiệm chi phí đáng kể — không cần thêm frontend developer chuyên biệt, chia sẻ model và validation giữa client/server, ít context switch hơn. Với team mixed hoặc mới: React có thể rẻ hơn vì dễ tìm nhân lực hơn.</p>
+
+<h2>Khi nào nên chọn Blazor?</h2>
+<ul>
+    <li>Team đã là .NET developer</li>
+    <li>Ứng dụng internal/B2B (không cần SEO public)</li>
+    <li>Muốn chia sẻ model và validation giữa client và server</li>
+    <li>Cần tích hợp sâu với .NET ecosystem (SignalR, EF Core, Identity)</li>
+    <li>Dự án dài hạn với ít người đủ kỹ năng đa ngôn ngữ</li>
+</ul>
+
+<h2>Khi nào nên chọn React?</h2>
+<ul>
+    <li>Cần SEO tốt (dùng Next.js)</li>
+    <li>Team đã quen JavaScript/TypeScript</li>
+    <li>Cần nhiều UI component phong phú và cộng đồng lớn</li>
+    <li>Public-facing website với yêu cầu performance cao</li>
+    <li>Cần tuyển dụng mở rộng team dễ dàng</li>
+</ul>
+
+<h2>FAQ</h2>
+
+<h3>Blazor có thể thay thế hoàn toàn React không?</h3>
+<p>Không hoàn toàn — ít nhất là trong 2025. Blazor WASM rất tốt cho ứng dụng internal, enterprise B2B. Nhưng cho public-facing website cần SEO mạnh và performance cao, React (Next.js) vẫn là lựa chọn tốt hơn.</p>
+
+<h3>Blazor có chạy được trên mobile không?</h3>
+<p>Blazor WASM chạy được trong mobile browser. Nếu cần native mobile app, .NET MAUI Blazor là lựa chọn (viết một lần, chạy native iOS/Android/Desktop). React Native là đối trọng tương đương từ phía React.</p>
+
+<h3>Học Blazor có khó không nếu đã biết React?</h3>
+<p>Khá dễ nếu đã biết C#. Component model tương tự (props, events, lifecycle hooks), chỉ khác ngôn ngữ và cú pháp. Cần khoảng 1-2 tuần để làm quen với Razor syntax và .NET ecosystem.</p>
+
+<h3>Blazor Server hay Blazor WASM — nên chọn cái nào?</h3>
+<p>Blazor Server: phù hợp cho app cần real-time, latency mạng tốt, không cần offline. Blazor WASM: phù hợp cho app cần offline capability hoặc không muốn phụ thuộc vào connection liên tục với server.</p>
+
+<h2>Kết luận</h2>
+<p>Blazor và React đều là lựa chọn tốt trong 2025 — nhưng cho những mục đích khác nhau. Blazor thắng khi team là .NET và app là internal/enterprise. React thắng khi cần SEO, performance public-facing, hoặc ecosystem rộng.</p>
+
+<p>Cá nhân tôi dùng cả hai và thấy Blazor ngày càng mature — vodongha.id.vn chạy Blazor Server và hoạt động tốt. Nếu bạn đang xây dựng stack mới và team là .NET, hãy thử Blazor trước khi mặc định chọn React.</p>",
+                    ContentEn = @"<p><img src=""https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=1200&auto=format&fit=crop&q=80"" alt=""Blazor vs React 2025"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+
+<p>The question I get asked most often when discussing my tech stack: <em>""Why Blazor instead of React?""</em>. As a developer using both in production — Blazor WASM/Server for konfipay and vodongha.id.vn, React for other projects — I have a practical perspective to offer.</p>
+
+<p>There is no universally correct answer. The right choice depends on your team, project, and context.</p>
+
+<h2>1. Developer Experience</h2>
+
+<h3>Blazor — advantage when the team is .NET</h3>
+<p>If your team already works with .NET, Blazor is the natural choice. Same C# language from backend to frontend, same IDE (Visual Studio / Rider), same ecosystem (NuGet). No need to learn a JavaScript framework, no context-switching between C# and JS. For small teams, this is a significant advantage.</p>
+
+<h3>React — advantage in tooling and ecosystem</h3>
+<p>React has a massive ecosystem: Vite, Next.js, TanStack Query, Zustand, Tailwind, shadcn/ui... Fast tooling, blazing-fast hot reload, and the largest community in frontend. If you need something, there's almost certainly already a library for it.</p>
+
+<h2>2. Performance</h2>
+
+<h3>Blazor WASM — slow initial load</h3>
+<p>The biggest weakness of Blazor WASM: the first load downloads the .NET runtime (~5-10MB). Subsequent loads are cached well, but the first-visit experience is noticeably worse than React. Blazor Server avoids this (server-side rendering) but trades off on network latency dependency and doesn't scale as well.</p>
+
+<h3>React — small bundle, high performance</h3>
+<p>A typical React bundle is 100-300KB (after tree-shaking). With Next.js and server-side rendering, First Contentful Paint can be under 1 second. For public-facing apps that need SEO and performance, React (especially Next.js) remains the stronger choice.</p>
+
+<h2>3. SEO</h2>
+<p>Blazor WASM renders client-side, so SEO is poor — search engine crawlers don't wait for WASM to load. Blazor Server is better but more complex to set up. React with Next.js (SSG/SSR) is currently the best choice for SEO.</p>
+
+<h2>4. Ecosystem and Libraries</h2>
+<p>React: tens of thousands of npm libraries, rich component libraries (MUI, shadcn/ui, Ant Design). Blazor: fewer libraries but growing fast — Telerik Blazor, MudBlazor, and Radzen are solid enterprise options. If you need many complex UI components, React still offers more choices.</p>
+
+<h2>5. Hiring and Teams</h2>
+<p>React developers: extremely plentiful in the market. Blazor developers: fewer, but typically .NET developers with deeper experience. If you're actively hiring to grow a team, React is easier to staff. If you already have a strong .NET team, Blazor lets you maximize existing skills.</p>
+
+<h2>6. Development Cost</h2>
+<p>With a .NET team: Blazor saves significant cost — no need to add specialist frontend developers, model and validation sharing between client and server, less context-switching. With a mixed or new team: React may be cheaper because it's easier to find people.</p>
+
+<h2>When Should You Choose Blazor?</h2>
+<ul>
+    <li>Your team is already .NET developers</li>
+    <li>Internal or B2B application (no public SEO needed)</li>
+    <li>You want to share models and validation between client and server</li>
+    <li>You need deep integration with the .NET ecosystem (SignalR, EF Core, Identity)</li>
+    <li>Long-term project with limited cross-language expertise on the team</li>
+</ul>
+
+<h2>When Should You Choose React?</h2>
+<ul>
+    <li>You need good SEO (use Next.js)</li>
+    <li>Your team is already comfortable with JavaScript/TypeScript</li>
+    <li>You need a rich UI component library and large community support</li>
+    <li>Public-facing website with high performance requirements</li>
+    <li>You need to hire and scale the team easily</li>
+</ul>
+
+<h2>FAQ</h2>
+
+<h3>Can Blazor completely replace React?</h3>
+<p>Not completely — at least not in 2025. Blazor WASM is excellent for internal and enterprise B2B applications. But for public-facing websites that need strong SEO and high performance, React (Next.js) is still the better choice.</p>
+
+<h3>Can Blazor run on mobile?</h3>
+<p>Blazor WASM runs in mobile browsers. For native mobile apps, .NET MAUI Blazor is an option (write once, run native on iOS/Android/Desktop). React Native is the equivalent from the React side.</p>
+
+<h3>Is Blazor hard to learn if you already know React?</h3>
+<p>Fairly easy if you already know C#. The component model is similar (props, events, lifecycle hooks) — just different language and syntax. Expect about 1-2 weeks to get comfortable with Razor syntax and the .NET ecosystem.</p>
+
+<h3>Blazor Server or Blazor WASM — which to choose?</h3>
+<p>Blazor Server: good for real-time apps with low network latency, no offline requirement. Blazor WASM: good for apps that need offline capability or don't want to depend on a persistent server connection.</p>
+
+<h2>Conclusion</h2>
+<p>Both Blazor and React are strong choices in 2025 — but for different purposes. Blazor wins when the team is .NET and the app is internal or enterprise-facing. React wins when you need SEO, public-facing performance, or a wide ecosystem.</p>
+
+<p>I use both professionally and find Blazor increasingly mature — vodongha.id.vn runs on Blazor Server and works well. If you're building a new stack and your team is .NET, give Blazor a try before defaulting to React.</p>"
+                },
+                new BlogPost
+                {
+                    Id = 6,
+                    Title = "PostgreSQL + Entity Framework Core: Best practices cho .NET",
+                    TitleEn = "PostgreSQL + Entity Framework Core: Best Practices for .NET",
+                    Slug = "postgresql-entity-framework-core-best-practices",
+                    Summary = "PostgreSQL + EF Core best practices từ production: connection pooling, tránh N+1, migrations an toàn, indexes và Neon serverless. Đọc ngay!",
+                    SummaryEn = "PostgreSQL + EF Core best practices from production: connection pooling, avoiding N+1 queries, safe migrations, indexes, and Neon serverless setup.",
+                    CoverImageUrl = "https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=1200&auto=format&fit=crop&q=80",
+                    Tags = "PostgreSQL,Entity Framework Core,.NET,EF Core,Database,Neon,Performance",
+                    IsPublished = true,
+                    CreatedAt = new DateTime(2026, 6, 25, 0, 0, 0, DateTimeKind.Utc),
+                    Content = @"<p><img src=""https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=1200&auto=format&fit=crop&q=80"" alt=""PostgreSQL + Entity Framework Core best practices"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+
+<p>PostgreSQL + Entity Framework Core là bộ đôi mạnh mẽ cho ứng dụng .NET hiện đại. Nhưng dùng sai cách, bạn sẽ gặp phải N+1 queries, connection pool exhaustion, và migration nguy hiểm trên production. Bài viết này tổng hợp những best practices tôi áp dụng trong thực tế — từ cấu hình cơ bản đến tối ưu hiệu năng.</p>
+
+<h2>1. Cấu hình kết nối PostgreSQL</h2>
+<p>Cài package Npgsql EF Core provider:</p>
+<pre><code>dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL</code></pre>
+
+<p>Đăng ký DbContext trong <code>Program.cs</code>:</p>
+<pre><code>builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString(""DefaultConnection""),
+        npgsql =&gt; npgsql.CommandTimeout(30)
+    ));</code></pre>
+
+<p>Connection string mẫu:</p>
+<pre><code>Host=db.neon.tech;Database=mydb;Username=user;Password=pass;
+SSL Mode=Require;Trust Server Certificate=true;
+Timeout=30;CommandTimeout=30</code></pre>
+
+<h2>2. Connection Pooling với IDbContextFactory</h2>
+<p>Với ứng dụng Blazor Server hoặc background jobs, tránh dùng scoped DbContext. Dùng <code>IDbContextFactory</code> thay thế:</p>
+<pre><code>builder.Services.AddDbContextFactory&lt;AppDbContext&gt;(options =&gt;
+    options.UseNpgsql(connectionString));
+
+// Dùng trong service:
+public class BlogService(IDbContextFactory&lt;AppDbContext&gt; dbFactory)
+{
+    public async Task&lt;List&lt;BlogPost&gt;&gt; GetPublishedAsync()
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+        return await db.BlogPosts
+            .Where(b =&gt; b.IsPublished)
+            .OrderByDescending(b =&gt; b.CreatedAt)
+            .ToListAsync();
+    }
+}</code></pre>
+<p>Pattern này đảm bảo mỗi operation tạo và dispose DbContext riêng — không bị leaked connection và không bị concurrency issue trong Blazor circuits.</p>
+
+<h2>3. Tránh N+1 Query</h2>
+<p>N+1 là lỗi phổ biến nhất với EF Core. Ví dụ nguy hiểm:</p>
+<pre><code>// BAD: N+1 — mỗi post load thêm 1 query để lấy tags
+var posts = await db.BlogPosts.ToListAsync();
+foreach (var post in posts)
+{
+    var tags = post.Tags; // query riêng mỗi lần
+}</code></pre>
+
+<p>Fix bằng <code>Include</code> hoặc projection:</p>
+<pre><code>// GOOD: 1 query duy nhất với JOIN
+var posts = await db.BlogPosts
+    .Include(p =&gt; p.Tags)
+    .ToListAsync();
+
+// BETTER: projection — chỉ lấy những gì cần
+var posts = await db.BlogPosts
+    .Select(p =&gt; new BlogPostDto
+    {
+        Id = p.Id,
+        Title = p.Title,
+        TagNames = p.Tags.Select(t =&gt; t.Name).ToList()
+    })
+    .ToListAsync();</code></pre>
+
+<h2>4. Async từ đầu đến cuối</h2>
+<p>Tất cả DB operations phải async — không bao giờ dùng <code>.Result</code> hay <code>.Wait()</code>:</p>
+<pre><code>// NEVER do this:
+var post = db.BlogPosts.FirstOrDefault(p =&gt; p.Id == id); // sync
+var count = db.BlogPosts.Count(); // sync
+
+// Always do this:
+var post = await db.BlogPosts.FirstOrDefaultAsync(p =&gt; p.Id == id);
+var count = await db.BlogPosts.CountAsync();</code></pre>
+
+<h2>5. Migrations an toàn trên Production</h2>
+<p>Quy tắc vàng khi làm việc với migrations:</p>
+<ul>
+    <li><strong>Không bao giờ xóa migration đã deploy</strong> — chỉ tạo migration mới để revert</li>
+    <li><strong>Không rename column trực tiếp</strong> — EF Core sẽ drop + add mới, mất data. Dùng <code>.HasColumnName()</code> hoặc viết SQL migration tay</li>
+    <li><strong>Thêm column nullable trước</strong> — sau đó backfill data, rồi mới set NOT NULL</li>
+    <li><strong>Test migration trên staging trước</strong> — chạy <code>dotnet ef migrations script</code> để xem SQL</li>
+</ul>
+<pre><code># Xem SQL sẽ chạy trước khi apply:
+dotnet ef migrations script --idempotent -o migration.sql</code></pre>
+
+<h2>6. Index chiến lược</h2>
+<p>PostgreSQL rất mạnh về indexing. Với EF Core, thêm index bằng Fluent API:</p>
+<pre><code>protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    // Index đơn
+    modelBuilder.Entity&lt;BlogPost&gt;()
+        .HasIndex(b =&gt; b.Slug)
+        .IsUnique();
+
+    // Composite index cho queries phổ biến
+    modelBuilder.Entity&lt;BlogPost&gt;()
+        .HasIndex(b =&gt; new { b.IsPublished, b.CreatedAt });
+
+    // Partial index (PostgreSQL-specific)
+    modelBuilder.Entity&lt;BlogPost&gt;()
+        .HasIndex(b =&gt; b.CreatedAt)
+        .HasFilter(""\""IsPublished\"" = true"");
+}</code></pre>
+
+<h2>7. Neon Serverless — cấu hình đặc biệt</h2>
+<p>Neon PostgreSQL có behavior đặc thù: connection idle timeout ngắn và cold start sau khi suspend. Thêm retry policy:</p>
+<pre><code>options.UseNpgsql(connectionString, npgsql =&gt;
+{
+    npgsql.CommandTimeout(30);
+    npgsql.EnableRetryOnFailure(
+        maxRetryCount: 3,
+        maxRetryDelay: TimeSpan.FromSeconds(5),
+        errorCodesToAdd: null);
+});</code></pre>
+<p>Và trong connection string: <code>Keepalive=30;Tcp Keepalive=true</code> để tránh idle disconnect.</p>
+
+<h2>FAQ</h2>
+
+<h3>EF Core có chậm hơn raw SQL không?</h3>
+<p>Với queries đơn giản: chênh lệch không đáng kể (~1-5ms overhead). Với complex queries: đôi khi EF Core generate SQL kém tối ưu — dùng <code>db.Database.ExecuteSqlRaw()</code> hoặc <code>FromSqlRaw()</code> khi cần. Luôn profiling với <code>EnableSensitiveDataLogging</code> trong development.</p>
+
+<h3>HasData hay seed bằng code?</h3>
+<p><code>HasData</code> tốt cho static lookup data (ít thay đổi, không cần logic phức tạp). Seed bằng code (<code>IHostedService</code>) tốt hơn cho data cần logic hoặc depend vào data đã có. Tuyệt đối không seed production data trong <code>HasData</code> nếu data đó có thể thay đổi qua runtime.</p>
+
+<h3>Xử lý concurrency như thế nào?</h3>
+<p>Dùng <code>IsConcurrencyToken()</code> hoặc <code>IsRowVersion()</code> trên property. EF Core sẽ throw <code>DbUpdateConcurrencyException</code> khi có concurrent update — bắt exception và xử lý conflict logic theo nghiệp vụ.</p>
+
+<h3>Tracking vs No-Tracking?</h3>
+<p>Dùng <code>.AsNoTracking()</code> cho read-only queries — nhanh hơn 20-30% và tốn ít memory hơn vì EF Core không giữ object trong ChangeTracker. Chỉ dùng tracking khi cần update entity sau khi đọc.</p>
+
+<h2>Kết luận</h2>
+<p>PostgreSQL + EF Core là bộ đôi đáng tin cậy cho production .NET apps. Áp dụng đúng connection pooling, tránh N+1, sử dụng async nhất quán và index hợp lý — performance sẽ không phải vấn đề ngay cả khi scale lên.</p>
+
+<p>Nếu bạn đang setup từ đầu, đọc thêm bài <a href=""/blog/deploy-dotnet-fly-io-2025"">Deploy .NET 10 lên Fly.io</a> để biết cách tích hợp Neon PostgreSQL vào deployment pipeline. Và nếu bạn muốn dùng AI để tăng tốc quá trình này, xem thêm về <a href=""/blog/building-with-ai-experience-with-claude-code"">kinh nghiệm dùng Claude Code trong dự án .NET enterprise</a>.</p>",
+                    ContentEn = @"<p><img src=""https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=1200&auto=format&fit=crop&q=80"" alt=""PostgreSQL + Entity Framework Core best practices"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+
+<p>PostgreSQL + Entity Framework Core is a powerful combination for modern .NET applications. But used incorrectly, you'll hit N+1 queries, connection pool exhaustion, and dangerous production migrations. This post summarizes the best practices I apply in production — from basic configuration to performance tuning.</p>
+
+<h2>1. PostgreSQL Connection Setup</h2>
+<p>Install the Npgsql EF Core provider:</p>
+<pre><code>dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL</code></pre>
+
+<p>Register DbContext in <code>Program.cs</code>:</p>
+<pre><code>builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString(""DefaultConnection""),
+        npgsql =&gt; npgsql.CommandTimeout(30)
+    ));</code></pre>
+
+<p>Sample connection string:</p>
+<pre><code>Host=db.neon.tech;Database=mydb;Username=user;Password=pass;
+SSL Mode=Require;Trust Server Certificate=true;
+Timeout=30;CommandTimeout=30</code></pre>
+
+<h2>2. Connection Pooling with IDbContextFactory</h2>
+<p>For Blazor Server apps or background jobs, avoid using a scoped DbContext. Use <code>IDbContextFactory</code> instead:</p>
+<pre><code>builder.Services.AddDbContextFactory&lt;AppDbContext&gt;(options =&gt;
+    options.UseNpgsql(connectionString));
+
+// Usage in a service:
+public class BlogService(IDbContextFactory&lt;AppDbContext&gt; dbFactory)
+{
+    public async Task&lt;List&lt;BlogPost&gt;&gt; GetPublishedAsync()
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+        return await db.BlogPosts
+            .Where(b =&gt; b.IsPublished)
+            .OrderByDescending(b =&gt; b.CreatedAt)
+            .ToListAsync();
+    }
+}</code></pre>
+<p>This pattern ensures each operation creates and disposes its own DbContext — no connection leaks and no concurrency issues in Blazor circuits.</p>
+
+<h2>3. Avoiding N+1 Queries</h2>
+<p>N+1 is the most common EF Core mistake. A dangerous example:</p>
+<pre><code>// BAD: N+1 — each post fires a separate query for tags
+var posts = await db.BlogPosts.ToListAsync();
+foreach (var post in posts)
+{
+    var tags = post.Tags; // separate query per post
+}</code></pre>
+
+<p>Fix with <code>Include</code> or projection:</p>
+<pre><code>// GOOD: single query with JOIN
+var posts = await db.BlogPosts
+    .Include(p =&gt; p.Tags)
+    .ToListAsync();
+
+// BETTER: projection — only fetch what you need
+var posts = await db.BlogPosts
+    .Select(p =&gt; new BlogPostDto
+    {
+        Id = p.Id,
+        Title = p.Title,
+        TagNames = p.Tags.Select(t =&gt; t.Name).ToList()
+    })
+    .ToListAsync();</code></pre>
+
+<h2>4. Async All the Way Down</h2>
+<p>All DB operations must be async — never use <code>.Result</code> or <code>.Wait()</code>:</p>
+<pre><code>// NEVER do this:
+var post = db.BlogPosts.FirstOrDefault(p =&gt; p.Id == id); // sync
+var count = db.BlogPosts.Count(); // sync
+
+// Always do this:
+var post = await db.BlogPosts.FirstOrDefaultAsync(p =&gt; p.Id == id);
+var count = await db.BlogPosts.CountAsync();</code></pre>
+
+<h2>5. Safe Production Migrations</h2>
+<p>Golden rules for migrations in production:</p>
+<ul>
+    <li><strong>Never delete a deployed migration</strong> — only add new migrations to revert</li>
+    <li><strong>Never rename a column directly</strong> — EF Core will drop and re-add it, losing data. Use <code>.HasColumnName()</code> or hand-write the SQL migration</li>
+    <li><strong>Add nullable columns first</strong> — then backfill data, then set NOT NULL</li>
+    <li><strong>Test migrations on staging first</strong> — run <code>dotnet ef migrations script</code> to review the SQL</li>
+</ul>
+<pre><code># Review the SQL before applying:
+dotnet ef migrations script --idempotent -o migration.sql</code></pre>
+
+<h2>6. Strategic Indexing</h2>
+<p>PostgreSQL is very capable with indexing. With EF Core, add indexes via Fluent API:</p>
+<pre><code>protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    // Single-column unique index
+    modelBuilder.Entity&lt;BlogPost&gt;()
+        .HasIndex(b =&gt; b.Slug)
+        .IsUnique();
+
+    // Composite index for common queries
+    modelBuilder.Entity&lt;BlogPost&gt;()
+        .HasIndex(b =&gt; new { b.IsPublished, b.CreatedAt });
+
+    // Partial index (PostgreSQL-specific)
+    modelBuilder.Entity&lt;BlogPost&gt;()
+        .HasIndex(b =&gt; b.CreatedAt)
+        .HasFilter(""\""IsPublished\"" = true"");
+}</code></pre>
+
+<h2>7. Neon Serverless — Special Configuration</h2>
+<p>Neon PostgreSQL has specific behavior: short idle connection timeouts and cold starts after suspension. Add a retry policy:</p>
+<pre><code>options.UseNpgsql(connectionString, npgsql =&gt;
+{
+    npgsql.CommandTimeout(30);
+    npgsql.EnableRetryOnFailure(
+        maxRetryCount: 3,
+        maxRetryDelay: TimeSpan.FromSeconds(5),
+        errorCodesToAdd: null);
+});</code></pre>
+<p>Also add <code>Keepalive=30;Tcp Keepalive=true</code> to the connection string to avoid idle disconnects.</p>
+
+<h2>FAQ</h2>
+
+<h3>Is EF Core slower than raw SQL?</h3>
+<p>For simple queries: the difference is negligible (~1-5ms overhead). For complex queries: EF Core sometimes generates suboptimal SQL — use <code>db.Database.ExecuteSqlRaw()</code> or <code>FromSqlRaw()</code> when needed. Always profile with <code>EnableSensitiveDataLogging</code> in development.</p>
+
+<h3>HasData or code-based seeding?</h3>
+<p><code>HasData</code> is good for static lookup data (rarely changes, no complex logic needed). Code-based seeding (<code>IHostedService</code>) is better for data requiring logic or dependencies on existing records. Never use <code>HasData</code> for production data that might change at runtime.</p>
+
+<h3>How do you handle concurrency?</h3>
+<p>Use <code>IsConcurrencyToken()</code> or <code>IsRowVersion()</code> on a property. EF Core will throw <code>DbUpdateConcurrencyException</code> on concurrent updates — catch it and handle the conflict according to your business logic.</p>
+
+<h3>Tracking vs No-Tracking?</h3>
+<p>Use <code>.AsNoTracking()</code> for read-only queries — 20-30% faster and less memory usage since EF Core doesn't keep objects in the ChangeTracker. Only use tracking when you need to update an entity after reading it.</p>
+
+<h2>Conclusion</h2>
+<p>PostgreSQL + EF Core is a reliable combination for production .NET apps. Apply proper connection pooling, avoid N+1 queries, use async consistently, and index strategically — performance won't be an issue even as you scale.</p>
+
+<p>If you're setting up from scratch, read <a href=""/blog/deploy-dotnet-fly-io-2025"">Deploy .NET 10 to Fly.io</a> to see how Neon PostgreSQL integrates into the deployment pipeline. And if you want to use AI to speed up the process, check out <a href=""/blog/building-with-ai-experience-with-claude-code"">using Claude Code on a .NET enterprise project</a>.</p>"
                 }
             );
 

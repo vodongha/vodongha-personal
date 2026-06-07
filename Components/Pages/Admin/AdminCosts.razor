@@ -23,8 +23,68 @@
 
         @if (_loading)
         {
-            <div class="cost-loading">
-                <i class="bi bi-arrow-clockwise admin-spin"></i> @Loc.T("Loading...")
+            <!-- Skeleton loading — mirrors the real page structure -->
+            <div class="cost-skeleton">
+                <!-- Summary banner skeleton -->
+                <div class="cost-skeleton__banner">
+                    <div class="cost-skeleton__banner-cols">
+                        <div class="cost-skeleton__banner-col">
+                            <div class="skel skel--label"></div>
+                            <div class="skel skel--value-lg"></div>
+                            <div class="skel skel--sub"></div>
+                        </div>
+                        <div class="cost-skeleton__banner-divider"></div>
+                        <div class="cost-skeleton__banner-col">
+                            <div class="skel skel--label"></div>
+                            <div class="skel skel--value-lg"></div>
+                            <div class="skel skel--sub"></div>
+                        </div>
+                    </div>
+                    <div class="cost-skeleton__banner-footer">
+                        <div class="skel skel--badge"></div>
+                        <div class="skel skel--sub" style="margin-left:auto"></div>
+                    </div>
+                </div>
+
+                <!-- Fly.io section skeleton -->
+                <div class="cost-skeleton__section">
+                    <div class="cost-skeleton__section-header">
+                        <div class="skel skel--section-title"></div>
+                        <div class="skel skel--btn"></div>
+                    </div>
+                    <div class="cost-skeleton__cards">
+                        @for (int i = 0; i < 6; i++)
+                        {
+                            <div class="cost-skeleton__card">
+                                <div class="skel skel--icon"></div>
+                                <div class="cost-skeleton__card-body">
+                                    <div class="skel skel--card-label"></div>
+                                    <div class="skel skel--card-value"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Neon section skeleton -->
+                <div class="cost-skeleton__section">
+                    <div class="cost-skeleton__section-header">
+                        <div class="skel skel--section-title"></div>
+                        <div class="skel skel--btn"></div>
+                    </div>
+                    <div class="cost-skeleton__cards">
+                        @for (int i = 0; i < 5; i++)
+                        {
+                            <div class="cost-skeleton__card">
+                                <div class="skel skel--icon"></div>
+                                <div class="cost-skeleton__card-body">
+                                    <div class="skel skel--card-label"></div>
+                                    <div class="skel skel--card-value"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
         }
         else if (_summary == null)

@@ -1271,7 +1271,6 @@ tr.admin-row--dragover td {
 
 // ─── Costs page ──────────────────────────────────────────────────────────────
 
-.cost-loading,
 .cost-empty {
     display: flex;
     align-items: center;
@@ -1281,6 +1280,113 @@ tr.admin-row--dragover td {
     padding: 2rem 0;
 
     &--sm { padding: 1rem 0; }
+}
+
+// ─── Skeleton shimmer ────────────────────────────────────────────────────────
+
+@keyframes skel-shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position:  400px 0; }
+}
+
+.skel {
+    background: linear-gradient(90deg,
+        #1e1e1e 25%,
+        #2a2a2a 50%,
+        #1e1e1e 75%
+    );
+    background-size: 800px 100%;
+    animation: skel-shimmer 1.6s infinite linear;
+    border-radius: 6px;
+
+    &--label      { height: 11px; width: 110px; margin-bottom: 0.6rem; }
+    &--value-lg   { height: 36px; width: 90px;  margin-bottom: 0.4rem; border-radius: 8px; }
+    &--sub        { height: 11px; width: 140px; }
+    &--badge      { height: 26px; width: 80px;  border-radius: 20px; }
+    &--btn        { height: 30px; width: 90px;  border-radius: 8px; }
+    &--section-title { height: 16px; width: 80px; }
+    &--icon       { width: 36px; height: 36px; flex-shrink: 0; border-radius: 8px; }
+    &--card-label { height: 11px; width: 90px;  margin-bottom: 0.45rem; }
+    &--card-value { height: 18px; width: 60px;  border-radius: 6px; }
+}
+
+// ─── Cost skeleton layout ─────────────────────────────────────────────────────
+
+.cost-skeleton {
+    &__banner {
+        background: linear-gradient(135deg, #141418 0%, #131820 100%);
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+    }
+
+    &__banner-cols {
+        display: flex;
+        align-items: stretch;
+        gap: 0;
+        flex-wrap: wrap;
+    }
+
+    &__banner-col {
+        flex: 1;
+        min-width: 140px;
+        padding: 0.25rem 1.5rem 0.25rem 0;
+
+        &:last-child { padding-right: 0; padding-left: 1.5rem; }
+    }
+
+    &__banner-divider {
+        width: 1px;
+        background: #2a2a2a;
+        align-self: stretch;
+        flex-shrink: 0;
+    }
+
+    &__banner-footer {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid #2a2a2a;
+    }
+
+    &__section {
+        margin-bottom: 2rem;
+    }
+
+    &__section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #2a2a2a;
+    }
+
+    &__cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+    }
+
+    &__card {
+        background: #141414;
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        padding: 1rem 1rem 1rem 0.75rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    &__card-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
 }
 
 .cost-summary-banner {

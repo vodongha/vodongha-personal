@@ -48,7 +48,28 @@
     <ReconnectModal />
     <script>window.getTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;</script>
     <script>window.__clientIp = '@clientIp';</script>
-    <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script>
+        // Increase Blazor circuit reconnect retries to handle Fly.io suspend wakeup (~3-5s)
+        window.Blazor = window.Blazor || {};
+        window.Blazor._internal = window.Blazor._internal || {};
+        Blazor.start = Blazor.start || (() => {});
+    </script>
+    <script src="@Assets["_framework/blazor.web.js"]" autostart="false"></script>
+    <script>
+        Blazor.start({
+            circuit: {
+                reconnectionOptions: {
+                    maxRetries: 10,
+                    retryIntervalMilliseconds: (previousAttempts) => {
+                        // Quick retries at first (handles Fly.io cold start), then slow down
+                        if (previousAttempts < 3) return 1000;
+                        if (previousAttempts < 6) return 3000;
+                        return 6000;
+                    }
+                }
+            }
+        });
+    </script>
     <script src="js/admin.js"></script>
     <script src="js/chat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
