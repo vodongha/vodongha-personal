@@ -43,6 +43,29 @@ public class TelegramService
         return null;
     }
 
+    public async Task<bool> DeleteTopicAsync(long threadId)
+    {
+        if (_chatId == 0 || string.IsNullOrEmpty(_token))
+        {
+            return false;
+        }
+
+        try
+        {
+            HttpResponseMessage response = await _http.PostAsJsonAsync(
+                $"{BaseUrl}/deleteForumTopic",
+                new { chat_id = _chatId, message_thread_id = threadId }
+            );
+            string json = await response.Content.ReadAsStringAsync();
+            JsonDocument doc = JsonDocument.Parse(json);
+            return doc.RootElement.TryGetProperty("result", out JsonElement result) && result.GetBoolean();
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public async Task SendTypingAsync(long threadId)
     {
         if (_chatId == 0 || string.IsNullOrEmpty(_token))
@@ -63,11 +86,15 @@ public class TelegramService
         }
     }
 
-    public async Task<long?> SendMessageAsync(string text, long threadId)
+    /// <summary>
+    /// Returns (messageId, topicDeleted).
+    /// topicDeleted = true means Telegram replied "message thread not found" — the topic no longer exists.
+    /// </summary>
+    public async Task<(long? MessageId, bool TopicDeleted)> SendMessageAsync(string text, long threadId)
     {
         if (_chatId == 0 || string.IsNullOrEmpty(_token))
         {
-            return null;
+            return (null, false);
         }
 
         HttpResponseMessage response = await _http.PostAsJsonAsync(
@@ -81,9 +108,18 @@ public class TelegramService
         if (doc.RootElement.TryGetProperty("result", out JsonElement result) &&
             result.TryGetProperty("message_id", out JsonElement msgId))
         {
-            return msgId.GetInt64();
+            return (msgId.GetInt64(), false);
         }
 
-        return null;
+        // Detect deleted/missing topic: {"ok":false,"error_code":400,"description":"Bad Request: message thread not found"}
+        bool topicDeleted = false;
+        if (doc.RootElement.TryGetProperty("description", out JsonElement desc))
+        {
+            string description = desc.GetString() ?? "";
+            topicDeleted = description.Contains("message thread not found", StringComparison.OrdinalIgnoreCase)
+                        || description.Contains("thread not found", StringComparison.OrdinalIgnoreCase);
+        }
+
+        return (null, topicDeleted);
     }
 }
