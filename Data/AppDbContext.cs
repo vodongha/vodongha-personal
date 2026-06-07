@@ -647,7 +647,19 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 new Skill { Id = 18, Name = "jQuery",            Category = "Frontend", Icon = "devicon-jquery-plain",        Proficiency = 75, Order = 18 },
                 new Skill { Id = 19, Name = "AJAX",              Category = "Frontend", Icon = "bi bi-arrow-repeat",          Proficiency = 72, Order = 19 },
                 new Skill { Id = 20, Name = "JSON",              Category = "Backend",  Icon = "devicon-json-plain",          Proficiency = 85, Order = 20 },
-                new Skill { Id = 21, Name = "CoffeeScript",      Category = "Frontend", Icon = "devicon-coffeescript-plain",  Proficiency = 60, Order = 21 }
+                new Skill { Id = 21, Name = "CoffeeScript",      Category = "Frontend", Icon = "devicon-coffeescript-plain",  Proficiency = 60, Order = 21 },
+                // DevOps extras
+                new Skill { Id = 22, Name = "CI/CD",             Category = "DevOps",   Icon = "devicon-githubactions-plain", Proficiency = 80, Order = 22 },
+                new Skill { Id = 23, Name = "Linux / Bash",      Category = "DevOps",   Icon = "devicon-linux-plain",         Proficiency = 75, Order = 23 },
+                new Skill { Id = 24, Name = "Fly.io",            Category = "DevOps",   Icon = "devicon-flyio-plain",         Proficiency = 72, Order = 24 },
+                // Backend extras
+                new Skill { Id = 25, Name = "Entity Framework",  Category = "Backend",  Icon = "devicon-dotnetcore-plain",    Proficiency = 85, Order = 25 },
+                new Skill { Id = 26, Name = "SignalR",           Category = "Backend",  Icon = "devicon-dotnetcore-plain",    Proficiency = 78, Order = 26 },
+                new Skill { Id = 27, Name = "Elasticsearch",     Category = "Backend",  Icon = "devicon-elasticsearch-plain", Proficiency = 70, Order = 27 },
+                new Skill { Id = 28, Name = "Hangfire",          Category = "Backend",  Icon = "devicon-dotnetcore-plain",    Proficiency = 75, Order = 28 },
+                // Frontend extras
+                new Skill { Id = 29, Name = "SCSS / Sass",       Category = "Frontend", Icon = "devicon-sass-plain",          Proficiency = 82, Order = 29 },
+                new Skill { Id = 30, Name = "Bootstrap",         Category = "Frontend", Icon = "devicon-bootstrap-plain",     Proficiency = 78, Order = 30 }
             );
 
         modelBuilder.Entity<Project>()
