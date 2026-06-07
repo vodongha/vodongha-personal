@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.SassCompiler" Version="1.100.0" />
+    <PackageReference Include="libphonenumber-csharp" Version="9.0.32" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="10.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="10.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.8" />

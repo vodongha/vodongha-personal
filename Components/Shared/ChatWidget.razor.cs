@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
+using PhoneNumbers;
 using vodongha.Data.Models;
 using vodongha.Services;
 
@@ -18,62 +19,75 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private enum ChatState { Closed, Form, Chat }
 
-    private record Country(string Flag, string Code, string Dial);
+    private record Country(string Flag, string RegionCode, string Dial, string Name);
 
-    private static readonly List<Country> Countries =
-    [
-        new("🇻🇳", "VN", "+84"),
-        new("🇺🇸", "US", "+1"),
-        new("🇬🇧", "GB", "+44"),
-        new("🇦🇺", "AU", "+61"),
-        new("🇨🇦", "CA", "+1"),
-        new("🇫🇷", "FR", "+33"),
-        new("🇩🇪", "DE", "+49"),
-        new("🇯🇵", "JP", "+81"),
-        new("🇰🇷", "KR", "+82"),
-        new("🇨🇳", "CN", "+86"),
-        new("🇸🇬", "SG", "+65"),
-        new("🇹🇭", "TH", "+66"),
-        new("🇵🇭", "PH", "+63"),
-        new("🇮🇩", "ID", "+62"),
-        new("🇲🇾", "MY", "+60"),
-        new("🇮🇳", "IN", "+91"),
-        new("🇳🇿", "NZ", "+64"),
-        new("🇧🇷", "BR", "+55"),
-        new("🇲🇽", "MX", "+52"),
-        new("🇳🇱", "NL", "+31"),
-        new("🇮🇹", "IT", "+39"),
-        new("🇪🇸", "ES", "+34"),
-        new("🇷🇺", "RU", "+7"),
-        new("🇦🇪", "AE", "+971"),
-        new("🇸🇦", "SA", "+966"),
-    ];
+    private static readonly PhoneNumberUtil PhoneUtil = PhoneNumberUtil.GetInstance();
 
-    private string _selectedDial = "+84";
-    private Country SelectedCountry => Countries.FirstOrDefault(c => c.Dial == _selectedDial) ?? Countries[0];
+    // Priority countries shown at top
+    private static readonly string[] PriorityRegions = ["VN", "US", "GB", "AU", "CA", "SG", "JP", "KR", "CN", "FR", "DE"];
+
+    private static readonly List<Country> Countries = BuildCountryList();
+
+    private static List<Country> BuildCountryList()
+    {
+        var util = PhoneNumberUtil.GetInstance();
+        var all = util.GetSupportedRegions()
+            .Select(region =>
+            {
+                int dialCode = util.GetCountryCodeForRegion(region);
+                string flag = RegionToFlag(region);
+                string name = new System.Globalization.RegionInfo(region).EnglishName;
+                return new Country(flag, region, $"+{dialCode}", name);
+            })
+            .OrderBy(c => c.Name)
+            .ToList();
+
+        // Move priority regions to top
+        var priority = PriorityRegions
+            .Select(r => all.FirstOrDefault(c => c.RegionCode == r))
+            .Where(c => c != null)
+            .Select(c => c!)
+            .ToList();
+
+        var rest = all.Where(c => !PriorityRegions.Contains(c.RegionCode)).ToList();
+        return [.. priority, .. rest];
+    }
+
+    private static string RegionToFlag(string region)
+    {
+        if (region.Length != 2) return "🌐";
+        return string.Concat(region.Select(c => char.ConvertFromUtf32(c - 'A' + 0x1F1E6)));
+    }
+
+    private string _selectedRegion = "VN";
+    private Country SelectedCountry => Countries.FirstOrDefault(c => c.RegionCode == _selectedRegion) ?? Countries[0];
 
     private void OnDialChanged(ChangeEventArgs e)
     {
-        _selectedDial = e.Value?.ToString() ?? "+84";
+        _selectedRegion = e.Value?.ToString() ?? "VN";
     }
 
     private void OnPhoneInput(ChangeEventArgs e)
     {
         string raw = e.Value?.ToString() ?? "";
-        // Strip leading 0
         if (raw.StartsWith("0")) raw = raw[1..];
-        // Digits and spaces/dashes only
         _phone = new string(raw.Where(c => char.IsDigit(c) || c == ' ' || c == '-').ToArray());
     }
 
-    private static bool IsValidPhone(string phone)
+    private bool IsValidPhone(string phone)
     {
         if (string.IsNullOrWhiteSpace(phone)) return false;
-        string digits = new string(phone.Where(char.IsDigit).ToArray());
-        return digits.Length >= 6 && digits.Length <= 15;
+        try
+        {
+            string digits = new string(phone.Where(char.IsDigit).ToArray());
+            string full = $"+{PhoneUtil.GetCountryCodeForRegion(_selectedRegion)}{digits}";
+            PhoneNumber parsed = PhoneUtil.Parse(full, _selectedRegion);
+            return PhoneUtil.IsValidNumber(parsed);
+        }
+        catch { return false; }
     }
 
-    private string FullPhone => $"{_selectedDial}{_phone}";
+    private string FullPhone => $"{SelectedCountry.Dial}{new string(_phone.Where(char.IsDigit).ToArray())}";
 
     private ChatState _state = ChatState.Closed;
     private string _name = "";
