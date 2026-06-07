@@ -99,8 +99,41 @@
 
     &:hover { border-color: $color-primary; transform: translateY(-2px); }
 
+    &--unread {
+        border-color: rgba($color-primary, 0.45);
+        background: rgba($color-primary, 0.04);
+    }
+
     &__icon { font-size: 2rem; color: $color-primary; }
     &__label { font-size: 0.875rem; font-weight: 500; }
+
+    // Wrapper so the badge sits on top of the icon
+    &__icon-wrap {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__badge {
+        position: absolute;
+        top: -6px;
+        right: -10px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 4px;
+        background: #ef4444;
+        color: #fff;
+        font-size: 0.6rem;
+        font-weight: 700;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        border: 2px solid #141414;
+        pointer-events: none;
+    }
 }
 
 // ── Table ─────────────────────────────────────────────────────────
