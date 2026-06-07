@@ -52,16 +52,14 @@
                 @if (_selectedSessionId.HasValue)
                 {
                     <div class="chat-admin-window">
-                        <div class="chat-header" style="flex-shrink:0;border-bottom:1px solid #2a2a2a;padding:.875rem 1rem;background:#141414">
+                        <div style="flex-shrink:0;display:flex;align-items:center;gap:.625rem;border-bottom:1px solid #2a2a2a;padding:.875rem 1rem;background:#141414">
                             <button class="chat-admin-back" @onclick="CloseChat" title="Quay lại">
                                 <i class="bi bi-arrow-left"></i>
                             </button>
-                            <div class="chat-header__info">
-                                <div class="chat-header__avatar"><i class="bi bi-person-circle"></i></div>
-                                <div>
-                                    <div class="chat-header__name">@_selectedSession?.Name</div>
-                                    <div style="font-size:.7rem;color:#6b7280">@_selectedSession?.Email · @_selectedSession?.Phone</div>
-                                </div>
+                            <div class="chat-header__avatar"><i class="bi bi-person-circle"></i></div>
+                            <div>
+                                <div class="chat-header__name">@_selectedSession?.Name</div>
+                                <div style="font-size:.7rem;color:#6b7280">@_selectedSession?.Email · @_selectedSession?.Phone</div>
                             </div>
                         </div>
 
