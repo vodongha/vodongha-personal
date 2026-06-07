@@ -49,11 +49,11 @@ public partial class AdminCosts : ComponentBase, IDisposable
 
     // ─── Restart ─────────────────────────────────────────────────────────────
 
-    private void RestartMachine(string machineId)
+    private async Task RestartMachine(string machineId)
     {
         _pendingRestartId = machineId;
         _confirmRestart = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     private void CancelRestart()
