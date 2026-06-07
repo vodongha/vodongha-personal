@@ -693,7 +693,7 @@ tr.admin-row--dragover td {
     }
 
     .admin-nav {
-        flex: 1 !important;
+        flex: 2 1 0 !important; // same weight as logout — Dashboard gets flex:2
         flex-direction: row !important;
         padding: 0 !important;
         gap: 0 !important;
@@ -705,11 +705,11 @@ tr.admin-row--dragover td {
     // Hide all nav items except Dashboard (--pinned) — only target items inside .admin-nav
     .admin-nav .admin-nav__item:not(.admin-nav__item--pinned) { display: none !important; }
 
-    // Dashboard | Lang | Logout — equal thirds
+    // Dashboard | Lang | Logout — Dashboard & Logout wider, Lang toggle narrow
     .admin-nav__item,
     .admin-lang-toggle,
     .admin-sidebar__logout .admin-nav__item {
-        flex: 1 1 0 !important;
+        flex: 2 1 0 !important;
         flex-direction: column !important;
         gap: 0.15rem !important;
         padding: 0.45rem 0.5rem 0.35rem !important;
@@ -728,16 +728,17 @@ tr.admin-row--dragover td {
         i { font-size: 1.1rem !important; line-height: 1 !important; }
     }
 
-    // Lang toggle mobile: icon on top, "VI|EN" text below
+    // Lang toggle mobile: narrower than Dashboard/Logout
     .admin-lang-toggle {
+        flex: 1 1 0 !important; // narrower — Dashboard & Logout each get flex:2
         background: transparent !important;
         border-left: 1px solid #2a2a2a !important;
         border-right: 1px solid #2a2a2a !important;
 
-        &__icon { font-size: 1.1rem !important; line-height: 1 !important; }
+        &__icon { font-size: 1.05rem !important; line-height: 1 !important; }
 
         &__label {
-            font-size: 0.55rem !important;
+            font-size: 0.5rem !important;
             gap: 0.05rem !important;
         }
     }
