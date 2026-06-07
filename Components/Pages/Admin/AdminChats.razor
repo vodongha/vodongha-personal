@@ -37,7 +37,7 @@
                                 <div class="chat-session-card__meta">@session.Email · @session.Phone</div>
                             </div>
                             <div class="chat-session-card__right">
-                                <div class="chat-session-card__time">@session.LastMessageAt.ToLocalTime().ToString("MM/dd HH:mm")</div>
+                                <div class="chat-session-card__time">@Tz.ToUserTime(session.LastMessageAt).ToString("MM/dd HH:mm")</div>
                                 <button class="chat-session-card__delete admin-btn admin-btn--sm admin-btn--danger"
                                         @onclick:stopPropagation
                                         @onclick="() => ConfirmDeleteSession(session.Id)"
@@ -84,7 +84,7 @@
                                 <div class="chat-msg @(msg.IsFromUser ? "chat-msg--admin" : "chat-msg--user") @(isUnread ? "chat-msg--unread" : "") @(msg.Id == 0 ? "chat-msg--pending" : "")">
                                     <div class="chat-msg__bubble">@msg.Content</div>
                                     <div class="chat-msg__time">
-                                        @(msg.IsFromUser ? Loc.T("User") : Loc.T("Admin")) · @msg.SentAt.ToLocalTime().ToString("HH:mm")
+                                        @(msg.IsFromUser ? Loc.T("User") : Loc.T("Admin")) · @Tz.ToUserTime(msg.SentAt).ToString("HH:mm")
                                         @if (!msg.IsFromUser)
                                         {
                                             if (_userReadUpToId > 0 && msg.Id <= _userReadUpToId)

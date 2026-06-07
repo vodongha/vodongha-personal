@@ -62,6 +62,7 @@ builder.Services.AddScoped<ToastService>();
 builder.Services.AddHttpClient<TelegramService>();
 builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<AdminLocalizationService>();
+builder.Services.AddScoped<TimezoneService>();
 builder.Services.AddSingleton<HealthMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 

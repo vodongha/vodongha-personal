@@ -13,6 +13,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     [Inject] private ProtectedLocalStorage LocalStorage { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private TimezoneService Tz { get; set; } = default!;
 
     private enum ChatState { Closed, Form, Chat }
 

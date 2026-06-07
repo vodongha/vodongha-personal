@@ -8,6 +8,7 @@ public partial class BlogPostPage : ComponentBase, IDisposable
 {
     [Inject] private BlogService BlogSvc { get; set; } = default!;
     [Inject] private LanguageService Lang { get; set; } = default!;
+    [Inject] private TimezoneService Tz { get; set; } = default!;
 
     [Parameter] public string Slug { get; set; } = string.Empty;
 
