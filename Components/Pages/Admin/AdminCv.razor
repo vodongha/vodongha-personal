@@ -13,15 +13,7 @@
                 <i class="bi bi-file-earmark-person"></i> @Loc.T("CV / Resume")
             </h1>
             <button class="admin-btn admin-btn--primary" @onclick="Download" disabled="@_loading">
-                @if (_loading)
-                {
-                    <i class="bi bi-arrow-clockwise admin-spin"></i>
-                }
-                else
-                {
-                    <i class="bi bi-download"></i>
-                }
-                @Loc.T("Download PDF")
+                <i class="bi bi-download"></i> @Loc.T("Download PDF")
             </button>
         </header>
 

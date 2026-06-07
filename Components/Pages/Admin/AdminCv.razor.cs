@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.JSInterop;
 using vodongha.Data;
 using vodongha.Data.Models;
 using vodongha.Services;
@@ -11,12 +12,11 @@ public partial class AdminCv : ComponentBase, IDisposable
 {
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private SiteSettingService SettingsSvc { get; set; } = default!;
-    [Inject] private CvPdfService CvPdf { get; set; } = default!;
-    [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private AdminLocalizationService Loc { get; set; } = default!;
 
     private CvData? _data;
-    private bool _loading = true;
+    private bool _loading = true;  // only for initial data load, not for PDF (handled by API)
 
     protected override void OnInitialized()
     {
@@ -64,23 +64,11 @@ public partial class AdminCv : ComponentBase, IDisposable
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task Download()
+    private void Download()
     {
-        if (_data == null) return;
-        _loading = true;
-        await InvokeAsync(StateHasChanged);
-
-        try
-        {
-            byte[] pdf = await Task.Run(() => CvPdf.Generate(_data));
-            string filename = $"cv-{_data.Name.ToLower().Replace(" ", "-")}.pdf";
-            await JS.InvokeVoidAsync("downloadFileFromBytes", filename, "application/pdf", pdf);
-        }
-        finally
-        {
-            _loading = false;
-            await InvokeAsync(StateHasChanged);
-        }
+        // Navigate to the API endpoint — PDF is streamed directly over HTTP,
+        // avoiding the 32KB SignalR message size limit.
+        Nav.NavigateTo("/api/cv/download", forceLoad: true);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
