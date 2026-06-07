@@ -61,9 +61,12 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     protected override void OnInitialized()
     {
         Loc.OnChanged += OnLangChanged;
+        Tz.OnTimezoneSet += OnTimezoneUpdated;
         _startedAt = Monitor.StartedAt;
         LoadData();
     }
+
+    private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -86,7 +89,7 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     {
         try
         {
-            string[] labels = _snapshots.Select(s => s.Timestamp.ToLocalTime().ToString("HH:mm:ss")).ToArray();
+            string[] labels = _snapshots.Select(s => Tz.ToUserTime(s.Timestamp).ToString("HH:mm:ss")).ToArray();
             double[] memData = _snapshots.Select(s => (double)s.MemoryMb).ToArray();
             double[] dbData = _snapshots.Select(s => s.DbPingMs).ToArray();
 
@@ -102,7 +105,7 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     {
         try
         {
-            string[] labels = _snapshots.Select(s => s.Timestamp.ToLocalTime().ToString("HH:mm:ss")).ToArray();
+            string[] labels = _snapshots.Select(s => Tz.ToUserTime(s.Timestamp).ToString("HH:mm:ss")).ToArray();
             double[] memData = _snapshots.Select(s => (double)s.MemoryMb).ToArray();
             double[] dbData = _snapshots.Select(s => s.DbPingMs).ToArray();
 
@@ -165,6 +168,7 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         Loc.OnChanged -= OnLangChanged;
+        Tz.OnTimezoneSet -= OnTimezoneUpdated;
         await _cts.CancelAsync();
         _cts.Dispose();
 

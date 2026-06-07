@@ -743,9 +743,11 @@ tr.admin-row--dragover td {
         }
     }
 
-    // Separate Đăng xuất from lang toggle with a subtle divider
+    // Logout form must also carry its own flex weight (button inside gets flex but form defaults to auto)
     .admin-sidebar__logout {
-        border-left: none !important;
+        flex: 2 1 0 !important;
+        display: flex !important;
+        min-width: 0 !important;
     }
 
     // Main content — full width, space for bottom nav
