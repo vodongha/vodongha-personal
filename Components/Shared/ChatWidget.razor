@@ -104,9 +104,9 @@
 
             <div class="chat-input">
                 <textarea class="chat-input__field" rows="1" placeholder="Nhập tin nhắn..."
-                          @key="_inputKey"
-                          value="@_inputText"
-                          @oninput="OnTypingInput"
+                          @bind="_inputText"
+                          @bind:event="oninput"
+                          @bind:after="OnTypingInput"
                           @onkeydown="OnKeyDown"></textarea>
                 <button class="chat-input__send" @onclick="SendMessage"
                         disabled="@(string.IsNullOrWhiteSpace(_inputText) || _sending)">

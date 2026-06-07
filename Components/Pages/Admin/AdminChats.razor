@@ -120,7 +120,8 @@
                         <div class="chat-admin-input">
                             <textarea rows="2" placeholder="@Loc.T("Type a reply...")"
                                       @bind="_replyText"
-                                      @oninput="OnReplyInput"
+                                      @bind:event="oninput"
+                                      @bind:after="OnReplyInput"
                                       @onkeydown="OnReplyKeyDown"></textarea>
                             <button class="admin-btn admin-btn--primary"
                                     @onclick="SendReply"

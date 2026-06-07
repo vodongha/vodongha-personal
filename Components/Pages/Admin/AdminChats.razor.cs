@@ -117,6 +117,10 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             bool isFromUser = root.TryGetProperty("isFromUser", out System.Text.Json.JsonElement fromEl) && fromEl.GetBoolean();
             DateTime sentAt = root.TryGetProperty("sentAt", out System.Text.Json.JsonElement sentEl) ? sentEl.GetDateTime() : DateTime.UtcNow;
 
+            // Skip admin's own replies — already shown via optimistic update in SendReply.
+            // Only process incoming user messages here.
+            if (!isFromUser) return;
+
             _messages.Add(new ChatMessage { Id = id, Content = content, IsFromUser = isFromUser, SentAt = sentAt });
             // Admin is watching this session live — auto-mark as read
             if (isFromUser)
@@ -284,11 +288,10 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             return;
         }
 
-        await StopTypingAsync();
-
         string content = _replyText.Trim();
-        _replyText = "";    // Clear input immediately
+        _replyText = "";    // Clear input immediately — @bind:event="oninput" ensures Blazor tracks this
         _sending = true;
+        _ = StopTypingAsync(); // fire-and-forget, don't block optimistic display
 
         // Optimistic: show message instantly
         ChatMessage optimistic = new() { Id = 0, Content = content, IsFromUser = false, SentAt = DateTime.UtcNow, ChatSessionId = _selectedSessionId.Value };
@@ -329,38 +332,35 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         }
     }
 
-    private async Task OnReplyInput(ChangeEventArgs e)
+    // Called by @bind:after — _replyText already updated, no ChangeEventArgs needed
+    private void OnReplyInput()
     {
-        _replyText = e.Value?.ToString() ?? "";
-
-        if (_hubConnection == null || !_selectedSessionId.HasValue)
-        {
-            return;
-        }
-
+        if (_hubConnection == null || !_selectedSessionId.HasValue) return;
         _typingCts?.Cancel();
         _typingCts = new CancellationTokenSource();
-
-        await _hubConnection.InvokeAsync("StartTyping", _selectedSessionId.Value.ToString());
-
-        try
-        {
-            await Task.Delay(2000, _typingCts.Token);
-            await StopTypingAsync();
-        }
-        catch (OperationCanceledException)
-        {
-            // Cancelled by next keystroke — fine
-        }
+        _ = SendTypingSignalsAsync(_typingCts.Token);
     }
 
-    private async Task StopTypingAsync()
+    private async Task SendTypingSignalsAsync(CancellationToken ct)
+    {
+        if (_hubConnection == null || !_selectedSessionId.HasValue) return;
+        try
+        {
+            _ = _hubConnection.InvokeAsync("StartTyping", _selectedSessionId.Value.ToString(), ct);
+            await Task.Delay(2000, ct);
+            _ = _hubConnection.InvokeAsync("StopTyping", _selectedSessionId.Value.ToString());
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    private Task StopTypingAsync()
     {
         _typingCts?.Cancel();
         if (_hubConnection != null && _selectedSessionId.HasValue)
         {
-            await _hubConnection.InvokeAsync("StopTyping", _selectedSessionId.Value.ToString());
+            _ = _hubConnection.InvokeAsync("StopTyping", _selectedSessionId.Value.ToString());
         }
+        return Task.CompletedTask;
     }
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
