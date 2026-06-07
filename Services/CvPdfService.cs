@@ -79,7 +79,7 @@ public class CvPdfService
                         if (avatarBytes != null && avatarBytes.Length > 0)
                         {
                             col.Item().AlignCenter().Width(80).Height(80)
-                                .CornerRadius(40).Image(avatarBytes).FitArea();
+                                .CornerRadius(40).Image(avatarBytes).FitWidth();
                         }
                         else
                         {
@@ -172,7 +172,7 @@ public class CvPdfService
                             // Avatar
                             if (avatarBytes != null && avatarBytes.Length > 0)
                             {
-                                r.ConstantItem(64).Height(64).CornerRadius(32).Image(avatarBytes).FitArea();
+                                r.ConstantItem(64).Height(64).CornerRadius(32).Image(avatarBytes).FitWidth();
                             }
                             else
                             {
@@ -270,7 +270,7 @@ public class CvPdfService
                         // Avatar
                         if (avatarBytes != null && avatarBytes.Length > 0)
                         {
-                            h.ConstantItem(72).Height(72).CornerRadius(36).Image(avatarBytes).FitArea();
+                            h.ConstantItem(72).Height(72).CornerRadius(36).Image(avatarBytes).FitWidth();
                         }
                         else
                         {
