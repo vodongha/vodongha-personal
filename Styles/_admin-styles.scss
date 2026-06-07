@@ -664,58 +664,32 @@ tr.admin-row--dragover td {
         overflow: visible !important;
     }
 
-    // Only Dashboard stays visible in bottom bar; everything else hidden
-    .admin-nav__item:not(.admin-nav__item--pinned) { display: none !important; }
+    // Hide all nav items except Dashboard (--pinned) — only target items inside .admin-nav
+    .admin-nav .admin-nav__item:not(.admin-nav__item--pinned) { display: none !important; }
 
-    // All nav items
-    .admin-nav__item {
-        flex-direction: column !important;
-        gap: 0.15rem !important;
-        padding: 0.45rem 0.35rem 0.35rem !important;
-        font-size: 0.58rem !important;
-        line-height: 1 !important;
-        border-radius: 0 !important;
-        white-space: nowrap !important;
-        flex: 0 0 auto !important;
-        min-width: 46px !important;   // compact — nav items stay small
-        justify-content: center !important;
-        align-items: center !important;
-        text-align: center !important;
-        position: relative !important;
-
-        i { font-size: 1.1rem !important; line-height: 1 !important; }
-
-        // Badge: absolute over the icon, doesn't affect layout
-        .admin-badge-count {
-            position: absolute !important;
-            top: 2px !important;
-            right: calc(50% - 18px) !important;
-            margin: 0 !important;
-            min-width: 16px !important;
-            height: 16px !important;
-            font-size: 0.6rem !important;
-            padding: 0 3px !important;
-            border: 1.5px solid #0f0f0f !important;
-        }
-    }
-
-    // Đăng xuất button — wider so it's easy to tap and stands out
+    // Dashboard + Đăng xuất: each takes 50% width
+    .admin-nav__item,
     .admin-sidebar__logout .admin-nav__item {
+        flex: 1 1 0 !important;
         flex-direction: column !important;
         gap: 0.15rem !important;
         padding: 0.45rem 0.5rem 0.35rem !important;
-        font-size: 0.58rem !important;
+        font-size: 0.6rem !important;
         line-height: 1 !important;
         border-radius: 0 !important;
         white-space: nowrap !important;
-        flex: 0 0 auto !important;
-        min-width: 72px !important;   // wider than regular items
+        min-width: 0 !important;
         justify-content: center !important;
         align-items: center !important;
         text-align: center !important;
         position: relative !important;
 
         i { font-size: 1.1rem !important; line-height: 1 !important; }
+    }
+
+    // Separate Đăng xuất from Dashboard with a subtle divider
+    .admin-sidebar__logout {
+        border-left: 1px solid #2a2a2a !important;
     }
 
     // Main content — full width, space for bottom nav
