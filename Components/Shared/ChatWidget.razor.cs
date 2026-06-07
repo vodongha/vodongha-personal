@@ -66,6 +66,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     }
 
     private string _selectedRegion = "VN";
+    private bool _phoneTouched;
+    private bool _emailTouched;
     private Country SelectedCountry => Countries.FirstOrDefault(c => c.RegionCode == _selectedRegion) ?? Countries[0];
 
     private void OnDialChanged(ChangeEventArgs e)
@@ -80,17 +82,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         _phone = new string(raw.Where(c => char.IsDigit(c) || c == ' ' || c == '-').ToArray());
     }
 
-    private bool IsValidPhone(string phone)
+    private static bool IsValidPhone(string phone)
     {
         if (string.IsNullOrWhiteSpace(phone)) return false;
-        try
-        {
-            string digits = new string(phone.Where(char.IsDigit).ToArray());
-            string full = $"+{PhoneUtil.GetCountryCodeForRegion(_selectedRegion)}{digits}";
-            PhoneNumber parsed = PhoneUtil.Parse(full, _selectedRegion);
-            return PhoneUtil.IsValidNumber(parsed);
-        }
-        catch { return false; }
+        string digits = new string(phone.Where(char.IsDigit).ToArray());
+        return digits.Length >= 6 && digits.Length <= 15;
     }
 
     private string FullPhone => $"{SelectedCountry.Dial}{new string(_phone.Where(char.IsDigit).ToArray())}";
