@@ -21,6 +21,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     private bool _sending;
     private bool _otherIsTyping;
     private int _unreadChatCount;
+    private int _sessionLastReadId;   // max message ID admin had seen when session was opened
     private HubConnection? _hubConnection;
     private CancellationTokenSource? _typingCts;
 
@@ -78,6 +79,12 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             DateTime sentAt = root.TryGetProperty("sentAt", out System.Text.Json.JsonElement sentEl) ? sentEl.GetDateTime() : DateTime.UtcNow;
 
             _messages.Add(new ChatMessage { Id = id, Content = content, IsFromUser = isFromUser, SentAt = sentAt });
+            // Admin is watching this session live — auto-mark as read
+            if (isFromUser)
+            {
+                _sessionLastReadId = id;
+                await ChatSvc.MarkSessionReadAsync(_selectedSessionId.Value);
+            }
             _sessions = await ChatSvc.GetSessionsAsync();
             _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
             await InvokeAsync(StateHasChanged);
@@ -123,6 +130,9 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         _replyText = "";
         _otherIsTyping = false;
 
+        // Mark current max user-message ID as read — new user messages arriving after this will show as unread
+        _sessionLastReadId = _messages.Count > 0 ? _messages.Where(m => m.IsFromUser).Select(m => (int?)m.Id).Max() ?? 0 : 0;
+
         // Mark session as read
         await ChatSvc.MarkSessionReadAsync(sessionId);
         if (_selectedSession != null)
@@ -151,6 +161,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         _selectedSession = null;
         _messages = [];
         _otherIsTyping = false;
+        _sessionLastReadId = 0;
     }
 
     private async Task SendReply()
@@ -170,6 +181,8 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         {
             ChatMessage msg = await ChatSvc.SendAdminReplyAsync(_selectedSessionId.Value, content);
             _messages.Add(msg);
+            // Admin just sent — they've seen all messages; reset unread pointer
+            _sessionLastReadId = _messages.Where(m => m.IsFromUser).Select(m => (int?)m.Id).Max() ?? _sessionLastReadId;
             _sessions = await ChatSvc.GetSessionsAsync();
             await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "adminChatMessages");
         }
