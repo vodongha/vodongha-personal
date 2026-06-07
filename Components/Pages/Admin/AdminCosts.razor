@@ -59,22 +59,22 @@
             <!-- Summary banner — 2 columns: actual MTD + estimated max -->
             <div class="cost-summary-banner">
                 <div class="cost-summary-banner__cols">
-                    <!-- Actual MTD -->
+                    <!-- Estimated MTD -->
                     <div class="cost-summary-banner__col">
                         <div class="cost-summary-banner__col-label">
-                            <i class="bi bi-receipt"></i> @Loc.T("Actual this month")
+                            <i class="bi bi-receipt"></i> @Loc.T("Est. this month")
                         </div>
-                        @if (_summary.Fly?.ActualMtdDollars != null)
+                        @if (_summary.Fly != null)
                         {
                             <div class="cost-summary-banner__col-value cost-summary-banner__col-value--actual">
-                                @FormatUsd(_summary.Fly.ActualMtdDollars.Value)
+                                @(_summary.Fly.EstimatedMtdDollars == 0 ? "FREE" : FormatUsd(_summary.Fly.EstimatedMtdDollars))
                             </div>
-                            <div class="cost-summary-banner__col-sub">@Loc.T("Real billing from Fly.io")</div>
+                            <div class="cost-summary-banner__col-sub">@Loc.T("Day 1–@day est. (24/7)").Replace("@day", DateTime.UtcNow.Day.ToString())</div>
                         }
                         else
                         {
                             <div class="cost-summary-banner__col-value cost-summary-banner__col-value--na">N/A</div>
-                            <div class="cost-summary-banner__col-sub">@Loc.T("GraphQL billing unavailable")</div>
+                            <div class="cost-summary-banner__col-sub">@Loc.T("No Fly.io data")</div>
                         }
                     </div>
 
@@ -148,7 +148,7 @@
                                 </div>
                                 <div class="health-card__dot health-card__dot--@(m.State == "started" ? "ok" : "warn")"></div>
                                 <button class="cost-restart-btn @(_restartingId == m.Id ? "cost-restart-btn--loading" : "")"
-                                        @onclick="() => RestartMachine(m.Id)"
+                                        @onclick="async () => await RestartMachine(m.Id)"
                                         disabled="@(_restartingId != null)"
                                         title="@Loc.T("Restart machine")">
                                     <i class="bi bi-arrow-clockwise @(_restartingId == m.Id ? "admin-spin" : "")"></i>
@@ -205,20 +205,17 @@
                             </div>
                         </div>
 
-                        <!-- Actual MTD -->
-                        @if (_summary.Fly.ActualMtdDollars != null)
-                        {
-                            <div class="health-card @(_summary.Fly.ActualMtdDollars.Value == 0 ? "health-card--ok" : "")">
-                                <div class="health-card__icon"><i class="bi bi-cash-stack"></i></div>
-                                <div class="health-card__body">
-                                    <div class="health-card__label">@Loc.T("Actual this month")</div>
-                                    <div class="health-card__value health-card__value--wrap @(_summary.Fly.ActualMtdDollars.Value == 0 ? "cost-green" : "cost-blue")">
-                                        @(_summary.Fly.ActualMtdDollars.Value == 0 ? "FREE" : FormatUsd(_summary.Fly.ActualMtdDollars.Value))
-                                    </div>
-                                    <div class="cost-sub">@Loc.T("Real billing")</div>
+                        <!-- Estimated MTD -->
+                        <div class="health-card @(_summary.Fly.EstimatedMtdDollars == 0 ? "health-card--ok" : "")">
+                            <div class="health-card__icon"><i class="bi bi-cash-stack"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">@Loc.T("Est. this month")</div>
+                                <div class="health-card__value health-card__value--wrap @(_summary.Fly.EstimatedMtdDollars == 0 ? "cost-green" : "cost-blue")">
+                                    @(_summary.Fly.EstimatedMtdDollars == 0 ? "FREE" : FormatUsd(_summary.Fly.EstimatedMtdDollars))
                                 </div>
+                                <div class="cost-sub">@Loc.T("Day 1–") @DateTime.UtcNow.Day @Loc.T("(24/7 est.)")</div>
                             </div>
-                        }
+                        </div>
                     </div>
 
                     <p class="cost-note">
