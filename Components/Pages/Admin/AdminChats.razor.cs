@@ -286,17 +286,33 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         await StopTypingAsync();
 
         string content = _replyText.Trim();
-        _replyText = "";
+        _replyText = "";    // Clear input immediately
         _sending = true;
+
+        // Optimistic: show message instantly
+        ChatMessage optimistic = new() { Id = 0, Content = content, IsFromUser = false, SentAt = DateTime.UtcNow, ChatSessionId = _selectedSessionId.Value };
+        _messages.Add(optimistic);
+        StateHasChanged();
+        await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "adminChatMessages");
 
         try
         {
             ChatMessage msg = await ChatSvc.SendAdminReplyAsync(_selectedSessionId.Value, content);
-            _messages.Add(msg);
+            // Replace optimistic placeholder with real message
+            int idx = _messages.FindIndex(m => m.Id == 0 && m.Content == content && !m.IsFromUser);
+            if (idx >= 0)
+            {
+                _messages[idx] = msg;
+            }
             // Admin just sent — they've seen all messages; reset unread pointer
             _sessionLastReadId = _messages.Where(m => m.IsFromUser).Select(m => (int?)m.Id).Max() ?? _sessionLastReadId;
             _sessions = await ChatSvc.GetSessionsAsync();
-            await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "adminChatMessages");
+        }
+        catch
+        {
+            // Revert on failure
+            _messages.Remove(optimistic);
+            _replyText = content;
         }
         finally
         {

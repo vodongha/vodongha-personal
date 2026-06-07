@@ -47,7 +47,7 @@ public class ChatService
             throw new InvalidOperationException("Session not found.");
         }
 
-        // Create Telegram topic on first message
+        // Create Telegram topic on first message — must await to get the topic ID
         if (session.TelegramTopicId == null)
         {
             string topicTitle = $"{session.Name} | {session.Email}";
@@ -55,9 +55,9 @@ public class ChatService
             if (topicId != null)
             {
                 session.TelegramTopicId = topicId;
-                // Send contact info as first message in topic
+                // Fire-and-forget the contact info pin — no need to block user
                 string info = $"👤 {session.Name}\n📞 {session.Phone}\n📧 {session.Email}";
-                await _telegram.SendMessageAsync(info, topicId.Value);
+                _ = _telegram.SendMessageAsync(info, topicId.Value);
             }
         }
 
@@ -69,20 +69,21 @@ public class ChatService
             SentAt = DateTime.UtcNow
         };
 
-        // Send to Telegram
-        if (session.TelegramTopicId != null)
-        {
-            long? msgId = await _telegram.SendMessageAsync($"💬 {content}", session.TelegramTopicId.Value);
-            message.TelegramMessageId = msgId;
-        }
-
+        // Save to DB first — fast path, no Telegram latency
         session.LastMessageAt = DateTime.UtcNow;
         session.HasUnread = true;
         db.ChatMessages.Add(message);
         await db.SaveChangesAsync();
 
-        // Notify admin group so session list refreshes
+        // Notify admin group immediately after DB save
         await _hub.Clients.Group("admin").SendAsync("SessionUpdated", session.Id);
+
+        // Forward to Telegram in the background — failure is non-critical
+        if (session.TelegramTopicId != null)
+        {
+            long topicId = session.TelegramTopicId.Value;
+            _ = _telegram.SendMessageAsync($"💬 {content}", topicId);
+        }
 
         return message;
     }
@@ -105,18 +106,12 @@ public class ChatService
             SentAt = DateTime.UtcNow
         };
 
-        // Also send to Telegram topic so admin sees it there too
-        if (session.TelegramTopicId != null)
-        {
-            long? msgId = await _telegram.SendMessageAsync($"🔵 [Admin] {content}", session.TelegramTopicId.Value);
-            message.TelegramMessageId = msgId;
-        }
-
+        // Save to DB first — fast path
         session.LastMessageAt = DateTime.UtcNow;
         db.ChatMessages.Add(message);
         await db.SaveChangesAsync();
 
-        // Push to chat widget in real-time
+        // Push to chat widget immediately after DB save
         await _hub.Clients.Group($"session_{sessionId}")
             .SendAsync("ReceiveMessage", new
             {
@@ -125,6 +120,13 @@ public class ChatService
                 isFromUser = message.IsFromUser,
                 sentAt = message.SentAt
             });
+
+        // Forward to Telegram in the background — failure is non-critical
+        if (session.TelegramTopicId != null)
+        {
+            long topicId = session.TelegramTopicId.Value;
+            _ = _telegram.SendMessageAsync($"🔵 [Admin] {content}", topicId);
+        }
 
         return message;
     }
