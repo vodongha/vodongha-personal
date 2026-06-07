@@ -47,7 +47,7 @@ public record CostSummary(
 public class CostMonitorService
 {
     private readonly IHttpClientFactory _httpFactory;
-    private readonly IConfiguration _config;
+    private readonly AppSecretsService _secrets;
     private readonly ILogger<CostMonitorService> _logger;
 
     private CostSummary? _cache;
@@ -63,11 +63,11 @@ public class CostMonitorService
     private const double NeonStoragePerGbMonth = 1.75;
     private const long   NeonFreeStorageBytes  = 512L * 1024 * 1024; // 512 MB
 
-    public CostMonitorService(IHttpClientFactory httpFactory, IConfiguration config, ILogger<CostMonitorService> logger)
+    public CostMonitorService(IHttpClientFactory httpFactory, AppSecretsService secrets, ILogger<CostMonitorService> logger)
     {
         _httpFactory = httpFactory;
-        _config = config;
-        _logger = logger;
+        _secrets     = secrets;
+        _logger      = logger;
     }
 
     public async Task<CostSummary> GetSummaryAsync()
@@ -88,8 +88,8 @@ public class CostMonitorService
 
     public async Task<bool> RestartMachineAsync(string machineId)
     {
-        string? token   = _config["Fly:ApiToken"];
-        string  appName = _config["Fly:AppName"] ?? "vodongha";
+        string? token   = await _secrets.GetValueAsync("Fly:ApiToken");
+        string  appName = await _secrets.GetValueAsync("Fly:AppName") ?? "vodongha";
 
         if (string.IsNullOrEmpty(token))
         {
@@ -126,8 +126,8 @@ public class CostMonitorService
 
     private async Task<FlyAppData?> FetchFlyAsync()
     {
-        string? token   = _config["Fly:ApiToken"];
-        string  appName = _config["Fly:AppName"] ?? "vodongha";
+        string? token   = await _secrets.GetValueAsync("Fly:ApiToken");
+        string  appName = await _secrets.GetValueAsync("Fly:AppName") ?? "vodongha";
 
         if (string.IsNullOrEmpty(token))
         {
@@ -266,8 +266,8 @@ public class CostMonitorService
 
     private async Task<NeonProjectData?> FetchNeonAsync()
     {
-        string? apiKey    = _config["Neon:ApiKey"];
-        string? projectId = _config["Neon:ProjectId"];
+        string? apiKey    = await _secrets.GetValueAsync("Neon:ApiKey");
+        string? projectId = await _secrets.GetValueAsync("Neon:ProjectId");
 
         if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(projectId))
         {

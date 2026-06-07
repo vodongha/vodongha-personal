@@ -1,0 +1,143 @@
+@page "/admin/api-keys"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">
+                <i class="bi bi-key"></i> @Loc.T("API Keys")
+            </h1>
+            <div class="health-refresh">
+                <span class="health-refresh__label">@Loc.T("Changes apply immediately")</span>
+                <button class="admin-btn admin-btn--ghost admin-btn--sm" @onclick="LoadAsync" disabled="@_loading">
+                    <i class="bi bi-arrow-clockwise @(_loading ? "admin-spin" : "")"></i> @Loc.T("Refresh")
+                </button>
+            </div>
+        </header>
+
+        <div class="apikey-info">
+            <i class="bi bi-shield-lock"></i>
+            @Loc.T("Values are encrypted in the database. DB overrides take effect immediately without redeployment. Leave blank to fall back to environment variables.")
+        </div>
+
+        @if (_loading)
+        {
+            <div class="cost-loading">
+                <i class="bi bi-arrow-clockwise admin-spin"></i> @Loc.T("Loading...")
+            </div>
+        }
+        else
+        {
+            @foreach (string category in _categories)
+            {
+                <div class="cost-section">
+                    <div class="cost-section__header">
+                        <span class="cost-section__title">
+                            <i class="bi @CategoryIcon(category)"></i> @category
+                        </span>
+                    </div>
+
+                    <div class="apikey-list">
+                        @foreach (AppSecretDefinition def in AppSecretsService.Definitions.Where(d => d.Category == category))
+                        {
+                            bool isEditing = _editingKey == def.Key;
+                            string? dbVal  = _dbValues.GetValueOrDefault(def.Key);
+                            string? envVal = _envValues.GetValueOrDefault(def.Key);
+                            bool hasDb     = !string.IsNullOrEmpty(dbVal);
+                            bool hasEnv    = !string.IsNullOrEmpty(envVal);
+
+                            <div class="apikey-row @(isEditing ? "apikey-row--editing" : "")">
+                                <div class="apikey-row__meta">
+                                    <div class="apikey-row__name">
+                                        @def.DisplayName
+                                        @if (hasDb)
+                                        {
+                                            <span class="apikey-badge apikey-badge--db" title="@Loc.T("Overridden in database")">DB</span>
+                                        }
+                                        else if (hasEnv)
+                                        {
+                                            <span class="apikey-badge apikey-badge--env" title="@Loc.T("Set via environment variable")">ENV</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="apikey-badge apikey-badge--missing">@Loc.T("Not set")</span>
+                                        }
+                                    </div>
+                                    <div class="apikey-row__key">@def.Key</div>
+                                    <div class="apikey-row__desc">@def.Description</div>
+                                </div>
+
+                                <div class="apikey-row__value">
+                                    @if (!isEditing)
+                                    {
+                                        @if (hasDb || hasEnv)
+                                        {
+                                            string display = hasDb ? dbVal! : envVal!;
+                                            <span class="apikey-masked">@MaskValue(display, def.Sensitive)</span>
+                                            <span class="apikey-source">@(hasDb ? Loc.T("from DB") : Loc.T("from ENV"))</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="apikey-empty">—</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="apikey-edit-form">
+                                            <input class="admin-form__input apikey-edit-input"
+                                                   type="@(def.Sensitive ? "password" : "text")"
+                                                   placeholder="@(def.Sensitive ? "Enter new value (leave blank to remove DB override)" : "Enter value")"
+                                                   @bind="_editValue"
+                                                   @bind:event="oninput" />
+                                            @if (!string.IsNullOrEmpty(_editError))
+                                            {
+                                                <div class="apikey-error">@_editError</div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="apikey-row__actions">
+                                    @if (!isEditing)
+                                    {
+                                        <button class="admin-btn admin-btn--ghost admin-btn--sm"
+                                                @onclick="() => StartEdit(def.Key, dbVal ?? string.Empty)">
+                                            <i class="bi bi-pencil"></i> @Loc.T("Edit")
+                                        </button>
+                                        @if (hasDb)
+                                        {
+                                            <button class="admin-btn admin-btn--danger admin-btn--sm"
+                                                    @onclick="() => RemoveOverride(def.Key)"
+                                                    title="@Loc.T("Remove DB override, fall back to ENV")">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <button class="admin-btn admin-btn--primary admin-btn--sm"
+                                                @onclick="SaveEdit"
+                                                disabled="@_saving">
+                                            @if (_saving) { <i class="bi bi-arrow-clockwise admin-spin"></i> }
+                                            else          { <i class="bi bi-check-lg"></i> }
+                                            @Loc.T("Save")
+                                        </button>
+                                        <button class="admin-btn admin-btn--ghost admin-btn--sm"
+                                                @onclick="CancelEdit">
+                                            @Loc.T("Cancel")
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </main>
+</div>
