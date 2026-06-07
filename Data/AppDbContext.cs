@@ -17,6 +17,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Education> Educations => Set<Education>();
     public DbSet<Experience> Experiences => Set<Experience>();
     public DbSet<SiteSetting> SiteSettings => Set<SiteSetting>();
+    public DbSet<AppSecret>   AppSecrets   => Set<AppSecret>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -25,6 +26,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<SiteSetting>()
             .HasIndex(s => s.Key).IsUnique();
+
+        modelBuilder.Entity<AppSecret>()
+            .HasIndex(a => a.Key).IsUnique();
 
         modelBuilder.Entity<SiteSetting>()
             .HasData(

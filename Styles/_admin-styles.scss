@@ -1529,3 +1529,144 @@ tr.admin-row--dragover td {
         color: $color-primary;
     }
 }
+
+// ─── API Keys page ────────────────────────────────────────────────────────────
+
+.apikey-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+    background: #0f1623;
+    border: 1px solid #1f2937;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+
+    i { color: $color-primary; flex-shrink: 0; margin-top: 0.1rem; }
+}
+
+.apikey-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid #1f2937;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.apikey-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.1rem;
+    border-bottom: 1px solid #1a1a1a;
+    transition: background 150ms;
+
+    &:last-child { border-bottom: none; }
+    &:hover      { background: #111; }
+    &--editing   { background: #0f1623; border-color: rgba($color-primary, 0.2); }
+
+    &__meta {
+        min-width: 0;
+    }
+
+    &__name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $color-text;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.15rem;
+    }
+
+    &__key {
+        font-family: $font-mono;
+        font-size: 0.72rem;
+        color: #6b7280;
+        margin-bottom: 0.2rem;
+    }
+
+    &__desc {
+        font-size: 0.75rem;
+        color: #4b5563;
+        line-height: 1.4;
+    }
+
+    &__value {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 180px;
+        max-width: 280px;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+}
+
+.apikey-badge {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+
+    &--db      { background: rgba($color-primary, 0.15); color: $color-primary; border: 1px solid rgba($color-primary, 0.3); }
+    &--env     { background: rgba(96, 165, 250, 0.12); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.25); }
+    &--missing { background: rgba(239, 68, 68, 0.1);  color: #f87171;  border: 1px solid rgba(239, 68, 68, 0.2); }
+}
+
+.apikey-masked {
+    font-family: $font-mono;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    letter-spacing: 0.05em;
+}
+
+.apikey-source {
+    font-size: 0.7rem;
+    color: #4b5563;
+    white-space: nowrap;
+}
+
+.apikey-empty {
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.apikey-edit-form {
+    width: 100%;
+}
+
+.apikey-edit-input {
+    font-family: $font-mono;
+    font-size: 0.82rem;
+}
+
+.apikey-error {
+    font-size: 0.75rem;
+    color: #f87171;
+    margin-top: 0.3rem;
+}
+
+@media (max-width: 768px) {
+    .apikey-row {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+
+        &__value { max-width: 100%; min-width: 0; }
+        &__actions { justify-content: flex-end; }
+    }
+}

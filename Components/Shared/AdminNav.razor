@@ -22,6 +22,7 @@
         </a>
         <a href="/admin/health" class="admin-nav__item @(IsActive("/admin/health") ? "admin-nav__item--active" : "")"><i class="bi bi-activity"></i> @Loc.T("Health")</a>
         <a href="/admin/costs" class="admin-nav__item @(IsActive("/admin/costs") ? "admin-nav__item--active" : "")"><i class="bi bi-currency-dollar"></i> @Loc.T("Costs")</a>
+        <a href="/admin/api-keys" class="admin-nav__item @(IsActive("/admin/api-keys") ? "admin-nav__item--active" : "")"><i class="bi bi-key"></i> @Loc.T("API Keys")</a>
         <a href="/admin/settings" class="admin-nav__item @(IsActive("/admin/settings") ? "admin-nav__item--active" : "")"><i class="bi bi-gear"></i> @Loc.T("Settings")</a>
     </nav>
     <button class="admin-lang-toggle" @onclick="ToggleLang" title="Switch language">

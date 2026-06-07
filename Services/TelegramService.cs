@@ -7,28 +7,28 @@ namespace vodongha.Services;
 public class TelegramService
 {
     private readonly HttpClient _http;
-    private readonly string _token;
-    private readonly long _chatId;
+    private readonly AppSecretsService _secrets;
 
-    public TelegramService(HttpClient http, IConfiguration config)
+    public TelegramService(HttpClient http, AppSecretsService secrets)
     {
-        _http = http;
-        _token = config["Telegram:BotToken"] ?? "";
-        _chatId = long.TryParse(config["Telegram:ChatId"], out long id) ? id : 0;
+        _http    = http;
+        _secrets = secrets;
     }
 
-    private string BaseUrl => $"https://api.telegram.org/bot{_token}";
+    private string Token  => _secrets.GetValue("Telegram:BotToken") ?? "";
+    private long   ChatId => long.TryParse(_secrets.GetValue("Telegram:ChatId"), out long id) ? id : 0;
+    private string BaseUrl => $"https://api.telegram.org/bot{Token}";
 
     public async Task<long?> CreateTopicAsync(string title)
     {
-        if (_chatId == 0 || string.IsNullOrEmpty(_token))
+        if (ChatId == 0 || string.IsNullOrEmpty(Token))
         {
             return null;
         }
 
         HttpResponseMessage response = await _http.PostAsJsonAsync(
             $"{BaseUrl}/createForumTopic",
-            new { chat_id = _chatId, name = title }
+            new { chat_id = ChatId, name = title }
         );
 
         string json = await response.Content.ReadAsStringAsync();
@@ -45,7 +45,7 @@ public class TelegramService
 
     public async Task<bool> DeleteTopicAsync(long threadId)
     {
-        if (_chatId == 0 || string.IsNullOrEmpty(_token))
+        if (ChatId == 0 || string.IsNullOrEmpty(Token))
         {
             return false;
         }
@@ -54,7 +54,7 @@ public class TelegramService
         {
             HttpResponseMessage response = await _http.PostAsJsonAsync(
                 $"{BaseUrl}/deleteForumTopic",
-                new { chat_id = _chatId, message_thread_id = threadId }
+                new { chat_id = ChatId, message_thread_id = threadId }
             );
             string json = await response.Content.ReadAsStringAsync();
             JsonDocument doc = JsonDocument.Parse(json);
@@ -68,7 +68,7 @@ public class TelegramService
 
     public async Task SendTypingAsync(long threadId)
     {
-        if (_chatId == 0 || string.IsNullOrEmpty(_token))
+        if (ChatId == 0 || string.IsNullOrEmpty(Token))
         {
             return;
         }
@@ -77,7 +77,7 @@ public class TelegramService
         {
             await _http.PostAsJsonAsync(
                 $"{BaseUrl}/sendChatAction",
-                new { chat_id = _chatId, message_thread_id = threadId, action = "typing" }
+                new { chat_id = ChatId, message_thread_id = threadId, action = "typing" }
             );
         }
         catch
@@ -92,14 +92,14 @@ public class TelegramService
     /// </summary>
     public async Task<(long? MessageId, bool TopicDeleted)> SendMessageAsync(string text, long threadId)
     {
-        if (_chatId == 0 || string.IsNullOrEmpty(_token))
+        if (ChatId == 0 || string.IsNullOrEmpty(Token))
         {
             return (null, false);
         }
 
         HttpResponseMessage response = await _http.PostAsJsonAsync(
             $"{BaseUrl}/sendMessage",
-            new { chat_id = _chatId, message_thread_id = threadId, text = text }
+            new { chat_id = ChatId, message_thread_id = threadId, text = text }
         );
 
         string json = await response.Content.ReadAsStringAsync();
