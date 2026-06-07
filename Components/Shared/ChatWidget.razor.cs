@@ -39,7 +39,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private bool _pendingScrollToUnread;
 
-    private bool CanStartChat => !string.IsNullOrWhiteSpace(_name) && !string.IsNullOrWhiteSpace(_email);
+    private bool CanStartChat => !string.IsNullOrWhiteSpace(_name) && !string.IsNullOrWhiteSpace(_phone) && !string.IsNullOrWhiteSpace(_email);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
