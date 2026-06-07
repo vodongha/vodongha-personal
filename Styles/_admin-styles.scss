@@ -1527,18 +1527,17 @@ tr.admin-row--dragover td {
     font-size: 0.78rem;
     color: #6b7280;
     margin-top: 0.75rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 0.4rem;
-    line-height: 1.5;
+    line-height: 1.6;
 
-    i { margin-top: 0.1rem; flex-shrink: 0; }
+    i { margin-right: 0.3rem; }
     code {
+        display: inline;
         background: #1f2937;
-        padding: 0.1rem 0.3rem;
+        padding: 0.1rem 0.35rem;
         border-radius: 3px;
         font-size: 0.75rem;
         color: $color-primary;
+        white-space: nowrap;
     }
 }
 
