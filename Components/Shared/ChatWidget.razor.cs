@@ -32,36 +32,9 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     // Unread tracking
     private int _unreadCount;
     private int _lastReadMessageId;   // last message ID the user saw when chat was open
+    private int _unreadDividerIndex = -1;  // index in _messages where the divider is shown
 
     private bool CanStartChat => !string.IsNullOrWhiteSpace(_name) && !string.IsNullOrWhiteSpace(_email);
-
-    // Index of first unread admin message (for divider)
-    private int FirstUnreadIndex
-    {
-        get
-        {
-            if (_unreadCount <= 0)
-            {
-                return -1;
-            }
-
-            // Walk backwards to find where unread messages start
-            int unreadSeen = 0;
-            for (int i = _messages.Count - 1; i >= 0; i--)
-            {
-                if (!_messages[i].IsFromUser)
-                {
-                    unreadSeen++;
-                    if (unreadSeen == _unreadCount)
-                    {
-                        return i;
-                    }
-                }
-            }
-
-            return -1;
-        }
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -92,7 +65,15 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
                     _unreadCount = _messages.Count(m => !m.IsFromUser && m.Id > _lastReadMessageId);
 
-                    _state = _unreadCount > 0 ? ChatState.Closed : ChatState.Chat;
+                    if (_unreadCount > 0)
+                    {
+                        // Keep closed so badge shows; divider will be set when user opens
+                        _state = ChatState.Closed;
+                    }
+                    else
+                    {
+                        _state = ChatState.Chat;
+                    }
 
                     await ConnectHubAsync();
                     StateHasChanged();
@@ -112,6 +93,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             _state = _sessionId.HasValue ? ChatState.Chat : ChatState.Form;
             if (_state == ChatState.Chat)
             {
+                SetUnreadDivider();
                 MarkAllRead();
             }
         }
@@ -126,13 +108,38 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         _state = ChatState.Closed;
     }
 
+    // Compute and freeze the divider position BEFORE resetting the unread count
+    private void SetUnreadDivider()
+    {
+        if (_unreadCount <= 0)
+        {
+            _unreadDividerIndex = -1;
+            return;
+        }
+
+        int unreadSeen = 0;
+        for (int i = _messages.Count - 1; i >= 0; i--)
+        {
+            if (!_messages[i].IsFromUser)
+            {
+                unreadSeen++;
+                if (unreadSeen == _unreadCount)
+                {
+                    _unreadDividerIndex = i;
+                    return;
+                }
+            }
+        }
+
+        _unreadDividerIndex = -1;
+    }
+
     private void MarkAllRead()
     {
         if (_messages.Count > 0)
         {
             _lastReadMessageId = _messages.Max(m => m.Id);
             _unreadCount = 0;
-            // Fire-and-forget: persist to localStorage
             _ = SaveLastReadAsync();
         }
     }
@@ -267,10 +274,20 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
             _messages.Add(new ChatMessageDto(id, content, isFromUser, sentAt));
 
-            // Track unread only for admin messages received while chat is closed
-            if (!isFromUser && _state == ChatState.Closed)
+            if (!isFromUser)
             {
-                _unreadCount++;
+                if (_state == ChatState.Closed)
+                {
+                    // Chat is closed — increment badge
+                    _unreadCount++;
+                }
+                else
+                {
+                    // Chat is open — user sees it immediately; clear any lingering divider
+                    _unreadDividerIndex = -1;
+                    _lastReadMessageId = id;
+                    _ = SaveLastReadAsync();
+                }
             }
 
             await InvokeAsync(StateHasChanged);

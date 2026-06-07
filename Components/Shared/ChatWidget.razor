@@ -53,21 +53,20 @@
         }
         else if (_state == ChatState.Chat)
         {
-            int firstUnread = FirstUnreadIndex;
-
             <div class="chat-messages" id="chatMessages">
                 @for (int i = 0; i < _messages.Count; i++)
                 {
                     ChatMessageDto msg = _messages[i];
+                    bool isUnread = !msg.IsFromUser && _unreadDividerIndex >= 0 && i >= _unreadDividerIndex;
 
-                    @if (i == firstUnread)
+                    @if (i == _unreadDividerIndex)
                     {
                         <div class="chat-unread-divider">
                             <span>Tin nhắn mới</span>
                         </div>
                     }
 
-                    <div class="chat-msg @(msg.IsFromUser ? "chat-msg--user" : "chat-msg--admin") @(!msg.IsFromUser && i >= firstUnread && firstUnread >= 0 ? "chat-msg--unread" : "")">
+                    <div class="chat-msg @(msg.IsFromUser ? "chat-msg--user" : "chat-msg--admin") @(isUnread ? "chat-msg--unread" : "")">
                         <div class="chat-msg__bubble">@msg.Content</div>
                         <div class="chat-msg__time">@msg.SentAt.ToLocalTime().ToString("HH:mm")</div>
                     </div>
