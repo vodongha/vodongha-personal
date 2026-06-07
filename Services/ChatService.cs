@@ -218,6 +218,17 @@ public class ChatService
             session.HasUnread = false;
             await db.SaveChangesAsync();
         }
+
+        // Broadcast read receipt to widget: admin has read all user messages up to this ID
+        int lastUserMsgId = await db.ChatMessages
+            .Where(m => m.ChatSessionId == sessionId && m.IsFromUser)
+            .Select(m => (int?)m.Id)
+            .MaxAsync() ?? 0;
+
+        if (lastUserMsgId > 0)
+        {
+            await _hub.Clients.Group($"session_{sessionId}").SendAsync("AdminRead", lastUserMsgId);
+        }
     }
 
     public async Task SendTypingToTelegramAsync(int sessionId)

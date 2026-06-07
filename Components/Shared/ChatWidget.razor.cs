@@ -31,8 +31,9 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     // Unread tracking
     private int _unreadCount;
-    private int _lastReadMessageId;   // last message ID the user saw when chat was open
-    private int _unreadDividerIndex = -1;  // index in _messages where the divider is shown
+    private int _lastReadMessageId;    // last admin message ID the user has seen
+    private int _adminReadUpToId;      // last user message ID the admin has read (for ✓✓ on user's outgoing)
+    private int _unreadDividerIndex = -1;  // index in _messages where the "new messages" divider is shown
 
     private bool CanStartChat => !string.IsNullOrWhiteSpace(_name) && !string.IsNullOrWhiteSpace(_email);
 
@@ -82,6 +83,13 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                         _state = ChatState.Chat;
                     }
 
+                    // Restore admin-read pointer (for ✓✓ on user's outgoing messages)
+                    ProtectedBrowserStorageResult<int> adminReadResult = await LocalStorage.GetAsync<int>("chatAdminReadId");
+                    if (adminReadResult.Success && adminReadResult.Value > 0)
+                    {
+                        _adminReadUpToId = adminReadResult.Value;
+                    }
+
                     await ConnectHubAsync();
                     StateHasChanged();
                 }
@@ -93,7 +101,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
-    private void ToggleOpen()
+    private async Task ToggleOpen()
     {
         if (_state == ChatState.Closed)
         {
@@ -101,7 +109,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             if (_state == ChatState.Chat)
             {
                 SetUnreadDivider();
-                MarkAllRead();
+                await MarkAllReadAsync();
             }
         }
         else
@@ -121,13 +129,25 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         _unreadDividerIndex = _messages.FindIndex(m => !m.IsFromUser && m.Id > _lastReadMessageId);
     }
 
-    private void MarkAllRead()
+    private async Task MarkAllReadAsync()
     {
-        if (_messages.Count > 0)
+        if (_messages.Count == 0)
         {
-            _lastReadMessageId = _messages.Max(m => m.Id);
-            _unreadCount = 0;
-            _ = SaveLastReadAsync();
+            return;
+        }
+
+        _lastReadMessageId = _messages.Max(m => m.Id);
+        _unreadCount = 0;
+        await SaveLastReadAsync();
+
+        // Notify the other party (admin) that user has read their messages
+        if (_hubConnection != null && _sessionId.HasValue)
+        {
+            int lastAdminMsgId = _messages.Where(m => !m.IsFromUser).Select(m => (int?)m.Id).Max() ?? 0;
+            if (lastAdminMsgId > 0)
+            {
+                await _hubConnection.InvokeAsync("MarkRead", _sessionId.Value.ToString(), lastAdminMsgId);
+            }
         }
     }
 
@@ -274,6 +294,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                     _unreadDividerIndex = -1;
                     _lastReadMessageId = id;
                     _ = SaveLastReadAsync();
+                    // Notify admin that user has read this message
+                    if (_hubConnection != null && _sessionId.HasValue)
+                    {
+                        _ = _hubConnection.InvokeAsync("MarkRead", _sessionId.Value.ToString(), id);
+                    }
                 }
             }
 
@@ -282,6 +307,14 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             {
                 await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "chatMessages");
             }
+        });
+
+        // Admin read receipt — update ✓ → ✓✓ on user's outgoing messages
+        _hubConnection.On<int>("AdminRead", async lastReadId =>
+        {
+            _adminReadUpToId = Math.Max(_adminReadUpToId, lastReadId);
+            try { await LocalStorage.SetAsync("chatAdminReadId", _adminReadUpToId); } catch { }
+            await InvokeAsync(StateHasChanged);
         });
 
         _hubConnection.On("TypingStarted", async () =>

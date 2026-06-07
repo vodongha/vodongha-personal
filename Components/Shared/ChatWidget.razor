@@ -68,7 +68,20 @@
 
                     <div class="chat-msg @(msg.IsFromUser ? "chat-msg--user" : "chat-msg--admin") @(isUnread ? "chat-msg--unread" : "")">
                         <div class="chat-msg__bubble">@msg.Content</div>
-                        <div class="chat-msg__time">@msg.SentAt.ToLocalTime().ToString("HH:mm")</div>
+                        <div class="chat-msg__time">
+                            @msg.SentAt.ToLocalTime().ToString("HH:mm")
+                            @if (msg.IsFromUser)
+                            {
+                                if (_adminReadUpToId > 0 && msg.Id <= _adminReadUpToId)
+                                {
+                                    <i class="bi bi-check-all chat-msg__ticks chat-msg__ticks--read" title="Đã đọc"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-check chat-msg__ticks" title="Đã gửi"></i>
+                                }
+                            }
+                        </div>
                     </div>
                 }
 

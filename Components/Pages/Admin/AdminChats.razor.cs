@@ -21,7 +21,8 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     private bool _sending;
     private bool _otherIsTyping;
     private int _unreadChatCount;
-    private int _sessionLastReadId;   // max message ID admin had seen when session was opened
+    private int _sessionLastReadId;   // max user-message ID admin had seen when session was opened
+    private int _userReadUpToId;      // max admin-message ID the user has read (for ✓✓ on admin's outgoing)
     private HubConnection? _hubConnection;
     private CancellationTokenSource? _typingCts;
 
@@ -104,6 +105,13 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             await InvokeAsync(StateHasChanged);
         });
 
+        // User read receipt — update ✓ → ✓✓ on admin's outgoing messages
+        _hubConnection.On<int>("MessagesRead", async lastReadId =>
+        {
+            _userReadUpToId = Math.Max(_userReadUpToId, lastReadId);
+            await InvokeAsync(StateHasChanged);
+        });
+
         // Refresh session list when any session gets a new message
         _hubConnection.On<int>("SessionUpdated", async updatedSessionId =>
         {
@@ -162,6 +170,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         _messages = [];
         _otherIsTyping = false;
         _sessionLastReadId = 0;
+        _userReadUpToId = 0;
     }
 
     private async Task SendReply()
