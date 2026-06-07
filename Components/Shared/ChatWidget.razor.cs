@@ -29,7 +29,39 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private HubConnection? _hubConnection;
     private CancellationTokenSource? _typingCts;
 
+    // Unread tracking
+    private int _unreadCount;
+    private int _lastReadMessageId;   // last message ID the user saw when chat was open
+
     private bool CanStartChat => !string.IsNullOrWhiteSpace(_name) && !string.IsNullOrWhiteSpace(_email);
+
+    // Index of first unread admin message (for divider)
+    private int FirstUnreadIndex
+    {
+        get
+        {
+            if (_unreadCount <= 0)
+            {
+                return -1;
+            }
+
+            // Walk backwards to find where unread messages start
+            int unreadSeen = 0;
+            for (int i = _messages.Count - 1; i >= 0; i--)
+            {
+                if (!_messages[i].IsFromUser)
+                {
+                    unreadSeen++;
+                    if (unreadSeen == _unreadCount)
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return -1;
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -40,17 +72,28 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
         try
         {
-            ProtectedBrowserStorageResult<int> result = await LocalStorage.GetAsync<int>("chatSessionId");
-            if (result.Success && result.Value > 0)
+            ProtectedBrowserStorageResult<int> sessionResult = await LocalStorage.GetAsync<int>("chatSessionId");
+            if (sessionResult.Success && sessionResult.Value > 0)
             {
-                _sessionId = result.Value;
+                _sessionId = sessionResult.Value;
                 ChatSession? session = await ChatSvc.GetSessionAsync(_sessionId.Value);
                 if (session != null)
                 {
-                    _state = ChatState.Chat;
                     _messages = (await ChatSvc.GetMessagesAsync(_sessionId.Value))
                         .Select(m => new ChatMessageDto(m.Id, m.Content, m.IsFromUser, m.SentAt))
                         .ToList();
+
+                    // Restore last-read pointer and compute initial unread count
+                    ProtectedBrowserStorageResult<int> lastReadResult = await LocalStorage.GetAsync<int>("chatLastReadId");
+                    if (lastReadResult.Success)
+                    {
+                        _lastReadMessageId = lastReadResult.Value;
+                    }
+
+                    _unreadCount = _messages.Count(m => !m.IsFromUser && m.Id > _lastReadMessageId);
+
+                    _state = _unreadCount > 0 ? ChatState.Closed : ChatState.Chat;
+
                     await ConnectHubAsync();
                     StateHasChanged();
                 }
@@ -67,6 +110,10 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         if (_state == ChatState.Closed)
         {
             _state = _sessionId.HasValue ? ChatState.Chat : ChatState.Form;
+            if (_state == ChatState.Chat)
+            {
+                MarkAllRead();
+            }
         }
         else
         {
@@ -77,6 +124,29 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private void Close()
     {
         _state = ChatState.Closed;
+    }
+
+    private void MarkAllRead()
+    {
+        if (_messages.Count > 0)
+        {
+            _lastReadMessageId = _messages.Max(m => m.Id);
+            _unreadCount = 0;
+            // Fire-and-forget: persist to localStorage
+            _ = SaveLastReadAsync();
+        }
+    }
+
+    private async Task SaveLastReadAsync()
+    {
+        try
+        {
+            await LocalStorage.SetAsync("chatLastReadId", _lastReadMessageId);
+        }
+        catch
+        {
+            // ignore
+        }
     }
 
     private async Task StartChat()
@@ -94,6 +164,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             await LocalStorage.SetAsync("chatSessionId", session.Id);
             _state = ChatState.Chat;
             _messages = [];
+            _unreadCount = 0;
             await ConnectHubAsync();
         }
         finally
@@ -109,7 +180,6 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-        // Stop typing indicator before sending
         await StopTypingAsync();
 
         string content = _inputText.Trim();
@@ -196,8 +266,18 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             DateTime sentAt = root.TryGetProperty("sentAt", out System.Text.Json.JsonElement sentEl) ? sentEl.GetDateTime() : DateTime.UtcNow;
 
             _messages.Add(new ChatMessageDto(id, content, isFromUser, sentAt));
+
+            // Track unread only for admin messages received while chat is closed
+            if (!isFromUser && _state == ChatState.Closed)
+            {
+                _unreadCount++;
+            }
+
             await InvokeAsync(StateHasChanged);
-            await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "chatMessages");
+            if (_state == ChatState.Chat)
+            {
+                await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "chatMessages");
+            }
         });
 
         _hubConnection.On("TypingStarted", async () =>

@@ -24,6 +24,32 @@
         transform: scale(1.08);
         box-shadow: 0 6px 28px rgba(110, 231, 183, 0.5);
     }
+
+    &__badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        background: #ef4444;
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 700;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        border: 2px solid #0f0f0f;
+        pointer-events: none;
+        animation: badge-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+}
+
+@keyframes badge-pop {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
 }
 
 // ── Chat panel (form + chat window) ───────────────────────────────
@@ -238,6 +264,32 @@
         margin-top: 0.2rem;
         padding: 0 0.2rem;
     }
+}
+
+.chat-unread-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.4rem 0;
+
+    &::before,
+    &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(239, 68, 68, 0.35);
+    }
+
+    span {
+        font-size: 0.62rem;
+        color: #ef4444;
+        white-space: nowrap;
+        font-weight: 500;
+    }
+}
+
+.chat-msg--unread .chat-msg__bubble {
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.25);
 }
 
 .chat-typing {
