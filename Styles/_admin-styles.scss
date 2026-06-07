@@ -642,10 +642,9 @@ tr.admin-row--dragover td {
         overflow-y: hidden !important;
         -webkit-overflow-scrolling: touch;
 
-        &__logo   { display: none !important; }
+        &__logo { display: none !important; }
 
         // Make the logout <form> a proper flex item (same row as nav items)
-        // display:contents has cross-browser bugs — avoid it
         &__logout {
             display: flex !important;
             align-items: stretch !important;
@@ -665,18 +664,17 @@ tr.admin-row--dragover td {
         overflow: visible !important;
     }
 
-    // All nav items — including the logout button inside admin-sidebar__logout
-    .admin-nav__item,
-    .admin-sidebar__logout .admin-nav__item {
+    // All nav items
+    .admin-nav__item {
         flex-direction: column !important;
         gap: 0.15rem !important;
-        padding: 0.45rem 0.5rem 0.35rem !important;
+        padding: 0.45rem 0.35rem 0.35rem !important;
         font-size: 0.58rem !important;
         line-height: 1 !important;
         border-radius: 0 !important;
         white-space: nowrap !important;
-        flex: 0 0 auto !important;    // don't grow/shrink — let the bar scroll instead
-        min-width: 52px !important;   // minimum tap target
+        flex: 0 0 auto !important;
+        min-width: 46px !important;   // compact — nav items stay small
         justify-content: center !important;
         align-items: center !important;
         text-align: center !important;
@@ -696,6 +694,25 @@ tr.admin-row--dragover td {
             padding: 0 3px !important;
             border: 1.5px solid #0f0f0f !important;
         }
+    }
+
+    // Đăng xuất button — wider so it's easy to tap and stands out
+    .admin-sidebar__logout .admin-nav__item {
+        flex-direction: column !important;
+        gap: 0.15rem !important;
+        padding: 0.45rem 0.5rem 0.35rem !important;
+        font-size: 0.58rem !important;
+        line-height: 1 !important;
+        border-radius: 0 !important;
+        white-space: nowrap !important;
+        flex: 0 0 auto !important;
+        min-width: 72px !important;   // wider than regular items
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+        position: relative !important;
+
+        i { font-size: 1.1rem !important; line-height: 1 !important; }
     }
 
     // Main content — full width, space for bottom nav
