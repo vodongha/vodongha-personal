@@ -134,20 +134,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-        // Auto-detect country from IP (fire-and-forget, non-blocking)
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                string? countryCode = await JS.InvokeAsync<string?>("chatUtils.getCountryCode");
-                if (!string.IsNullOrWhiteSpace(countryCode) && Countries.Any(c => c.RegionCode == countryCode))
-                {
-                    _selectedRegion = countryCode;
-                    await InvokeAsync(StateHasChanged);
-                }
-            }
-            catch { }
-        });
+        // Auto-detect country from IP (fire-and-forget, stays on Blazor circuit)
+        _ = DetectCountryAsync();
 
         try
         {
@@ -500,6 +488,20 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
     private void OnLangChanged() => InvokeAsync(StateHasChanged);
+
+    private async Task DetectCountryAsync()
+    {
+        try
+        {
+            string? countryCode = await JS.InvokeAsync<string?>("chatUtils.getCountryCode");
+            if (!string.IsNullOrWhiteSpace(countryCode) && Countries.Any(c => c.RegionCode == countryCode))
+            {
+                _selectedRegion = countryCode;
+                StateHasChanged();
+            }
+        }
+        catch { }
+    }
 
     public async ValueTask DisposeAsync()
     {
