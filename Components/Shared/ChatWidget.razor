@@ -59,6 +59,18 @@
                     ChatMessageDto msg = _messages[i];
                     bool isUnread = !msg.IsFromUser && _unreadDividerIndex >= 0 && i >= _unreadDividerIndex;
 
+                    @* Date divider — show when this message is on a different day than the previous one *@
+                    DateTime msgDay = Tz.ToUserTime(msg.SentAt).Date;
+                    bool showDate = i == 0 || Tz.ToUserTime(_messages[i - 1].SentAt).Date != msgDay;
+                    @if (showDate)
+                    {
+                        DateTime today = Tz.ToUserTime(DateTime.UtcNow).Date;
+                        string dateLabel = msgDay == today ? "Hôm nay"
+                            : msgDay == today.AddDays(-1) ? "Hôm qua"
+                            : msgDay.ToString("dd/MM/yyyy");
+                        <div class="chat-date-divider"><span>@dateLabel</span></div>
+                    }
+
                     @if (i == _unreadDividerIndex)
                     {
                         <div class="chat-unread-divider">
