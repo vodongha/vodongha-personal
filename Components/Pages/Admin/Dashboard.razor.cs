@@ -35,6 +35,7 @@ public partial class Dashboard : ComponentBase, IAsyncDisposable
         if (firstRender)
         {
             _menuOrder = await Secrets.GetValueAsync(MenuPrefKey) ?? "[]";
+            await InvokeAsync(StateHasChanged);   // update data-saved-order in DOM before JS reads it
             await JS.InvokeVoidAsync("initSortableCards", "admin-dash-cards", _dotNetRef, MenuPrefKey);
         }
     }
