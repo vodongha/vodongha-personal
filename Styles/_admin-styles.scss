@@ -1250,3 +1250,207 @@ tr.admin-row--dragover td {
         color: #ef4444;
     }
 }
+
+// ─── Costs page ──────────────────────────────────────────────────────────────
+
+.cost-loading,
+.cost-empty {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #9ca3af;
+    font-size: 0.9rem;
+    padding: 2rem 0;
+
+    &--sm { padding: 1rem 0; }
+}
+
+.cost-summary-banner {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid #2d3748;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+
+    &__label {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        flex-basis: 100%;
+    }
+
+    &__value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #f9fafb;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__note {
+        font-size: 1rem;
+        color: #6b7280;
+        margin-left: 0.25rem;
+    }
+
+    &__updated {
+        font-size: 0.75rem;
+        color: #4b5563;
+        margin-left: auto;
+    }
+}
+
+.cost-section {
+    margin-bottom: 2rem;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #1f2937;
+    }
+
+    &__title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #e5e7eb;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i { color: $color-primary; }
+    }
+}
+
+.cost-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    &--free {
+        background: rgba($color-primary, 0.15);
+        color: $color-primary;
+        border: 1px solid rgba($color-primary, 0.3);
+    }
+
+    &--inline {
+        margin-left: 0.4rem;
+        font-size: 0.65rem;
+    }
+}
+
+.cost-green { color: #6ee7b7 !important; }
+.cost-yellow { color: #fbbf24 !important; }
+
+.cost-sub {
+    display: block;
+    font-size: 0.7rem;
+    color: #6b7280;
+    margin-top: 0.1rem;
+}
+
+.cost-card--wide {
+    grid-column: span 2;
+
+    @media (max-width: 640px) { grid-column: span 1; }
+}
+
+.cost-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.cost-progress {
+    flex: 1;
+    height: 6px;
+    background: #1f2937;
+    border-radius: 999px;
+    overflow: hidden;
+
+    &__bar {
+        height: 100%;
+        background: $color-primary;
+        border-radius: 999px;
+        transition: width 0.4s ease;
+        min-width: 2px;
+    }
+}
+
+.cost-progress__pct {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-variant-numeric: tabular-nums;
+    min-width: 3.5rem;
+    text-align: right;
+}
+
+.cost-restart-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    background: transparent;
+    color: #9ca3af;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color 150ms, border-color 150ms, background 150ms;
+    margin-left: auto;
+
+    &:hover:not(:disabled) {
+        color: $color-primary;
+        border-color: $color-primary;
+        background: rgba($color-primary, 0.08);
+    }
+
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    &--loading {
+        color: $color-primary;
+        border-color: $color-primary;
+    }
+
+    i { font-size: 0.85rem; }
+}
+
+// Modal warn icon variant
+.admin-modal__icon--warn {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.cost-note {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    line-height: 1.5;
+
+    i { margin-top: 0.1rem; flex-shrink: 0; }
+    code {
+        background: #1f2937;
+        padding: 0.1rem 0.3rem;
+        border-radius: 3px;
+        font-size: 0.75rem;
+        color: $color-primary;
+    }
+}
