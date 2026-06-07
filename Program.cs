@@ -171,8 +171,27 @@ app.MapGet("/api/cv/download", async (
             Projects:    await db.Projects.OrderBy(p => p.Order).ToListAsync()
         );
 
+        // Pre-load avatar image (async, before entering Task.Run)
+        byte[]? avatarBytes = null;
+        if (!string.IsNullOrEmpty(data.AvatarUrl))
+        {
+            try
+            {
+                using HttpClient http = new();
+                http.Timeout = TimeSpan.FromSeconds(5);
+                string url = data.AvatarUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                    ? data.AvatarUrl
+                    : $"https://vodongha.id.vn{data.AvatarUrl}";
+                avatarBytes = await http.GetByteArrayAsync(url);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning("CV download: could not load avatar ({Url}): {Msg}", data.AvatarUrl, ex.Message);
+            }
+        }
+
         logger.LogInformation("CV download: generating PDF for {Name}", data.Name);
-        byte[] pdf = await Task.Run(() => cvPdf.Generate(data));
+        byte[] pdf = await Task.Run(() => cvPdf.Generate(data, avatarBytes));
         logger.LogInformation("CV download: PDF generated, {Bytes} bytes", pdf.Length);
         string name = data.Name.ToLower().Replace(" ", "-");
         return Results.File(pdf, "application/pdf", $"cv-{name}.pdf");

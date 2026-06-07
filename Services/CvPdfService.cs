@@ -34,7 +34,7 @@ public class CvPdfService
     private static readonly string DividerLine = "#e2e8f0";
     private static readonly string TagBg       = "#f1f5f9";
 
-    public byte[] Generate(CvData cv)
+    public byte[] Generate(CvData cv, byte[]? avatarBytes = null)
     {
         QuestPDF.Settings.License = LicenseType.Community;
 
@@ -53,12 +53,21 @@ public class CvPdfService
                     {
                         col.Spacing(16);
 
-                        // Avatar placeholder / initials circle
-                        col.Item().AlignCenter().Width(80).Height(80).Background(AccentGreen)
-                            .Border(2).BorderColor(AccentGreen)
-                            .Element(e => e.AlignCenter().AlignMiddle()
+                        // Avatar: photo or initials circle
+                        if (avatarBytes != null && avatarBytes.Length > 0)
+                        {
+                            col.Item().AlignCenter().Width(80).Height(80)
+                                .CornerRadius(40)
+                                .Image(avatarBytes).FitArea();
+                        }
+                        else
+                        {
+                            col.Item().AlignCenter().Width(80).Height(80)
+                                .CornerRadius(40).Background(AccentGreen)
+                                .AlignCenter().AlignMiddle()
                                 .Text(Initials(cv.Name))
-                                .FontSize(26).Bold().FontColor(SidebarBg));
+                                .FontSize(26).Bold().FontColor(SidebarBg);
+                        }
 
                         // Name + Title
                         col.Item().AlignCenter().Column(c =>
@@ -79,46 +88,25 @@ public class CvPdfService
                         SidebarSection(col, "CONTACT");
                         if (!string.IsNullOrEmpty(cv.Email))
                         {
-                            col.Item().Row(r =>
-                            {
-                                r.ConstantItem(14).Text("✉").FontSize(8).FontColor(AccentGreen);
-                                r.RelativeItem().Text(cv.Email).FontSize(8).FontColor(SidebarText);
-                            });
+                            ContactRow(col, "Email", cv.Email);
                         }
                         if (!string.IsNullOrEmpty(cv.Phone))
                         {
-                            col.Item().Row(r =>
-                            {
-                                r.ConstantItem(14).Text("📞").FontSize(8).FontColor(AccentGreen);
-                                r.RelativeItem().Text(cv.Phone).FontSize(8).FontColor(SidebarText);
-                            });
+                            ContactRow(col, "Tel", cv.Phone);
                         }
                         if (!string.IsNullOrEmpty(cv.Location))
                         {
-                            col.Item().Row(r =>
-                            {
-                                r.ConstantItem(14).Text("📍").FontSize(8).FontColor(AccentGreen);
-                                r.RelativeItem().Text(cv.Location).FontSize(8).FontColor(SidebarText);
-                            });
+                            ContactRow(col, "Loc", cv.Location);
                         }
                         if (!string.IsNullOrEmpty(cv.GitHub))
                         {
-                            col.Item().Row(r =>
-                            {
-                                r.ConstantItem(14).Text("⌥").FontSize(8).FontColor(AccentGreen);
-                                r.RelativeItem().Text(cv.GitHub.Replace("https://github.com/", "github.com/"))
-                                    .FontSize(8).FontColor(SidebarText);
-                            });
+                            ContactRow(col, "Git", cv.GitHub.Replace("https://github.com/", "github.com/"));
                         }
                         if (!string.IsNullOrEmpty(cv.LinkedIn))
                         {
-                            col.Item().Row(r =>
-                            {
-                                r.ConstantItem(14).Text("in").FontSize(8).Bold().FontColor(AccentGreen);
-                                r.RelativeItem().Text(cv.LinkedIn.Replace("https://linkedin.com/in/", "linkedin.com/in/")
-                                    .Replace("https://www.linkedin.com/in/", "linkedin.com/in/"))
-                                    .FontSize(8).FontColor(SidebarText);
-                            });
+                            ContactRow(col, "in",
+                                cv.LinkedIn.Replace("https://linkedin.com/in/", "linkedin.com/in/")
+                                           .Replace("https://www.linkedin.com/in/", "linkedin.com/in/"));
                         }
 
                         // Skills by category
@@ -306,6 +294,15 @@ public class CvPdfService
             c.Item().Text(title)
                 .FontSize(8).Bold().FontColor(AccentGreen).LetterSpacing(0.1f);
             c.Item().Height(1.5f).Background(AccentGreen);
+        });
+    }
+
+    private static void ContactRow(ColumnDescriptor col, string label, string value)
+    {
+        col.Item().Row(r =>
+        {
+            r.ConstantItem(28).Text(label).FontSize(7).Bold().FontColor(AccentGreen);
+            r.RelativeItem().Text(value).FontSize(7.5f).FontColor(SidebarText);
         });
     }
 
