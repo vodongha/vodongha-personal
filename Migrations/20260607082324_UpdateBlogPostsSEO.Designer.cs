@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using vodongha.Data;
@@ -11,9 +12,11 @@ using vodongha.Data;
 namespace vodongha.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260607082324_UpdateBlogPostsSEO")]
+    partial class UpdateBlogPostsSEO
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -924,87 +927,6 @@ namespace vodongha.Migrations
                             Name = "CoffeeScript",
                             Order = 21,
                             Proficiency = 60
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Category = "DevOps",
-                            Icon = "devicon-githubactions-plain",
-                            Name = "CI/CD",
-                            Order = 22,
-                            Proficiency = 80
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Category = "DevOps",
-                            Icon = "devicon-linux-plain",
-                            Name = "Linux / Bash",
-                            Order = 23,
-                            Proficiency = 75
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Category = "DevOps",
-                            Icon = "devicon-flyio-plain",
-                            Name = "Fly.io",
-                            Order = 24,
-                            Proficiency = 72
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Category = "Backend",
-                            Icon = "devicon-dotnetcore-plain",
-                            Name = "Entity Framework",
-                            Order = 25,
-                            Proficiency = 85
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Category = "Backend",
-                            Icon = "devicon-dotnetcore-plain",
-                            Name = "SignalR",
-                            Order = 26,
-                            Proficiency = 78
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Category = "Backend",
-                            Icon = "devicon-elasticsearch-plain",
-                            Name = "Elasticsearch",
-                            Order = 27,
-                            Proficiency = 70
-                        },
-                        new
-                        {
-                            Id = 28,
-                            Category = "Backend",
-                            Icon = "devicon-dotnetcore-plain",
-                            Name = "Hangfire",
-                            Order = 28,
-                            Proficiency = 75
-                        },
-                        new
-                        {
-                            Id = 29,
-                            Category = "Frontend",
-                            Icon = "devicon-sass-plain",
-                            Name = "SCSS / Sass",
-                            Order = 29,
-                            Proficiency = 82
-                        },
-                        new
-                        {
-                            Id = 30,
-                            Category = "Frontend",
-                            Icon = "devicon-bootstrap-plain",
-                            Name = "Bootstrap",
-                            Order = 30,
-                            Proficiency = 78
                         });
                 });
 

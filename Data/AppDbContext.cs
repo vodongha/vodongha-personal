@@ -72,168 +72,550 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                     Title = "Lập trình với AI: Trải nghiệm thực tế khi làm việc cùng Claude Code",
                     TitleEn = "Building with AI: A Developer's Real Experience with Claude Code",
                     Slug = "building-with-ai-experience-with-claude-code",
-                    Summary = "Chia sẻ trải nghiệm thực tế sau nhiều tháng sử dụng Claude Code trong công việc hàng ngày — từ debug lỗi phức tạp, viết test, đến xây dựng tính năng hoàn chỉnh trên codebase lớn.",
-                    SummaryEn = "Sharing real-world experience after months of using Claude Code daily — from debugging complex issues and writing tests to building complete features on a large enterprise codebase.",
-                    Tags = "AI,Claude,Developer Experience,.NET,Blazor",
+                    Summary = "Hơn một năm dùng Claude Code hàng ngày trên codebase enterprise .NET — đây là những gì tôi học được về debug, viết test, refactor và giới hạn thực sự của AI coding assistant.",
+                    SummaryEn = "Over a year using Claude Code daily on an enterprise .NET codebase — here is what I learned about debugging, writing tests, refactoring, and the real limits of AI coding assistants.",
+                    CoverImageUrl = "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&auto=format&fit=crop&q=80",
+                    Tags = "AI,Claude Code,Developer Experience,.NET,Blazor,Productivity",
                     IsPublished = true,
                     CreatedAt = new DateTime(2026, 6, 6, 0, 0, 0, DateTimeKind.Utc),
-                    Content = @"<p>Trong hơn một năm qua, AI đã trở thành một phần không thể thiếu trong quy trình làm việc của tôi. Và công cụ tôi dùng nhiều nhất là <strong>Claude Code</strong> — CLI của Anthropic chạy trực tiếp trong terminal.</p>
+                    Content = @"<p><img src=""https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&auto=format&fit=crop&q=80"" alt=""Lập trình với Claude Code AI assistant"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<h2>Bắt đầu từ đâu?</h2>
-<p>Tôi bắt đầu thử nghiệm Claude Code khi đang phát triển <a href=""https://portal.konfipay.de"" target=""_blank"">konfipay</a> — một nền tảng ngân hàng trực tuyến doanh nghiệp chuẩn EBICS với hàng trăm tenant, mỗi tenant có database riêng. Codebase lớn, logic phức tạp, và áp lực deadline thực tế.</p>
+<p>Hơn một năm qua, <strong>Claude Code</strong> — CLI của Anthropic chạy trực tiếp trong terminal — đã thay đổi hoàn toàn cách tôi làm việc với code. Không phải theo kiểu ""công cụ hỗ trợ thêm"", mà là thay đổi cả quy trình: cách tôi debug, cách tôi viết test, cách tôi tiếp cận refactor trên codebase lớn.</p>
 
-<p>Điều đầu tiên tôi nhận ra: Claude không chỉ ""gợi ý code"" — nó <em>đọc hiểu ngữ cảnh</em>. Khi tôi hỏi về một bug trong luồng xử lý payment, Claude đọc qua controller, service, repo rồi chỉ ra đúng chỗ có vấn đề, không phải chỉ đoán mò.</p>
+<p>Bài viết này chia sẻ trải nghiệm thực tế — không phải demo, không phải tutorial — từ môi trường làm việc thực sự với deadline thật và codebase enterprise phức tạp.</p>
 
-<h2>Những việc Claude làm tốt nhất</h2>
+<h2>Bối cảnh: Codebase như thế nào?</h2>
+<p>Tôi dùng Claude Code chủ yếu khi phát triển <a href=""https://portal.konfipay.de"" target=""_blank"" rel=""noopener"">konfipay</a> — nền tảng ngân hàng trực tuyến doanh nghiệp theo chuẩn EBICS, với kiến trúc multi-tenant: mỗi khách hàng có một database SQL Server riêng. Codebase gồm nhiều project: API server, Blazor WASM client, background job processor, migration tool. Hàng trăm nghìn dòng code, logic nghiệp vụ phức tạp, và yêu cầu bảo mật cao vì xử lý giao dịch tài chính thực.</p>
 
-<h3>1. Debug và trace logic phức tạp</h3>
-<p>Khi một background job Hangfire chạy sai trong production nhưng pass tests, Claude giúp tôi phân tích sự khác biệt giữa môi trường DEBUG và Release — phát hiện một service thiếu đăng ký trong <code>Windata.Server.Jobs</code> nhưng lại có trong <code>Windata.Server</code>.</p>
+<p>Đây không phải môi trường lý tưởng để ""thử nghiệm AI"" — đây là nơi AI phải chứng minh được giá trị thực sự.</p>
 
-<h3>2. Viết test nhanh và đúng pattern</h3>
-<p>Tôi chỉ cần mô tả: ""viết NUnit test cho repo method này, dùng SQLite in-memory, FakeItEasy mock service, Shouldly assertion"" — Claude tạo ra test đúng convention của project ngay lập tức. Tiết kiệm rất nhiều thời gian boilerplate.</p>
+<h2>Những việc Claude Code làm tốt nhất</h2>
 
-<h3>3. Refactor an toàn</h3>
-<p>Dự án đang trong quá trình chuyển từ sync sang async. Claude giúp tôi convert từng method một cách chính xác: <code>GetPaged</code> → <code>GetPagedAsync</code>, thay <code>.ToList()</code> bằng <code>await .ToListAsync()</code>, và <code>using var db</code> thành <code>await using var db</code>. Không bỏ sót một chỗ nào.</p>
+<h3>1. Debug và trace logic phức tạp xuyên nhiều layer</h3>
+<p>Đây là điểm Claude Code vượt trội nhất. Khi một background job Hangfire chạy sai trong production nhưng pass hết tests, tôi mô tả triệu chứng và paste stack trace — Claude đọc qua service registrations, tìm ngay vấn đề: một service được đăng ký trong <code>Windata.Server</code> (debug host) nhưng thiếu trong <code>Windata.Server.Jobs</code> (production Hangfire host). Loại bug này thường mất vài tiếng để tự tìm; với Claude mất dưới 10 phút.</p>
 
-<h3>4. Hiểu kiến trúc của project</h3>
-<p>Claude đọc <code>CLAUDE.md</code> — file tài liệu kiến trúc của project — và tuân thủ đúng convention: controller thin, business logic trong service, DB access trong repo. Không bao giờ vi phạm nguyên tắc layered architecture dù tôi không nhắc lại.</p>
+<p>Bí quyết: cung cấp đủ ngữ cảnh — kiến trúc project, flow của feature, và triệu chứng cụ thể. Claude không đoán mò khi có đủ thông tin.</p>
 
-<h2>Những giới hạn cần lưu ý</h2>
-<p>Claude Code không phải không có điểm yếu:</p>
+<h3>2. Viết test nhanh và đúng convention của project</h3>
+<p>Mô tả yêu cầu: <em>""viết NUnit test cho <code>GetPagedAsync</code>, dùng SQLite in-memory, FakeItEasy mock service, Shouldly assertion, theo pattern của các test hiện có""</em>. Claude đọc các test file hiện có, hiểu pattern, rồi tạo test mới hoàn toàn phù hợp convention — không phải code generic. Thời gian viết boilerplate giảm từ 30 phút xuống còn 3 phút.</p>
+
+<h3>3. Refactor an toàn trên diện rộng</h3>
+<p>Project đang trong quá trình chuyển toàn bộ codebase từ synchronous sang async — hàng trăm method cần đổi. Claude giúp convert chính xác: <code>GetPaged</code> → <code>GetPagedAsync</code>, <code>.ToList()</code> → <code>await .ToListAsync()</code>, <code>using var db</code> → <code>await using var db</code>, và tìm hết các callsite cần cập nhật. Quan trọng hơn, nó cảnh báo khi phát hiện nguy cơ <code>.Result</code> hay <code>.Wait()</code> tiềm ẩn deadlock.</p>
+
+<h3>4. Tôn trọng kiến trúc và convention của project</h3>
+<p>Claude Code đọc file <code>CLAUDE.md</code> — tài liệu mô tả kiến trúc, convention và quyết định kỹ thuật của project — và tuân thủ nhất quán: controller mỏng, business logic trong service, DB access trong repo. Không bao giờ tự ý vi phạm layered architecture hay thêm logic vào sai layer, ngay cả khi tôi không nhắc lại trong câu hỏi.</p>
+
+<h3>5. Giải thích code xa lạ</h3>
+<p>Khi cần làm việc với phần codebase cũ không có tài liệu, Claude đọc và giải thích logic theo ngữ cảnh nghiệp vụ — không phải giải thích từng dòng code như syntax, mà giải thích <em>tại sao</em> code làm vậy. Rút ngắn đáng kể thời gian onboard vào module mới.</p>
+
+<h2>Giới hạn thực sự cần biết</h2>
+<p>Claude Code không phải không có điểm yếu. Sau hơn một năm dùng thực tế, đây là những giới hạn quan trọng nhất:</p>
+
 <ul>
-    <li><strong>Không tự kiểm tra runtime:</strong> Nó có thể suggest code compile được nhưng fail khi chạy thực tế — đặc biệt với async deadlock hoặc DI container issues.</li>
-    <li><strong>Cần context rõ ràng:</strong> Nếu bạn không mô tả đủ ngữ cảnh, Claude sẽ đưa ra giải pháp generic thay vì phù hợp với project của bạn.</li>
-    <li><strong>Không thay thế được review:</strong> Code do AI tạo vẫn cần review kỹ — đặc biệt với logic nghiệp vụ quan trọng như payment processing.</li>
+    <li><strong>Không tự verify runtime:</strong> Code compile được không có nghĩa chạy đúng. Đặc biệt cẩn thận với async deadlock, DI scope mismatch, và EF Core tracking behavior — những lỗi này không bị bắt ở compile time.</li>
+    <li><strong>Hallucinate API không tồn tại:</strong> Đôi khi Claude suggest method hoặc overload trông hợp lý nhưng thực ra không tồn tại trong version bạn đang dùng. Luôn verify với IntelliSense hoặc docs.</li>
+    <li><strong>Context window có giới hạn:</strong> Trên codebase rất lớn, Claude có thể bỏ sót một số file liên quan. Chỉ rõ file nào cần đọc sẽ cho kết quả tốt hơn là để Claude tự tìm.</li>
+    <li><strong>Logic nghiệp vụ phức tạp cần review kỹ:</strong> Code liên quan đến payment, authentication, hay database migration — không bao giờ merge mà không đọc từng dòng, dù AI tạo ra.</li>
 </ul>
+
+<h2>Cách dùng Claude Code hiệu quả nhất</h2>
+<p>Sau nhiều tháng thử và sai, đây là những nguyên tắc tôi áp dụng:</p>
+
+<ol>
+    <li><strong>Duy trì file CLAUDE.md:</strong> Mô tả kiến trúc, convention, và quyết định kỹ thuật quan trọng. Claude đọc file này trước mọi thứ khác — đây là ""bộ nhớ dài hạn"" của AI về project của bạn.</li>
+    <li><strong>Đặt câu hỏi có ngữ cảnh:</strong> Thay vì ""fix bug này"", hãy nói ""đây là service X, method Y đang throw Z khi input là W, đây là stack trace, đây là code liên quan"".</li>
+    <li><strong>Làm việc theo iteration nhỏ:</strong> Đừng yêu cầu implement toàn bộ tính năng một lần. Xác nhận approach trước, implement từng phần, review trước khi tiếp tục.</li>
+    <li><strong>Dùng cho việc khám phá:</strong> Claude giỏi trả lời ""có cách nào tốt hơn không?"" hay ""pattern này có vấn đề gì?"" — dùng như một senior dev để pair với, không chỉ để generate code.</li>
+</ol>
 
 <h2>Kết luận</h2>
-<p>Sau hơn một năm, tôi không còn nghĩ AI là ""công cụ hỗ trợ"" nữa — nó đã trở thành một phần của quy trình làm việc. Không phải vì nó thay thế được tư duy của developer, mà vì nó <strong>khuếch đại</strong> tốc độ và độ chính xác của từng quyết định kỹ thuật.</p>
+<p>Claude Code không thay thế tư duy của developer — nó <strong>khuếch đại</strong> tốc độ và độ chính xác của từng quyết định kỹ thuật. Developer biết kiến trúc tốt, biết đặt câu hỏi đúng, biết review kết quả nghiêm túc sẽ hưởng lợi nhiều nhất.</p>
 
-<p>Nếu bạn chưa thử Claude Code trong môi trường làm việc thực tế, tôi nghĩ đây là thời điểm tốt để bắt đầu.</p>",
-                    ContentEn = @"<p>Over the past year, AI has become an indispensable part of my workflow. The tool I use most is <strong>Claude Code</strong> — Anthropic's CLI that runs directly in the terminal.</p>
+<p>Nếu bạn muốn tìm hiểu thêm về cách AI đang thay đổi quy trình lập trình theo hướng rộng hơn, xem thêm bài viết về <a href=""/blog/vibe-coding-la-gi"">Vibe Coding — xu hướng lập trình mới với AI</a>.</p>",
+                    ContentEn = @"<p><img src=""https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&auto=format&fit=crop&q=80"" alt=""Building with Claude Code AI assistant"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<h2>Where It Started</h2>
-<p>I started experimenting with Claude Code while developing <a href=""https://portal.konfipay.de"" target=""_blank"">konfipay</a> — an enterprise online banking platform implementing the EBICS standard, with hundreds of tenants each having their own dedicated database. Large codebase, complex business logic, real deadlines.</p>
+<p>For over a year, <strong>Claude Code</strong> — Anthropic's CLI that runs directly in the terminal — has fundamentally changed how I work with code. Not as an ""extra support tool"", but as a workflow transformation: how I debug, how I write tests, how I approach refactoring across a large enterprise codebase.</p>
 
-<p>The first thing I noticed: Claude doesn't just ""suggest code"" — it <em>understands context</em>. When I asked about a bug in the payment processing flow, Claude read through the controller, service, and repo layers and pinpointed the exact issue rather than guessing.</p>
+<p>This post shares real-world experience — not a demo, not a tutorial — from an actual working environment with real deadlines and genuinely complex enterprise code.</p>
 
-<h2>Where Claude Excels</h2>
+<h2>Context: What Kind of Codebase?</h2>
+<p>I primarily use Claude Code while developing <a href=""https://portal.konfipay.de"" target=""_blank"" rel=""noopener"">konfipay</a> — an enterprise online banking platform implementing the EBICS standard, with a multi-tenant architecture where each customer has their own dedicated SQL Server database. The solution spans multiple projects: an API server, a Blazor WASM client, a background job processor, and a migration tool. Hundreds of thousands of lines of code, complex business logic, and high security requirements since it processes real financial transactions.</p>
 
-<h3>1. Debugging and tracing complex logic</h3>
-<p>When a Hangfire background job was misbehaving in production but passing all tests, Claude helped me analyse the difference between DEBUG and Release environments — catching a service that was registered in <code>Windata.Server</code> but missing from <code>Windata.Server.Jobs</code>.</p>
+<p>This is not an ideal environment to ""experiment with AI"" — it's a place where AI has to prove real value.</p>
 
-<h3>3. Writing tests quickly and correctly</h3>
-<p>I just describe: ""write an NUnit test for this repo method, SQLite in-memory, FakeItEasy for service mocks, Shouldly assertions"" — and Claude produces a test that matches the project's conventions immediately. It saves an enormous amount of boilerplate time.</p>
+<h2>Where Claude Code Excels</h2>
 
-<h3>3. Safe refactoring</h3>
-<p>The project is mid-migration from sync to async. Claude helped me convert methods accurately one by one: <code>GetPaged</code> → <code>GetPagedAsync</code>, replacing <code>.ToList()</code> with <code>await .ToListAsync()</code>, and <code>using var db</code> with <code>await using var db</code> — without missing a single callsite.</p>
+<h3>1. Debugging and tracing complex logic across multiple layers</h3>
+<p>This is where Claude Code stands out most clearly. When a Hangfire background job was misbehaving in production but passing all tests, I described the symptoms and pasted the stack trace — Claude read through the service registrations and found the issue immediately: a service registered in <code>Windata.Server</code> (the debug host) but missing from <code>Windata.Server.Jobs</code> (the production Hangfire host). This type of bug typically takes hours to find manually; with Claude it took under 10 minutes.</p>
 
-<h3>4. Respecting the project architecture</h3>
-<p>Claude reads <code>CLAUDE.md</code> — the project's architecture documentation — and consistently follows its conventions: thin controllers, business logic in services, DB access in repos. It never violates the layered architecture even without being reminded.</p>
+<p>The key: providing enough context — the project architecture, the feature flow, and specific symptoms. Claude doesn't guess when it has sufficient information.</p>
 
-<h2>Limitations to Keep in Mind</h2>
-<p>Claude Code isn't without weaknesses:</p>
+<h3>2. Writing tests quickly and in the project's conventions</h3>
+<p>Describe the requirement: <em>""write an NUnit test for <code>GetPagedAsync</code>, SQLite in-memory, FakeItEasy for service mocks, Shouldly assertions, following the pattern of existing tests""</em>. Claude reads the existing test files, understands the pattern, and generates new tests that completely match the convention — not generic code. Time writing boilerplate dropped from 30 minutes to 3.</p>
+
+<h3>3. Safe large-scale refactoring</h3>
+<p>The project is mid-migration from synchronous to async across the entire codebase — hundreds of methods need updating. Claude converts accurately: <code>GetPaged</code> → <code>GetPagedAsync</code>, <code>.ToList()</code> → <code>await .ToListAsync()</code>, <code>using var db</code> → <code>await using var db</code>, and finds all callsites that need updating. More importantly, it flags potential <code>.Result</code> or <code>.Wait()</code> calls that risk deadlock.</p>
+
+<h3>4. Respecting the project's architecture and conventions</h3>
+<p>Claude Code reads the <code>CLAUDE.md</code> file — which describes the architecture, conventions, and key technical decisions — and follows them consistently: thin controllers, business logic in services, DB access in repos. It never crosses layer boundaries or puts logic in the wrong place, even when I don't explicitly mention it in the question.</p>
+
+<h3>5. Explaining unfamiliar code</h3>
+<p>When working with undocumented legacy parts of the codebase, Claude reads and explains the logic in business context terms — not line-by-line syntax explanations, but <em>why</em> the code does what it does. This significantly shortens the time needed to onboard into a new module.</p>
+
+<h2>Real Limitations You Need to Know</h2>
+<p>Claude Code is not without weaknesses. After over a year of real use, these are the most important limitations:</p>
+
 <ul>
-    <li><strong>No runtime verification:</strong> It can suggest code that compiles but fails at runtime — especially with async deadlocks or DI container issues.</li>
-    <li><strong>Context matters a lot:</strong> Without a clear description of your environment, Claude may offer a generic solution rather than one tailored to your project.</li>
-    <li><strong>Still needs review:</strong> AI-generated code still requires careful review — especially for critical business logic like payment processing.</li>
+    <li><strong>No runtime verification:</strong> Code that compiles doesn't mean it runs correctly. Be especially careful with async deadlocks, DI scope mismatches, and EF Core tracking behavior — these errors aren't caught at compile time.</li>
+    <li><strong>API hallucination:</strong> Occasionally Claude suggests a method or overload that looks plausible but doesn't exist in the version you're using. Always verify with IntelliSense or docs.</li>
+    <li><strong>Context window limits:</strong> On very large codebases, Claude may miss some related files. Explicitly pointing to which files to read gives better results than letting Claude discover them.</li>
+    <li><strong>Complex business logic needs careful review:</strong> Code related to payments, authentication, or database migrations — never merge without reading every line, regardless of who (or what) wrote it.</li>
 </ul>
 
-<h2>Conclusion</h2>
-<p>After more than a year, I no longer think of AI as a ""support tool"" — it has become part of my workflow. Not because it replaces developer thinking, but because it <strong>amplifies</strong> the speed and accuracy of every technical decision.</p>
+<h2>How to Use Claude Code Most Effectively</h2>
+<p>After months of trial and error, here are the principles I apply:</p>
 
-<p>If you haven't tried Claude Code in a real work environment yet, I think now is a great time to start.</p>"
+<ol>
+    <li><strong>Maintain a CLAUDE.md file:</strong> Describe the architecture, conventions, and key technical decisions. Claude reads this file before anything else — it's the AI's ""long-term memory"" about your project.</li>
+    <li><strong>Ask contextual questions:</strong> Instead of ""fix this bug"", say ""this is service X, method Y is throwing Z when input is W, here's the stack trace, here's the relevant code"".</li>
+    <li><strong>Work in small iterations:</strong> Don't ask for a full feature in one shot. Confirm the approach first, implement piece by piece, review before continuing.</li>
+    <li><strong>Use it for exploration:</strong> Claude is great at answering ""is there a better way?"" or ""what problems might this pattern have?"" — use it as a senior dev to pair with, not just a code generator.</li>
+</ol>
+
+<h2>Conclusion</h2>
+<p>Claude Code doesn't replace a developer's thinking — it <strong>amplifies</strong> the speed and accuracy of every technical decision. Developers with strong architectural thinking, who ask the right questions and review results seriously, benefit the most.</p>
+
+<p>If you want to explore how AI is changing the programming workflow more broadly, check out the post on <a href=""/blog/vibe-coding-la-gi"">Vibe Coding — the new AI-driven approach to software development</a>.</p>"
+                },
+                new BlogPost
+                {
+                    Id = 3,
+                    Title = "Vibe Coding là gì? Khi lập trình viên 'cảm' thay vì 'gõ'",
+                    TitleEn = "What Is Vibe Coding? When Developers Feel Instead of Type",
+                    Slug = "vibe-coding-la-gi",
+                    Summary = "Vibe coding — xu hướng lập trình mới nơi bạn mô tả ý tưởng bằng ngôn ngữ tự nhiên và AI tạo ra code. Không còn gõ từng dòng, chỉ cần 'cảm' đúng hướng. Nhưng đây có phải tương lai của nghề lập trình?",
+                    SummaryEn = "Vibe coding is the emerging practice of describing your intent in natural language and letting AI write the code. No more typing line by line — just feel the direction. But is this really the future of software development?",
+                    CoverImageUrl = "https://cdn.sanity.io/images/bj34pdbp/migration/285b93a3e464a3cd61067037083f75f1b902f2a5-4800x2520.png?w=3840&q=75&fit=clip&auto=format",
+                    Tags = "Vibe Coding,AI,Developer Experience,Claude,Productivity",
+                    IsPublished = true,
+                    CreatedAt = new DateTime(2026, 6, 7, 0, 0, 0, DateTimeKind.Utc),
+                    Content = @"<p><img src=""https://cdn.sanity.io/images/bj34pdbp/migration/285b93a3e464a3cd61067037083f75f1b902f2a5-4800x2520.png?w=3840&q=75&fit=clip&auto=format"" alt=""Vibe Coding — lập trình cùng AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+
+<p>Đầu năm 2025, Andrej Karpathy — cựu giám đốc AI của Tesla và là một trong những nhà nghiên cứu AI hàng đầu thế giới — đăng một tweet ngắn gọn mà sau đó trở thành định nghĩa cho một xu hướng mới: <strong>Vibe Coding</strong>.</p>
+
+<blockquote>
+<p><em>""There's a new kind of coding I call vibe coding, where you fully give in to the vibes, embrace exponentials, and forget that the code even exists.""</em><br />— Andrej Karpathy</p>
+</blockquote>
+
+<p>Vậy vibe coding là gì, và tại sao nó đang thay đổi cách chúng ta nghĩ về nghề lập trình?</p>
+
+<h2>Vibe Coding là gì?</h2>
+<p>Vibe coding là phong cách lập trình nơi developer không gõ code thủ công từng dòng, mà thay vào đó <strong>mô tả ý định bằng ngôn ngữ tự nhiên</strong> — và để AI tạo ra code. Bạn ""cảm"" hướng mình muốn đi, AI hiểu và thực thi.</p>
+
+<p>Quy trình điển hình:</p>
+<ol>
+    <li>Bạn mô tả tính năng: <em>""Thêm một chat widget vào trang web, có form nhập tên/số điện thoại/email, kết nối SignalR real-time, gửi tin nhắn lên Telegram""</em></li>
+    <li>AI (Claude Code, Copilot, Cursor...) đọc toàn bộ codebase, hiểu ngữ cảnh</li>
+    <li>AI tạo ra tất cả: component Blazor, service, hub SignalR, SCSS styling</li>
+    <li>Bạn test, feedback, lặp lại</li>
+</ol>
+
+<p>Không cần nhớ API signature. Không cần tra Google từng lỗi nhỏ. Không cần viết boilerplate tay. Bạn <em>suy nghĩ ở mức cao hơn</em> — AI xử lý phần còn lại.</p>
+
+<h2>Tại sao vibe coding lại hiệu quả đến vậy?</h2>
+
+<h3>1. AI hiểu ngữ cảnh toàn bộ codebase</h3>
+<p>Đây là điểm khác biệt lớn nhất so với autocomplete truyền thống. Claude Code đọc tất cả file liên quan trước khi viết một dòng code. Nó biết bạn đang dùng kiến trúc nào, convention là gì, pattern nào đã có sẵn. Kết quả là code được tạo ra phù hợp với project — không phải code generic copy-paste từ StackOverflow.</p>
+
+<h3>2. Vòng lặp feedback cực ngắn</h3>
+<p>Thay vì mất 2 tiếng để implement một tính năng từ đầu, bạn có thể có bản prototype hoạt động trong 15 phút. Thời gian còn lại dành cho việc quan trọng hơn: <strong>xác định đúng vấn đề cần giải quyết</strong>.</p>
+
+<h3>3. Barrier to entry giảm mạnh</h3>
+<p>Bạn không cần thuộc lòng 100% API của một framework để sử dụng nó hiệu quả. Developer .NET có thể nhanh chóng làm việc với Ruby on Rails — chỉ cần mô tả ý định, AI tạo code đúng cú pháp. Đây vừa là lợi thế lớn, vừa là điểm cần cẩn thận.</p>
+
+<h2>Trải nghiệm thực tế — website này được vibe code</h2>
+<p>Trang web bạn đang đọc — <strong>vodongha.id.vn</strong> — được xây dựng hoàn toàn theo phong cách vibe coding cùng Claude Code.</p>
+
+<p>Một ví dụ cụ thể: chat widget với country auto-detection. Yêu cầu ban đầu nghe có vẻ đơn giản — <em>""tự nhận mã quốc gia từ IP của user""</em>. Nhưng thực tế phức tạp hơn nhiều:</p>
+<ul>
+    <li>Blazor Server có SSR phase và circuit phase — <code>HttpContext</code> chỉ available trong SSR</li>
+    <li>Nếu server gọi ipinfo.io, nó dùng IP của Fly.io Singapore — không phải IP của user</li>
+    <li>Giải pháp đúng: nhúng IP vào HTML trong SSR, để browser JS tự gọi ipinfo.io</li>
+</ul>
+
+<p>Claude Code phân tích vấn đề, đề xuất đúng giải pháp, implement qua 3 lần iteration. Không phải lần đầu tiên đúng ngay — nhưng quy trình debug cùng AI nhanh hơn nhiều so với làm một mình.</p>
+
+<h2>Vibe coding ≠ không cần hiểu code</h2>
+<p>Đây là quan niệm sai lầm phổ biến nhất. Vibe coding hiệu quả <em>vì</em> bạn hiểu đủ để:</p>
+<ul>
+    <li><strong>Nhận ra khi AI sai</strong> — AI tự tin đề xuất giải pháp không tối ưu hoặc thậm chí sai về mặt logic nghiệp vụ</li>
+    <li><strong>Đặt câu hỏi đúng</strong> — biết cần hỏi về security implication, performance, hay edge case nào</li>
+    <li><strong>Review code quan trọng</strong> — payment logic, auth flow, database migration không bao giờ nên tin tưởng mù quáng</li>
+</ul>
+
+<p>Developer giỏi nhất trong kỷ nguyên vibe coding không phải người gõ nhanh nhất — mà là người <strong>có tư duy kiến trúc tốt nhất</strong> và biết khi nào cần kiểm soát chặt, khi nào có thể delegate cho AI.</p>
+
+<h2>Công cụ vibe coding tốt nhất hiện nay</h2>
+
+<table style=""width:100%;border-collapse:collapse;margin:1rem 0"">
+<thead>
+<tr style=""border-bottom:1px solid #333"">
+<th style=""text-align:left;padding:0.5rem"">Công cụ</th>
+<th style=""text-align:left;padding:0.5rem"">Điểm mạnh</th>
+<th style=""text-align:left;padding:0.5rem"">Phù hợp với</th>
+</tr>
+</thead>
+<tbody>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>Claude Code</strong></td>
+<td style=""padding:0.5rem"">Hiểu toàn bộ codebase, làm việc trong terminal</td>
+<td style=""padding:0.5rem"">Project lớn, refactor, architecture</td>
+</tr>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>Cursor</strong></td>
+<td style=""padding:0.5rem"">IDE tích hợp AI, UX tốt</td>
+<td style=""padding:0.5rem"">Developer muốn giữ IDE workflow</td>
+</tr>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>GitHub Copilot</strong></td>
+<td style=""padding:0.5rem"">Inline suggestion mượt mà</td>
+<td style=""padding:0.5rem"">Autocomplete, boilerplate nhanh</td>
+</tr>
+<tr>
+<td style=""padding:0.5rem""><strong>Bolt / v0</strong></td>
+<td style=""padding:0.5rem"">Tạo UI từ mô tả, preview ngay</td>
+<td style=""padding:0.5rem"">Prototype UI nhanh</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Vibe coding có phải tương lai không?</h2>
+<p>Câu trả lời ngắn: <strong>có</strong> — nhưng không phải theo nghĩa AI thay thế hoàn toàn developer.</p>
+
+<p>Vibe coding là sự chuyển dịch về <em>mức độ abstraction</em>. Giống như khi các ngôn ngữ bậc cao thay thế assembly — lập trình viên không biến mất, họ chuyển sang làm việc ở tầng cao hơn. Thay vì quản lý memory thủ công, họ thiết kế hệ thống. Thay vì viết từng dòng SQL, họ thiết kế data model.</p>
+
+<p>Vibe coding đẩy tiếp xu hướng đó: thay vì viết từng function, developer <strong>thiết kế kiến trúc, định nghĩa behaviour, và đảm bảo chất lượng</strong>.</p>
+
+<p>Nếu bạn chưa thử vibe coding trong một project thực tế, đây là thời điểm tốt để bắt đầu. Không cần chờ đến khi nó ""hoàn hảo"" — công cụ hiện tại đã đủ tốt để tăng tốc độ làm việc của bạn lên đáng kể.</p>",
+                    ContentEn = @"<p><img src=""https://cdn.sanity.io/images/bj34pdbp/migration/285b93a3e464a3cd61067037083f75f1b902f2a5-4800x2520.png?w=3840&q=75&fit=clip&auto=format"" alt=""Vibe Coding — programming with AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+
+<p>In early 2025, Andrej Karpathy — former AI Director at Tesla and one of the world's leading AI researchers — posted a short tweet that went on to define a new trend: <strong>Vibe Coding</strong>.</p>
+
+<blockquote>
+<p><em>""There's a new kind of coding I call vibe coding, where you fully give in to the vibes, embrace exponentials, and forget that the code even exists.""</em><br />— Andrej Karpathy</p>
+</blockquote>
+
+<p>So what is vibe coding, and why is it changing how we think about software development as a profession?</p>
+
+<h2>What Is Vibe Coding?</h2>
+<p>Vibe coding is a style of programming where the developer no longer types code line by line, but instead <strong>describes their intent in natural language</strong> — and lets AI generate the code. You ""feel"" the direction you want to go, and AI understands and executes.</p>
+
+<p>A typical workflow:</p>
+<ol>
+    <li>You describe the feature: <em>""Add a chat widget to the website with a name/phone/email form, real-time SignalR connection, and Telegram message forwarding""</em></li>
+    <li>AI (Claude Code, Copilot, Cursor...) reads the entire codebase and understands the context</li>
+    <li>AI generates everything: Blazor component, service, SignalR hub, SCSS styling</li>
+    <li>You test, give feedback, iterate</li>
+</ol>
+
+<p>No need to memorize API signatures. No Googling minor syntax errors. No writing boilerplate by hand. You <em>think at a higher level</em> — AI handles the rest.</p>
+
+<h2>Why Is Vibe Coding So Effective?</h2>
+
+<h3>1. AI understands the full codebase context</h3>
+<p>This is the biggest difference from traditional autocomplete. Claude Code reads all relevant files before writing a single line of code. It knows your architecture, your conventions, the patterns already in place. The result is code that fits your project — not generic StackOverflow copy-paste.</p>
+
+<h3>2. Extremely short feedback loops</h3>
+<p>Instead of spending 2 hours implementing a feature from scratch, you can have a working prototype in 15 minutes. The remaining time goes to what matters more: <strong>identifying the right problem to solve</strong>.</p>
+
+<h3>3. Dramatically lower barrier to entry</h3>
+<p>You don't need to memorize 100% of a framework's API to use it effectively. A .NET developer can quickly work with Ruby on Rails — just describe the intent, AI generates syntactically correct code. This is both a major advantage and a reason to stay careful.</p>
+
+<h2>Real Experience — This Website Was Vibe Coded</h2>
+<p>The website you're reading — <strong>vodongha.id.vn</strong> — was built entirely in the vibe coding style with Claude Code.</p>
+
+<p>A concrete example: the chat widget with country auto-detection. The initial requirement sounded simple — <em>""auto-detect the user's country from their IP""</em>. But the reality was more complex:</p>
+<ul>
+    <li>Blazor Server has an SSR phase and a circuit phase — <code>HttpContext</code> is only available during SSR</li>
+    <li>If the server calls ipinfo.io, it uses the Fly.io Singapore IP — not the user's IP</li>
+    <li>The correct solution: embed the IP in the HTML during SSR, and let browser JS call ipinfo.io directly</li>
+</ul>
+
+<p>Claude Code analysed the problem, proposed the right solution, and implemented it across 3 iterations. Not right on the first try — but debugging alongside AI was significantly faster than doing it alone.</p>
+
+<h2>Vibe Coding ≠ Not Understanding Code</h2>
+<p>This is the most common misconception. Vibe coding is effective <em>because</em> you understand enough to:</p>
+<ul>
+    <li><strong>Recognise when AI is wrong</strong> — AI confidently proposes suboptimal or even logically incorrect solutions</li>
+    <li><strong>Ask the right questions</strong> — knowing which security implications, performance concerns, or edge cases to probe</li>
+    <li><strong>Review critical code</strong> — payment logic, auth flows, and database migrations should never be trusted blindly</li>
+</ul>
+
+<p>The best developers in the vibe coding era aren't the fastest typists — they're the ones with the <strong>strongest architectural thinking</strong> and who know when to maintain tight control versus when to delegate to AI.</p>
+
+<h2>The Best Vibe Coding Tools Right Now</h2>
+
+<table style=""width:100%;border-collapse:collapse;margin:1rem 0"">
+<thead>
+<tr style=""border-bottom:1px solid #333"">
+<th style=""text-align:left;padding:0.5rem"">Tool</th>
+<th style=""text-align:left;padding:0.5rem"">Strengths</th>
+<th style=""text-align:left;padding:0.5rem"">Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>Claude Code</strong></td>
+<td style=""padding:0.5rem"">Full codebase understanding, terminal-native</td>
+<td style=""padding:0.5rem"">Large projects, refactoring, architecture</td>
+</tr>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>Cursor</strong></td>
+<td style=""padding:0.5rem"">AI-integrated IDE, great UX</td>
+<td style=""padding:0.5rem"">Developers who prefer an IDE workflow</td>
+</tr>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>GitHub Copilot</strong></td>
+<td style=""padding:0.5rem"">Smooth inline suggestions</td>
+<td style=""padding:0.5rem"">Autocomplete, fast boilerplate</td>
+</tr>
+<tr>
+<td style=""padding:0.5rem""><strong>Bolt / v0</strong></td>
+<td style=""padding:0.5rem"">Generate UI from description with live preview</td>
+<td style=""padding:0.5rem"">Fast UI prototyping</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Is Vibe Coding the Future?</h2>
+<p>The short answer: <strong>yes</strong> — but not in the sense that AI fully replaces developers.</p>
+
+<p>Vibe coding is a shift in the <em>level of abstraction</em>. It's like when high-level languages replaced assembly — programmers didn't disappear, they moved up to work at a higher layer. Instead of managing memory manually, they designed systems. Instead of writing raw SQL, they designed data models.</p>
+
+<p>Vibe coding continues that trend: instead of writing every function, developers <strong>design architecture, define behaviour, and ensure quality</strong>.</p>
+
+<p>If you haven't tried vibe coding in a real project yet, now is a great time to start. No need to wait for it to be ""perfect"" — the current tools are already good enough to meaningfully accelerate your work.</p>"
                 },
                 new BlogPost
                 {
                     Id = 2,
-                    Title = "AI Skills cho Developer: Những kỹ năng cần có trong kỷ nguyên AI",
-                    TitleEn = "AI Skills for Developers: What You Need in the Age of AI",
+                    Title = "AI Skills cho Developer: 5 Kỹ năng cốt lõi trong kỷ nguyên AI",
+                    TitleEn = "AI Skills for Developers: 5 Core Skills Every Developer Needs in the Age of AI",
                     Slug = "ai-skills-for-developers",
-                    Summary = "AI không thay thế developer — nhưng developer biết dùng AI sẽ thay thế developer không biết dùng. Bài viết chia sẻ những kỹ năng thực tế cần có để làm việc hiệu quả với AI.",
-                    SummaryEn = "AI won't replace developers — but developers who know how to use AI will replace those who don't. This post shares practical skills for working effectively with AI tools.",
-                    CoverImageUrl = "https://news.vio.vn/wp-content/uploads/2024/05/claude-ai-la-gi.jpg",
-                    Tags = "AI,Claude,Skills,Developer",
+                    Summary = "AI không thay thế developer — nhưng developer biết dùng AI sẽ thay thế người không biết. Đây là 5 kỹ năng thực tế giúp bạn làm việc hiệu quả với AI coding assistant trong công việc hàng ngày.",
+                    SummaryEn = "AI won't replace developers — but developers who use AI effectively will outpace those who don't. Here are 5 practical skills to work with AI coding assistants productively every day.",
+                    CoverImageUrl = "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&auto=format&fit=crop&q=80",
+                    Tags = "AI,Claude Code,Developer Skills,Productivity,Prompt Engineering",
                     IsPublished = true,
                     CreatedAt = new DateTime(2026, 6, 10, 0, 0, 0, DateTimeKind.Utc),
-                    Content = @"<p><img src=""https://news.vio.vn/wp-content/uploads/2024/05/claude-ai-la-gi.jpg"" alt=""Claude AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+                    Content = @"<p><img src=""https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&auto=format&fit=crop&q=80"" alt=""AI Skills cho Developer — làm việc cùng AI coding assistant"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<p>Trong vài năm trở lại đây, AI đã thay đổi hoàn toàn cách developer làm việc. Không còn là câu hỏi ""AI có thay thế lập trình viên không?"" — mà là <strong>""bạn có biết cách làm việc cùng AI không?""</strong></p>
+<p>""AI có thay thế lập trình viên không?"" — câu hỏi này đã không còn là trọng tâm nữa. Thực tế năm 2025 cho thấy câu hỏi đúng là: <strong>""Developer biết dùng AI có đang làm việc nhanh hơn bạn 3–5 lần không?""</strong> Câu trả lời, trong nhiều trường hợp, là có.</p>
+
+<p>Nhưng làm việc hiệu quả với AI không chỉ là ""dùng ChatGPT để hỏi câu hỏi"". Đó là một bộ kỹ năng cụ thể, có thể học và luyện tập. Bài viết này tổng hợp 5 kỹ năng cốt lõi nhất từ kinh nghiệm thực tế của tôi sau hơn một năm dùng Claude Code hàng ngày trên codebase enterprise.</p>
 
 <h2>1. Prompt Engineering — Kỹ năng giao tiếp với AI</h2>
-<p>Đây là kỹ năng quan trọng nhất. Một prompt rõ ràng, có context đầy đủ sẽ cho kết quả tốt hơn gấp nhiều lần so với một câu hỏi mơ hồ.</p>
-<p>Ví dụ thực tế: thay vì hỏi <em>""fix bug này""</em>, hãy nói <em>""đây là một ASP.NET Core service, method GetAsync đang throw NullReferenceException khi list rỗng, đây là stack trace, đây là code — tìm nguyên nhân và sửa""</em>.</p>
+<p>Đây là kỹ năng căn bản nhất và cũng là nơi hầu hết developer mắc lỗi đầu tiên. AI không đọc được suy nghĩ của bạn — nó chỉ làm tốt với những gì bạn mô tả.</p>
 
-<h2>2. Context Management — Biết cái gì cần nói với AI</h2>
-<p>AI làm việc tốt nhất khi hiểu đủ ngữ cảnh. Với các dự án lớn, hãy duy trì một file <code>CLAUDE.md</code> hoặc tương đương — mô tả kiến trúc, convention, và những quyết định kỹ thuật quan trọng. Claude Code đọc file này trước khi làm bất kỳ việc gì.</p>
+<p><strong>Prompt yếu:</strong> <em>""fix bug này""</em> — AI không biết bug là gì, ở đâu, mong đợi gì.</p>
 
-<h2>3. Verification — Không tin tưởng mù quáng</h2>
-<p>AI có thể tự tin đưa ra câu trả lời sai. Kỹ năng quan trọng là biết <em>khi nào cần verify</em>:</p>
+<p><strong>Prompt mạnh:</strong> <em>""Đây là ASP.NET Core service. Method <code>GetOrdersAsync</code> đang throw <code>NullReferenceException</code> tại dòng 47 khi <code>customerId</code> không tồn tại trong DB. Stack trace: [paste]. Code hiện tại: [paste]. Mong đợi: trả về empty list thay vì throw. Tìm nguyên nhân và sửa.""</em></p>
+
+<p>Công thức cho một prompt hiệu quả: <strong>Ngữ cảnh + Vấn đề cụ thể + Input/Output mong đợi + Ràng buộc</strong>. Mỗi phần thiếu là một lần AI phải đoán — và đoán sai.</p>
+
+<h2>2. Context Management — Dạy AI hiểu project của bạn</h2>
+<p>AI coding assistant không nhớ project của bạn giữa các session. Mỗi lần bắt đầu, nó là một tờ giấy trắng. Đây là lý do <strong>file context</strong> quan trọng hơn bất kỳ prompt đơn lẻ nào.</p>
+
+<p>Với Claude Code, tôi duy trì file <code>CLAUDE.md</code> trong mỗi project — mô tả:</p>
 <ul>
-    <li>Code liên quan đến security, payment, authentication — luôn review kỹ</li>
-    <li>Migration database — không bao giờ chạy mà không đọc lại</li>
-    <li>Logic nghiệp vụ phức tạp — viết test trước, để AI implement sau</li>
+    <li>Kiến trúc tổng thể và các layer (Controller → Service → Repo)</li>
+    <li>Convention đặt tên, coding style</li>
+    <li>Những quyết định kỹ thuật quan trọng và lý do</li>
+    <li>Những gì <em>không được làm</em> (ví dụ: ""không dùng AutoMapper"", ""không thêm raw SQL"")</li>
+    <li>Các gotcha đặc thù của project</li>
 </ul>
 
-<h2>4. Iterative Workflow — Làm việc theo vòng lặp</h2>
-<p>Đừng yêu cầu AI làm một tác vụ lớn trong một lần. Hãy chia nhỏ:</p>
-<ol>
-    <li>Yêu cầu AI phân tích vấn đề trước</li>
-    <li>Xác nhận hướng giải quyết</li>
-    <li>Implement từng bước nhỏ</li>
-    <li>Review và điều chỉnh</li>
-</ol>
-<p>Cách này giúp bạn kiểm soát được chất lượng output và tránh những thay đổi ngoài ý muốn.</p>
+<p>Claude Code đọc file này trước khi làm bất cứ việc gì — kết quả là code được tạo ra đúng convention ngay từ đầu, không cần sửa lại nhiều lần.</p>
 
-<h2>5. Tool Selection — Chọn đúng công cụ</h2>
-<p>Không phải mọi AI tool đều như nhau:</p>
+<h2>3. Critical Verification — Không tin tưởng mù quáng</h2>
+<p>AI tự tin là đặc điểm, không phải dấu hiệu của sự đúng đắn. Khả năng phân biệt khi nào AI đúng và khi nào cần verify kỹ hơn là kỹ năng phân tách developer dùng AI hiệu quả với developer bị AI dắt mũi.</p>
+
+<p><strong>Verify bắt buộc:</strong></p>
 <ul>
-    <li><strong>Claude Code</strong> — tốt nhất cho coding tasks trong terminal, hiểu codebase phức tạp</li>
-    <li><strong>GitHub Copilot</strong> — inline suggestion trong IDE, tốt cho autocomplete</li>
-    <li><strong>ChatGPT / Claude.ai</strong> — brainstorming, giải thích concept, viết tài liệu</li>
+    <li><strong>Security-sensitive code</strong>: authentication, authorization, encryption, input validation</li>
+    <li><strong>Database migration</strong>: không bao giờ chạy script AI tạo ra mà không đọc từng dòng</li>
+    <li><strong>Payment và financial logic</strong>: một lỗi nhỏ có thể gây ra hậu quả không thể đảo ngược</li>
+    <li><strong>Async/concurrent code</strong>: deadlock và race condition không bị bắt ở compile time</li>
+</ul>
+
+<p><strong>Tin tưởng tương đối:</strong> boilerplate code, test setup, CRUD đơn giản, SCSS/styling, documentation.</p>
+
+<p>Rule of thumb: mức độ verify tỉ lệ thuận với hậu quả nếu code sai.</p>
+
+<h2>4. Iterative Decomposition — Chia nhỏ để kiểm soát</h2>
+<p>Đây là lỗi phổ biến nhất của người mới dùng AI: yêu cầu implement toàn bộ tính năng trong một lần. AI sẽ tạo ra hàng trăm dòng code — và bạn không biết bắt đầu review từ đâu.</p>
+
+<p>Workflow hiệu quả hơn:</p>
+<ol>
+    <li><strong>Phân tích trước:</strong> <em>""Phân tích approach để implement X, liệt kê các bước và rủi ro""</em></li>
+    <li><strong>Xác nhận hướng đi:</strong> Đồng ý với approach trước khi bắt đầu code</li>
+    <li><strong>Implement từng bước:</strong> <em>""Implement bước 1 trước: tạo data model và migration""</em></li>
+    <li><strong>Review trước khi tiếp:</strong> Đọc kỹ output bước 1, fix nếu cần, rồi mới sang bước 2</li>
+</ol>
+
+<p>Cách này giúp bạn bắt lỗi sớm hơn, hiểu được code AI tạo ra, và tránh được những thay đổi ngoài scope gây ra rắc rối sau.</p>
+
+<h2>5. Tool-Task Matching — Chọn đúng công cụ cho đúng việc</h2>
+<p>Không có AI tool nào tốt nhất cho mọi việc. Sử dụng sai công cụ làm giảm hiệu quả đáng kể:</p>
+
+<table style=""width:100%;border-collapse:collapse;margin:1rem 0"">
+<thead>
+<tr style=""border-bottom:1px solid #333"">
+<th style=""text-align:left;padding:0.5rem"">Công cụ</th>
+<th style=""text-align:left;padding:0.5rem"">Dùng tốt nhất cho</th>
+<th style=""text-align:left;padding:0.5rem"">Không nên dùng cho</th>
+</tr>
+</thead>
+<tbody>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>Claude Code</strong></td>
+<td style=""padding:0.5rem"">Codebase lớn, debug cross-layer, refactor, architecture review</td>
+<td style=""padding:0.5rem"">Câu hỏi nhanh không cần đọc file</td>
+</tr>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>GitHub Copilot</strong></td>
+<td style=""padding:0.5rem"">Inline completion trong IDE, boilerplate nhanh</td>
+<td style=""padding:0.5rem"">Task cần hiểu toàn bộ codebase</td>
+</tr>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>Claude.ai / ChatGPT</strong></td>
+<td style=""padding:0.5rem"">Brainstorming, giải thích concept, viết documentation</td>
+<td style=""padding:0.5rem"">Task cần truy cập file thực tế</td>
+</tr>
+<tr>
+<td style=""padding:0.5rem""><strong>Cursor</strong></td>
+<td style=""padding:0.5rem"">Tích hợp AI sâu trong IDE, muốn giữ GUI workflow</td>
+<td style=""padding:0.5rem"">Terminal-heavy workflow</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Bonus: Kỹ năng quan trọng nhất — Biết khi nào KHÔNG dùng AI</h2>
+<p>Đây là kỹ năng ít được nhắc đến nhất. AI làm chậm bạn khi:</p>
+<ul>
+    <li>Task đủ đơn giản để bạn làm trực tiếp nhanh hơn</li>
+    <li>Cần sự sáng tạo thực sự hoặc domain knowledge sâu mà AI không có</li>
+    <li>Đang trong quá trình học — làm tay giúp bạn hiểu sâu hơn nhờ AI</li>
 </ul>
 
 <h2>Kết luận</h2>
-<p>AI không làm bạn kém đi nếu bạn dùng đúng cách — ngược lại, nó <strong>nhân lên</strong> những gì bạn đã có. Developer giỏi dùng AI sẽ làm được công việc của một team nhỏ. Đó là lợi thế cạnh tranh thực sự trong thị trường hiện tại.</p>",
-                    ContentEn = @"<p><img src=""https://news.vio.vn/wp-content/uploads/2024/05/claude-ai-la-gi.jpg"" alt=""Claude AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+<p>AI là công cụ khuếch đại, không phải công cụ thay thế. Developer giỏi nhất trong kỷ nguyên AI không phải người có nhiều AI tool nhất — mà là người <strong>biết dùng chúng đúng lúc, đúng chỗ, với mức độ tin tưởng phù hợp</strong>.</p>
 
-<p>In recent years, AI has completely changed the way developers work. The question is no longer ""will AI replace programmers?"" — it's <strong>""do you know how to work with AI?""</strong></p>
+<p>Muốn xem AI coding assistant hoạt động như thế nào trong thực tế? Xem bài <a href=""/blog/building-with-ai-experience-with-claude-code"">Trải nghiệm thực tế làm việc cùng Claude Code</a> trên codebase enterprise .NET.</p>",
+                    ContentEn = @"<p><img src=""https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&auto=format&fit=crop&q=80"" alt=""AI Skills for Developers — working with AI coding assistants"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+
+<p>""Will AI replace programmers?"" — that question is no longer the point. The reality in 2025 is that the right question is: <strong>""Are developers who use AI well already working 3–5× faster than you?""</strong> In many cases, the answer is yes.</p>
+
+<p>But working effectively with AI is not just ""asking ChatGPT questions"". It's a specific set of skills — learnable and practicable. This post covers the 5 most essential skills, drawn from over a year of using Claude Code daily on an enterprise codebase.</p>
 
 <h2>1. Prompt Engineering — Communicating Effectively with AI</h2>
-<p>This is the most important skill. A clear, context-rich prompt produces far better results than a vague question.</p>
-<p>Real example: instead of asking <em>""fix this bug""</em>, say <em>""this is an ASP.NET Core service, the GetAsync method is throwing NullReferenceException when the list is empty, here's the stack trace, here's the code — find the root cause and fix it""</em>.</p>
+<p>This is the most foundational skill and also where most developers make their first mistake. AI doesn't read your mind — it only performs as well as what you describe.</p>
 
-<h2>2. Context Management — Knowing What to Tell AI</h2>
-<p>AI works best with sufficient context. For large projects, maintain a <code>CLAUDE.md</code> or equivalent file — describing the architecture, conventions, and key technical decisions. Claude Code reads this file before doing anything.</p>
+<p><strong>Weak prompt:</strong> <em>""fix this bug""</em> — AI doesn't know what the bug is, where it is, or what you expect.</p>
 
-<h2>3. Verification — Don't Trust Blindly</h2>
-<p>AI can confidently give wrong answers. The key skill is knowing <em>when to verify</em>:</p>
+<p><strong>Strong prompt:</strong> <em>""This is an ASP.NET Core service. The <code>GetOrdersAsync</code> method is throwing <code>NullReferenceException</code> at line 47 when <code>customerId</code> doesn't exist in the DB. Stack trace: [paste]. Current code: [paste]. Expected behaviour: return an empty list instead of throwing. Find the root cause and fix it.""</em></p>
+
+<p>The formula for an effective prompt: <strong>Context + Specific problem + Expected input/output + Constraints</strong>. Each missing element is something AI has to guess — and guessing wrong wastes your time.</p>
+
+<h2>2. Context Management — Teaching AI to Understand Your Project</h2>
+<p>AI coding assistants don't remember your project between sessions. Each time you start fresh, it's a blank slate. This is why a <strong>context file</strong> matters more than any individual prompt.</p>
+
+<p>With Claude Code, I maintain a <code>CLAUDE.md</code> file in every project describing:</p>
 <ul>
-    <li>Security, payment, authentication code — always review carefully</li>
-    <li>Database migrations — never run without re-reading them</li>
-    <li>Complex business logic — write tests first, let AI implement after</li>
+    <li>Overall architecture and layer boundaries (Controller → Service → Repo)</li>
+    <li>Naming conventions and coding style</li>
+    <li>Important technical decisions and their rationale</li>
+    <li>What is explicitly <em>not allowed</em> (e.g. ""no AutoMapper"", ""no raw SQL in application code"")</li>
+    <li>Project-specific gotchas and quirks</li>
 </ul>
 
-<h2>4. Iterative Workflow — Work in Small Loops</h2>
-<p>Don't ask AI to complete a large task in one shot. Break it down:</p>
-<ol>
-    <li>Ask AI to analyse the problem first</li>
-    <li>Confirm the approach</li>
-    <li>Implement in small steps</li>
-    <li>Review and adjust</li>
-</ol>
-<p>This keeps you in control of output quality and avoids unintended changes.</p>
+<p>Claude Code reads this file before doing anything — the result is code that matches your conventions from the first attempt, with far less rework.</p>
 
-<h2>5. Tool Selection — Choosing the Right Tool</h2>
-<p>Not all AI tools are equal:</p>
+<h2>3. Critical Verification — Not Trusting Blindly</h2>
+<p>AI confidence is a feature, not a signal of correctness. The ability to distinguish when AI is right from when it needs deeper scrutiny is what separates developers who use AI effectively from those who get misled by it.</p>
+
+<p><strong>Always verify:</strong></p>
 <ul>
-    <li><strong>Claude Code</strong> — best for coding tasks in the terminal, understands complex codebases</li>
-    <li><strong>GitHub Copilot</strong> — inline suggestions in the IDE, great for autocomplete</li>
-    <li><strong>ChatGPT / Claude.ai</strong> — brainstorming, explaining concepts, writing documentation</li>
+    <li><strong>Security-sensitive code</strong>: authentication, authorization, encryption, input validation</li>
+    <li><strong>Database migrations</strong>: never run an AI-generated script without reading every line</li>
+    <li><strong>Payment and financial logic</strong>: a small error can cause irreversible consequences</li>
+    <li><strong>Async/concurrent code</strong>: deadlocks and race conditions aren't caught at compile time</li>
+</ul>
+
+<p><strong>Relatively trustworthy:</strong> boilerplate code, test setup, simple CRUD, SCSS/styling, documentation.</p>
+
+<p>Rule of thumb: verification effort is proportional to the consequence of the code being wrong.</p>
+
+<h2>4. Iterative Decomposition — Breaking Down for Control</h2>
+<p>This is the most common mistake among new AI users: asking to implement an entire feature in one shot. AI generates hundreds of lines of code — and you don't know where to start reviewing.</p>
+
+<p>A more effective workflow:</p>
+<ol>
+    <li><strong>Analyse first:</strong> <em>""Analyse the approach to implement X, list the steps and risks""</em></li>
+    <li><strong>Confirm direction:</strong> Agree on the approach before any code is written</li>
+    <li><strong>Implement step by step:</strong> <em>""Implement step 1 first: create the data model and migration""</em></li>
+    <li><strong>Review before continuing:</strong> Read step 1's output carefully, fix if needed, then move to step 2</li>
+</ol>
+
+<p>This approach catches errors earlier, ensures you understand the code being generated, and prevents out-of-scope changes that cause headaches later.</p>
+
+<h2>5. Tool-Task Matching — Right Tool for the Right Job</h2>
+<p>No AI tool is best at everything. Using the wrong tool significantly reduces the benefit:</p>
+
+<table style=""width:100%;border-collapse:collapse;margin:1rem 0"">
+<thead>
+<tr style=""border-bottom:1px solid #333"">
+<th style=""text-align:left;padding:0.5rem"">Tool</th>
+<th style=""text-align:left;padding:0.5rem"">Best for</th>
+<th style=""text-align:left;padding:0.5rem"">Avoid for</th>
+</tr>
+</thead>
+<tbody>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>Claude Code</strong></td>
+<td style=""padding:0.5rem"">Large codebases, cross-layer debugging, refactoring, architecture review</td>
+<td style=""padding:0.5rem"">Quick questions that don't need file reading</td>
+</tr>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>GitHub Copilot</strong></td>
+<td style=""padding:0.5rem"">Inline completion in IDE, fast boilerplate</td>
+<td style=""padding:0.5rem"">Tasks needing whole-codebase understanding</td>
+</tr>
+<tr style=""border-bottom:1px solid #222"">
+<td style=""padding:0.5rem""><strong>Claude.ai / ChatGPT</strong></td>
+<td style=""padding:0.5rem"">Brainstorming, explaining concepts, writing documentation</td>
+<td style=""padding:0.5rem"">Tasks requiring access to actual project files</td>
+</tr>
+<tr>
+<td style=""padding:0.5rem""><strong>Cursor</strong></td>
+<td style=""padding:0.5rem"">Deep AI integration in IDE, prefer GUI workflow</td>
+<td style=""padding:0.5rem"">Terminal-heavy workflows</td>
+</tr>
+</tbody>
+</table>
+
+<h2>Bonus: The Most Important Skill — Knowing When NOT to Use AI</h2>
+<p>This is the least talked-about skill. AI slows you down when:</p>
+<ul>
+    <li>The task is simple enough to do directly faster than prompting</li>
+    <li>You need genuine creativity or deep domain knowledge AI doesn't have</li>
+    <li>You're actively learning — doing it by hand with AI guidance builds understanding better than having AI do it for you</li>
 </ul>
 
 <h2>Conclusion</h2>
-<p>AI doesn't make you worse if you use it correctly — it <strong>multiplies</strong> what you already have. A skilled developer using AI can do the work of a small team. That's a real competitive advantage in today's market.</p>"
+<p>AI is an amplifier, not a replacement. The best developers in the AI era aren't the ones with the most AI tools — they're the ones who <strong>use them at the right time, in the right place, with the right level of trust</strong>.</p>
+
+<p>Want to see AI coding assistants in action in a real codebase? Read about <a href=""/blog/building-with-ai-experience-with-claude-code"">a year of using Claude Code on an enterprise .NET codebase</a>.</p>"
                 }
             );
 
@@ -265,7 +647,19 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 new Skill { Id = 18, Name = "jQuery",            Category = "Frontend", Icon = "devicon-jquery-plain",        Proficiency = 75, Order = 18 },
                 new Skill { Id = 19, Name = "AJAX",              Category = "Frontend", Icon = "bi bi-arrow-repeat",          Proficiency = 72, Order = 19 },
                 new Skill { Id = 20, Name = "JSON",              Category = "Backend",  Icon = "devicon-json-plain",          Proficiency = 85, Order = 20 },
-                new Skill { Id = 21, Name = "CoffeeScript",      Category = "Frontend", Icon = "devicon-coffeescript-plain",  Proficiency = 60, Order = 21 }
+                new Skill { Id = 21, Name = "CoffeeScript",      Category = "Frontend", Icon = "devicon-coffeescript-plain",  Proficiency = 60, Order = 21 },
+                // DevOps extras
+                new Skill { Id = 22, Name = "CI/CD",             Category = "DevOps",   Icon = "devicon-githubactions-plain", Proficiency = 80, Order = 22 },
+                new Skill { Id = 23, Name = "Linux / Bash",      Category = "DevOps",   Icon = "devicon-linux-plain",         Proficiency = 75, Order = 23 },
+                new Skill { Id = 24, Name = "Fly.io",            Category = "DevOps",   Icon = "devicon-flyio-plain",         Proficiency = 72, Order = 24 },
+                // Backend extras
+                new Skill { Id = 25, Name = "Entity Framework",  Category = "Backend",  Icon = "devicon-dotnetcore-plain",    Proficiency = 85, Order = 25 },
+                new Skill { Id = 26, Name = "SignalR",           Category = "Backend",  Icon = "devicon-dotnetcore-plain",    Proficiency = 78, Order = 26 },
+                new Skill { Id = 27, Name = "Elasticsearch",     Category = "Backend",  Icon = "devicon-elasticsearch-plain", Proficiency = 70, Order = 27 },
+                new Skill { Id = 28, Name = "Hangfire",          Category = "Backend",  Icon = "devicon-dotnetcore-plain",    Proficiency = 75, Order = 28 },
+                // Frontend extras
+                new Skill { Id = 29, Name = "SCSS / Sass",       Category = "Frontend", Icon = "devicon-sass-plain",          Proficiency = 82, Order = 29 },
+                new Skill { Id = 30, Name = "Bootstrap",         Category = "Frontend", Icon = "devicon-bootstrap-plain",     Proficiency = 78, Order = 30 }
             );
 
         modelBuilder.Entity<Project>()
