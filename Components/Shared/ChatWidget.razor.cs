@@ -134,6 +134,21 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
+        // Auto-detect country from IP (fire-and-forget, non-blocking)
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                string? countryCode = await JS.InvokeAsync<string?>("chatUtils.getCountryCode");
+                if (!string.IsNullOrWhiteSpace(countryCode) && Countries.Any(c => c.RegionCode == countryCode))
+                {
+                    _selectedRegion = countryCode;
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+            catch { }
+        });
+
         try
         {
             ProtectedBrowserStorageResult<int> sessionResult = await LocalStorage.GetAsync<int>("chatSessionId");
