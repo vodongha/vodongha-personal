@@ -72,6 +72,26 @@ public class LanguageService
         // Footer
         ["footer.rights"]   = "Tất cả quyền được bảo lưu.",
         ["footer.built"]    = "Xây dựng với Claude",
+        // Chat widget
+        ["chat.title"]          = "Võ Đông Hà",
+        ["chat.status"]         = "● Online",
+        ["chat.close"]          = "Đóng",
+        ["chat.form.title"]     = "Bắt đầu cuộc trò chuyện",
+        ["chat.form.subtitle"]  = "Điền thông tin để mình có thể liên hệ lại với bạn.",
+        ["chat.form.name"]      = "Họ tên *",
+        ["chat.form.phone"]     = "Số điện thoại",
+        ["chat.form.email"]     = "Email *",
+        ["chat.form.name.placeholder"]  = "Nguyễn Văn A",
+        ["chat.form.phone.placeholder"] = "09xxxxxxxx",
+        ["chat.form.start"]     = "Bắt đầu chat",
+        ["chat.empty"]          = "Gửi tin nhắn để bắt đầu cuộc trò chuyện 👋",
+        ["chat.placeholder"]    = "Nhập tin nhắn...",
+        ["chat.new"]            = "Tin nhắn mới",
+        ["chat.today"]          = "Hôm nay",
+        ["chat.yesterday"]      = "Hôm qua",
+        ["chat.sent"]           = "Đã gửi",
+        ["chat.read"]           = "Đã đọc",
+        ["chat.fab.title"]      = "Chat với mình",
     };
 
     private static readonly Dictionary<string, string> En = new()
@@ -128,5 +148,25 @@ public class LanguageService
         // Footer
         ["footer.rights"]   = "All rights reserved.",
         ["footer.built"]    = "Built with Claude",
+        // Chat widget
+        ["chat.title"]          = "Võ Đông Hà",
+        ["chat.status"]         = "● Online",
+        ["chat.close"]          = "Close",
+        ["chat.form.title"]     = "Start a conversation",
+        ["chat.form.subtitle"]  = "Fill in your details so I can follow up with you.",
+        ["chat.form.name"]      = "Full name *",
+        ["chat.form.phone"]     = "Phone number",
+        ["chat.form.email"]     = "Email *",
+        ["chat.form.name.placeholder"]  = "John Doe",
+        ["chat.form.phone.placeholder"] = "+1 234 567 890",
+        ["chat.form.start"]     = "Start chat",
+        ["chat.empty"]          = "Send a message to start the conversation 👋",
+        ["chat.placeholder"]    = "Type a message...",
+        ["chat.new"]            = "New messages",
+        ["chat.today"]          = "Today",
+        ["chat.yesterday"]      = "Yesterday",
+        ["chat.sent"]           = "Sent",
+        ["chat.read"]           = "Read",
+        ["chat.fab.title"]      = "Chat with me",
     };
 }
