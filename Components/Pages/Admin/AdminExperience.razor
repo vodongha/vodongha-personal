@@ -5,14 +5,15 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using vodongha.Data.Models
+@inject AdminLocalizationService Loc
 
 <div class="admin-shell">
     <AdminNav />
 
     <main class="admin-main">
         <header class="admin-header">
-            <h1 class="admin-header__title">Experience</h1>
-            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
+            <h1 class="admin-header__title">@Loc.T("Experience")</h1>
+            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> @Loc.T("Add new")</button>
         </header>
 
         <div class="admin-toolbar">
@@ -31,13 +32,13 @@
         </div>
 
         <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
-            <PropertyColumn Property="e => e.Company" Title="Công ty" Sortable="true" />
-            <PropertyColumn Property="e => e.Role" Title="Vai trò" Sortable="true" />
-            <PropertyColumn Property="e => e.Location" Title="Địa điểm" Sortable="true" />
-            <TemplateColumn Title="Thời gian" Sortable="false">
-                @context.StartMonth/@context.StartYear – @(context.IsCurrent ? "Hiện tại" : $"{context.EndMonth}/{context.EndYear}")
+            <PropertyColumn Property="e => e.Company" Title="@Loc.T("Company")" Sortable="true" />
+            <PropertyColumn Property="e => e.Role" Title="@Loc.T("Role")" Sortable="true" />
+            <PropertyColumn Property="e => e.Location" Title="@Loc.T("Location")" Sortable="true" />
+            <TemplateColumn Title="@Loc.T("Duration")" Sortable="false">
+                @context.StartMonth/@context.StartYear – @(context.IsCurrent ? Loc.T("Present") : $"{context.EndMonth}/{context.EndYear}")
             </TemplateColumn>
-            <TemplateColumn Title="Hành động">
+            <TemplateColumn Title="@Loc.T("Actions")">
                 <div class="admin-table__actions">
                     <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(context)"><i class="bi bi-pencil"></i></button>
                     <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(context.Id)"><i class="bi bi-trash"></i></button>
@@ -50,64 +51,64 @@
         {
             <div class="admin-modal-overlay" @onclick="CloseForm">
                 <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
-                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? "Thêm" : "Sửa") Experience</h2>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? Loc.T("Add experience") : Loc.T("Edit experience"))</h2>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Công ty</label>
+                        <label class="admin-form__label">@Loc.T("Company")</label>
                         <input class="admin-form__input" @bind="Editing.Company" />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Vai trò</label>
+                        <label class="admin-form__label">@Loc.T("Role")</label>
                         <input class="admin-form__input" @bind="Editing.Role" />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Địa điểm</label>
+                        <label class="admin-form__label">@Loc.T("Location")</label>
                         <input class="admin-form__input" @bind="Editing.Location" />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Website URL</label>
+                        <label class="admin-form__label">@Loc.T("Website URL")</label>
                         <input class="admin-form__input" @bind="Editing.WebsiteUrl" placeholder="https://..." />
                     </div>
                     <div class="admin-form__row">
                         <div class="admin-form__group">
-                            <label class="admin-form__label">Tháng bắt đầu</label>
+                            <label class="admin-form__label">@Loc.T("Start month")</label>
                             <input type="number" min="1" max="12" class="admin-form__input" @bind="Editing.StartMonth" />
                         </div>
                         <div class="admin-form__group">
-                            <label class="admin-form__label">Năm bắt đầu</label>
+                            <label class="admin-form__label">@Loc.T("Start year")</label>
                             <input type="number" class="admin-form__input" @bind="Editing.StartYear" />
                         </div>
                     </div>
                     <div class="admin-form__group admin-form__check">
-                        <label><input type="checkbox" @bind="Editing.IsCurrent" /> Đang làm việc</label>
+                        <label><input type="checkbox" @bind="Editing.IsCurrent" /> @Loc.T("Currently working")</label>
                     </div>
                     @if (!Editing.IsCurrent)
                     {
                         <div class="admin-form__row">
                             <div class="admin-form__group">
-                                <label class="admin-form__label">Tháng kết thúc</label>
+                                <label class="admin-form__label">@Loc.T("End month")</label>
                                 <input type="number" min="1" max="12" class="admin-form__input" @bind="Editing.EndMonth" />
                             </div>
                             <div class="admin-form__group">
-                                <label class="admin-form__label">Năm kết thúc</label>
+                                <label class="admin-form__label">@Loc.T("End year")</label>
                                 <input type="number" class="admin-form__input" @bind="Editing.EndYear" />
                             </div>
                         </div>
                     }
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Mô tả 🇻🇳</label>
+                        <label class="admin-form__label">@Loc.T("Description VI")</label>
                         <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Description"></textarea>
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Description 🇬🇧</label>
+                        <label class="admin-form__label">@Loc.T("Description EN")</label>
                         <textarea class="admin-form__input admin-form__textarea" @bind="Editing.DescriptionEn"></textarea>
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Thứ tự</label>
+                        <label class="admin-form__label">@Loc.T("Order")</label>
                         <input type="number" class="admin-form__input" @bind="Editing.Order" />
                     </div>
                     <div class="admin-modal__footer">
-                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">Huỷ</button>
-                        <button class="admin-btn admin-btn--primary" @onclick="Save">Lưu</button>
+                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">@Loc.T("Cancel")</button>
+                        <button class="admin-btn admin-btn--primary" @onclick="Save">@Loc.T("Save")</button>
                     </div>
                 </div>
             </div>

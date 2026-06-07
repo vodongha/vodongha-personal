@@ -4,20 +4,21 @@
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
 @using vodongha.Data.Models
+@inject AdminLocalizationService Loc
 
 <div class="admin-shell">
     <AdminNav />
 
     <main class="admin-main">
         <header class="admin-header">
-            <h1 class="admin-header__title">Live Chats</h1>
+            <h1 class="admin-header__title">@Loc.T("Live Chats")</h1>
         </header>
 
         @if (_sessions.Count == 0)
         {
             <div class="admin-empty">
                 <i class="bi bi-chat-dots" style="font-size:3rem;opacity:.3"></i>
-                <p style="margin-top:.75rem;opacity:.5">No chat sessions yet.</p>
+                <p style="margin-top:.75rem;opacity:.5">@Loc.T("No chat sessions yet.")</p>
             </div>
         }
         else
@@ -40,7 +41,7 @@
                                 <button class="chat-session-card__delete admin-btn admin-btn--sm admin-btn--danger"
                                         @onclick:stopPropagation
                                         @onclick="() => ConfirmDeleteSession(session.Id)"
-                                        title="Xoá cuộc trò chuyện">
+                                        title="@Loc.T("Delete conversation")">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
@@ -78,14 +79,14 @@
                                 @if (i == firstUnreadIdx)
                                 {
                                     <div class="chat-unread-divider chat-unread-divider--admin">
-                                        <span>Tin nhắn mới</span>
+                                        <span>@Loc.T("New messages")</span>
                                     </div>
                                 }
 
                                 <div class="chat-msg @(msg.IsFromUser ? "chat-msg--admin" : "chat-msg--user") @(isUnread ? "chat-msg--unread" : "") @(msg.Id == 0 ? "chat-msg--pending" : "")">
                                     <div class="chat-msg__bubble">@msg.Content</div>
                                     <div class="chat-msg__time">
-                                        @(msg.IsFromUser ? "User" : "Admin") · @msg.SentAt.ToLocalTime().ToString("HH:mm")
+                                        @(msg.IsFromUser ? Loc.T("User") : Loc.T("Admin")) · @msg.SentAt.ToLocalTime().ToString("HH:mm")
                                         @if (!msg.IsFromUser)
                                         {
                                             if (_userReadUpToId > 0 && msg.Id <= _userReadUpToId)
@@ -103,7 +104,7 @@
 
                             @if (_messages.Count == 0)
                             {
-                                <div style="text-align:center;color:#6b7280;font-size:.8rem;margin-top:1rem">No messages yet.</div>
+                                <div style="text-align:center;color:#6b7280;font-size:.8rem;margin-top:1rem">@Loc.T("No messages yet")</div>
                             }
 
                             @if (_otherIsTyping)
@@ -117,7 +118,7 @@
                         </div>
 
                         <div class="chat-admin-input">
-                            <textarea rows="2" placeholder="Nhập tin nhắn trả lời..."
+                            <textarea rows="2" placeholder="@Loc.T("Type a reply...")"
                                       @bind="_replyText"
                                       @oninput="OnReplyInput"
                                       @onkeydown="OnReplyKeyDown"></textarea>
@@ -132,7 +133,7 @@
                                 {
                                     <i class="bi bi-send"></i>
                                 }
-                                <span>Gửi</span>
+                                <span>@Loc.T("Send")</span>
                             </button>
                         </div>
                     </div>
@@ -140,7 +141,7 @@
                 else
                 {
                     <div class="admin-chat-placeholder">
-                        Chọn một cuộc trò chuyện để xem
+                        @Loc.T("Select a conversation to view")
                     </div>
                 }
             </div>

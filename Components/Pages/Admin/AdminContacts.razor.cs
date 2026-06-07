@@ -7,7 +7,7 @@ using vodongha.Services;
 
 namespace vodongha.Components.Pages.Admin;
 
-public partial class AdminContacts : ComponentBase
+public partial class AdminContacts : ComponentBase, IDisposable
 {
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private ToastService Toast { get; set; } = default!;
@@ -43,6 +43,7 @@ public partial class AdminContacts : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        Loc.OnChanged += OnLangChanged;
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
         await LoadAsync();
     }
@@ -87,4 +88,7 @@ public partial class AdminContacts : ComponentBase
         if (Selected?.Id == id) { Selected = null; }
         Toast.Show("Đã xoá tin nhắn");
     }
+
+    private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
+    public void Dispose() { Loc.OnChanged -= OnLangChanged; }
 }

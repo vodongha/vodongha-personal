@@ -1,37 +1,39 @@
 ﻿@page "/admin"
 @layout AdminLayout
+@rendermode InteractiveServer
 @attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
+@inject AdminLocalizationService Loc
 
 <div class="admin-shell">
     <AdminNav />
 
     <main class="admin-main">
         <header class="admin-header">
-            <h1 class="admin-header__title">Dashboard</h1>
-            <a href="/" target="_blank" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-up-right"></i> Xem website</a>
+            <h1 class="admin-header__title">@Loc.T("Dashboard")</h1>
+            <a href="/" target="_blank" class="admin-btn admin-btn--ghost"><i class="bi bi-box-arrow-up-right"></i> @Loc.T("View website")</a>
         </header>
 
         <div class="admin-cards">
             <a href="/admin/skills" class="admin-card">
                 <i class="bi bi-bar-chart admin-card__icon"></i>
-                <span class="admin-card__label">Skills</span>
+                <span class="admin-card__label">@Loc.T("Skills")</span>
             </a>
             <a href="/admin/projects" class="admin-card">
                 <i class="bi bi-folder2 admin-card__icon"></i>
-                <span class="admin-card__label">Projects</span>
+                <span class="admin-card__label">@Loc.T("Projects")</span>
             </a>
             <a href="/admin/education" class="admin-card">
                 <i class="bi bi-mortarboard admin-card__icon"></i>
-                <span class="admin-card__label">Education</span>
+                <span class="admin-card__label">@Loc.T("Education")</span>
             </a>
             <a href="/admin/experience" class="admin-card">
                 <i class="bi bi-briefcase admin-card__icon"></i>
-                <span class="admin-card__label">Experience</span>
+                <span class="admin-card__label">@Loc.T("Experience")</span>
             </a>
             <a href="/admin/blog" class="admin-card">
                 <i class="bi bi-file-text admin-card__icon"></i>
-                <span class="admin-card__label">Blog</span>
+                <span class="admin-card__label">@Loc.T("Blog")</span>
             </a>
             <a href="/admin/contacts" class="admin-card @(_unreadMessagesCount > 0 ? "admin-card--unread" : "")">
                 <div class="admin-card__icon-wrap">
@@ -41,7 +43,7 @@
                         <span class="admin-card__badge">@(_unreadMessagesCount > 99 ? "99+" : _unreadMessagesCount.ToString())</span>
                     }
                 </div>
-                <span class="admin-card__label">Messages</span>
+                <span class="admin-card__label">@Loc.T("Messages")</span>
             </a>
             <a href="/admin/chats" class="admin-card @(_unreadChatCount > 0 ? "admin-card--unread" : "")">
                 <div class="admin-card__icon-wrap">
@@ -51,11 +53,11 @@
                         <span class="admin-card__badge">@(_unreadChatCount > 99 ? "99+" : _unreadChatCount.ToString())</span>
                     }
                 </div>
-                <span class="admin-card__label">Chats</span>
+                <span class="admin-card__label">@Loc.T("Chats")</span>
             </a>
             <a href="/admin/settings" class="admin-card">
                 <i class="bi bi-gear admin-card__icon"></i>
-                <span class="admin-card__label">Thông tin</span>
+                <span class="admin-card__label">@Loc.T("Settings")</span>
             </a>
         </div>
     </main>

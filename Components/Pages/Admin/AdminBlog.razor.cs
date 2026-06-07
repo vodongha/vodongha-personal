@@ -5,7 +5,7 @@ using vodongha.Services;
 
 namespace vodongha.Components.Pages.Admin;
 
-public partial class AdminBlog : ComponentBase
+public partial class AdminBlog : ComponentBase, IDisposable
 {
     [Inject] private BlogService BlogSvc { get; set; } = default!;
     [Inject] private ToastService Toast { get; set; } = default!;
@@ -41,6 +41,7 @@ public partial class AdminBlog : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        Loc.OnChanged += OnLangChanged;
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
         await LoadAsync();
     }
@@ -88,4 +89,7 @@ public partial class AdminBlog : ComponentBase
     private async Task Save() { await BlogSvc.SaveAsync(Editing); ShowForm = false; await LoadAsync(); Toast.Show("Đã lưu bài viết thành công"); }
 
     private async Task Delete(int id) { await BlogSvc.DeleteAsync(id); await LoadAsync(); Toast.Show("Đã xoá bài viết"); }
+
+    private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
+    public void Dispose() { Loc.OnChanged -= OnLangChanged; }
 }
