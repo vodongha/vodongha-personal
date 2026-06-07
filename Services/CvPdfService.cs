@@ -1,6 +1,7 @@
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 using vodongha.Data.Models;
 
 namespace vodongha.Services;
@@ -47,12 +48,40 @@ public class CvPdfService
     public byte[] Generate(CvData cv, int template = 0, byte[]? avatarBytes = null)
     {
         QuestPDF.Settings.License = LicenseType.Community;
+
+        // Pre-crop avatar to square (center-horizontal, top-vertical) so
+        // QuestPDF FitArea() fills the circle cleanly without letterboxing.
+        byte[]? avatar = avatarBytes != null ? CropSquareTop(avatarBytes) : null;
+
         return template switch
         {
-            1 => GenerateMinimal(cv, avatarBytes),
-            2 => GenerateProfessional(cv, avatarBytes),
-            _ => GenerateDarkSidebar(cv, avatarBytes),
+            1 => GenerateMinimal(cv, avatar),
+            2 => GenerateProfessional(cv, avatar),
+            _ => GenerateDarkSidebar(cv, avatar),
         };
+    }
+
+    /// <summary>Crops image bytes to a square, centered horizontally and anchored to top vertically.</summary>
+    private static byte[] CropSquareTop(byte[] imageBytes)
+    {
+        try
+        {
+            using SKBitmap src = SKBitmap.Decode(imageBytes);
+            int size = Math.Min(src.Width, src.Height);
+            int x = (src.Width - size) / 2;   // center horizontally
+            int y = 0;                          // anchor to top (show face)
+
+            using SKBitmap cropped = new(size, size);
+            src.ExtractSubset(cropped, new SKRectI(x, y, x + size, y + size));
+
+            using SKImage img = SKImage.FromBitmap(cropped);
+            using SKData data = img.Encode(SKEncodedImageFormat.Jpeg, 90);
+            return data.ToArray();
+        }
+        catch
+        {
+            return imageBytes; // fallback: pass original if decode fails
+        }
     }
 
     // ════════════════════════════════════════════════════════════════════════
@@ -79,7 +108,7 @@ public class CvPdfService
                         if (avatarBytes != null && avatarBytes.Length > 0)
                         {
                             col.Item().AlignCenter().Width(80).Height(80)
-                                .CornerRadius(40).Image(avatarBytes).FitWidth();
+                                .CornerRadius(40).Image(avatarBytes).FitArea();
                         }
                         else
                         {
@@ -172,7 +201,7 @@ public class CvPdfService
                             // Avatar
                             if (avatarBytes != null && avatarBytes.Length > 0)
                             {
-                                r.ConstantItem(64).Height(64).CornerRadius(32).Image(avatarBytes).FitWidth();
+                                r.ConstantItem(64).Height(64).CornerRadius(32).Image(avatarBytes).FitArea();
                             }
                             else
                             {
@@ -270,7 +299,7 @@ public class CvPdfService
                         // Avatar
                         if (avatarBytes != null && avatarBytes.Length > 0)
                         {
-                            h.ConstantItem(72).Height(72).CornerRadius(36).Image(avatarBytes).FitWidth();
+                            h.ConstantItem(72).Height(72).CornerRadius(36).Image(avatarBytes).FitArea();
                         }
                         else
                         {

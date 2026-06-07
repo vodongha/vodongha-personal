@@ -1827,6 +1827,82 @@ tr.admin-row--dragover td {
     }
 }
 
+// ── CV preview — template variants ───────────────────────────────────────
+
+// Template 1: Minimal — clean white, no dark sidebar
+.cv-preview--tpl-1 {
+    grid-template-columns: 1fr !important;
+
+    .cv-preview__sidebar {
+        background: #f8fafc;
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        align-items: flex-start;
+
+        .cv-preview__avatar {
+            width: 64px; height: 64px;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .cv-preview__name  { font-size: 1.1rem; color: #111827; text-align: left; }
+        .cv-preview__title { color: #059669; text-align: left; margin-bottom: 0; }
+
+        .cv-preview__section-label {
+            width: 100%; color: #059669; margin-top: 0.25rem;
+        }
+
+        .cv-preview__contact-row { color: #374151; i { color: #059669; } }
+        .cv-preview__skill-cat   { color: #059669; }
+        .cv-preview__skill-tag   { background: #ecfdf5; border-color: #d1fae5; color: #065f46; }
+    }
+
+    .cv-preview__main { background: #fff; }
+}
+
+// Template 2: Professional — navy header spanning full width
+.cv-preview--tpl-2 {
+    grid-template-columns: 1fr !important;
+
+    .cv-preview__sidebar {
+        background: #1e3a5f;
+        border-right: none;
+        border-bottom: 4px solid #3b82f6;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        align-items: flex-start;
+
+        .cv-preview__avatar {
+            width: 64px; height: 64px;
+            margin: 0;
+            flex-shrink: 0;
+            background: #3b82f6;
+        }
+
+        .cv-preview__name  { color: #fff; text-align: left; font-size: 1.1rem; }
+        .cv-preview__title { color: #93c5fd; text-align: left; margin-bottom: 0; }
+
+        .cv-preview__section-label { color: #93c5fd; width: 100%; margin-top: 0.25rem; }
+        .cv-preview__contact-row   { color: #bfdbfe; i { color: #93c5fd; } }
+        .cv-preview__skill-cat     { color: #93c5fd; }
+        .cv-preview__skill-tag     { background: #1e40af; border-color: #3b82f6; color: #bfdbfe; }
+    }
+
+    .cv-preview__main {
+        background: #f8fafc;
+        .cv-preview__block-title { color: #3b82f6; border-color: #3b82f6; }
+        .cv-preview__entry-sub   { color: #3b82f6; }
+        .cv-preview__tech        { color: #3b82f6; }
+        .cv-preview__entry-link  { color: #3b82f6; }
+    }
+}
+
 // ── CV page layout (preview + template picker) ────────────────────────────
 .cv-page-layout {
     display: grid;
