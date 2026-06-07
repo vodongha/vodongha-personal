@@ -1,0 +1,269 @@
+@page "/admin/costs"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">
+                <i class="bi bi-currency-dollar"></i> @Loc.T("Infrastructure Costs")
+            </h1>
+            <div class="health-refresh">
+                <span class="health-refresh__label">@Loc.T("Cache"): 5 @Loc.T("min")</span>
+                <button class="admin-btn admin-btn--ghost admin-btn--sm" @onclick="Refresh" disabled="@_loading">
+                    <i class="bi bi-arrow-clockwise @(_loading ? "admin-spin" : "")"></i> @Loc.T("Refresh")
+                </button>
+            </div>
+        </header>
+
+        @if (_loading)
+        {
+            <div class="cost-loading">
+                <i class="bi bi-arrow-clockwise admin-spin"></i> @Loc.T("Loading...")
+            </div>
+        }
+        else if (_summary == null)
+        {
+            <div class="cost-empty">
+                <i class="bi bi-exclamation-circle"></i>
+                @Loc.T("No data. Configure Fly:ApiToken, Neon:ApiKey and Neon:ProjectId in secrets.")
+            </div>
+        }
+        else
+        {
+            <!-- Summary banner -->
+            <div class="cost-summary-banner">
+                <div class="cost-summary-banner__label">@Loc.T("Estimated monthly cost")</div>
+                <div class="cost-summary-banner__value">
+                    @FormatUsd(TotalEstimated)
+                    <span class="cost-summary-banner__note">/ @Loc.T("month")</span>
+                </div>
+                @if (TotalEstimated == 0)
+                {
+                    <div class="cost-badge cost-badge--free">
+                        <i class="bi bi-gift"></i> @Loc.T("Free tier")
+                    </div>
+                }
+                <div class="cost-summary-banner__updated">
+                    @Loc.T("Updated"): @_summary.FetchedAt.ToString("HH:mm:ss") UTC
+                </div>
+            </div>
+
+            <!-- Fly.io section -->
+            <div class="cost-section">
+                <div class="cost-section__header">
+                    <span class="cost-section__title">
+                        <i class="bi bi-airplane"></i> Fly.io
+                    </span>
+                    <a href="https://fly.io/dashboard" target="_blank" rel="noopener"
+                       class="admin-btn admin-btn--ghost admin-btn--sm">
+                        <i class="bi bi-box-arrow-up-right"></i> @Loc.T("Dashboard")
+                    </a>
+                </div>
+
+                @if (_summary.Fly == null)
+                {
+                    <div class="cost-empty cost-empty--sm">
+                        <i class="bi bi-plug-fill"></i> @Loc.T("Add Fly:ApiToken to secrets to enable")
+                    </div>
+                }
+                else
+                {
+                    <div class="health-cards">
+                        <!-- App -->
+                        <div class="health-card health-card--ok">
+                            <div class="health-card__icon"><i class="bi bi-airplane-fill"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">App</div>
+                                <div class="health-card__value">@_summary.Fly.AppName</div>
+                            </div>
+                        </div>
+
+                        <!-- Machines -->
+                        @foreach (FlyMachine m in _summary.Fly.Machines)
+                        {
+                            <div class="health-card @MachineCardClass(m.State)">
+                                <div class="health-card__icon">
+                                    <i class="bi @MachineIcon(m.State)"></i>
+                                </div>
+                                <div class="health-card__body">
+                                    <div class="health-card__label">@m.Size · @m.MemoryMb MB · @m.Region</div>
+                                    <div class="health-card__value">@MachinStateLabel(m.State)</div>
+                                </div>
+                                <div class="health-card__dot health-card__dot--@(m.State == "started" ? "ok" : "warn")"></div>
+                            </div>
+                        }
+
+                        <!-- Compute/hr -->
+                        <div class="health-card">
+                            <div class="health-card__icon"><i class="bi bi-cpu"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">@Loc.T("Compute rate")</div>
+                                <div class="health-card__value">@FormatUsd(_summary.Fly.ComputePerHour) / h</div>
+                            </div>
+                        </div>
+
+                        <!-- 24/7 compute -->
+                        <div class="health-card">
+                            <div class="health-card__icon"><i class="bi bi-calculator"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">@Loc.T("Compute 24/7 × 30d")</div>
+                                <div class="health-card__value">@FormatUsd(_summary.Fly.ComputePerMonth24h)</div>
+                            </div>
+                        </div>
+
+                        <!-- IPv4 -->
+                        <div class="health-card">
+                            <div class="health-card__icon"><i class="bi bi-diagram-3"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">IPv4 @Loc.T("(dedicated)")</div>
+                                <div class="health-card__value">@FormatUsd(_summary.Fly.Ipv4PerMonth)</div>
+                            </div>
+                        </div>
+
+                        <!-- Free allowance -->
+                        <div class="health-card">
+                            <div class="health-card__icon"><i class="bi bi-gift"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">@Loc.T("Free allowance")</div>
+                                <div class="health-card__value cost-green">−@FormatUsd(_summary.Fly.FreeAllowance)</div>
+                            </div>
+                        </div>
+
+                        <!-- Billable -->
+                        <div class="health-card @(_summary.Fly.EstimatedBillable == 0 ? "health-card--ok" : "")">
+                            <div class="health-card__icon"><i class="bi bi-receipt"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">@Loc.T("Est. billable / month")</div>
+                                <div class="health-card__value @(_summary.Fly.EstimatedBillable == 0 ? "cost-green" : "cost-yellow")">
+                                    @(_summary.Fly.EstimatedBillable == 0 ? "FREE" : FormatUsd(_summary.Fly.EstimatedBillable))
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="cost-note">
+                        <i class="bi bi-info-circle"></i>
+                        @Loc.T("Compute cost shown is theoretical maximum (24/7). With")
+                        <code>auto_stop_machines = \"suspend\"</code>
+                        @Loc.T("and low traffic, actual cost is significantly lower.")
+                    </p>
+                }
+            </div>
+
+            <!-- Neon section -->
+            <div class="cost-section">
+                <div class="cost-section__header">
+                    <span class="cost-section__title">
+                        <i class="bi bi-database"></i> Neon
+                    </span>
+                    <a href="https://console.neon.tech" target="_blank" rel="noopener"
+                       class="admin-btn admin-btn--ghost admin-btn--sm">
+                        <i class="bi bi-box-arrow-up-right"></i> @Loc.T("Console")
+                    </a>
+                </div>
+
+                @if (_summary.Neon == null)
+                {
+                    <div class="cost-empty cost-empty--sm">
+                        <i class="bi bi-plug-fill"></i> @Loc.T("Add Neon:ApiKey and Neon:ProjectId to secrets to enable")
+                    </div>
+                }
+                else
+                {
+                    <div class="health-cards">
+                        <!-- Project -->
+                        <div class="health-card health-card--ok">
+                            <div class="health-card__icon"><i class="bi bi-database-fill"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">@Loc.T("Project")</div>
+                                <div class="health-card__value">@_summary.Neon.Name</div>
+                            </div>
+                        </div>
+
+                        <!-- Plan -->
+                        <div class="health-card @(_summary.Neon.Plan == "free" ? "health-card--ok" : "")">
+                            <div class="health-card__icon"><i class="bi bi-patch-check"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">@Loc.T("Plan")</div>
+                                <div class="health-card__value" style="text-transform:capitalize">
+                                    @_summary.Neon.Plan
+                                    @if (_summary.Neon.Plan == "free")
+                                    {
+                                        <span class="cost-badge cost-badge--free cost-badge--inline">FREE</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Region -->
+                        <div class="health-card">
+                            <div class="health-card__icon"><i class="bi bi-geo-alt"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">@Loc.T("Region")</div>
+                                <div class="health-card__value">@_summary.Neon.Region</div>
+                            </div>
+                        </div>
+
+                        <!-- Storage -->
+                        <div class="health-card">
+                            <div class="health-card__icon"><i class="bi bi-hdd"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">@Loc.T("Storage used")</div>
+                                <div class="health-card__value">
+                                    @if (_summary.Neon.StorageMb >= 1024)
+                                    {
+                                        @($"{_summary.Neon.StorageGb:F2} GB")
+                                    }
+                                    else
+                                    {
+                                        @($"{_summary.Neon.StorageMb:F1} MB")
+                                    }
+                                    <span class="cost-sub">/ 512 MB @Loc.T("free")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Storage bar -->
+                        <div class="health-card cost-card--wide">
+                            <div class="health-card__body" style="width:100%">
+                                <div class="health-card__label">@Loc.T("Storage usage")</div>
+                                <div class="cost-progress-wrap">
+                                    <div class="cost-progress">
+                                        <div class="cost-progress__bar"
+                                             style="width:@Math.Min(100, _summary.Neon.StorageMb / 512.0 * 100):F1}%"></div>
+                                    </div>
+                                    <span class="cost-progress__pct">@($"{_summary.Neon.StorageMb / 512.0 * 100:F1}")%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PostgreSQL -->
+                        <div class="health-card">
+                            <div class="health-card__icon"><i class="bi bi-server"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">PostgreSQL</div>
+                                <div class="health-card__value">v@(_summary.Neon.PgVersion)</div>
+                            </div>
+                        </div>
+
+                        <!-- Monthly cost -->
+                        <div class="health-card @(_summary.Neon.EstimatedMonthlyCost == 0 ? "health-card--ok" : "")">
+                            <div class="health-card__icon"><i class="bi bi-receipt"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">@Loc.T("Est. cost / month")</div>
+                                <div class="health-card__value @(_summary.Neon.EstimatedMonthlyCost == 0 ? "cost-green" : "cost-yellow")">
+                                    @(_summary.Neon.EstimatedMonthlyCost == 0 ? "FREE" : FormatUsd(_summary.Neon.EstimatedMonthlyCost))
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </main>
+</div>

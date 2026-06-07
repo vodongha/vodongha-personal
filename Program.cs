@@ -64,6 +64,7 @@ builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<AdminLocalizationService>();
 builder.Services.AddScoped<TimezoneService>();
 builder.Services.AddSingleton<HealthMonitorService>();
+builder.Services.AddSingleton<CostMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 builder.Services.AddHttpContextAccessor();
 
