@@ -29,8 +29,24 @@
                 </div>
                 <div class="chat-form__group">
                     <label class="chat-form__label">@Lang.T("chat.form.phone")</label>
-                    <input class="chat-form__input" type="tel" placeholder="@Lang.T("chat.form.phone.placeholder")"
-                           @bind="_phone" @bind:event="oninput" />
+                    <div class="chat-phone">
+                        <select class="chat-phone__dial" @onchange="OnDialChanged">
+                            @foreach (Country c in Countries)
+                            {
+                                <option value="@c.Dial" selected="@(c.Dial == _selectedDial)">
+                                    @c.Flag @c.Dial
+                                </option>
+                            }
+                        </select>
+                        <input class="chat-phone__number @(!string.IsNullOrWhiteSpace(_phone) && !IsValidPhone(_phone) ? "chat-form__input--error" : "")"
+                               type="tel" placeholder="@Lang.T("chat.form.phone.placeholder")"
+                               value="@_phone"
+                               @oninput="OnPhoneInput" />
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(_phone) && !IsValidPhone(_phone))
+                    {
+                        <span class="chat-form__error">@Lang.T("chat.form.phone.invalid")</span>
+                    }
                 </div>
                 <div class="chat-form__group">
                     <label class="chat-form__label">@Lang.T("chat.form.email")</label>
