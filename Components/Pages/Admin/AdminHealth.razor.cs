@@ -79,7 +79,8 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender) return;
+        try
         {
             _statOrder  = await Secrets.GetValueAsync(StatPrefKey)  ?? "[]";
             _chartOrder = await Secrets.GetValueAsync(ChartPrefKey) ?? "[]";
@@ -92,6 +93,9 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
             // Background loop: update every 30 seconds, countdown every second
             _ = RunRefreshLoopAsync(_cts.Token);
         }
+        catch (JSDisconnectedException) { /* user navigated away */ }
+        catch (ObjectDisposedException) { /* component disposed */ }
+        catch (OperationCanceledException) { /* cancelled */ }
     }
 
     /// <summary>Called by JS when user finishes dragging a card.</summary>
@@ -141,23 +145,29 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
 
     private async Task RunRefreshLoopAsync(CancellationToken ct)
     {
-        while (!ct.IsCancellationRequested)
+        try
         {
-            // Count down 1 second at a time
-            for (int i = 30; i > 0 && !ct.IsCancellationRequested; i--)
+            while (!ct.IsCancellationRequested)
             {
-                _countdown = i;
+                // Count down 1 second at a time
+                for (int i = 30; i > 0 && !ct.IsCancellationRequested; i--)
+                {
+                    _countdown = i;
+                    await InvokeAsync(StateHasChanged);
+                    await Task.Delay(1000, ct).ConfigureAwait(false);
+                }
+
+                if (ct.IsCancellationRequested) break;
+
+                LoadData();
                 await InvokeAsync(StateHasChanged);
-                await Task.Delay(1000, ct).ConfigureAwait(false);
+                await UpdateCharts();
+                _countdown = 30;
             }
-
-            if (ct.IsCancellationRequested) break;
-
-            LoadData();
-            await InvokeAsync(StateHasChanged);
-            await UpdateCharts();
-            _countdown = 30;
         }
+        catch (OperationCanceledException) { /* normal shutdown */ }
+        catch (ObjectDisposedException) { /* component disposed */ }
+        catch (JSDisconnectedException) { /* circuit terminated */ }
     }
 
     private async Task Refresh()
