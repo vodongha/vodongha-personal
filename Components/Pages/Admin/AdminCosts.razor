@@ -271,6 +271,15 @@
                             </div>
                         </div>
 
+                        <!-- PostgreSQL -->
+                        <div class="health-card">
+                            <div class="health-card__icon"><i class="bi bi-server"></i></div>
+                            <div class="health-card__body">
+                                <div class="health-card__label">PostgreSQL</div>
+                                <div class="health-card__value health-card__value--wrap">v@(_summary.Neon.PgVersion)</div>
+                            </div>
+                        </div>
+
                         <!-- Storage bar -->
                         <div class="health-card cost-card--wide">
                             <div class="health-card__body" style="width:100%">
@@ -282,15 +291,6 @@
                                     </div>
                                     <span class="cost-progress__pct">@($"{_summary.Neon.StorageMb / 512.0 * 100:F1}")%</span>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- PostgreSQL -->
-                        <div class="health-card">
-                            <div class="health-card__icon"><i class="bi bi-server"></i></div>
-                            <div class="health-card__body">
-                                <div class="health-card__label">PostgreSQL</div>
-                                <div class="health-card__value health-card__value--wrap">v@(_summary.Neon.PgVersion)</div>
                             </div>
                         </div>
 
