@@ -18,6 +18,63 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private enum ChatState { Closed, Form, Chat }
 
+    private record Country(string Flag, string Code, string Dial);
+
+    private static readonly List<Country> Countries =
+    [
+        new("🇻🇳", "VN", "+84"),
+        new("🇺🇸", "US", "+1"),
+        new("🇬🇧", "GB", "+44"),
+        new("🇦🇺", "AU", "+61"),
+        new("🇨🇦", "CA", "+1"),
+        new("🇫🇷", "FR", "+33"),
+        new("🇩🇪", "DE", "+49"),
+        new("🇯🇵", "JP", "+81"),
+        new("🇰🇷", "KR", "+82"),
+        new("🇨🇳", "CN", "+86"),
+        new("🇸🇬", "SG", "+65"),
+        new("🇹🇭", "TH", "+66"),
+        new("🇵🇭", "PH", "+63"),
+        new("🇮🇩", "ID", "+62"),
+        new("🇲🇾", "MY", "+60"),
+        new("🇮🇳", "IN", "+91"),
+        new("🇳🇿", "NZ", "+64"),
+        new("🇧🇷", "BR", "+55"),
+        new("🇲🇽", "MX", "+52"),
+        new("🇳🇱", "NL", "+31"),
+        new("🇮🇹", "IT", "+39"),
+        new("🇪🇸", "ES", "+34"),
+        new("🇷🇺", "RU", "+7"),
+        new("🇦🇪", "AE", "+971"),
+        new("🇸🇦", "SA", "+966"),
+    ];
+
+    private string _selectedDial = "+84";
+    private Country SelectedCountry => Countries.FirstOrDefault(c => c.Dial == _selectedDial) ?? Countries[0];
+
+    private void OnDialChanged(ChangeEventArgs e)
+    {
+        _selectedDial = e.Value?.ToString() ?? "+84";
+    }
+
+    private void OnPhoneInput(ChangeEventArgs e)
+    {
+        string raw = e.Value?.ToString() ?? "";
+        // Strip leading 0
+        if (raw.StartsWith("0")) raw = raw[1..];
+        // Digits and spaces/dashes only
+        _phone = new string(raw.Where(c => char.IsDigit(c) || c == ' ' || c == '-').ToArray());
+    }
+
+    private static bool IsValidPhone(string phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return false;
+        string digits = new string(phone.Where(char.IsDigit).ToArray());
+        return digits.Length >= 6 && digits.Length <= 15;
+    }
+
+    private string FullPhone => $"{_selectedDial}{_phone}";
+
     private ChatState _state = ChatState.Closed;
     private string _name = "";
     private string _phone = "";
@@ -48,7 +105,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private bool CanStartChat =>
         !string.IsNullOrWhiteSpace(_name) &&
-        !string.IsNullOrWhiteSpace(_phone) &&
+        IsValidPhone(_phone) &&
         IsValidEmail(_email);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -215,7 +272,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         _loading = true;
         try
         {
-            ChatSession session = await ChatSvc.CreateSessionAsync(_name.Trim(), _phone.Trim(), _email.Trim());
+            ChatSession session = await ChatSvc.CreateSessionAsync(_name.Trim(), FullPhone.Trim(), _email.Trim());
             _sessionId = session.Id;
             await LocalStorage.SetAsync("chatSessionId", session.Id);
             _state = ChatState.Chat;
