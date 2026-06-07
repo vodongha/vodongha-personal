@@ -270,26 +270,42 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin: 0.4rem 0;
+    margin: 0.5rem 0;
 
     &::before,
     &::after {
         content: '';
         flex: 1;
         height: 1px;
-        background: rgba(239, 68, 68, 0.35);
+        background: rgba(110, 231, 183, 0.3);
     }
 
     span {
         font-size: 0.62rem;
-        color: #ef4444;
+        color: $color-primary;
         white-space: nowrap;
-        font-weight: 500;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+    }
+
+    // Admin panel variant — orange/amber tone
+    &--admin {
+        &::before, &::after { background: rgba(251, 191, 36, 0.3); }
+        span { color: #fbbf24; }
     }
 }
 
-.chat-msg--unread .chat-msg__bubble {
-    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.25);
+// Unread message — admin bubble in widget (left side)
+.chat-msg--admin.chat-msg--unread .chat-msg__bubble {
+    background: #2d3a2e;
+    border-left: 3px solid $color-primary;
+    border-bottom-left-radius: 4px;
+}
+
+// Unread message — user bubble in admin panel (left side in admin view)
+.chat-msg--admin.chat-msg--unread .chat-msg__bubble {
+    background: #2d3a2e;
+    border-left: 3px solid $color-primary;
 }
 
 .chat-typing {
