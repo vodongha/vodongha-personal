@@ -22,7 +22,7 @@ public record FlyAppData(
     double Ipv4PerMonth,
     double FreeAllowance,
     double EstimatedBillable,     // after free allowance
-    double? ActualMtdDollars      // real month-to-date from Fly.io GraphQL billing
+    double EstimatedMtdDollars    // estimated month-to-date (days elapsed × daily rate)
 );
 
 public record NeonProjectData(
@@ -185,125 +185,20 @@ public class CostMonitorService
             double totalWithIpv4   = computePerMonth + FlyIpv4PerMonth;
             double billable        = Math.Max(0, totalWithIpv4 - FlyFreeAllowance);
 
-            double? actualMtd = await FetchFlyBillingAsync(token);
+            // Estimate MTD based on days elapsed in current month (no billing API needed)
+            DateTime now = DateTime.UtcNow;
+            double daysElapsed  = now.Day - 1 + now.Hour / 24.0; // days so far this month
+            double dailyCompute = computePerMonth / 30.0;
+            double dailyIpv4    = FlyIpv4PerMonth / 30.0;
+            double rawMtd       = (dailyCompute + dailyIpv4) * daysElapsed;
+            double estimatedMtd = Math.Max(0, rawMtd - FlyFreeAllowance);
 
             return new FlyAppData(appName, machines, computePerHour, computePerMonth,
-                FlyIpv4PerMonth, FlyFreeAllowance, billable, actualMtd);
+                FlyIpv4PerMonth, FlyFreeAllowance, billable, estimatedMtd);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to fetch Fly.io data");
-            return null;
-        }
-    }
-
-    // ─── Fly.io GraphQL billing (actual MTD) ─────────────────────────────────
-    // Pricing constants for compute-seconds fallback calculation
-    private const double FlyComputeSecRate = 0.0000008;  // per vCPU-second (shared-cpu-1x)
-    private const double FlyRamMbSecRate   = 0.0000000128; // per MB-second
-
-    private async Task<double?> FetchFlyBillingAsync(string token)
-    {
-        // Query both currentPeriodBilling (actual invoice) and billableUsage (seconds-based fallback)
-        const string query = """
-            {
-              viewer {
-                organizations {
-                  nodes {
-                    currentPeriodBilling {
-                      totalMoney {
-                        amount
-                        cents
-                      }
-                    }
-                    billableUsage {
-                      computeSecs
-                      memMbSecs
-                      bandwidthGb
-                    }
-                  }
-                }
-              }
-            }
-            """;
-
-        try
-        {
-            using HttpClient client = _httpFactory.CreateClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            client.Timeout = TimeSpan.FromSeconds(10);
-
-            string body = JsonSerializer.Serialize(new { query });
-            using StringContent content = new(body, System.Text.Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync("https://api.fly.io/graphql", content);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogWarning("Fly.io GraphQL returned {Status}", response.StatusCode);
-                return null;
-            }
-
-            string json = await response.Content.ReadAsStringAsync();
-            _logger.LogDebug("Fly.io GraphQL response: {Json}", json);
-            using JsonDocument doc = JsonDocument.Parse(json);
-
-            if (!doc.RootElement.TryGetProperty("data", out JsonElement data))
-            {
-                _logger.LogWarning("Fly.io GraphQL: no 'data' field. Response: {Json}", json);
-                return null;
-            }
-
-            if (!data.TryGetProperty("viewer",          out JsonElement viewer))  return null;
-            if (!viewer.TryGetProperty("organizations",  out JsonElement orgs))   return null;
-            if (!orgs.TryGetProperty("nodes",            out JsonElement nodes))  return null;
-
-            foreach (JsonElement node in nodes.EnumerateArray())
-            {
-                // Strategy 1: currentPeriodBilling.totalMoney.amount (float dollars)
-                if (node.TryGetProperty("currentPeriodBilling", out JsonElement billing) &&
-                    billing.ValueKind != JsonValueKind.Null &&
-                    billing.TryGetProperty("totalMoney", out JsonElement money) &&
-                    money.ValueKind != JsonValueKind.Null)
-                {
-                    if (money.TryGetProperty("amount", out JsonElement amount) &&
-                        amount.ValueKind == JsonValueKind.Number)
-                    {
-                        _logger.LogInformation("Fly.io billing from currentPeriodBilling.totalMoney.amount: {Amount}", amount.GetDouble());
-                        return amount.GetDouble();
-                    }
-
-                    // Some versions return cents as integer
-                    if (money.TryGetProperty("cents", out JsonElement cents) &&
-                        cents.ValueKind == JsonValueKind.Number)
-                    {
-                        double dollars = cents.GetInt64() / 100.0;
-                        _logger.LogInformation("Fly.io billing from currentPeriodBilling.totalMoney.cents: {Dollars}", dollars);
-                        return dollars;
-                    }
-                }
-
-                // Strategy 2: compute from billableUsage seconds
-                if (node.TryGetProperty("billableUsage", out JsonElement usage) &&
-                    usage.ValueKind != JsonValueKind.Null)
-                {
-                    double computeSecs = usage.TryGetProperty("computeSecs", out JsonElement cs) ? cs.GetDouble() : 0;
-                    double memMbSecs   = usage.TryGetProperty("memMbSecs",   out JsonElement ms) ? ms.GetDouble() : 0;
-
-                    if (computeSecs > 0 || memMbSecs > 0)
-                    {
-                        double computed = computeSecs * FlyComputeSecRate + memMbSecs * FlyRamMbSecRate;
-                        _logger.LogInformation("Fly.io billing from billableUsage calculation: ${Amount:F4} (compute={Cs}s, mem={Ms}MB·s)", computed, computeSecs, memMbSecs);
-                        return computed;
-                    }
-                }
-            }
-
-            _logger.LogWarning("Fly.io GraphQL: no billing data found in response");
-            return null;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Could not fetch Fly.io billing data via GraphQL");
             return null;
         }
     }
