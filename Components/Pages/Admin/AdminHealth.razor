@@ -20,8 +20,9 @@
         </header>
 
         <!-- Status cards -->
-        <div class="health-cards">
-            <div class="health-card @(_latest?.DbHealthy == true ? "health-card--ok" : "health-card--error")">
+        <div id="health-stat-cards" class="health-cards" data-saved-order="@_statOrder">
+            <div class="health-card @(_latest?.DbHealthy == true ? "health-card--ok" : "health-card--error")" data-card-id="stat-server">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <div class="health-card__icon">
                     <i class="bi @(_latest?.DbHealthy == true ? "bi-server" : "bi-exclamation-triangle")"></i>
                 </div>
@@ -32,7 +33,8 @@
                 <div class="health-card__dot health-card__dot--@(_latest?.DbHealthy == true ? "ok" : "error")"></div>
             </div>
 
-            <div class="health-card @(_latest?.DbHealthy == true ? "health-card--ok" : "health-card--error")">
+            <div class="health-card @(_latest?.DbHealthy == true ? "health-card--ok" : "health-card--error")" data-card-id="stat-db">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <div class="health-card__icon">
                     <i class="bi bi-database@(_latest?.DbHealthy == true ? "-check" : "-x")"></i>
                 </div>
@@ -52,7 +54,8 @@
                 <div class="health-card__dot health-card__dot--@(_latest?.DbHealthy == true ? "ok" : "error")"></div>
             </div>
 
-            <div class="health-card">
+            <div class="health-card" data-card-id="stat-uptime">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <div class="health-card__icon"><i class="bi bi-clock-history"></i></div>
                 <div class="health-card__body">
                     <div class="health-card__label">@Loc.T("Uptime")</div>
@@ -60,7 +63,8 @@
                 </div>
             </div>
 
-            <div class="health-card">
+            <div class="health-card" data-card-id="stat-memory">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <div class="health-card__icon"><i class="bi bi-memory"></i></div>
                 <div class="health-card__body">
                     <div class="health-card__label">@Loc.T("Memory")</div>
@@ -68,7 +72,8 @@
                 </div>
             </div>
 
-            <div class="health-card">
+            <div class="health-card" data-card-id="stat-threads">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <div class="health-card__icon"><i class="bi bi-cpu"></i></div>
                 <div class="health-card__body">
                     <div class="health-card__label">@Loc.T("Threads")</div>
@@ -76,7 +81,8 @@
                 </div>
             </div>
 
-            <div class="health-card">
+            <div class="health-card" data-card-id="stat-started">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <div class="health-card__icon"><i class="bi bi-calendar3"></i></div>
                 <div class="health-card__body">
                     <div class="health-card__label">@Loc.T("Started at")</div>
@@ -86,9 +92,10 @@
         </div>
 
         <!-- Charts row -->
-        <div class="health-charts">
-            <div class="health-chart-card">
+        <div id="health-chart-cards" class="health-charts" data-saved-order="@_chartOrder">
+            <div class="health-chart-card" data-card-id="chart-memory-card">
                 <div class="health-chart-card__header">
+                    <i class="bi bi-grip-vertical health-chart-drag-handle"></i>
                     <span class="health-chart-card__title">
                         <i class="bi bi-memory"></i> @Loc.T("Memory Usage")
                     </span>
@@ -99,8 +106,9 @@
                 </div>
             </div>
 
-            <div class="health-chart-card">
+            <div class="health-chart-card" data-card-id="chart-db-card">
                 <div class="health-chart-card__header">
+                    <i class="bi bi-grip-vertical health-chart-drag-handle"></i>
                     <span class="health-chart-card__title">
                         <i class="bi bi-database"></i> @Loc.T("DB Response Time")
                     </span>
