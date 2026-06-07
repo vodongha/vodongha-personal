@@ -14,6 +14,7 @@ public partial class AdminContacts : ComponentBase, IDisposable
     [Inject] private ChatService ChatSvc { get; set; } = default!;
 
     private int _unreadChatCount;
+    private bool _loading = true;
     private List<ContactMessage> Messages = [];
     private ContactMessage? Selected;
     private string _search = "";
@@ -50,8 +51,10 @@ public partial class AdminContacts : ComponentBase, IDisposable
 
     private async Task LoadAsync()
     {
+        _loading = true;
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         Messages = await db.ContactMessages.OrderByDescending(m => m.SentAt).ToListAsync();
+        _loading = false;
     }
 
     private async Task OpenMessage(ContactMessage msg)

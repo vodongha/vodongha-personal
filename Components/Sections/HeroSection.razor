@@ -4,6 +4,32 @@
         <div class="hero__bg-blob hero__bg-blob--2"></div>
     </div>
 
+    @if (!_loaded)
+    {
+        <div class="hero__content">
+            <div class="hero-skel">
+                <div class="hero-skel__text">
+                    <div class="hero-skel__badge"></div>
+                    <div class="hero-skel__name"></div>
+                    <div class="hero-skel__name-2"></div>
+                    <div class="hero-skel__role"></div>
+                    <div class="hero-skel__desc"></div>
+                    <div class="hero-skel__actions">
+                        <div class="hero-skel__btn"></div>
+                        <div class="hero-skel__btn"></div>
+                    </div>
+                    <div class="hero-skel__social">
+                        <div class="hero-skel__icon"></div>
+                        <div class="hero-skel__icon"></div>
+                        <div class="hero-skel__icon"></div>
+                    </div>
+                </div>
+                <div class="hero-skel__avatar"></div>
+            </div>
+        </div>
+    }
+    else
+    {
     <div class="hero__content">
         <div class="hero__text">
             <span class="hero__badge">@Lang.T("hero.greeting")</span>
@@ -69,6 +95,7 @@
             </div>
         </div>
     </div>
+    } @* end else (_loaded) *@
 
     <button class="hero__scroll" onclick="document.getElementById('skills').scrollIntoView({behavior:'smooth'})">
         <span>Scroll</span>

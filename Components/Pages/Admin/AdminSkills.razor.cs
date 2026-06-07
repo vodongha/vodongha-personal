@@ -29,6 +29,7 @@ public partial class AdminSkills : ComponentBase, IDisposable
         }
     }
 
+    private bool _loading = true;
     private List<Skill> _skills = [];
     private Skill Editing = new();
     private bool ShowForm;
@@ -49,8 +50,10 @@ public partial class AdminSkills : ComponentBase, IDisposable
 
     private async Task LoadAsync()
     {
+        _loading = true;
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         _skills = await db.Skills.OrderBy(s => s.Order).ToListAsync();
+        _loading = false;
     }
 
     private void OpenAdd() { Editing = new Skill(); ShowForm = true; }

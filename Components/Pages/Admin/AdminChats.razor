@@ -14,7 +14,23 @@
             <h1 class="admin-header__title">@Loc.T("Live Chats")</h1>
         </header>
 
-        @if (_sessions.Count == 0)
+        @if (_loading)
+        {
+            <div class="admin-chat-skel">
+                @for (int i = 0; i < 6; i++)
+                {
+                    <div class="admin-chat-skel__item">
+                        <div class="admin-chat-skel__avatar"></div>
+                        <div class="admin-chat-skel__body">
+                            <div class="admin-chat-skel__name"></div>
+                            <div class="admin-chat-skel__meta"></div>
+                        </div>
+                        <div class="admin-chat-skel__time"></div>
+                    </div>
+                }
+            </div>
+        }
+        else if (_sessions.Count == 0)
         {
             <div class="admin-empty">
                 <i class="bi bi-chat-dots" style="font-size:3rem;opacity:.3"></i>
