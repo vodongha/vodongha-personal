@@ -169,6 +169,47 @@ public class CostMonitorService
 
     // ─── Neon ────────────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// Neon's project object has store_bytes = 0 always.
+    /// Real storage is the sum of logical_size across all branches.
+    /// </summary>
+    private async Task<long> FetchNeonStorageBytesAsync(HttpClient client, string projectId)
+    {
+        try
+        {
+            HttpResponseMessage response = await client.GetAsync(
+                $"https://console.neon.tech/api/v2/projects/{projectId}/branches");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return 0;
+            }
+
+            string json = await response.Content.ReadAsStringAsync();
+            using JsonDocument doc = JsonDocument.Parse(json);
+
+            if (!doc.RootElement.TryGetProperty("branches", out JsonElement branches))
+            {
+                return 0;
+            }
+
+            long total = 0;
+            foreach (JsonElement branch in branches.EnumerateArray())
+            {
+                if (branch.TryGetProperty("logical_size", out JsonElement ls))
+                {
+                    total += ls.GetInt64();
+                }
+            }
+
+            return total;
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
     private async Task<NeonProjectData?> FetchNeonAsync()
     {
         string? apiKey    = await _secrets.GetValueAsync("Neon:ApiKey");
@@ -195,22 +236,17 @@ public class CostMonitorService
             }
 
             string json = await response.Content.ReadAsStringAsync();
-            _logger.LogInformation("Neon project raw JSON: {Json}", json);
             using JsonDocument doc = JsonDocument.Parse(json);
             JsonElement p = doc.RootElement.GetProperty("project");
 
-            string name      = p.TryGetProperty("name",      out JsonElement en)  ? en.GetString()  ?? "" : "";
-            string plan      = p.TryGetProperty("plan",      out JsonElement epl) ? epl.GetString() ?? "free" : "free";
-            string region    = p.TryGetProperty("region_id", out JsonElement er)  ? er.GetString()  ?? "" : "";
-            int    pgVersion = p.TryGetProperty("pg_version", out JsonElement epg)? epg.GetInt32()  : 16;
+            string name      = p.TryGetProperty("name",       out JsonElement en)  ? en.GetString()  ?? "" : "";
+            string plan      = p.TryGetProperty("plan",       out JsonElement epl) ? epl.GetString() ?? "free" : "free";
+            string region    = p.TryGetProperty("region_id",  out JsonElement er)  ? er.GetString()  ?? "" : "";
+            int    pgVersion = p.TryGetProperty("pg_version", out JsonElement epg) ? epg.GetInt32()  : 16;
 
-            // Try multiple possible field names for storage
-            long storeBytes = 0;
-            if      (p.TryGetProperty("data_storage_bytes_hour", out JsonElement ef1)) storeBytes = ef1.GetInt64();
-            else if (p.TryGetProperty("store_bytes",             out JsonElement ef2)) storeBytes = ef2.GetInt64();
-            else if (p.TryGetProperty("storage_size",            out JsonElement ef3)) storeBytes = ef3.GetInt64();
-            else if (p.TryGetProperty("data_bytes",              out JsonElement ef4)) storeBytes = ef4.GetInt64();
-            _logger.LogInformation("Neon storage bytes resolved: {Bytes}", storeBytes);
+            // Fetch real storage from branches — project.store_bytes is always 0
+            // Each branch has logical_size in bytes; sum all branches for total storage
+            long storeBytes = await FetchNeonStorageBytesAsync(client, projectId);
 
             double storageMb = storeBytes / 1024.0 / 1024.0;
             double storageGb = storageMb  / 1024.0;
