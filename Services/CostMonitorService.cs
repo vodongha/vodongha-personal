@@ -198,16 +198,28 @@ public class CostMonitorService
     }
 
     // ─── Fly.io GraphQL billing (actual MTD) ─────────────────────────────────
+    // Pricing constants for compute-seconds fallback calculation
+    private const double FlyComputeSecRate = 0.0000008;  // per vCPU-second (shared-cpu-1x)
+    private const double FlyRamMbSecRate   = 0.0000000128; // per MB-second
 
     private async Task<double?> FetchFlyBillingAsync(string token)
     {
+        // Query both currentPeriodBilling (actual invoice) and billableUsage (seconds-based fallback)
         const string query = """
             {
               viewer {
                 organizations {
                   nodes {
+                    currentPeriodBilling {
+                      totalMoney {
+                        amount
+                        cents
+                      }
+                    }
                     billableUsage {
-                      totalDollars
+                      computeSecs
+                      memMbSecs
+                      bandwidthGb
                     }
                   }
                 }
@@ -232,27 +244,61 @@ public class CostMonitorService
             }
 
             string json = await response.Content.ReadAsStringAsync();
+            _logger.LogDebug("Fly.io GraphQL response: {Json}", json);
             using JsonDocument doc = JsonDocument.Parse(json);
 
             if (!doc.RootElement.TryGetProperty("data", out JsonElement data))
             {
+                _logger.LogWarning("Fly.io GraphQL: no 'data' field. Response: {Json}", json);
                 return null;
             }
 
-            // Traverse: data.viewer.organizations.nodes[0].billableUsage.totalDollars
-            if (!data.TryGetProperty("viewer",        out JsonElement viewer))   return null;
-            if (!viewer.TryGetProperty("organizations", out JsonElement orgs))   return null;
-            if (!orgs.TryGetProperty("nodes",          out JsonElement nodes))   return null;
+            if (!data.TryGetProperty("viewer",          out JsonElement viewer))  return null;
+            if (!viewer.TryGetProperty("organizations",  out JsonElement orgs))   return null;
+            if (!orgs.TryGetProperty("nodes",            out JsonElement nodes))  return null;
 
             foreach (JsonElement node in nodes.EnumerateArray())
             {
-                if (node.TryGetProperty("billableUsage", out JsonElement usage) &&
-                    usage.TryGetProperty("totalDollars", out JsonElement total))
+                // Strategy 1: currentPeriodBilling.totalMoney.amount (float dollars)
+                if (node.TryGetProperty("currentPeriodBilling", out JsonElement billing) &&
+                    billing.ValueKind != JsonValueKind.Null &&
+                    billing.TryGetProperty("totalMoney", out JsonElement money) &&
+                    money.ValueKind != JsonValueKind.Null)
                 {
-                    return total.GetDouble();
+                    if (money.TryGetProperty("amount", out JsonElement amount) &&
+                        amount.ValueKind == JsonValueKind.Number)
+                    {
+                        _logger.LogInformation("Fly.io billing from currentPeriodBilling.totalMoney.amount: {Amount}", amount.GetDouble());
+                        return amount.GetDouble();
+                    }
+
+                    // Some versions return cents as integer
+                    if (money.TryGetProperty("cents", out JsonElement cents) &&
+                        cents.ValueKind == JsonValueKind.Number)
+                    {
+                        double dollars = cents.GetInt64() / 100.0;
+                        _logger.LogInformation("Fly.io billing from currentPeriodBilling.totalMoney.cents: {Dollars}", dollars);
+                        return dollars;
+                    }
+                }
+
+                // Strategy 2: compute from billableUsage seconds
+                if (node.TryGetProperty("billableUsage", out JsonElement usage) &&
+                    usage.ValueKind != JsonValueKind.Null)
+                {
+                    double computeSecs = usage.TryGetProperty("computeSecs", out JsonElement cs) ? cs.GetDouble() : 0;
+                    double memMbSecs   = usage.TryGetProperty("memMbSecs",   out JsonElement ms) ? ms.GetDouble() : 0;
+
+                    if (computeSecs > 0 || memMbSecs > 0)
+                    {
+                        double computed = computeSecs * FlyComputeSecRate + memMbSecs * FlyRamMbSecRate;
+                        _logger.LogInformation("Fly.io billing from billableUsage calculation: ${Amount:F4} (compute={Cs}s, mem={Ms}MB·s)", computed, computeSecs, memMbSecs);
+                        return computed;
+                    }
                 }
             }
 
+            _logger.LogWarning("Fly.io GraphQL: no billing data found in response");
             return null;
         }
         catch (Exception ex)
