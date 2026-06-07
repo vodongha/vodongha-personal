@@ -714,13 +714,33 @@ tr.admin-row--dragover td {
     .toast { max-width: 100%; min-width: unset; }
 
     // Admin Chats — master/detail on mobile
+    // Pull the layout out to the edges of the screen (override main's padding)
     .admin-chat-layout {
         display: block;
+        margin: 0 -0.75rem;   // cancel parent padding so cards touch the gutter
 
-        // List view: show sessions, hide chat panel
+        // List view
         .chat-sessions {
             height: auto;
             max-height: calc(100dvh - 9rem);
+            padding: 0 0.75rem;   // re-apply even gutter for the cards
+            gap: 0.5rem;
+        }
+
+        .chat-session-card {
+            border-radius: 0;          // flush edge-to-edge
+            border-left: none;
+            border-right: none;
+            border-top: none;
+            border-bottom: 1px solid #2a2a2a;
+            background: transparent;
+            padding: 0.875rem 0.75rem;
+
+            &--active,
+            &--unread {
+                border-bottom-color: rgba($color-primary, 0.25);
+                background: rgba($color-primary, 0.06);
+            }
         }
 
         .chat-admin-window,
@@ -729,16 +749,25 @@ tr.admin-row--dragover td {
         // Chat view: hide list, show chat full-screen
         &--chat-open {
             .chat-sessions { display: none; }
-
             .admin-chat-placeholder { display: none !important; }
 
             .chat-admin-window {
                 display: flex !important;
-                height: calc(100dvh - 9rem);
+                height: calc(100dvh - 8.5rem);
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+                border-top: 1px solid #2a2a2a;
+                border-bottom: none;
             }
 
             .chat-admin-back { display: block; }
         }
+    }
+
+    // Chat header on mobile — flush with no extra rounding
+    .admin-chat-layout--chat-open .chat-header {
+        border-radius: 0;
     }
 }
 
