@@ -53,34 +53,58 @@
         }
         else
         {
-            <EditForm Model="_model" OnValidSubmit="HandleSubmit" class="contact__form">
-                <DataAnnotationsValidator />
-
+            <div class="contact__form">
                 <div class="contact__field">
                     <label class="contact__label">@Lang.T("contact.name")<span class="required">*</span></label>
-                    <InputText @bind-Value="_model.Name" class="contact__input" />
-                    <ValidationMessage For="() => _model.Name" />
+                    <input class="contact__input @(NameError != null ? "invalid" : "")"
+                           type="text"
+                           value="@_model.Name"
+                           @oninput="e => _model.Name = e.Value?.ToString() ?? string.Empty"
+                           @onblur="ValidateName" />
+                    @if (NameError != null)
+                    {
+                        <span class="validation-message">@NameError</span>
+                    }
                 </div>
 
                 <div class="contact__field">
                     <label class="contact__label">@Lang.T("contact.email")<span class="required">*</span></label>
-                    <InputText @bind-Value="_model.Email" class="contact__input" />
-                    <ValidationMessage For="() => _model.Email" />
+                    <input class="contact__input @(EmailError != null ? "invalid" : "")"
+                           type="email"
+                           value="@_model.Email"
+                           @oninput="e => _model.Email = e.Value?.ToString() ?? string.Empty"
+                           @onblur="ValidateEmail" />
+                    @if (EmailError != null)
+                    {
+                        <span class="validation-message">@EmailError</span>
+                    }
                 </div>
 
                 <div class="contact__field">
                     <label class="contact__label">@(Lang.IsVi ? "Tiêu đề" : "Subject")<span class="required">*</span></label>
-                    <InputText @bind-Value="_model.Subject" class="contact__input" />
-                    <ValidationMessage For="() => _model.Subject" />
+                    <input class="contact__input @(SubjectError != null ? "invalid" : "")"
+                           type="text"
+                           value="@_model.Subject"
+                           @oninput="e => _model.Subject = e.Value?.ToString() ?? string.Empty"
+                           @onblur="ValidateSubject" />
+                    @if (SubjectError != null)
+                    {
+                        <span class="validation-message">@SubjectError</span>
+                    }
                 </div>
 
                 <div class="contact__field">
                     <label class="contact__label">@Lang.T("contact.message")<span class="required">*</span></label>
-                    <InputTextArea @bind-Value="_model.Message" class="contact__textarea" />
-                    <ValidationMessage For="() => _model.Message" />
+                    <textarea class="contact__textarea @(MessageError != null ? "invalid" : "")"
+                              @oninput="e => _model.Message = e.Value?.ToString() ?? string.Empty"
+                              @onblur="ValidateMessage">@_model.Message</textarea>
+                    @if (MessageError != null)
+                    {
+                        <span class="validation-message">@MessageError</span>
+                    }
                 </div>
 
-                <button type="submit" class="contact__submit" disabled="@_sending">
+                <button type="button" class="contact__submit" @onclick="HandleSubmit" disabled="@_sending">
                     @if (_sending)
                     {
                         <span>@(Lang.IsVi ? "Đang gửi..." : "Sending...")</span>
@@ -91,7 +115,7 @@
                         <span>@Lang.T("contact.send")</span>
                     }
                 </button>
-            </EditForm>
+            </div>
         }
     </div>
 </section>
