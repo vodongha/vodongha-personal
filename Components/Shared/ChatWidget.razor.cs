@@ -101,6 +101,13 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                     await ConnectHubAsync();
                     StateHasChanged();
                 }
+                else
+                {
+                    // Session was deleted by admin — clear stale localStorage and show form
+                    await ClearSessionStorageAsync();
+                    _sessionId = null;
+                    _state = ChatState.Closed;
+                }
             }
         }
         catch
@@ -173,6 +180,20 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
+    private async Task ClearSessionStorageAsync()
+    {
+        try
+        {
+            await LocalStorage.DeleteAsync("chatSessionId");
+            await LocalStorage.DeleteAsync("chatLastReadId");
+            await LocalStorage.DeleteAsync("chatAdminReadId");
+        }
+        catch
+        {
+            // ignore
+        }
+    }
+
     private async Task StartChat()
     {
         if (!CanStartChat || _loading)
@@ -229,6 +250,15 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             {
                 _messages[idx] = new ChatMessageDto(msg.Id, msg.Content, msg.IsFromUser, msg.SentAt);
             }
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("Session not found"))
+        {
+            // Admin deleted the session while user was chatting — reset widget to form
+            _messages.Remove(optimistic);
+            await ClearSessionStorageAsync();
+            _sessionId = null;
+            _messages = [];
+            _state = ChatState.Form;
         }
         catch
         {
