@@ -47,13 +47,15 @@ public class HealthMonitorService : IHostedService, IDisposable
 
             try
             {
+                using CancellationTokenSource cts = new(TimeSpan.FromSeconds(5));
                 Stopwatch sw = Stopwatch.StartNew();
-                await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
+                await using AppDbContext db = await _dbFactory.CreateDbContextAsync(cts.Token);
                 System.Data.Common.DbConnection conn = db.Database.GetDbConnection();
-                await conn.OpenAsync();
+                await conn.OpenAsync(cts.Token);
                 await using System.Data.Common.DbCommand cmd = conn.CreateCommand();
                 cmd.CommandText = "SELECT 1";
-                await cmd.ExecuteScalarAsync();
+                cmd.CommandTimeout = 5;
+                await cmd.ExecuteScalarAsync(cts.Token);
                 sw.Stop();
                 dbPingMs = Math.Round(sw.Elapsed.TotalMilliseconds, 1);
                 dbHealthy = true;
