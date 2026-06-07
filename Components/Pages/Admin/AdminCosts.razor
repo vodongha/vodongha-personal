@@ -4,6 +4,27 @@
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
 
+@if (_confirmRestart)
+{
+    <div class="admin-modal-overlay" @onclick="CancelRestart">
+        <div class="admin-modal" @onclick:stopPropagation="true">
+            <div class="admin-modal__icon admin-modal__icon--warn">
+                <i class="bi bi-arrow-clockwise"></i>
+            </div>
+            <h3 class="admin-modal__title">@Loc.T("Restart server?")</h3>
+            <p class="admin-modal__body">
+                @Loc.T("This will restart the Fly.io machine. The site will be briefly unavailable (~5–10 seconds).")
+            </p>
+            <div class="admin-modal__actions">
+                <button class="admin-btn admin-btn--ghost" @onclick="CancelRestart">@Loc.T("Cancel")</button>
+                <button class="admin-btn admin-btn--danger" @onclick="ConfirmRestart">
+                    <i class="bi bi-arrow-clockwise"></i> @Loc.T("Restart")
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
 <div class="admin-shell">
     <AdminNav />
 
@@ -95,6 +116,12 @@
                                     <div class="health-card__value">@MachinStateLabel(m.State)</div>
                                 </div>
                                 <div class="health-card__dot health-card__dot--@(m.State == "started" ? "ok" : "warn")"></div>
+                                <button class="cost-restart-btn @(_restartingId == m.Id ? "cost-restart-btn--loading" : "")"
+                                        @onclick="() => RestartMachine(m.Id)"
+                                        disabled="@(_restartingId != null)"
+                                        title="@Loc.T("Restart machine")">
+                                    <i class="bi bi-arrow-clockwise @(_restartingId == m.Id ? "admin-spin" : "")"></i>
+                                </button>
                             </div>
                         }
 
