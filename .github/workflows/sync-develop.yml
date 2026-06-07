@@ -7,6 +7,9 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,6 +20,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout develop
+          # Create develop from master if it doesn't exist
+          git checkout develop 2>/dev/null || git checkout -b develop origin/master
           git merge origin/master --no-edit
           git push origin develop
