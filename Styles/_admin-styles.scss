@@ -1155,7 +1155,7 @@ tr.admin-row--dragover td {
     &__dot {
         position: absolute;
         top: 0.6rem;
-        left: 0.6rem;
+        right: 0.6rem;
         width: 7px;
         height: 7px;
         border-radius: 50%;
@@ -1429,7 +1429,7 @@ tr.admin-row--dragover td {
 .cost-card-drag-handle {
     position: absolute;
     top: 0.5rem;
-    right: 0.5rem;
+    left: 0.5rem;
     color: #374151;
     font-size: 0.85rem;
     cursor: grab;
