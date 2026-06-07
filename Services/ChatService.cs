@@ -34,6 +34,19 @@ public class ChatService
 
         db.ChatSessions.Add(session);
         await db.SaveChangesAsync();
+
+        // Automated welcome message — saved to DB so it loads when widget connects
+        string firstName = name.Trim().Split(' ').Last(); // lấy tên (phần cuối)
+        ChatMessage welcome = new()
+        {
+            ChatSessionId = session.Id,
+            Content = $"Xin chào {firstName}! 👋 Mình là Hà — cứ nhắn bất cứ điều gì bạn cần, mình sẽ trả lời sớm nhất có thể.",
+            IsFromUser = false,
+            SentAt = DateTime.UtcNow,
+        };
+        db.ChatMessages.Add(welcome);
+        await db.SaveChangesAsync();
+
         return session;
     }
 
