@@ -57,25 +57,25 @@
                 <DataAnnotationsValidator />
 
                 <div class="contact__field">
-                    <label class="contact__label">@Lang.T("contact.name")</label>
+                    <label class="contact__label">@Lang.T("contact.name")<span class="required">*</span></label>
                     <InputText @bind-Value="_model.Name" class="contact__input" />
                     <ValidationMessage For="() => _model.Name" />
                 </div>
 
                 <div class="contact__field">
-                    <label class="contact__label">@Lang.T("contact.email")</label>
+                    <label class="contact__label">@Lang.T("contact.email")<span class="required">*</span></label>
                     <InputText @bind-Value="_model.Email" class="contact__input" />
                     <ValidationMessage For="() => _model.Email" />
                 </div>
 
                 <div class="contact__field">
-                    <label class="contact__label">@(Lang.IsVi ? "Tiêu đề" : "Subject")</label>
+                    <label class="contact__label">@(Lang.IsVi ? "Tiêu đề" : "Subject")<span class="required">*</span></label>
                     <InputText @bind-Value="_model.Subject" class="contact__input" />
                     <ValidationMessage For="() => _model.Subject" />
                 </div>
 
                 <div class="contact__field">
-                    <label class="contact__label">@Lang.T("contact.message")</label>
+                    <label class="contact__label">@Lang.T("contact.message")<span class="required">*</span></label>
                     <InputTextArea @bind-Value="_model.Message" class="contact__textarea" />
                     <ValidationMessage For="() => _model.Message" />
                 </div>
