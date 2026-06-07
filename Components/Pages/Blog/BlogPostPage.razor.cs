@@ -13,6 +13,7 @@ public partial class BlogPostPage : ComponentBase, IDisposable
     [Parameter] public string Slug { get; set; } = string.Empty;
 
     private BlogPost? _post;
+    private bool _loading = true;
 
     private string DisplayTitle => Lang.IsVi ? (_post?.Title ?? "") : (_post?.TitleEn ?? _post?.Title ?? "");
     private string DisplaySummary => Lang.IsVi ? (_post?.Summary ?? "") : (_post?.SummaryEn ?? _post?.Summary ?? "");
@@ -21,7 +22,9 @@ public partial class BlogPostPage : ComponentBase, IDisposable
     protected override async Task OnParametersSetAsync()
     {
         Lang.OnChange -= StateHasChanged;
+        _loading = true;
         _post = await BlogSvc.GetBySlugAsync(Slug);
+        _loading = false;
         Lang.OnChange += StateHasChanged;
     }
 

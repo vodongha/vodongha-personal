@@ -5,7 +5,29 @@
         <p class="section__subtitle">@Lang.T("blog.subtitle")</p>
     </div>
 
-    @if (_posts is not null)
+    @if (_posts is null)
+    {
+        <div class="blog-skel">
+            @for (int i = 0; i < 3; i++)
+            {
+                <div class="blog-skel__card">
+                    <div class="blog-skel__img"></div>
+                    <div class="blog-skel__body">
+                        <div class="blog-skel__tags">
+                            <div class="blog-skel__tag"></div>
+                            <div class="blog-skel__tag"></div>
+                        </div>
+                        <div class="blog-skel__title"></div>
+                        <div class="blog-skel__title2"></div>
+                        <div class="blog-skel__desc"></div>
+                        <div class="blog-skel__desc2"></div>
+                        <div class="blog-skel__meta"></div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
     {
         @if (_posts.Count == 0)
         {

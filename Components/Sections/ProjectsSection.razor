@@ -5,7 +5,28 @@
         <p class="section__subtitle">@Lang.T("projects.subtitle")</p>
     </div>
 
-    @if (_projects is not null)
+    @if (_projects is null)
+    {
+        <div class="projects-skel">
+            @for (int i = 0; i < 6; i++)
+            {
+                <div class="projects-skel__card">
+                    <div class="projects-skel__img"></div>
+                    <div class="projects-skel__body">
+                        <div class="projects-skel__title"></div>
+                        <div class="projects-skel__desc"></div>
+                        <div class="projects-skel__desc2"></div>
+                        <div class="projects-skel__tags">
+                            <div class="projects-skel__tag"></div>
+                            <div class="projects-skel__tag"></div>
+                            <div class="projects-skel__tag"></div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
     {
         <div class="projects__grid">
             @foreach (Project project in VisibleProjects)

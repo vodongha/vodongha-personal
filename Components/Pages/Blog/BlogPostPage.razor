@@ -22,7 +22,29 @@
     </HeadContent>
 }
 
-@if (_post is null)
+@if (_loading)
+{
+    <div class="blog-post-skel">
+        <div class="blog-post-skel__back"></div>
+        <div class="blog-post-skel__title"></div>
+        <div class="blog-post-skel__title2"></div>
+        <div class="blog-post-skel__meta"></div>
+        <div class="blog-post-skel__tags">
+            <div class="blog-post-skel__tag"></div>
+            <div class="blog-post-skel__tag"></div>
+            <div class="blog-post-skel__tag"></div>
+        </div>
+        <div class="blog-post-skel__img"></div>
+        <div class="blog-post-skel__h2"></div>
+        <div class="blog-post-skel__p"></div>
+        <div class="blog-post-skel__p"></div>
+        <div class="blog-post-skel__p--sm"></div>
+        <div class="blog-post-skel__h2"></div>
+        <div class="blog-post-skel__p"></div>
+        <div class="blog-post-skel__p--sm"></div>
+    </div>
+}
+else if (_post is null)
 {
     <div class="blog-post">
         <p>Không tìm thấy bài viết.</p>

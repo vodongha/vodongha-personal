@@ -31,6 +31,30 @@
             </div>
         </div>
 
+        @if (_loading)
+        {
+            <div class="admin-tbl-skel">
+                <div class="admin-tbl-skel__head">
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                </div>
+                @for (int i = 0; i < 6; i++)
+                {
+                    <div class="admin-tbl-skel__row">
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--btn"></div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
         <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
             <PropertyColumn Property="e => e.School" Title="@Loc.T("School")" Sortable="true" />
             <PropertyColumn Property="e => e.Degree" Title="@Loc.T("Degree")" Sortable="true" />
@@ -46,6 +70,7 @@
             </TemplateColumn>
         </QuickGrid>
         <Paginator State="_pagination" />
+        }
 
         @if (ShowForm)
         {
