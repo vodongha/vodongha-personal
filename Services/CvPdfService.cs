@@ -108,7 +108,8 @@ public class CvPdfService
                         if (avatarBytes != null && avatarBytes.Length > 0)
                         {
                             col.Item().AlignCenter().Width(80).Height(80)
-                                .CornerRadius(40).Image(avatarBytes).FitArea();
+                                .CornerRadius(40).AlignCenter().AlignMiddle()
+                                .Image(avatarBytes).FitArea();
                         }
                         else
                         {
@@ -198,14 +199,18 @@ public class CvPdfService
                     {
                         h.Item().Row(r =>
                         {
-                            // Avatar
+                            // Avatar — use AutoItem + explicit Width/Height so the circle is
+                            // always a perfect square and FitArea() fills it without left-offset
                             if (avatarBytes != null && avatarBytes.Length > 0)
                             {
-                                r.ConstantItem(64).Height(64).CornerRadius(32).Image(avatarBytes).FitArea();
+                                r.AutoItem().AlignMiddle().Width(64).Height(64)
+                                    .CornerRadius(32).AlignCenter().AlignMiddle()
+                                    .Image(avatarBytes).FitArea();
                             }
                             else
                             {
-                                r.ConstantItem(64).Height(64).CornerRadius(32).Background(MinimalAccent)
+                                r.AutoItem().AlignMiddle().Width(64).Height(64)
+                                    .CornerRadius(32).Background(MinimalAccent)
                                     .AlignCenter().AlignMiddle()
                                     .Text(Initials(cv.Name)).FontSize(22).Bold().FontColor("#ffffff");
                             }
@@ -296,14 +301,17 @@ public class CvPdfService
                     // ── Full-width navy header ────────────────────────────────
                     root.Item().Background(ProHeader).PaddingHorizontal(30).PaddingVertical(22).Row(h =>
                     {
-                        // Avatar
+                        // Avatar — AutoItem + explicit square so CornerRadius circle stays centered
                         if (avatarBytes != null && avatarBytes.Length > 0)
                         {
-                            h.ConstantItem(72).Height(72).CornerRadius(36).Image(avatarBytes).FitArea();
+                            h.AutoItem().AlignMiddle().Width(72).Height(72)
+                                .CornerRadius(36).AlignCenter().AlignMiddle()
+                                .Image(avatarBytes).FitArea();
                         }
                         else
                         {
-                            h.ConstantItem(72).Height(72).CornerRadius(36).Background(ProAccent)
+                            h.AutoItem().AlignMiddle().Width(72).Height(72)
+                                .CornerRadius(36).Background(ProAccent)
                                 .AlignCenter().AlignMiddle()
                                 .Text(Initials(cv.Name)).FontSize(24).Bold().FontColor("#ffffff");
                         }
