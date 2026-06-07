@@ -36,6 +36,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private int _unreadDividerIndex = -1;  // index in _messages where the "new messages" divider is shown
 
     private bool _pendingScrollToUnread;
+    private int _inputKey;  // increment on send to force textarea DOM recreation
 
     private bool CanStartChat => !string.IsNullOrWhiteSpace(_name) && !string.IsNullOrWhiteSpace(_email);
 
@@ -204,7 +205,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
 
         string content = _inputText.Trim();
-        _inputText = "";    // Clear input immediately
+        _inputText = "";
+        _inputKey++;        // Force textarea DOM recreation so it clears reliably
         _sending = true;
 
         // Stop typing indicator — fire-and-forget, no need to await
