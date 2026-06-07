@@ -1,3 +1,11 @@
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    HttpContext? ctx = HttpContextAccessor.HttpContext;
+    string clientIp = ctx?.Request.Headers["Fly-Client-IP"].FirstOrDefault()
+        ?? ctx?.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',')[0].Trim()
+        ?? ctx?.Connection.RemoteIpAddress?.ToString()
+        ?? "";
+}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -38,6 +46,7 @@
     <Routes />
     <ReconnectModal />
     <script>window.getTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;</script>
+    <script>window.__clientIp = '@clientIp';</script>
     <script src="@Assets["_framework/blazor.web.js"]"></script>
     <script src="js/admin.js"></script>
     <script src="js/chat.js"></script>

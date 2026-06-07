@@ -1,14 +1,18 @@
 namespace vodongha.Services;
 
 /// <summary>
-/// Singleton service — resolves a 2-letter ISO country code from an IP address
-/// using ipinfo.io (free tier, no API key required, HTTPS, 50k req/month).
+/// Singleton — resolves a 2-letter ISO country code from an IP address
+/// using ipinfo.io (free tier, no API key, HTTPS, 50k req/month).
 /// </summary>
 public class GeoIpService(IHttpClientFactory httpClientFactory)
 {
     public async Task<string?> GetCountryCodeAsync(string? ip)
     {
-        if (string.IsNullOrWhiteSpace(ip) || ip == "::1" || ip.StartsWith("127.") || ip.StartsWith("192.168.") || ip.StartsWith("10."))
+        if (string.IsNullOrWhiteSpace(ip)
+            || ip == "::1"
+            || ip.StartsWith("127.")
+            || ip.StartsWith("192.168.")
+            || ip.StartsWith("10."))
         {
             return null;
         }

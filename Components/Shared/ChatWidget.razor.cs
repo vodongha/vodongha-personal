@@ -16,7 +16,6 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
-    [Inject] private ClientIpService ClientIp { get; set; } = default!;
     [Inject] private GeoIpService GeoIp { get; set; } = default!;
 
     private enum ChatState { Closed, Form, Chat }
@@ -68,6 +67,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     }
 
     private string _selectedRegion = "VN";
+    private bool _nameTouched;
     private bool _phoneTouched;
     private bool _emailTouched;
     private Country SelectedCountry => Countries.FirstOrDefault(c => c.RegionCode == _selectedRegion) ?? Countries[0];
@@ -84,11 +84,18 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         _phone = new string(raw.Where(c => char.IsDigit(c) || c == ' ' || c == '-').ToArray());
     }
 
-    private static bool IsValidPhone(string phone)
+    private bool IsValidPhone(string phone)
     {
         if (string.IsNullOrWhiteSpace(phone)) return false;
-        string digits = new string(phone.Where(char.IsDigit).ToArray());
-        return digits.Length >= 6 && digits.Length <= 15;
+        try
+        {
+            PhoneNumber parsed = PhoneUtil.Parse(phone, _selectedRegion);
+            return PhoneUtil.IsValidNumberForRegion(parsed, _selectedRegion);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private string FullPhone => $"{SelectedCountry.Dial}{new string(_phone.Where(char.IsDigit).ToArray())}";
@@ -138,7 +145,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-            // Auto-select country: IP-based first, fallback to timezone
+            // Auto-select country from already-detected timezone (no external API needed)
         _ = DetectCountryAsync();
 
         try
@@ -530,12 +537,21 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private async Task DetectCountryAsync()
     {
-        string? code = await GeoIp.GetCountryCodeAsync(ClientIp.IpAddress);
-        if (code != null && Countries.Any(c => c.RegionCode == code))
+        try
         {
-            _selectedRegion = code;
-            await InvokeAsync(StateHasChanged);
-            return;
+            // Read the IP that was embedded in the page during SSR (App.razor window.__clientIp)
+            string ip = await JS.InvokeAsync<string>("eval", "window.__clientIp || ''");
+            string? code = await GeoIp.GetCountryCodeAsync(ip);
+            if (code != null && Countries.Any(c => c.RegionCode == code))
+            {
+                _selectedRegion = code;
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+        }
+        catch
+        {
+            // ignore — fall through to timezone
         }
 
         // Fallback: timezone-based detection

@@ -67,7 +67,6 @@ builder.Services.AddSingleton<HealthMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ClientIpService>();
 builder.Services.AddSingleton<GeoIpService>();
 builder.Services.AddHttpClient("geoip", c => c.BaseAddress = new Uri("https://ipinfo.io/"));
 
