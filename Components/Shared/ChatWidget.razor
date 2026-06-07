@@ -53,10 +53,21 @@
         }
         else if (_state == ChatState.Chat)
         {
+            int firstUnread = FirstUnreadIndex;
+
             <div class="chat-messages" id="chatMessages">
-                @foreach (ChatMessageDto msg in _messages)
+                @for (int i = 0; i < _messages.Count; i++)
                 {
-                    <div class="chat-msg @(msg.IsFromUser ? "chat-msg--user" : "chat-msg--admin")">
+                    ChatMessageDto msg = _messages[i];
+
+                    @if (i == firstUnread)
+                    {
+                        <div class="chat-unread-divider">
+                            <span>Tin nhắn mới</span>
+                        </div>
+                    }
+
+                    <div class="chat-msg @(msg.IsFromUser ? "chat-msg--user" : "chat-msg--admin") @(!msg.IsFromUser && i >= firstUnread && firstUnread >= 0 ? "chat-msg--unread" : "")">
                         <div class="chat-msg__bubble">@msg.Content</div>
                         <div class="chat-msg__time">@msg.SentAt.ToLocalTime().ToString("HH:mm")</div>
                     </div>
@@ -97,6 +108,10 @@
     @if (_state == ChatState.Closed)
     {
         <i class="bi bi-chat-dots-fill"></i>
+        @if (_unreadCount > 0)
+        {
+            <span class="chat-fab__badge">@(_unreadCount > 9 ? "9+" : _unreadCount.ToString())</span>
+        }
     }
     else
     {
