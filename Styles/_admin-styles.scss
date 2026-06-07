@@ -2,7 +2,7 @@
 
 // Tell the browser this UI is already dark — prevents system dark-mode from
 // inverting or recolouring any element (form controls, scrollbars, etc.)
-html { color-scheme: dark; }
+html { color-scheme: only dark; }
 
 // ── Layout ──────────────────────────────────────────────────────
 .admin-shell { display: flex; min-height: 100vh; background: #0f0f0f; color: $color-text; font-family: $font-sans; }
