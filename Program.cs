@@ -149,6 +149,7 @@ app.MapGet("/api/cv/download", async (
     SiteSettingService settingsSvc,
     CvPdfService cvPdf,
     ILogger<Program> logger,
+    IWebHostEnvironment env,
     int template = 0) =>
 {
     try
@@ -172,22 +173,38 @@ app.MapGet("/api/cv/download", async (
             Projects:    await db.Projects.OrderBy(p => p.Order).ToListAsync()
         );
 
-        // Pre-load avatar image (async, before entering Task.Run)
+        // Pre-load avatar — read from wwwroot filesystem first (fast, reliable),
+        // fall back to HTTP download for absolute URLs.
         byte[]? avatarBytes = null;
         if (!string.IsNullOrEmpty(data.AvatarUrl))
         {
             try
             {
-                using HttpClient http = new();
-                http.Timeout = TimeSpan.FromSeconds(5);
-                string url = data.AvatarUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
-                    ? data.AvatarUrl
-                    : $"https://vodongha.id.vn{data.AvatarUrl}";
-                avatarBytes = await http.GetByteArrayAsync(url);
+                if (!data.AvatarUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Relative path — read directly from wwwroot
+                    string filePath = Path.Combine(env.WebRootPath, data.AvatarUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                    if (File.Exists(filePath))
+                    {
+                        avatarBytes = await File.ReadAllBytesAsync(filePath);
+                        logger.LogInformation("CV: avatar loaded from filesystem ({Path})", filePath);
+                    }
+                    else
+                    {
+                        logger.LogWarning("CV: avatar file not found at {Path}", filePath);
+                    }
+                }
+                else
+                {
+                    // Absolute URL — download via HTTP
+                    using HttpClient http = new() { Timeout = TimeSpan.FromSeconds(5) };
+                    avatarBytes = await http.GetByteArrayAsync(data.AvatarUrl);
+                    logger.LogInformation("CV: avatar downloaded from {Url}", data.AvatarUrl);
+                }
             }
             catch (Exception ex)
             {
-                logger.LogWarning("CV download: could not load avatar ({Url}): {Msg}", data.AvatarUrl, ex.Message);
+                logger.LogWarning("CV: could not load avatar ({Url}): {Msg}", data.AvatarUrl, ex.Message);
             }
         }
 

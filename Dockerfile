@@ -13,7 +13,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 # Install fonts required by QuestPDF/SkiaSharp on Linux
+# fonts-noto: full Unicode + Vietnamese support
+# fonts-liberation: Arial-equivalent metrics
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    fonts-noto \
     fonts-liberation \
     libfontconfig1 \
     && rm -rf /var/lib/apt/lists/*
