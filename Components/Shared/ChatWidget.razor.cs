@@ -134,8 +134,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-        // Auto-detect country from IP (fire-and-forget, stays on Blazor circuit)
-        _ = DetectCountryAsync();
+            // Auto-select country from already-detected timezone (no external API needed)
+        DetectCountryFromTimezone();
 
         try
         {
@@ -489,18 +489,49 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
     private void OnLangChanged() => InvokeAsync(StateHasChanged);
 
-    private async Task DetectCountryAsync()
+    // Map IANA timezone → ISO country code
+    private static readonly Dictionary<string, string> TimezoneToCountry = new()
     {
-        try
+        ["Asia/Ho_Chi_Minh"] = "VN", ["Asia/Saigon"] = "VN",
+        ["Asia/Hanoi"] = "VN",
+        ["America/New_York"] = "US", ["America/Chicago"] = "US",
+        ["America/Denver"] = "US", ["America/Los_Angeles"] = "US",
+        ["America/Phoenix"] = "US", ["America/Anchorage"] = "US",
+        ["Pacific/Honolulu"] = "US",
+        ["Europe/London"] = "GB",
+        ["Australia/Sydney"] = "AU", ["Australia/Melbourne"] = "AU",
+        ["Australia/Brisbane"] = "AU", ["Australia/Perth"] = "AU",
+        ["America/Toronto"] = "CA", ["America/Vancouver"] = "CA",
+        ["Europe/Paris"] = "FR",
+        ["Europe/Berlin"] = "DE",
+        ["Asia/Tokyo"] = "JP",
+        ["Asia/Seoul"] = "KR",
+        ["Asia/Shanghai"] = "CN", ["Asia/Beijing"] = "CN",
+        ["Asia/Singapore"] = "SG",
+        ["Asia/Bangkok"] = "TH",
+        ["Asia/Manila"] = "PH",
+        ["Asia/Jakarta"] = "ID",
+        ["Asia/Kuala_Lumpur"] = "MY",
+        ["Asia/Kolkata"] = "IN",
+        ["Pacific/Auckland"] = "NZ",
+        ["America/Sao_Paulo"] = "BR",
+        ["America/Mexico_City"] = "MX",
+        ["Europe/Amsterdam"] = "NL",
+        ["Europe/Rome"] = "IT",
+        ["Europe/Madrid"] = "ES",
+        ["Europe/Moscow"] = "RU",
+        ["Asia/Dubai"] = "AE",
+        ["Asia/Riyadh"] = "SA",
+    };
+
+    private void DetectCountryFromTimezone()
+    {
+        string tzId = Tz.Timezone.Id;
+        if (TimezoneToCountry.TryGetValue(tzId, out string? region) &&
+            Countries.Any(c => c.RegionCode == region))
         {
-            string? countryCode = await JS.InvokeAsync<string?>("chatUtils.getCountryCode");
-            if (!string.IsNullOrWhiteSpace(countryCode) && Countries.Any(c => c.RegionCode == countryCode))
-            {
-                _selectedRegion = countryCode;
-                StateHasChanged();
-            }
+            _selectedRegion = region;
         }
-        catch { }
     }
 
     public async ValueTask DisposeAsync()
