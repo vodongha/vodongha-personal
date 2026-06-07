@@ -36,7 +36,6 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private int _unreadDividerIndex = -1;  // index in _messages where the "new messages" divider is shown
 
     private bool _pendingScrollToUnread;
-    private int _inputKey;  // increment on send to force textarea DOM recreation
 
     private bool CanStartChat => !string.IsNullOrWhiteSpace(_name) && !string.IsNullOrWhiteSpace(_email);
 
@@ -205,8 +204,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
 
         string content = _inputText.Trim();
-        _inputText = "";
-        _inputKey++;        // Force textarea DOM recreation so it clears reliably
+        _inputText = "";    // @bind:event="oninput" ensures Blazor tracks this correctly
         _sending = true;
 
         // Stop typing indicator — fire-and-forget, no need to await
@@ -240,20 +238,12 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
-    private void OnTypingInput(Microsoft.AspNetCore.Components.ChangeEventArgs e)
+    // Called by @bind:after — _inputText already updated by @bind, no args needed
+    private void OnTypingInput()
     {
-        _inputText = e.Value?.ToString() ?? "";
-
-        if (_hubConnection == null || !_sessionId.HasValue)
-        {
-            return;
-        }
-
-        // Cancel previous debounce timer
+        if (_hubConnection == null || !_sessionId.HasValue) return;
         _typingCts?.Cancel();
         _typingCts = new CancellationTokenSource();
-
-        // Fire-and-forget — never await SignalR inside an oninput handler (blocks keypress queue)
         _ = SendTypingSignalsAsync(_typingCts.Token);
     }
 
