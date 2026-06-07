@@ -3,13 +3,17 @@ using vodongha.Services;
 
 namespace vodongha.Components.Pages.Admin;
 
-public partial class AdminCosts : ComponentBase
+public partial class AdminCosts : ComponentBase, IDisposable
 {
     [Inject] private CostMonitorService CostMonitor { get; set; } = default!;
     [Inject] private AdminLocalizationService Loc { get; set; } = default!;
+    [Inject] private ToastService Toast { get; set; } = default!;
 
     private CostSummary? _summary;
     private bool _loading = true;
+    private string? _restartingId;   // machine ID currently being restarted
+    private bool _confirmRestart;
+    private string? _pendingRestartId;
 
     private double TotalEstimated =>
         (_summary?.Fly?.EstimatedBillable ?? 0) +
@@ -41,6 +45,51 @@ public partial class AdminCosts : ComponentBase
     {
         CostMonitor.InvalidateCache();
         await LoadAsync();
+    }
+
+    // ─── Restart ─────────────────────────────────────────────────────────────
+
+    private void RestartMachine(string machineId)
+    {
+        _pendingRestartId = machineId;
+        _confirmRestart = true;
+        StateHasChanged();
+    }
+
+    private void CancelRestart()
+    {
+        _confirmRestart = false;
+        _pendingRestartId = null;
+    }
+
+    private async Task ConfirmRestart()
+    {
+        if (_pendingRestartId == null)
+        {
+            return;
+        }
+
+        _confirmRestart = false;
+        _restartingId = _pendingRestartId;
+        _pendingRestartId = null;
+        await InvokeAsync(StateHasChanged);
+
+        bool ok = await CostMonitor.RestartMachineAsync(_restartingId);
+
+        _restartingId = null;
+
+        if (ok)
+        {
+            Toast.Show(Loc.T("Machine restarted successfully"), success: true);
+            // Wait a moment for Fly.io to update state, then reload
+            await Task.Delay(3000);
+            await LoadAsync();
+        }
+        else
+        {
+            Toast.Show(Loc.T("Failed to restart machine. Check Fly:ApiToken."), success: false);
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);

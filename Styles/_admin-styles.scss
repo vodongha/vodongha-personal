@@ -1398,6 +1398,44 @@ tr.admin-row--dragover td {
     text-align: right;
 }
 
+.cost-restart-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    background: transparent;
+    color: #9ca3af;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color 150ms, border-color 150ms, background 150ms;
+    margin-left: auto;
+
+    &:hover:not(:disabled) {
+        color: $color-primary;
+        border-color: $color-primary;
+        background: rgba($color-primary, 0.08);
+    }
+
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    &--loading {
+        color: $color-primary;
+        border-color: $color-primary;
+    }
+
+    i { font-size: 0.85rem; }
+}
+
+// Modal warn icon variant
+.admin-modal__icon--warn {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
 .cost-note {
     font-size: 0.78rem;
     color: #6b7280;
