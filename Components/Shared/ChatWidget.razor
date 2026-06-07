@@ -24,8 +24,14 @@
 
                 <div class="chat-form__group">
                     <label class="chat-form__label">@Lang.T("chat.form.name")</label>
-                    <input class="chat-form__input" type="text" placeholder="@Lang.T("chat.form.name.placeholder")"
-                           @bind="_name" @bind:event="oninput" />
+                    <input class="chat-form__input @(_nameTouched && string.IsNullOrWhiteSpace(_name) ? "chat-form__input--error" : "")"
+                           type="text" placeholder="@Lang.T("chat.form.name.placeholder")"
+                           @bind="_name" @bind:event="oninput"
+                           @onblur="() => _nameTouched = true" />
+                    @if (_nameTouched && string.IsNullOrWhiteSpace(_name))
+                    {
+                        <span class="chat-form__error">@Lang.T("chat.form.name.required")</span>
+                    }
                 </div>
                 <div class="chat-form__group">
                     <label class="chat-form__label">@Lang.T("chat.form.phone")</label>

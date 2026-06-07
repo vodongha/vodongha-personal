@@ -196,6 +196,24 @@
         color: #ef4444;
         margin-top: -0.1rem;
     }
+
+    &__submit {
+        background: $color-primary;
+        color: #0d0d0d;
+        border: none;
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 150ms;
+        margin-top: 0.25rem;
+        font-family: inherit;
+        width: 100%;
+
+        &:hover:not(:disabled) { opacity: 0.88; }
+        &:disabled { opacity: 0.45; cursor: not-allowed; }
+    }
 }
 
 // ── Phone input with country dial ─────────────────────────────────

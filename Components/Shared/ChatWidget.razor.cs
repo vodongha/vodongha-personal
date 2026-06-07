@@ -66,6 +66,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     }
 
     private string _selectedRegion = "VN";
+    private bool _nameTouched;
     private bool _phoneTouched;
     private bool _emailTouched;
     private Country SelectedCountry => Countries.FirstOrDefault(c => c.RegionCode == _selectedRegion) ?? Countries[0];
