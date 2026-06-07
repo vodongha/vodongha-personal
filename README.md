@@ -194,14 +194,14 @@ gh pr create --title "..." --base master --head develop
   <tr>
     <td align="center">
       <a href="https://github.com/vodongha">
-        <img src="https://avatars.githubusercontent.com/u/vodongha?v=4" width="80" alt="vodongha" /><br />
+        <img src="https://github.com/vodongha.png?size=80" width="80" alt="vodongha" /><br />
         <sub><b>vodongha</b></sub>
       </a><br />
       💻 🎨 🚀
     </td>
     <td align="center">
       <a href="https://github.com/claude">
-        <img src="https://avatars.githubusercontent.com/u/claude?v=4" width="80" alt="Claude" /><br />
+        <img src="https://github.com/claude.png?size=80" width="80" alt="Claude" /><br />
         <sub><b>Claude</b></sub>
       </a><br />
       🤖 💻 📖
