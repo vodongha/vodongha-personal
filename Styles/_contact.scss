@@ -110,6 +110,8 @@
         }
 
         &::placeholder { color: $color-text-muted; }
+
+        &.invalid, &.modified.invalid { border-color: #ef4444 !important; }
     }
 
     &__textarea {
