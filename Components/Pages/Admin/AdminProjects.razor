@@ -4,14 +4,15 @@
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
 @using vodongha.Data.Models
+@inject AdminLocalizationService Loc
 
 <div class="admin-shell">
     <AdminNav />
 
     <main class="admin-main">
         <header class="admin-header">
-            <h1 class="admin-header__title">Projects</h1>
-            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
+            <h1 class="admin-header__title">@Loc.T("Projects")</h1>
+            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> @Loc.T("Add new")</button>
         </header>
 
         <div class="admin-toolbar">
@@ -33,10 +34,10 @@
             <thead>
                 <tr>
                     <th style="width:2rem"></th>
-                    <th>TÊN</th>
-                    <th>TECHNOLOGIES</th>
-                    <th style="width:6rem">FEATURED</th>
-                    <th style="width:6rem">HÀNH ĐỘNG</th>
+                    <th>@Loc.T("Title").ToUpper()</th>
+                    <th>@Loc.T("Technologies").ToUpper()</th>
+                    <th style="width:6rem">@Loc.T("Featured").ToUpper()</th>
+                    <th style="width:6rem">@Loc.T("Actions").ToUpper()</th>
                 </tr>
             </thead>
             <tbody>
@@ -84,29 +85,29 @@
         {
             <div class="admin-modal-overlay" @onclick="CloseForm">
                 <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
-                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? "Thêm Project" : "Sửa Project")</h2>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? Loc.T("Add project") : Loc.T("Edit project"))</h2>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Tên dự án</label>
+                        <label class="admin-form__label">@Loc.T("Title") 🇻🇳</label>
                         <input class="admin-form__input" @bind="Editing.Title" />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Mô tả 🇻🇳</label>
+                        <label class="admin-form__label">@Loc.T("Description VI")</label>
                         <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Description"></textarea>
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Description 🇬🇧</label>
+                        <label class="admin-form__label">@Loc.T("Description EN")</label>
                         <textarea class="admin-form__input admin-form__textarea" @bind="Editing.DescriptionEn"></textarea>
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Technologies (phân cách bằng dấu phẩy)</label>
+                        <label class="admin-form__label">@Loc.T("Technologies")</label>
                         <input class="admin-form__input" @bind="Editing.Technologies" placeholder="C#,ASP.NET Core,..." />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Image URL</label>
+                        <label class="admin-form__label">@Loc.T("Image URL")</label>
                         <input class="admin-form__input" @bind="Editing.ImageUrl" placeholder="https://..." />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">GitHub URL</label>
+                        <label class="admin-form__label">@Loc.T("GitHub URL")</label>
                         <input class="admin-form__input" @bind="Editing.GitHubUrl" />
                     </div>
                     <div class="admin-form__group">
@@ -115,16 +116,16 @@
                     </div>
                     <div class="admin-form__row">
                         <div class="admin-form__group">
-                            <label class="admin-form__label">Thứ tự</label>
+                            <label class="admin-form__label">@Loc.T("Order")</label>
                             <input type="number" class="admin-form__input" @bind="Editing.Order" />
                         </div>
                         <div class="admin-form__group admin-form__check">
-                            <label><input type="checkbox" @bind="Editing.IsFeatured" /> Featured</label>
+                            <label><input type="checkbox" @bind="Editing.IsFeatured" /> @Loc.T("Featured")</label>
                         </div>
                     </div>
                     <div class="admin-modal__footer">
-                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">Huỷ</button>
-                        <button class="admin-btn admin-btn--primary" @onclick="Save">Lưu</button>
+                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">@Loc.T("Cancel")</button>
+                        <button class="admin-btn admin-btn--primary" @onclick="Save">@Loc.T("Save")</button>
                     </div>
                 </div>
             </div>

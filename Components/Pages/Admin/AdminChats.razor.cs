@@ -33,6 +33,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
 
     protected override async Task OnInitializedAsync()
     {
+        Loc.OnChanged += OnLangChanged;
         _sessions = await ChatSvc.GetSessionsAsync();
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
     }
@@ -362,8 +363,11 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         }
     }
 
+    private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
+
     public async ValueTask DisposeAsync()
     {
+        Loc.OnChanged -= OnLangChanged;
         _typingCts?.Cancel();
         if (_hubConnection != null)
         {

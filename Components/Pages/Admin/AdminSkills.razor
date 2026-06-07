@@ -5,39 +5,40 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using vodongha.Data.Models
+@inject AdminLocalizationService Loc
 
 <div class="admin-shell">
     <AdminNav />
 
     <main class="admin-main">
         <header class="admin-header">
-            <h1 class="admin-header__title">Skills</h1>
-            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> Thêm mới</button>
+            <h1 class="admin-header__title">@Loc.T("Skills")</h1>
+            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> @Loc.T("Add new")</button>
         </header>
 
         <div class="admin-toolbar">
             <div class="admin-select-wrap">
                 <select class="admin-page-size" @onchange="SetPageSize">
-                    <option value="5">5 / trang</option>
-                    <option value="10" selected>10 / trang</option>
-                    <option value="20">20 / trang</option>
-                    <option value="50">50 / trang</option>
+                    <option value="5">5 / @Loc.T("page")</option>
+                    <option value="10" selected>10 / @Loc.T("page")</option>
+                    <option value="20">20 / @Loc.T("page")</option>
+                    <option value="50">50 / @Loc.T("page")</option>
                 </select>
             </div>
             <div class="admin-search-wrap">
                 <i class="bi bi-search admin-search-wrap__icon"></i>
-                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm..." />
+                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="@Loc.T("Search skills...")" />
             </div>
         </div>
 
         <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
-            <PropertyColumn Property="s => s.Name" Title="Tên" Sortable="true" />
-            <TemplateColumn Title="Danh mục" Sortable="false">
+            <PropertyColumn Property="s => s.Name" Title="@Loc.T("Skill name")" Sortable="true" />
+            <TemplateColumn Title="Category" Sortable="false">
                 <span class="admin-badge">@context.Category</span>
             </TemplateColumn>
             <PropertyColumn Property="s => s.Proficiency" Title="%" Sortable="true" />
-            <PropertyColumn Property="s => s.Order" Title="Thứ tự" Sortable="true" />
-            <TemplateColumn Title="Hành động">
+            <PropertyColumn Property="s => s.Order" Title="@Loc.T("Order")" Sortable="true" />
+            <TemplateColumn Title="@Loc.T("Actions")">
                 <div class="admin-table__actions">
                     <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(context)"><i class="bi bi-pencil"></i></button>
                     <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(context.Id)"><i class="bi bi-trash"></i></button>
@@ -50,13 +51,13 @@
         {
             <div class="admin-modal-overlay" @onclick="CloseForm">
                 <div class="admin-modal" @onclick:stopPropagation>
-                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? "Thêm Skill" : "Sửa Skill")</h2>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? Loc.T("Add skill") : Loc.T("Edit skill"))</h2>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Tên</label>
+                        <label class="admin-form__label">@Loc.T("Skill name")</label>
                         <input class="admin-form__input" @bind="Editing.Name" />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Danh mục</label>
+                        <label class="admin-form__label">Category</label>
                         <select class="admin-form__input" @bind="Editing.Category">
                             <option>Backend</option>
                             <option>Frontend</option>
@@ -70,16 +71,16 @@
                         <input class="admin-form__input" @bind="Editing.Icon" placeholder="devicon-csharp-plain" />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Thành thạo (@Editing.Proficiency%)</label>
+                        <label class="admin-form__label">@Loc.T("Level") (@Editing.Proficiency%)</label>
                         <input type="range" min="0" max="100" class="admin-form__range" @bind="Editing.Proficiency" />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Thứ tự</label>
+                        <label class="admin-form__label">@Loc.T("Order")</label>
                         <input type="number" class="admin-form__input" @bind="Editing.Order" />
                     </div>
                     <div class="admin-modal__footer">
-                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">Huỷ</button>
-                        <button class="admin-btn admin-btn--primary" @onclick="Save">Lưu</button>
+                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">@Loc.T("Cancel")</button>
+                        <button class="admin-btn admin-btn--primary" @onclick="Save">@Loc.T("Save")</button>
                     </div>
                 </div>
             </div>

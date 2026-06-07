@@ -6,7 +6,7 @@ using vodongha.Services;
 
 namespace vodongha.Components.Pages.Admin;
 
-public partial class AdminProjects : ComponentBase
+public partial class AdminProjects : ComponentBase, IDisposable
 {
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private ToastService Toast { get; set; } = default!;
@@ -43,6 +43,7 @@ public partial class AdminProjects : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        Loc.OnChanged += OnLangChanged;
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
         await LoadAsync();
     }
@@ -116,4 +117,7 @@ public partial class AdminProjects : ComponentBase
         if (p != null) { db.Projects.Remove(p); await db.SaveChangesAsync(); Toast.Show("Đã xoá project"); }
         await LoadAsync();
     }
+
+    private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
+    public void Dispose() { Loc.OnChanged -= OnLangChanged; }
 }

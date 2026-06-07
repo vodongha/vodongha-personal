@@ -5,7 +5,7 @@ using vodongha.Services;
 
 namespace vodongha.Components.Pages.Admin;
 
-public partial class Dashboard : ComponentBase
+public partial class Dashboard : ComponentBase, IDisposable
 {
     [Inject] private ChatService ChatSvc { get; set; } = default!;
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
@@ -15,8 +15,12 @@ public partial class Dashboard : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        Loc.OnChanged += OnLangChanged;
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         _unreadMessagesCount = await db.ContactMessages.CountAsync(m => !m.IsRead);
     }
+
+    private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
+    public void Dispose() { Loc.OnChanged -= OnLangChanged; }
 }

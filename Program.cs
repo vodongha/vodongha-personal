@@ -61,6 +61,7 @@ builder.Services.AddScoped<VisitorService>();
 builder.Services.AddScoped<ToastService>();
 builder.Services.AddHttpClient<TelegramService>();
 builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<AdminLocalizationService>();
 
 WebApplication app = builder.Build();
 
