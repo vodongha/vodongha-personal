@@ -29,6 +29,15 @@ window.initSortableCards = function (gridId, dotnetRef, prefKey) {
     });
 };
 
+// ── PDF download helper ───────────────────────────────────────────────────────
+window.downloadFileFromBytes = function (filename, mimeType, bytes) {
+    var blob = new Blob([new Uint8Array(bytes)], { type: mimeType });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+};
+
 // ── Select wrap ───────────────────────────────────────────────────────────────
 // Event delegation — works regardless of when Blazor renders the elements
 document.addEventListener('mousedown', function (e) {
