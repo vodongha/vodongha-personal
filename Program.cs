@@ -148,7 +148,8 @@ app.MapGet("/api/cv/download", async (
     IDbContextFactory<AppDbContext> dbFactory,
     SiteSettingService settingsSvc,
     CvPdfService cvPdf,
-    ILogger<Program> logger) =>
+    ILogger<Program> logger,
+    int template = 0) =>
 {
     try
     {
@@ -190,8 +191,8 @@ app.MapGet("/api/cv/download", async (
             }
         }
 
-        logger.LogInformation("CV download: generating PDF for {Name}", data.Name);
-        byte[] pdf = await Task.Run(() => cvPdf.Generate(data, avatarBytes));
+        logger.LogInformation("CV download: generating PDF for {Name}, template={T}", data.Name, template);
+        byte[] pdf = await Task.Run(() => cvPdf.Generate(data, template, avatarBytes));
         logger.LogInformation("CV download: PDF generated, {Bytes} bytes", pdf.Length);
         string name = data.Name.ToLower().Replace(" ", "-");
         return Results.File(pdf, "application/pdf", $"cv-{name}.pdf");

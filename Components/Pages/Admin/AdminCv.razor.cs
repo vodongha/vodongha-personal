@@ -18,6 +18,7 @@ public partial class AdminCv : ComponentBase, IDisposable
 
     private CvData? _data;
     private bool _loading = true;  // only for initial data load, not for PDF (handled by API)
+    private int _selectedTemplate = 0;
 
     protected override void OnInitialized()
     {
@@ -69,11 +70,16 @@ public partial class AdminCv : ComponentBase, IDisposable
         await InvokeAsync(StateHasChanged);
     }
 
+    private void SelectTemplate(int t)
+    {
+        _selectedTemplate = t;
+    }
+
     private void Download()
     {
         // Navigate to the API endpoint — PDF is streamed directly over HTTP,
         // avoiding the 32KB SignalR message size limit.
-        Nav.NavigateTo("/api/cv/download", forceLoad: true);
+        Nav.NavigateTo($"/api/cv/download?template={_selectedTemplate}", forceLoad: true);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
