@@ -43,6 +43,26 @@ public class TelegramService
         return null;
     }
 
+    public async Task SendTypingAsync(long threadId)
+    {
+        if (_chatId == 0 || string.IsNullOrEmpty(_token))
+        {
+            return;
+        }
+
+        try
+        {
+            await _http.PostAsJsonAsync(
+                $"{BaseUrl}/sendChatAction",
+                new { chat_id = _chatId, message_thread_id = threadId, action = "typing" }
+            );
+        }
+        catch
+        {
+            // Non-critical — ignore errors
+        }
+    }
+
     public async Task<long?> SendMessageAsync(string text, long threadId)
     {
         if (_chatId == 0 || string.IsNullOrEmpty(_token))
