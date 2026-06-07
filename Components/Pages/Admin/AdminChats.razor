@@ -51,7 +51,15 @@
                                 </div>
                                 <div class="chat-session-card__meta">@session.Email · @session.Phone</div>
                             </div>
-                            <div class="chat-session-card__time">@session.LastMessageAt.ToLocalTime().ToString("MM/dd HH:mm")</div>
+                            <div class="chat-session-card__right">
+                                <div class="chat-session-card__time">@session.LastMessageAt.ToLocalTime().ToString("MM/dd HH:mm")</div>
+                                <button class="chat-session-card__delete admin-btn admin-btn--sm admin-btn--danger"
+                                        @onclick:stopPropagation
+                                        @onclick="() => ConfirmDeleteSession(session.Id)"
+                                        title="Xoá cuộc trò chuyện">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     }
                 </div>
@@ -155,3 +163,5 @@
         }
     </main>
 </div>
+
+<ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDeleteSession" OnCancel="() => _confirmShow = false" />

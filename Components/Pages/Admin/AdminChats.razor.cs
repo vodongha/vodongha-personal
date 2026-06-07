@@ -12,6 +12,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     [Inject] private ChatService ChatSvc { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private ToastService Toast { get; set; } = default!;
 
     private List<ChatSession> _sessions = [];
     private List<ChatMessage> _messages = [];
@@ -21,6 +22,8 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     private bool _sending;
     private bool _otherIsTyping;
     private int _unreadChatCount;
+    private int _deleteSessionId;
+    private bool _confirmShow;
     private int _sessionLastReadId;   // user-message ID boundary: messages with Id > this are "new to admin"
     private int _userReadUpToId;      // max admin-message ID the user has read (for ✓✓ on admin's outgoing)
     private Dictionary<int, int> _sessionLastSeenId = new();  // sessionId → lastReadId, persists across re-opens
@@ -54,6 +57,33 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         {
             // Hub not available during SSR — ignore
         }
+    }
+
+    private void ConfirmDeleteSession(int sessionId)
+    {
+        _deleteSessionId = sessionId;
+        _confirmShow = true;
+    }
+
+    private async Task ExecuteDeleteSession()
+    {
+        _confirmShow = false;
+        await DeleteSessionAsync(_deleteSessionId);
+    }
+
+    private async Task DeleteSessionAsync(int sessionId)
+    {
+        // If the deleted session is currently open, close it first
+        if (_selectedSessionId == sessionId)
+        {
+            await CloseChat();
+        }
+
+        await ChatSvc.DeleteSessionAsync(sessionId);
+        _sessions.RemoveAll(s => s.Id == sessionId);
+        _sessionLastSeenId.Remove(sessionId);
+        _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
+        Toast.Show("Đã xoá cuộc trò chuyện");
     }
 
     private async Task ConnectHubAsync()
@@ -116,6 +146,23 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         _hubConnection.On<int>("MessagesRead", async lastReadId =>
         {
             _userReadUpToId = Math.Max(_userReadUpToId, lastReadId);
+            await InvokeAsync(StateHasChanged);
+        });
+
+        // Session deleted by another admin tab — remove it from the list
+        _hubConnection.On<int>("SessionDeleted", async deletedSessionId =>
+        {
+            if (_selectedSessionId == deletedSessionId)
+            {
+                _selectedSessionId = null;
+                _selectedSession = null;
+                _messages = [];
+                _sessionLastReadId = 0;
+                _userReadUpToId = 0;
+            }
+            _sessions.RemoveAll(s => s.Id == deletedSessionId);
+            _sessionLastSeenId.Remove(deletedSessionId);
+            _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
             await InvokeAsync(StateHasChanged);
         });
 
