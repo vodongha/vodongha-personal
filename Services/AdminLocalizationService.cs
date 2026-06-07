@@ -194,7 +194,8 @@ public class AdminLocalizationService
         ["Console"] = "Console",
 
         // API Keys
-        ["API Keys"] = "Quản lý API Keys",
+        ["API Keys"] = "API Keys",
+        ["Costs"] = "Chi phí",
         ["Changes apply immediately"] = "Thay đổi có hiệu lực ngay",
         ["Values are encrypted in the database. DB overrides take effect immediately without redeployment. Leave blank to fall back to environment variables."] = "Giá trị được mã hóa trong cơ sở dữ liệu. Ghi đè DB có hiệu lực ngay không cần triển khai lại. Để trống để dùng biến môi trường.",
         ["Overridden in database"] = "Đang ghi đè trong DB",
