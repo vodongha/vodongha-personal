@@ -1199,6 +1199,7 @@ tr.admin-row--dragover td {
         justify-content: space-between;
         padding: 0.875rem 1rem 0.5rem;
         border-bottom: 1px solid #1a1a1a;
+        gap: 0.5rem;
     }
 
     &__title {
@@ -1440,6 +1441,19 @@ tr.admin-row--dragover td {
 }
 
 .health-card:hover .cost-card-drag-handle { color: #6b7280; }
+
+// Chart card drag handle (inline in header row)
+.health-chart-drag-handle {
+    color: #2d3748;
+    font-size: 0.9rem;
+    cursor: grab;
+    transition: color 0.15s;
+    flex-shrink: 0;
+
+    &:active { cursor: grabbing; }
+}
+
+.health-chart-card:hover .health-chart-drag-handle { color: #6b7280; }
 
 .cost-card-ghost {
     opacity: 0.4;
