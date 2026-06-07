@@ -57,7 +57,8 @@ public class ChatService
                 session.TelegramTopicId = topicId;
                 // Fire-and-forget the contact info pin — no need to block user
                 string info = $"👤 {session.Name}\n📞 {session.Phone}\n📧 {session.Email}";
-                _ = _telegram.SendMessageAsync(info, topicId.Value);
+                _ = _telegram.SendMessageAsync(info, topicId.Value)
+                             .ContinueWith(_ => Task.CompletedTask);
             }
         }
 
@@ -78,11 +79,10 @@ public class ChatService
         // Notify admin group immediately after DB save
         await _hub.Clients.Group("admin").SendAsync("SessionUpdated", session.Id);
 
-        // Forward to Telegram in the background — failure is non-critical
+        // Forward to Telegram — if topic was deleted, recreate it
         if (session.TelegramTopicId != null)
         {
-            long topicId = session.TelegramTopicId.Value;
-            _ = _telegram.SendMessageAsync($"💬 {content}", topicId);
+            _ = ForwardUserMessageToTelegramAsync(session, message.Content);
         }
 
         return message;
@@ -125,7 +125,8 @@ public class ChatService
         if (session.TelegramTopicId != null)
         {
             long topicId = session.TelegramTopicId.Value;
-            _ = _telegram.SendMessageAsync($"🔵 [Admin] {content}", topicId);
+            _ = _telegram.SendMessageAsync($"🔵 [Admin] {content}", topicId)
+                         .ContinueWith(_ => Task.CompletedTask);
         }
 
         return message;
@@ -188,6 +189,38 @@ public class ChatService
             });
     }
 
+    /// <summary>
+    /// Sends a user message to the Telegram topic.
+    /// If the topic no longer exists (deleted on Telegram side), recreates it and retries once.
+    /// </summary>
+    private async Task ForwardUserMessageToTelegramAsync(ChatSession session, string content)
+    {
+        if (session.TelegramTopicId == null) return;
+
+        (long? _, bool topicDeleted) = await _telegram.SendMessageAsync($"💬 {content}", session.TelegramTopicId.Value);
+
+        if (!topicDeleted) return;
+
+        // Topic was deleted on Telegram — recreate it and update DB
+        string topicTitle = $"{session.Name} | {session.Email}";
+        long? newTopicId = await _telegram.CreateTopicAsync(topicTitle);
+        if (newTopicId == null) return;
+
+        await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
+        ChatSession? dbSession = await db.ChatSessions.FindAsync(session.Id);
+        if (dbSession == null) return;
+
+        dbSession.TelegramTopicId = newTopicId;
+        await db.SaveChangesAsync();
+
+        // Re-pin contact info in the new topic
+        string info = $"👤 {session.Name}\n📞 {session.Phone}\n📧 {session.Email}\n⚠️ Topic was recreated — previous history is in the old topic.";
+        await _telegram.SendMessageAsync(info, newTopicId.Value);
+
+        // Retry sending the actual message
+        await _telegram.SendMessageAsync($"💬 {content}", newTopicId.Value);
+    }
+
     public async Task<List<ChatMessage>> GetMessagesAsync(int sessionId)
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
@@ -246,6 +279,14 @@ public class ChatService
     public async Task DeleteSessionAsync(int sessionId)
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
+
+        // Delete the Telegram topic before wiping DB so we still have the TelegramTopicId
+        ChatSession? session = await db.ChatSessions.FindAsync(sessionId);
+        if (session?.TelegramTopicId != null)
+        {
+            await _telegram.DeleteTopicAsync(session.TelegramTopicId.Value);
+        }
+
         await db.ChatMessages.Where(m => m.ChatSessionId == sessionId).ExecuteDeleteAsync();
         await db.ChatSessions.Where(s => s.Id == sessionId).ExecuteDeleteAsync();
 
