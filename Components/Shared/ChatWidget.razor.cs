@@ -16,6 +16,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
+    [Inject] private ClientIpService ClientIp { get; set; } = default!;
+    [Inject] private GeoIpService GeoIp { get; set; } = default!;
 
     private enum ChatState { Closed, Form, Chat }
 
@@ -136,8 +138,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-            // Auto-select country from already-detected timezone (no external API needed)
-        DetectCountryFromTimezone();
+            // Auto-select country: IP-based first, fallback to timezone
+        _ = DetectCountryAsync();
 
         try
         {
@@ -525,6 +527,20 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         ["Asia/Dubai"] = "AE",
         ["Asia/Riyadh"] = "SA",
     };
+
+    private async Task DetectCountryAsync()
+    {
+        string? code = await GeoIp.GetCountryCodeAsync(ClientIp.IpAddress);
+        if (code != null && Countries.Any(c => c.RegionCode == code))
+        {
+            _selectedRegion = code;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        // Fallback: timezone-based detection
+        DetectCountryFromTimezone();
+    }
 
     private void DetectCountryFromTimezone()
     {
