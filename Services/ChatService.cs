@@ -81,6 +81,9 @@ public class ChatService
         db.ChatMessages.Add(message);
         await db.SaveChangesAsync();
 
+        // Notify admin group so session list refreshes
+        await _hub.Clients.Group("admin").SendAsync("SessionUpdated", session.Id);
+
         return message;
     }
 
@@ -167,6 +170,9 @@ public class ChatService
         session.HasUnread = true;
         db.ChatMessages.Add(message);
         await db.SaveChangesAsync();
+
+        // Notify admin group so session list refreshes
+        await _hub.Clients.Group("admin").SendAsync("SessionUpdated", session.Id);
 
         // Push to chat widget
         await _hub.Clients.Group($"session_{session.Id}")

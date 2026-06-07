@@ -97,7 +97,16 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             await InvokeAsync(StateHasChanged);
         });
 
+        // Refresh session list when any session gets a new message
+        _hubConnection.On<int>("SessionUpdated", async updatedSessionId =>
+        {
+            _sessions = await ChatSvc.GetSessionsAsync();
+            _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
+            await InvokeAsync(StateHasChanged);
+        });
+
         await _hubConnection.StartAsync();
+        await _hubConnection.InvokeAsync("JoinAdminGroup");
     }
 
     private async Task SelectSession(int sessionId)
