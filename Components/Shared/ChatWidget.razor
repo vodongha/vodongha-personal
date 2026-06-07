@@ -53,17 +53,13 @@
         }
         else if (_state == ChatState.Chat)
         {
-            @* Admin messages after user's last message = unread (user hasn't replied yet) *@
-            DateTime? lastUserMsgTime = _messages.Where(m => m.IsFromUser).Select(m => (DateTime?)m.SentAt).Max();
-            int firstUnreadIdx = _messages.FindIndex(m => !m.IsFromUser && (lastUserMsgTime == null || m.SentAt > lastUserMsgTime));
-
             <div class="chat-messages" id="chatMessages">
                 @for (int i = 0; i < _messages.Count; i++)
                 {
                     ChatMessageDto msg = _messages[i];
-                    bool isUnread = !msg.IsFromUser && (lastUserMsgTime == null || msg.SentAt > lastUserMsgTime);
+                    bool isUnread = !msg.IsFromUser && _unreadDividerIndex >= 0 && i >= _unreadDividerIndex;
 
-                    @if (i == firstUnreadIdx)
+                    @if (i == _unreadDividerIndex)
                     {
                         <div class="chat-unread-divider">
                             <span>Tin nhắn mới</span>

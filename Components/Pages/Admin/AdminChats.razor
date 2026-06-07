@@ -74,14 +74,14 @@
 
                         <div class="chat-admin-messages" id="adminChatMessages">
                             @{
-                                @* User messages after admin's last message = unread (admin hasn't replied yet) *@
-                                DateTime? lastAdminMsgTime = _messages.Where(m => !m.IsFromUser).Select(m => (DateTime?)m.SentAt).Max();
-                                int firstUnreadIdx = _messages.FindIndex(m => m.IsFromUser && (lastAdminMsgTime == null || m.SentAt > lastAdminMsgTime));
+                                int firstUnreadIdx = _sessionLastReadId > 0
+                                    ? _messages.FindIndex(m => m.IsFromUser && m.Id > _sessionLastReadId)
+                                    : -1;
                             }
                             @for (int i = 0; i < _messages.Count; i++)
                             {
                                 ChatMessage msg = _messages[i];
-                                bool isUnread = msg.IsFromUser && (lastAdminMsgTime == null || msg.SentAt > lastAdminMsgTime);
+                                bool isUnread = msg.IsFromUser && _sessionLastReadId > 0 && msg.Id > _sessionLastReadId;
 
                                 @if (i == firstUnreadIdx)
                                 {

@@ -58,20 +58,27 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
                     // Restore last-read pointer and compute initial unread count
                     ProtectedBrowserStorageResult<int> lastReadResult = await LocalStorage.GetAsync<int>("chatLastReadId");
-                    if (lastReadResult.Success)
+                    if (lastReadResult.Success && lastReadResult.Value > 0)
                     {
                         _lastReadMessageId = lastReadResult.Value;
-                    }
+                        _unreadCount = _messages.Count(m => !m.IsFromUser && m.Id > _lastReadMessageId);
 
-                    _unreadCount = _messages.Count(m => !m.IsFromUser && m.Id > _lastReadMessageId);
-
-                    if (_unreadCount > 0)
-                    {
-                        // Keep closed so badge shows; divider will be set when user opens
-                        _state = ChatState.Closed;
+                        if (_unreadCount > 0)
+                        {
+                            // Keep closed so badge shows; divider will be set when user opens
+                            _state = ChatState.Closed;
+                        }
+                        else
+                        {
+                            _state = ChatState.Chat;
+                        }
                     }
                     else
                     {
+                        // First visit or no saved pointer — mark all current messages as read
+                        _lastReadMessageId = _messages.Count > 0 ? _messages.Max(m => m.Id) : 0;
+                        _unreadCount = 0;
+                        _ = SaveLastReadAsync();
                         _state = ChatState.Chat;
                     }
 
@@ -111,27 +118,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     // Compute and freeze the divider position BEFORE resetting the unread count
     private void SetUnreadDivider()
     {
-        if (_unreadCount <= 0)
-        {
-            _unreadDividerIndex = -1;
-            return;
-        }
-
-        int unreadSeen = 0;
-        for (int i = _messages.Count - 1; i >= 0; i--)
-        {
-            if (!_messages[i].IsFromUser)
-            {
-                unreadSeen++;
-                if (unreadSeen == _unreadCount)
-                {
-                    _unreadDividerIndex = i;
-                    return;
-                }
-            }
-        }
-
-        _unreadDividerIndex = -1;
+        _unreadDividerIndex = _messages.FindIndex(m => !m.IsFromUser && m.Id > _lastReadMessageId);
     }
 
     private void MarkAllRead()
