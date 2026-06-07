@@ -147,30 +147,41 @@ app.MapHub<ChatHub>("/chathub");
 app.MapGet("/api/cv/download", async (
     IDbContextFactory<AppDbContext> dbFactory,
     SiteSettingService settingsSvc,
-    CvPdfService cvPdf) =>
+    CvPdfService cvPdf,
+    ILogger<Program> logger) =>
 {
-    Dictionary<string, string> settings = await settingsSvc.GetAllAsync();
-    await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+    try
+    {
+        Dictionary<string, string> settings = await settingsSvc.GetAllAsync();
+        await using AppDbContext db = await dbFactory.CreateDbContextAsync();
 
-    CvData data = new(
-        Name:        settings.GetValueOrDefault("Name", ""),
-        Title:       settings.GetValueOrDefault("Title", ""),
-        Email:       settings.GetValueOrDefault("Email", ""),
-        Phone:       settings.GetValueOrDefault("Phone", ""),
-        Location:    settings.GetValueOrDefault("Location", ""),
-        GitHub:      settings.GetValueOrDefault("GitHub", ""),
-        LinkedIn:    settings.GetValueOrDefault("LinkedIn", ""),
-        Bio:         settings.GetValueOrDefault("BioEn", settings.GetValueOrDefault("Bio", "")),
-        AvatarUrl:   settings.GetValueOrDefault("AvatarUrl", ""),
-        Skills:      await db.Skills.OrderBy(s => s.Order).ToListAsync(),
-        Experiences: await db.Experiences.OrderBy(e => e.Order).ToListAsync(),
-        Educations:  await db.Educations.OrderBy(e => e.Order).ToListAsync(),
-        Projects:    await db.Projects.OrderBy(p => p.Order).ToListAsync()
-    );
+        CvData data = new(
+            Name:        settings.GetValueOrDefault("Name", ""),
+            Title:       settings.GetValueOrDefault("Title", ""),
+            Email:       settings.GetValueOrDefault("Email", ""),
+            Phone:       settings.GetValueOrDefault("Phone", ""),
+            Location:    settings.GetValueOrDefault("Location", ""),
+            GitHub:      settings.GetValueOrDefault("GitHub", ""),
+            LinkedIn:    settings.GetValueOrDefault("LinkedIn", ""),
+            Bio:         settings.GetValueOrDefault("BioEn", settings.GetValueOrDefault("Bio", "")),
+            AvatarUrl:   settings.GetValueOrDefault("AvatarUrl", ""),
+            Skills:      await db.Skills.OrderBy(s => s.Order).ToListAsync(),
+            Experiences: await db.Experiences.OrderBy(e => e.Order).ToListAsync(),
+            Educations:  await db.Educations.OrderBy(e => e.Order).ToListAsync(),
+            Projects:    await db.Projects.OrderBy(p => p.Order).ToListAsync()
+        );
 
-    byte[] pdf = await Task.Run(() => cvPdf.Generate(data));
-    string name = data.Name.ToLower().Replace(" ", "-");
-    return Results.File(pdf, "application/pdf", $"cv-{name}.pdf");
+        logger.LogInformation("CV download: generating PDF for {Name}", data.Name);
+        byte[] pdf = await Task.Run(() => cvPdf.Generate(data));
+        logger.LogInformation("CV download: PDF generated, {Bytes} bytes", pdf.Length);
+        string name = data.Name.ToLower().Replace(" ", "-");
+        return Results.File(pdf, "application/pdf", $"cv-{name}.pdf");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "CV download failed: {Message}", ex.Message);
+        return Results.Problem($"PDF generation failed: {ex.Message}");
+    }
 }).RequireAuthorization();
 
 app.MapPost("/api/telegram/webhook", async (HttpContext ctx, ChatService chatService, IConfiguration config) =>
