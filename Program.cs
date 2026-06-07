@@ -62,6 +62,8 @@ builder.Services.AddScoped<ToastService>();
 builder.Services.AddHttpClient<TelegramService>();
 builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<AdminLocalizationService>();
+builder.Services.AddSingleton<HealthMonitorService>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 
 WebApplication app = builder.Build();
 
