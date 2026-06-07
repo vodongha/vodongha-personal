@@ -1,4 +1,4 @@
-﻿<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
+<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
 
 <dialog id="components-reconnect-modal" data-nosnippet>
     <div class="components-reconnect-container">
@@ -7,25 +7,31 @@
             <div></div>
         </div>
         <p class="components-reconnect-first-attempt-visible">
-            Rejoining the server...
+            <span class="reconnect-icon">⚡</span>
+            Đang kết nối lại…<br />
+            <span class="reconnect-sub">Reconnecting to server…</span>
         </p>
         <p class="components-reconnect-repeated-attempt-visible">
-            Rejoin failed... trying again in <span id="components-seconds-to-next-attempt"></span> seconds.
+            Thử lại sau <span id="components-seconds-to-next-attempt"></span> giây…<br />
+            <span class="reconnect-sub">Retrying in <span id="components-seconds-to-next-attempt-en"></span>s…</span>
         </p>
         <p class="components-reconnect-failed-visible">
-            Failed to rejoin.<br />Please retry or reload the page.
+            Mất kết nối với server.<br />
+            <span class="reconnect-sub">Lost connection. Please reload the page.</span>
         </p>
         <button id="components-reconnect-button" class="components-reconnect-failed-visible">
-            Retry
+            Tải lại trang
         </button>
         <p class="components-pause-visible">
-            The session has been paused by the server.
+            Phiên làm việc đã bị tạm dừng.<br />
+            <span class="reconnect-sub">Session paused by server.</span>
         </p>
         <p class="components-resume-failed-visible">
-            Failed to resume the session.<br />Please retry or reload the page.
+            Không thể tiếp tục phiên làm việc.<br />
+            <span class="reconnect-sub">Failed to resume. Please reload.</span>
         </p>
         <button id="components-resume-button" class="components-pause-visible components-resume-failed-visible">
-            Resume
+            Tiếp tục
         </button>
     </div>
 </dialog>
