@@ -21,8 +21,10 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     private bool _sending;
     private bool _otherIsTyping;
     private int _unreadChatCount;
-    private int _sessionLastReadId;   // max user-message ID admin had seen when session was opened
+    private int _sessionLastReadId;   // user-message ID boundary: messages with Id > this are "new to admin"
     private int _userReadUpToId;      // max admin-message ID the user has read (for ✓✓ on admin's outgoing)
+    private Dictionary<int, int> _sessionLastSeenId = new();  // sessionId → lastReadId, persists across re-opens
+    private bool _pendingScrollToUnread;
     private HubConnection? _hubConnection;
     private CancellationTokenSource? _typingCts;
 
@@ -36,6 +38,11 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     {
         if (!firstRender)
         {
+            if (_pendingScrollToUnread)
+            {
+                _pendingScrollToUnread = false;
+                await JS.InvokeVoidAsync("chatUtils.scrollToUnread", "adminChatMessages");
+            }
             return;
         }
 
@@ -126,6 +133,12 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
 
     private async Task SelectSession(int sessionId)
     {
+        // Save last-seen pointer for the session being left
+        if (_selectedSessionId.HasValue && _messages.Count > 0)
+        {
+            _sessionLastSeenId[_selectedSessionId.Value] = _messages.Max(m => m.Id);
+        }
+
         // Leave old session group
         if (_selectedSessionId.HasValue && _hubConnection != null)
         {
@@ -134,14 +147,49 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
 
         _selectedSessionId = sessionId;
         _selectedSession = _sessions.FirstOrDefault(s => s.Id == sessionId);
+        bool sessionHasUnread = _selectedSession?.HasUnread ?? false;
         _messages = await ChatSvc.GetMessagesAsync(sessionId);
         _replyText = "";
         _otherIsTyping = false;
+        _userReadUpToId = 0;
 
-        // Mark current max user-message ID as read — new user messages arriving after this will show as unread
-        _sessionLastReadId = _messages.Count > 0 ? _messages.Where(m => m.IsFromUser).Select(m => (int?)m.Id).Max() ?? 0 : 0;
+        // Determine the divider boundary
+        if (_sessionLastSeenId.TryGetValue(sessionId, out int storedLastSeen))
+        {
+            // Re-opening a session: new messages = those after last time admin viewed it
+            _sessionLastReadId = storedLastSeen;
+        }
+        else if (sessionHasUnread)
+        {
+            // First open with unread: new messages = user messages after admin's last reply
+            // Find the last admin message index; user messages after it are "new"
+            int lastAdminIdx = -1;
+            for (int i = _messages.Count - 1; i >= 0; i--)
+            {
+                if (!_messages[i].IsFromUser) { lastAdminIdx = i; break; }
+            }
 
-        // Mark session as read
+            if (lastAdminIdx < 0)
+            {
+                // Admin has never replied — all user messages are new
+                _sessionLastReadId = 0;
+            }
+            else
+            {
+                // User messages before lastAdminIdx are "seen"; after = new
+                _sessionLastReadId = _messages.Take(lastAdminIdx)
+                    .Where(m => m.IsFromUser)
+                    .Select(m => (int?)m.Id)
+                    .Max() ?? 0;
+            }
+        }
+        else
+        {
+            // No unread — mark everything as read, no divider
+            _sessionLastReadId = _messages.Where(m => m.IsFromUser).Select(m => (int?)m.Id).Max() ?? 0;
+        }
+
+        // Mark session as read in DB and notify widget
         await ChatSvc.MarkSessionReadAsync(sessionId);
         if (_selectedSession != null)
         {
@@ -155,11 +203,19 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             await _hubConnection.InvokeAsync("JoinSession", sessionId.ToString());
         }
 
-        await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "adminChatMessages");
+        // Scroll to unread divider if there are new messages, otherwise scroll to bottom
+        _pendingScrollToUnread = true;
+        StateHasChanged();
     }
 
     private async Task CloseChat()
     {
+        // Save last-seen pointer so re-opens show a divider for new messages
+        if (_selectedSessionId.HasValue && _messages.Count > 0)
+        {
+            _sessionLastSeenId[_selectedSessionId.Value] = _messages.Max(m => m.Id);
+        }
+
         if (_selectedSessionId.HasValue && _hubConnection != null)
         {
             await _hubConnection.InvokeAsync("LeaveSession", _selectedSessionId.Value.ToString());

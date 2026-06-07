@@ -74,19 +74,19 @@
 
                         <div class="chat-admin-messages" id="adminChatMessages">
                             @{
-                                int firstUnreadIdx = _sessionLastReadId > 0
-                                    ? _messages.FindIndex(m => m.IsFromUser && m.Id > _sessionLastReadId)
-                                    : -1;
+                                // Show divider at first user message with Id > _sessionLastReadId
+                                // When _sessionLastReadId = 0, all user messages are "new"
+                                int firstUnreadIdx = _messages.FindIndex(m => m.IsFromUser && m.Id > _sessionLastReadId);
                             }
                             @for (int i = 0; i < _messages.Count; i++)
                             {
                                 ChatMessage msg = _messages[i];
-                                bool isUnread = msg.IsFromUser && _sessionLastReadId > 0 && msg.Id > _sessionLastReadId;
+                                bool isUnread = msg.IsFromUser && firstUnreadIdx >= 0 && i >= firstUnreadIdx;
 
                                 @if (i == firstUnreadIdx)
                                 {
                                     <div class="chat-unread-divider chat-unread-divider--admin">
-                                        <span>Chưa trả lời</span>
+                                        <span>Tin nhắn mới</span>
                                     </div>
                                 }
 
