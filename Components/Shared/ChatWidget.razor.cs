@@ -145,7 +145,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
 
             // Auto-select country from already-detected timezone (no external API needed)
-        DetectCountryFromTimezone();
+        _ = DetectCountryAsync();
 
         try
         {
@@ -533,6 +533,28 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         ["Asia/Dubai"] = "AE",
         ["Asia/Riyadh"] = "SA",
     };
+
+    private async Task DetectCountryAsync()
+    {
+        try
+        {
+            // Call ipinfo.io from the browser (user's own IP — avoids server-side proxy issues)
+            string code = await JS.InvokeAsync<string>("chatUtils.detectCountry");
+            if (!string.IsNullOrWhiteSpace(code) && Countries.Any(c => c.RegionCode == code))
+            {
+                _selectedRegion = code;
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+        }
+        catch
+        {
+            // ignore — fall through to timezone
+        }
+
+        // Fallback: timezone-based detection
+        DetectCountryFromTimezone();
+    }
 
     private void DetectCountryFromTimezone()
     {

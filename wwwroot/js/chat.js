@@ -1,4 +1,13 @@
 window.chatUtils = {
+    detectCountry: async function () {
+        try {
+            const r = await fetch('https://ipinfo.io/json', { signal: AbortSignal.timeout(4000) });
+            const d = await r.json();
+            return d.country || '';
+        } catch {
+            return '';
+        }
+    },
     scrollToBottom: function (elementId) {
         var el = document.getElementById(elementId);
         if (el) el.scrollTop = el.scrollHeight;
