@@ -132,11 +132,12 @@ public class CvPdfService
                                 col.Item().Text(group.Key.ToUpper())
                                     .FontSize(7).Bold().FontColor(AccentGreen).LetterSpacing(0.05f);
 
-                                col.Item().Row(r =>
+                                col.Item().Inlined(il =>
                                 {
+                                    il.Spacing(3);
                                     foreach (Skill skill in group)
                                     {
-                                        r.AutoItem().Padding(2)
+                                        il.Item().Padding(2)
                                             .Background("#1a2a3a").Border(1).BorderColor("#2d4a5a")
                                             .PaddingHorizontal(5).PaddingVertical(2)
                                             .Text(skill.Name).FontSize(7).FontColor(SidebarText);
