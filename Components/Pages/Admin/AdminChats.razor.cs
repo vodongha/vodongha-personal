@@ -35,9 +35,12 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     protected override async Task OnInitializedAsync()
     {
         Loc.OnChanged += OnLangChanged;
+        Tz.OnTimezoneSet += OnTimezoneUpdated;
         _sessions = await ChatSvc.GetSessionsAsync();
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
     }
+
+    private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -369,6 +372,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         Loc.OnChanged -= OnLangChanged;
+        Tz.OnTimezoneSet -= OnTimezoneUpdated;
         _typingCts?.Cancel();
         if (_hubConnection != null)
         {
