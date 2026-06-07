@@ -22,7 +22,9 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 | Chat | Telegram Bot API + SignalR (`Microsoft.AspNetCore.SignalR.Client`). Secrets: `Telegram__BotToken`, `Telegram__ChatId`, `Telegram__WebhookSecret` |
 | Real-time | ASP.NET Core SignalR (`ChatHub`) — session groups, admin group, typing events |
 | Charts | Chart.js 4.4 via CDN — wrapped in `wwwroot/js/healthChart.js` |
-| Deploy | Fly.io, app `vodongha`, region `sin`. Merge PR to `master` → auto-deploy (~2 min) |
+| Phone validation | `libphonenumber-csharp` — validates per country's numbering plan (`IsValidNumberForRegion`) |
+| Geo IP | ipinfo.io — called from browser JS (`chatUtils.detectCountry`) for country code detection |
+| Deploy | Fly.io, app `vodongha`, region `sin`, `auto_stop_machines = "suspend"`. Merge PR to `master` → auto-deploy (~2 min) |
 | CI | GitHub Actions `ci.yml` — `dotnet build` on every push to `develop` and on PRs to `master` |
 | Migrations | EF Core, applied automatically on startup via `MigrateAsync()` in `Program.cs` |
 
@@ -32,6 +34,8 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 
 ```
 develop  →  Pull Request  →  master  →  Fly.io auto-deploy
+                                ↓
+                            develop  ← auto-synced by sync-develop.yml
 ```
 
 ### Daily workflow
@@ -292,7 +296,7 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 | `Services/ChatService.cs` | Sessions, messages, auto welcome, webhook handler, Telegram topic recreation on 404, SignalR push |
 | `Components/Shared/ChatWidget.razor` + `.cs` | Public chat widget — form, chat state, typing, read receipts, date dividers, optimistic UI |
 | `Components/Pages/Admin/AdminChats.razor` + `.cs` | Admin chat management — live updates, typing, read receipts, delete with Telegram sync |
-| `wwwroot/js/chat.js` | `chatUtils.scrollToBottom(id)`, `chatUtils.scrollToUnread(id)` |
+| `wwwroot/js/chat.js` | `chatUtils.scrollToBottom(id)`, `chatUtils.scrollToUnread(id)`, `chatUtils.detectCountry()` |
 
 ### Session persistence
 
@@ -309,8 +313,8 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 - **Auto welcome** — `CreateSessionAsync` saves a greeting `ChatMessage (IsFromUser=false)` immediately after session creation
 - **Telegram topic lifecycle** — topic created on first user message; auto-recreated with contact re-pin if deleted on Telegram side; `DeleteSessionAsync` calls `DeleteTopicAsync` before DB delete
 - **Full i18n** — all chat widget UI strings use `Lang.T("chat.*")` keys; widget re-renders on `Lang.OnChange`; `placeholder="email@example.com"` kept as-is (universal)
-- **Country code dropdown** — full country list from `libphonenumber-csharp` (Google libphonenumber); flag emoji auto-generated from ISO region code; auto-selected from browser timezone via `TimezoneService`
-- **Phone validation** — 6–15 digits, shown on blur; leading `0` auto-stripped, country dial code prepended on submit
+- **Country code dropdown** — full country list from `libphonenumber-csharp`; flag emoji auto-generated from ISO region code; auto-detected from visitor IP via `chatUtils.detectCountry()` (calls `ipinfo.io/json` from browser); falls back to timezone detection
+- **Phone validation** — `PhoneNumberUtil.IsValidNumberForRegion` per selected country; shown on blur; leading `0` auto-stripped, country dial code prepended on submit
 - **Blur validation** — errors shown only after user leaves the field (`@onblur`), not on page load
 
 ### Telegram setup
