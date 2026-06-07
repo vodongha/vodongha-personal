@@ -95,7 +95,7 @@
 
             <div class="chat-input">
                 <textarea class="chat-input__field" rows="1" placeholder="Nhập tin nhắn..."
-                          value="@_inputText"
+                          @bind="_inputText"
                           @oninput="OnTypingInput"
                           @onkeydown="OnKeyDown"></textarea>
                 <button class="chat-input__send" @onclick="SendMessage"
