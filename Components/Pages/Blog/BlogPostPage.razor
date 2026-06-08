@@ -92,12 +92,17 @@ else
             }
         </header>
 
-        <div class="blog-post__content">
-            @((MarkupString)DisplayContent)
+        <div class="blog-post__layout">
+            <div class="blog-post__main">
+                <div class="blog-post__content">
+                    @((MarkupString)DisplayContent)
+                </div>
+                <BlogShareButtons Slug="@_post.Slug" Title="@DisplayTitle" />
+                <RelatedPosts PostId="@_post.Id" Tags="@_post.Tags" />
+            </div>
+            <aside class="blog-post__sidebar">
+                <TableOfContents Content="@DisplayContent" />
+            </aside>
         </div>
-
-        <BlogShareButtons Slug="@_post.Slug" Title="@DisplayTitle" />
-
-        <RelatedPosts PostId="@_post.Id" Tags="@_post.Tags" />
     </article>
 }

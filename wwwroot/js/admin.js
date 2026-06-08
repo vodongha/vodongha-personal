@@ -125,6 +125,42 @@ document.addEventListener('blur', function (e) {
     sel.closest('.admin-select-wrap').classList.remove('is-open');
 }, true);
 
+// ── Table of Contents ─────────────────────────────────────────────────────────
+window.initToc = function (dotnetRef, headingIds) {
+    var content = document.querySelector('.blog-post__content');
+    if (!content) return;
+
+    // 1. Inject id attributes into h2/h3 elements to match the TOC anchors
+    var headings = content.querySelectorAll('h2, h3');
+    headings.forEach(function (h) {
+        var text = h.textContent.trim();
+        var id = text.toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-');
+        if (id) { h.id = id; }
+    });
+
+    // 2. IntersectionObserver to track active heading
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                dotnetRef.invokeMethodAsync('SetActiveHeading', entry.target.id);
+            }
+        });
+    }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+    headings.forEach(function (h) { if (h.id) observer.observe(h); });
+    window._tocObserver = observer;
+};
+
+window.destroyToc = function () {
+    if (window._tocObserver) {
+        window._tocObserver.disconnect();
+        window._tocObserver = null;
+    }
+};
+
 // ── Reading progress bar ───────────────────────────────────────────────────────
 window.initReadingProgress = function () {
     var bar = document.getElementById('reading-progress-bar');
@@ -142,6 +178,13 @@ window.initReadingProgress = function () {
 
     window.addEventListener('scroll', window._readingProgressHandler, { passive: true });
     window._readingProgressHandler(); // initial call
+};
+
+// ── Theme toggle ──────────────────────────────────────────────────────────────
+window.setTheme = function (theme) {
+    document.documentElement.setAttribute('data-theme', theme || 'dark');
+    var meta = document.querySelector('meta[name="color-scheme"]');
+    if (meta) { meta.setAttribute('content', theme === 'light' ? 'light' : 'dark'); }
 };
 
 // ── Code block copy buttons ───────────────────────────────────────────────────

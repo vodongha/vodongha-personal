@@ -16,7 +16,7 @@
             top: 8px;
             bottom: 0;
             width: 2px;
-            background: linear-gradient(to bottom, $color-primary, transparent);
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
         }
     }
 
@@ -36,7 +36,7 @@
         border-radius: $radius-full;
         background: $color-primary;
         border: 2px solid $color-bg;
-        box-shadow: 0 0 8px rgba(110, 231, 183, 0.5);
+        box-shadow: 0 0 8px color-mix(in srgb, var(--color-primary) 50%, transparent);
     }
 
     .timeline__content {
@@ -47,7 +47,7 @@
         transition: border-color $transition-fast, box-shadow $transition-fast;
 
         &:hover {
-            border-color: rgba($color-primary, 0.3);
+            border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
             box-shadow: $shadow-glow-primary;
         }
     }
@@ -73,7 +73,7 @@
         font-family: $font-mono;
         color: $color-primary;
         white-space: nowrap;
-        background: rgba($color-primary, 0.1);
+        background: color-mix(in srgb, var(--color-primary) 10%, transparent);
         padding: 2px $space-3;
         border-radius: $radius-full;
     }
