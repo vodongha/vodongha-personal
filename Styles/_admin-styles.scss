@@ -1904,7 +1904,7 @@ tr.admin-row--dragover td {
     transition: background 150ms;
 
     &:last-child { border-bottom: none; }
-    &:hover      { background: #111; }
+    &:hover      { background: var(--admin-hover); }
     &--editing   { background: #0f1623; border-color: rgba($color-primary, 0.2); }
 
     &__meta {
@@ -1939,8 +1939,9 @@ tr.admin-row--dragover td {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        min-width: 180px;
-        max-width: 280px;
+        min-width: 0;
+        max-width: 340px;
+        overflow: hidden;
     }
 
     &__actions {
@@ -1970,6 +1971,9 @@ tr.admin-row--dragover td {
     font-size: 0.8rem;
     color: var(--color-text-dim);
     letter-spacing: 0.05em;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
 }
 
 .apikey-source {
