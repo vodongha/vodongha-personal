@@ -148,7 +148,7 @@
     font-size: 0.875rem;
 
     th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--admin-hover); }
-    th { background: var(--admin-table-header); color: #6ee7b7; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    th { background: var(--admin-table-header); color: $color-primary; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
     tbody tr:nth-child(odd)  td { background: var(--admin-table-odd); }
     tbody tr:nth-child(even) td { background: var(--admin-table-even); }
     tr:hover td { background: var(--admin-table-hover) !important; }
@@ -526,7 +526,7 @@ tr.admin-row--dragover td {
     }
 
     &__sep { opacity: 0.3; margin: 0 0.1rem; }
-    &__opt { color: #4b5563; transition: color 150ms; }
+    &__opt { color: var(--color-text-muted); transition: color 150ms; }
     &__opt--active { color: $color-primary; font-weight: 700; }
 }
 
@@ -619,7 +619,7 @@ tr.admin-row--dragover td {
     background: var(--admin-bg);
     border: 1px solid var(--admin-border);
     border-radius: 8px;
-    color: #e5e7eb;
+    color: $color-text;
     font-size: 0.8rem;
     padding: 0.4rem 2rem 0.4rem 0.75rem;
     cursor: pointer;
@@ -627,9 +627,9 @@ tr.admin-row--dragover td {
     appearance: none;
     -webkit-appearance: none;
     transition: border-color 150ms;
-    &:hover { border-color: #3a3a3a; }
-    &:focus { border-color: #6ee7b7; }
-    option { background: var(--admin-elevated); }
+    &:hover { border-color: var(--admin-border-hover); }
+    &:focus { border-color: $color-primary; }
+    option { background: var(--admin-elevated); color: $color-text; }
 }
 
 // ── QuickGrid dark theme ──────────────────────────────────────────
@@ -643,8 +643,8 @@ tr.admin-row--dragover td {
     th {
         padding: 0.6rem 1rem;
         text-align: left;
-        border-bottom: 1px solid #1e3a2f;
-        color: #6ee7b7;
+        border-bottom: 1px solid var(--admin-border);
+        color: $color-primary;
         font-weight: 600;
         font-size: 0.75rem;
         text-transform: uppercase;
@@ -926,14 +926,14 @@ tr.admin-row--dragover td {
     display: none;
     background: none;
     border: none;
-    color: #9ca3af;
+    color: var(--color-text-dim);
     font-size: 1.1rem;
     cursor: pointer;
     padding: 0 0.5rem 0 0;
     line-height: 1;
     flex-shrink: 0;
 
-    &:hover { color: #e5e7eb; }
+    &:hover { color: $color-text; }
 }
 
 .chat-sessions {
@@ -960,7 +960,7 @@ tr.admin-row--dragover td {
     align-items: center;
     gap: 1rem;
 
-    &:hover { border-color: #3a3a3a; }
+    &:hover { border-color: var(--admin-border-hover); }
     &--active { border-color: rgba($color-primary, 0.5) !important; background: rgba($color-primary, 0.04); }
 
     &--unread {
@@ -1031,7 +1031,7 @@ tr.admin-row--dragover td {
         border: 1px solid var(--admin-border);
         border-radius: 8px;
         padding: 0.6rem 0.75rem;
-        color: #e5e7eb;
+        color: $color-text;
         font-size: 0.875rem;
         font-family: inherit;
         outline: none;
@@ -1041,7 +1041,7 @@ tr.admin-row--dragover td {
         transition: border-color 150ms;
 
         &:focus { border-color: $color-primary; }
-        &::placeholder { color: #4b5563; }
+        &::placeholder { color: var(--color-text-muted); }
     }
 }
 
@@ -1107,7 +1107,7 @@ tr.admin-row--dragover td {
 
     &__label {
         font-size: 0.78rem;
-        color: #4b5563;
+        color: var(--color-text-muted);
         font-variant-numeric: tabular-nums;
     }
 }
@@ -1252,7 +1252,7 @@ tr.admin-row--dragover td {
     &__title {
         font-size: 0.8rem;
         font-weight: 600;
-        color: #9ca3af;
+        color: var(--color-text-dim);
         display: flex;
         align-items: center;
         gap: 0.4rem;
@@ -1262,7 +1262,7 @@ tr.admin-row--dragover td {
 
     &__unit {
         font-size: 0.7rem;
-        color: #4b5563;
+        color: var(--color-text-muted);
         font-family: $font-mono;
         background: var(--admin-bg);
         border: 1px solid var(--admin-border);
@@ -1282,7 +1282,7 @@ tr.admin-row--dragover td {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #4b5563;
+    color: var(--color-text-muted);
     margin-bottom: 0.75rem;
 }
 
@@ -1313,7 +1313,7 @@ tr.admin-row--dragover td {
 .admin-tbl-skel {
     display: flex;
     flex-direction: column;
-    border: 1px solid #1e1e1e;
+    border: 1px solid var(--admin-border);
     border-radius: 10px;
     overflow: hidden;
 
@@ -1322,7 +1322,7 @@ tr.admin-row--dragover td {
         gap: 1rem;
         padding: .75rem 1rem;
         background: var(--admin-table-header);
-        border-bottom: 1px solid #1e1e1e;
+        border-bottom: 1px solid var(--admin-border);
         align-items: center;
     }
 
@@ -1363,7 +1363,7 @@ tr.admin-row--dragover td {
         gap: .875rem;
         padding: .875rem 1rem;
         background: var(--admin-surface);
-        border: 1px solid #1e1e1e;
+        border: 1px solid var(--admin-border);
         border-radius: 10px;
     }
 
@@ -1382,7 +1382,7 @@ tr.admin-row--dragover td {
     gap: 1.5rem;
 
     &__section {
-        border: 1px solid #1e1e1e;
+        border: 1px solid var(--admin-border);
         border-radius: 10px;
         overflow: hidden;
     }
@@ -1393,7 +1393,7 @@ tr.admin-row--dragover td {
         gap: .75rem;
         padding: .875rem 1rem;
         background: var(--admin-table-header);
-        border-bottom: 1px solid #1e1e1e;
+        border-bottom: 1px solid var(--admin-border);
     }
 
     &__icon  { @extend .skel; width: 20px; height: 20px; border-radius: 4px; }
@@ -1450,7 +1450,7 @@ tr.admin-row--dragover td {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #9ca3af;
+    color: var(--color-text-dim);
     font-size: 0.9rem;
     padding: 2rem 0;
 
@@ -1609,7 +1609,7 @@ tr.admin-row--dragover td {
 
     &__col-label {
         font-size: 0.75rem;
-        color: #9ca3af;
+        color: var(--color-text-dim);
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 0.4rem;
@@ -1648,7 +1648,7 @@ tr.admin-row--dragover td {
 
     &__updated {
         font-size: 0.72rem;
-        color: #4b5563;
+        color: var(--color-text-muted);
         margin-left: auto;
     }
 }
@@ -1668,7 +1668,7 @@ tr.admin-row--dragover td {
     &__title {
         font-size: 1rem;
         font-weight: 600;
-        color: #e5e7eb;
+        color: $color-text;
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -1775,7 +1775,7 @@ tr.admin-row--dragover td {
 
 .cost-progress__pct {
     font-size: 0.75rem;
-    color: #9ca3af;
+    color: var(--color-text-dim);
     font-variant-numeric: tabular-nums;
     min-width: 3.5rem;
     text-align: right;
@@ -1790,7 +1790,7 @@ tr.admin-row--dragover td {
     border: 1px solid #374151;
     border-radius: 6px;
     background: transparent;
-    color: #9ca3af;
+    color: var(--color-text-dim);
     font-size: 0.75rem;
     font-weight: 500;
     cursor: pointer;
@@ -1930,7 +1930,7 @@ tr.admin-row--dragover td {
 
     &__desc {
         font-size: 0.75rem;
-        color: #4b5563;
+        color: var(--color-text-muted);
         line-height: 1.4;
     }
 
@@ -1967,13 +1967,13 @@ tr.admin-row--dragover td {
 .apikey-masked {
     font-family: $font-mono;
     font-size: 0.8rem;
-    color: #9ca3af;
+    color: var(--color-text-dim);
     letter-spacing: 0.05em;
 }
 
 .apikey-source {
     font-size: 0.7rem;
-    color: #4b5563;
+    color: var(--color-text-muted);
     white-space: nowrap;
 }
 
@@ -2209,7 +2209,7 @@ tr.admin-row--dragover td {
     margin-bottom: 0.875rem;
     transition: border-color 0.15s, transform 0.1s;
 
-    &:hover { border-color: #4b5563; transform: translateY(-1px); }
+    &:hover { border-color: var(--color-text-muted); transform: translateY(-1px); }
     &--active { border-color: $color-primary !important; }
 
     &__label {
@@ -2370,7 +2370,7 @@ tr.admin-row--dragover td {
 
     &__contact-item {
         font-size: 0.72rem;
-        color: #4b5563;
+        color: var(--color-text-muted);
         i { color: #059669; margin-right: 3px; }
     }
 
@@ -2572,4 +2572,5 @@ tr.admin-row--dragover td {
     .cv-preview__entry-link { color: #059669; }
     .cv-preview__tech       { color: #059669; }
 }
+
 
