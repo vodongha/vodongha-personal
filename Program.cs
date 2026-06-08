@@ -279,6 +279,49 @@ app.MapPost("/api/telegram/webhook", async (HttpContext ctx, ChatService chatSer
     return Results.Ok();
 }).DisableAntiforgery();
 
+// ── One-time admin endpoint: sync all secrets from ENV → DB ──────────────────
+// Call POST /api/admin/sync-secrets-to-db with Basic auth (admin credentials).
+// Safe to call multiple times — skips keys with no ENV value, overwrites DB if a value exists.
+app.MapPost("/api/admin/sync-secrets-to-db", async (HttpContext ctx, AppSecretsService secretsSvc, IConfiguration config) =>
+{
+    // Validate Basic auth
+    string? authHeader = ctx.Request.Headers.Authorization.FirstOrDefault();
+    if (authHeader == null || !authHeader.StartsWith("Basic ", StringComparison.Ordinal))
+    {
+        ctx.Response.Headers.WWWAuthenticate = "Basic realm=\"admin\"";
+        return Results.Unauthorized();
+    }
+
+    string encoded = authHeader["Basic ".Length..].Trim();
+    string decoded = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
+    string[] parts = decoded.Split(':', 2);
+    string adminUser = config["Admin:Username"] ?? "admin";
+    string adminPass = config["Admin:Password"] ?? "changeme";
+
+    if (parts.Length != 2 || parts[0] != adminUser || parts[1] != adminPass)
+    {
+        ctx.Response.Headers.WWWAuthenticate = "Basic realm=\"admin\"";
+        return Results.Unauthorized();
+    }
+
+    List<object> results = [];
+
+    foreach (AppSecretDefinition def in AppSecretsService.Definitions)
+    {
+        string? value = config[def.Key];
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            results.Add(new { key = def.Key, status = "skipped", reason = "no value in ENV/config" });
+            continue;
+        }
+
+        bool ok = await secretsSvc.SaveAsync(def.Key, value);
+        results.Add(new { key = def.Key, status = ok ? "saved" : "error" });
+    }
+
+    return Results.Ok(results);
+}).DisableAntiforgery();
+
 app.MapGet("/sitemap.xml", async (BlogService blogSvc) =>
 {
     List<vodongha.Data.Models.BlogPost> posts = await blogSvc.GetAllSlugsForSitemapAsync();
