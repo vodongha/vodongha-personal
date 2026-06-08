@@ -7,7 +7,6 @@ namespace vodongha.Components.Sections;
 public partial class BlogSection : ComponentBase, IDisposable
 {
     [Inject] private BlogService BlogSvc { get; set; } = default!;
-    [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private LanguageService Lang { get; set; } = default!;
 
     private const int InitialCount = 3;

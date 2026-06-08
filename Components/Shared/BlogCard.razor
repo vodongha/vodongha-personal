@@ -1,4 +1,4 @@
-<article class="blog-card" @onclick="OnClick">
+<a class="blog-card" href="/blog/@Item.Slug">
     @if (!string.IsNullOrEmpty(Item.CoverImageUrl))
     {
         <div class="blog-card__cover">
@@ -24,4 +24,4 @@
             @Lang.T("blog.read") <i class="bi bi-arrow-right"></i>
         </span>
     </div>
-</article>
+</a>
