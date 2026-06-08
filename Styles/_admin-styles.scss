@@ -1269,6 +1269,142 @@ tr.admin-row--dragover td {
     }
 }
 
+// ─── Admin table skeleton ────────────────────────────────────────────────────
+
+.admin-tbl-skel {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #1e1e1e;
+    border-radius: 10px;
+    overflow: hidden;
+
+    &__head {
+        display: flex;
+        gap: 1rem;
+        padding: .75rem 1rem;
+        background: #111827;
+        border-bottom: 1px solid #1e1e1e;
+        align-items: center;
+    }
+
+    &__row {
+        display: flex;
+        gap: 1rem;
+        padding: .75rem 1rem;
+        border-bottom: 1px solid #141414;
+        align-items: center;
+
+        &:last-child { border-bottom: none; }
+        &:nth-child(even) { background: #0d0d0d; }
+    }
+
+    &__cell {
+        @extend .skel;
+        height: 14px;
+        flex: 1;
+
+        &--sm   { max-width: 60px; }
+        &--md   { max-width: 100px; }
+        &--lg   { max-width: 200px; }
+        &--icon { max-width: 32px; height: 24px; border-radius: 12px; }
+        &--btn  { max-width: 70px; height: 28px; border-radius: 8px; }
+    }
+}
+
+// ─── Admin chat skeleton ──────────────────────────────────────────────────────
+
+.admin-chat-skel {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: .875rem;
+        padding: .875rem 1rem;
+        background: #141414;
+        border: 1px solid #1e1e1e;
+        border-radius: 10px;
+    }
+
+    &__avatar  { @extend .skel; width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
+    &__body    { flex: 1; display: flex; flex-direction: column; gap: .45rem; }
+    &__name    { @extend .skel; height: 14px; width: 120px; }
+    &__meta    { @extend .skel; height: 11px; width: 180px; }
+    &__time    { @extend .skel; height: 11px; width: 50px; flex-shrink: 0; }
+}
+
+// ─── Admin apikeys skeleton ───────────────────────────────────────────────────
+
+.apikeys-skel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    &__section {
+        border: 1px solid #1e1e1e;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    &__head {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        padding: .875rem 1rem;
+        background: #111827;
+        border-bottom: 1px solid #1e1e1e;
+    }
+
+    &__icon  { @extend .skel; width: 20px; height: 20px; border-radius: 4px; }
+    &__title { @extend .skel; height: 14px; width: 100px; }
+
+    &__rows  { display: flex; flex-direction: column; }
+
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: .75rem 1rem;
+        border-bottom: 1px solid #141414;
+
+        &:last-child { border-bottom: none; }
+    }
+
+    &__label { @extend .skel; height: 13px; width: 120px; }
+    &__input { @extend .skel; height: 34px; flex: 1; border-radius: 8px; }
+    &__btn   { @extend .skel; height: 34px; width: 70px; border-radius: 8px; flex-shrink: 0; }
+}
+
+// ─── CV page skeleton ─────────────────────────────────────────────────────────
+
+.cv-skel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+
+    &__toolbar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: .5rem;
+    }
+    &__tab { @extend .skel; height: 36px; width: 120px; border-radius: 8px; }
+
+    &__preview {
+        @extend .skel;
+        height: 500px;
+        width: 100%;
+        border-radius: 12px;
+    }
+
+    &__actions {
+        display: flex;
+        gap: .75rem;
+    }
+    &__btn { @extend .skel; height: 38px; width: 140px; border-radius: 8px; }
+}
+
 // ─── Costs page ──────────────────────────────────────────────────────────────
 
 .cost-empty {

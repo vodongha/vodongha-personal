@@ -19,6 +19,7 @@ public partial class AdminProjects : ComponentBase, IDisposable
     private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
 
+    private bool _loading = true;
     private List<Project> Projects = [];
     private Project Editing = new();
     private bool ShowForm;
@@ -50,8 +51,10 @@ public partial class AdminProjects : ComponentBase, IDisposable
 
     private async Task LoadAsync()
     {
+        _loading = true;
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         Projects = await db.Projects.OrderBy(p => p.Order).ToListAsync();
+        _loading = false;
     }
 
     private void DragStart(int localIndex) => _dragIndex = _page * _pageSize + localIndex;

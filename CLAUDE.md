@@ -85,7 +85,7 @@ vodongha-personal/
 │   │   ├── AdminLayout.razor         # Admin layout — loads admin.css
 │   │   ├── NavBar.razor              # Top navigation (InteractiveServer — language toggle)
 │   │   ├── FooterSection.razor       # Footer with visitor count badge (InteractiveServer)
-│   │   └── ReconnectModal.razor      # Blazor reconnect overlay
+│   │   └── ReconnectModal.razor      # Blazor reconnect overlay — bilingual VI/EN; circuit retries configured in App.razor Blazor.start()
 │   ├── Pages/
 │   │   ├── Home.razor                # Landing page (InteractiveServer)
 │   │   ├── Blog/BlogPostPage.razor   # Individual blog post with per-page OG meta tags
@@ -120,7 +120,7 @@ vodongha-personal/
 │       ├── AdminNav.razor + .cs      # Shared admin sidebar / mobile bottom nav with unread badges
 │       └── TimezoneDetector.razor    # Invisible InteractiveServer component — reads browser IANA timezone via JS on first render, stores in TimezoneService
 ├── Data/
-│   ├── AppDbContext.cs               # EF context + seed data (Skills, Projects, Experience, Education, SiteSettings, BlogPost)
+│   ├── AppDbContext.cs               # EF context + seed data (Skills, Projects, Experience, Education, SiteSettings, BlogPost × 6)
 │   └── Models/
 │       ├── Skill.cs
 │       ├── Project.cs
@@ -202,6 +202,8 @@ Find `dart.exe` in the NuGet package cache under `AspNetCore.SassCompiler` tools
 ## Blazor — important rules
 
 **Scripts only execute from `App.razor`** — not from `.razor` layout or page components. All `<script>` tags must be placed in `App.razor` (before `</body>`). Currently: `<script src="js/admin.js"></script>`.
+
+**Blazor circuit reconnect config** — `App.razor` uses `autostart="false"` on `blazor.web.js` and calls `Blazor.start({ circuit: { reconnectionOptions: { maxRetries: 10, retryIntervalMilliseconds: (n) => n < 3 ? 1000 : n < 6 ? 3000 : 6000 } } })`. This handles Fly.io `suspend` mode wakeup (~3-5s cold start) without showing a reconnect error to the user.
 
 **Use event delegation** for admin JS — Blazor InteractiveServer renders elements after the WebSocket connects, so `document.querySelectorAll()` called immediately returns nothing. Attach listeners to `document` instead:
 
@@ -345,6 +347,23 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 builder.Services.AddSingleton<HealthMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 ```
+
+## Blog
+
+6 seed blog posts in `AppDbContext.HasData` — all bilingual VI/EN, SEO-optimized (50–60 char titles, 145–158 char meta descriptions, tags):
+
+| Id | Slug | Topic |
+|---|---|---|
+| 1 | `building-with-ai-experience-with-claude-code` | Claude Code — 1 year on .NET enterprise |
+| 2 | `ai-skills-for-developers` | 5 core AI skills for developers 2025 |
+| 3 | `vibe-coding-la-gi` | What is Vibe Coding? |
+| 4 | `deploy-dotnet-fly-io-2025` | Deploy .NET 10 to Fly.io |
+| 5 | `blazor-vs-react-2025` | Blazor vs React 2025 |
+| 6 | `postgresql-entity-framework-core-best-practices` | PostgreSQL + EF Core best practices |
+
+Posts 4→6 cross-link internally: post 4 & 6 cross-link each other; post 6 links to post 1.
+
+**SEO rules for new posts:** Title 50–60 chars, Summary (meta description) 145–158 chars, H2 first (no H1 in content body), FAQ section, internal links, bilingual VI/EN content.
 
 ## CV PDF
 

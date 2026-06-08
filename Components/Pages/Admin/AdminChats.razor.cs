@@ -15,6 +15,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     [Inject] private ToastService Toast { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
 
+    private bool _loading = true;
     private List<ChatSession> _sessions = [];
     private List<ChatMessage> _messages = [];
     private int? _selectedSessionId;
@@ -38,6 +39,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         Tz.OnTimezoneSet += OnTimezoneUpdated;
         _sessions = await ChatSvc.GetSessionsAsync();
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
+        _loading = false;
     }
 
     private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);

@@ -29,6 +29,7 @@ public partial class AdminEducation : ComponentBase, IDisposable
         }
     }
 
+    private bool _loading = true;
     private List<Education> _items = [];
     private Education Editing = new();
     private bool ShowForm;
@@ -49,8 +50,10 @@ public partial class AdminEducation : ComponentBase, IDisposable
 
     private async Task LoadAsync()
     {
+        _loading = true;
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         _items = await db.Educations.OrderBy(e => e.Order).ToListAsync();
+        _loading = false;
     }
 
     private void OpenAdd() { Editing = new Education(); ShowForm = true; }

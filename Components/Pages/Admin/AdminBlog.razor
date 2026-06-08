@@ -31,6 +31,32 @@
             </div>
         </div>
 
+        @if (_loading)
+        {
+            <div class="admin-tbl-skel">
+                <div class="admin-tbl-skel__head">
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                </div>
+                @for (int i = 0; i < 8; i++)
+                {
+                    <div class="admin-tbl-skel__row">
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--btn"></div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
         <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
             <PropertyColumn Property="p => p.Title" Title="@Loc.T("Title")" Sortable="true" />
             <PropertyColumn Property="p => p.Slug" Title="@Loc.T("Slug")" Sortable="true" />
@@ -47,6 +73,7 @@
             </TemplateColumn>
         </QuickGrid>
         <Paginator State="_pagination" />
+        }
 
         @if (ShowForm)
         {
