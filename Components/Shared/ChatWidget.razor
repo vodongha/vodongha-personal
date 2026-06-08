@@ -45,10 +45,13 @@
                                 <i class="bi bi-chevron-down chat-dial__caret"></i>
                             </button>
                             <div class="chat-dial__dropdown" id="chatDialDropdown" style="display:none">
-                                <input class="chat-dial__search" type="text"
-                                       id="chatDialSearch"
-                                       placeholder="Tìm quốc gia..."
-                                       oninput="chatDial.filter(this.value)" />
+                                <div class="chat-dial__search-wrap">
+                                    <i class="bi bi-search"></i>
+                                    <input class="chat-dial__search" type="text"
+                                           id="chatDialSearch"
+                                           placeholder="Tìm quốc gia..."
+                                           oninput="chatDial.filter(this.value)" />
+                                </div>
                                 <div class="chat-dial__list" id="chatDialList">
                                     @foreach (Country c in Countries)
                                     {
@@ -69,10 +72,11 @@
                                    @onchange="e => _selectedRegion = e.Value?.ToString() ?? _selectedRegion" />
                         </div>
                         <input class="chat-phone__number @(_phoneTouched && !IsValidPhone(_phone) ? "chat-form__input--error" : "")"
-                               type="tel" placeholder="@Lang.T("chat.form.phone.placeholder")"
-                               value="@_phone"
-                               @oninput="OnPhoneInput"
-                               @onblur="() => _phoneTouched = true" />
+                               type="tel" id="chatPhoneInput"
+                               placeholder="@Lang.T("chat.form.phone.placeholder")"
+                               oninput="chatDial.cleanPhone(this)"
+                               @onchange="OnPhoneInput"
+                               @onblur="OnPhoneBlur" />
                     </div>
                     @if (_phoneTouched && !IsValidPhone(_phone))
                     {

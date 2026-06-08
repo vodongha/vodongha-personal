@@ -77,11 +77,15 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         _selectedRegion = e.Value?.ToString() ?? _selectedRegion;
     }
 
+    // Called on @onchange (blur) — reads the JS-cleaned value into _phone
     private void OnPhoneInput(ChangeEventArgs e)
     {
-        string raw = e.Value?.ToString() ?? "";
-        if (raw.StartsWith("0")) raw = raw[1..];
-        _phone = new string(raw.Where(c => char.IsDigit(c) || c == ' ' || c == '-').ToArray());
+        _phone = e.Value?.ToString() ?? "";
+    }
+
+    private void OnPhoneBlur()
+    {
+        _phoneTouched = true;
     }
 
     private bool IsValidPhone(string phone)

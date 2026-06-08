@@ -122,5 +122,24 @@ window.chatDial = {
         });
 
         this.close();
+    },
+
+    // Clean phone input in JS — no Blazor round-trip while typing
+    cleanPhone: function (input) {
+        const pos = input.selectionStart;
+        let val = input.value;
+
+        // Strip leading zero
+        if (val.startsWith('0')) val = val.slice(1);
+
+        // Keep only digits, spaces, hyphens
+        const cleaned = val.replace(/[^\d\s\-]/g, '');
+
+        if (cleaned !== input.value) {
+            input.value = cleaned;
+            // Restore cursor position adjusted for removed chars
+            const diff = val.length - cleaned.length;
+            input.setSelectionRange(Math.max(0, pos - diff), Math.max(0, pos - diff));
+        }
     }
 };
