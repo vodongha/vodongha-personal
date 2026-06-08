@@ -256,6 +256,15 @@
     &__sidebar {
         position: sticky;
         top: calc($nav-height + $space-8);
+        // Constrain height so a long TOC scrolls instead of overflowing the viewport.
+        max-height: calc(100vh - #{$nav-height} - #{$space-8} * 2);
+        overflow-y: auto;
+        // Hide scrollbar visually but keep it functional.
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-border) transparent;
+        &::-webkit-scrollbar       { width: 4px; }
+        &::-webkit-scrollbar-track { background: transparent; }
+        &::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
 
         @media (max-width: 1024px) {
             display: none;
