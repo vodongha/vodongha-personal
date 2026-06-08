@@ -614,7 +614,14 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         Lang.OnChange += OnLangChanged;
     }
 
-    private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
+    private void OnTimezoneUpdated()
+    {
+        // Timezone only affects timestamps inside the open chat — skip re-render if closed
+        if (_state != ChatState.Closed)
+        {
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
     private void OnLangChanged() => InvokeAsync(StateHasChanged);
 
     // Map IANA timezone → ISO country code
@@ -661,7 +668,13 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             if (!string.IsNullOrWhiteSpace(code) && Countries.Any(c => c.RegionCode == code))
             {
                 _selectedRegion = code;
-                await InvokeAsync(StateHasChanged);
+                // Only re-render if form is currently visible — avoids a flash
+                // when ipinfo.io returns while the chat panel is still closed.
+                // When user opens the form later, _selectedRegion is already correct.
+                if (_state != ChatState.Closed)
+                {
+                    await InvokeAsync(StateHasChanged);
+                }
                 return;
             }
         }
