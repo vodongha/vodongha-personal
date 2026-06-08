@@ -1,0 +1,24 @@
+@if (!_loading && _related.Count > 0)
+{
+    <section class="related-posts">
+        <h2 class="related-posts__title">@Lang.T("blog.related.title")</h2>
+        <div class="related-posts__grid">
+            @foreach (BlogPost post in _related)
+            {
+                <a class="related-card" href="/blog/@post.Slug">
+                    @if (!string.IsNullOrEmpty(post.CoverImageUrl))
+                    {
+                        <div class="related-card__cover">
+                            <img src="@post.CoverImageUrl" alt="@(Lang.IsVi ? post.Title : (post.TitleEn ?? post.Title))" loading="lazy" />
+                        </div>
+                    }
+                    <div class="related-card__body">
+                        <span class="related-card__date">@Tz.ToUserTime(post.CreatedAt).ToString("dd/MM/yyyy")</span>
+                        <h3 class="related-card__title">@(Lang.IsVi ? post.Title : (post.TitleEn ?? post.Title))</h3>
+                        <p class="related-card__summary">@(Lang.IsVi ? post.Summary : (post.SummaryEn ?? post.Summary))</p>
+                    </div>
+                </a>
+            }
+        </div>
+    </section>
+}

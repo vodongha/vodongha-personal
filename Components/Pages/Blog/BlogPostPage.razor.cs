@@ -40,6 +40,12 @@ public partial class BlogPostPage : ComponentBase, IDisposable
         _post = await BlogSvc.GetBySlugAsync(Slug);
         _loading = false;
         Lang.OnChange += StateHasChanged;
+
+        // Increment view count — fire and forget, don't block render
+        if (_post is not null)
+        {
+            _ = Task.Run(() => BlogSvc.IncrementViewCountAsync(_post.Id));
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -48,6 +54,9 @@ public partial class BlogPostPage : ComponentBase, IDisposable
         try
         {
             await JS.InvokeVoidAsync("initReadingProgress");
+            await JS.InvokeVoidAsync("initCodeCopy",
+                Lang.T("blog.code.copy"),
+                Lang.T("blog.code.copied"));
         }
         catch (JSDisconnectedException) { }
         catch (ObjectDisposedException) { }
@@ -65,5 +74,6 @@ public partial class BlogPostPage : ComponentBase, IDisposable
         Lang.OnChange -= StateHasChanged;
         Tz.OnTimezoneSet -= OnTimezoneUpdated;
         _ = JS.InvokeVoidAsync("destroyReadingProgress");
+        _ = JS.InvokeVoidAsync("destroyCodeCopy");
     }
 }

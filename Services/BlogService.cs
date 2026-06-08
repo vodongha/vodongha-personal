@@ -53,4 +53,57 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory)
             await db.SaveChangesAsync();
         }
     }
+
+    public async Task IncrementViewCountAsync(int id)
+    {
+        await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+        await db.BlogPosts
+            .Where(b => b.Id == id)
+            .ExecuteUpdateAsync(s => s.SetProperty(b => b.ViewCount, b => b.ViewCount + 1));
+    }
+
+    public async Task<List<BlogPost>> GetRelatedAsync(int postId, string tags, int count = 3)
+    {
+        await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+        string[] tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(t => t.Trim()).Where(t => !string.IsNullOrEmpty(t)).ToArray();
+
+        if (tagList.Length == 0)
+        {
+            return await db.BlogPosts
+                .Where(b => b.IsPublished && b.Id != postId)
+                .OrderByDescending(b => b.CreatedAt)
+                .Take(count)
+                .ToListAsync();
+        }
+
+        List<BlogPost> all = await db.BlogPosts
+            .Where(b => b.IsPublished && b.Id != postId)
+            .ToListAsync();
+
+        return all
+            .Select(b => new
+            {
+                Post = b,
+                Score = b.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(t => t.Trim())
+                    .Count(t => tagList.Contains(t, StringComparer.OrdinalIgnoreCase))
+            })
+            .Where(x => x.Score > 0)
+            .OrderByDescending(x => x.Score)
+            .ThenByDescending(x => x.Post.CreatedAt)
+            .Take(count)
+            .Select(x => x.Post)
+            .ToList();
+    }
+
+    public async Task<List<BlogPost>> GetAllSlugsForSitemapAsync()
+    {
+        await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+        return await db.BlogPosts
+            .Where(b => b.IsPublished)
+            .Select(b => new BlogPost { Slug = b.Slug, UpdatedAt = b.UpdatedAt, CreatedAt = b.CreatedAt })
+            .OrderByDescending(b => b.CreatedAt)
+            .ToListAsync();
+    }
 }

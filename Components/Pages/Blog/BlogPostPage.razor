@@ -1,5 +1,6 @@
 @page "/blog/{Slug}"
 @rendermode InteractiveServer
+@using vodongha.Components.Shared
 
 <PageTitle>@(DisplayTitle ?? "Blog") — Võ Đông Hà</PageTitle>
 
@@ -69,6 +70,11 @@ else
                 <span><i class="bi bi-calendar3"></i> @Tz.ToUserTime(_post.CreatedAt).ToString("dd/MM/yyyy")</span>
                 <span>·</span>
                 <span><i class="bi bi-clock"></i> @ReadingMinutes @Lang.T("blog.readtime")</span>
+                @if (_post.ViewCount > 0)
+                {
+                    <span>·</span>
+                    <span><i class="bi bi-eye"></i> @_post.ViewCount @Lang.T("blog.views")</span>
+                }
                 @if (_post.UpdatedAt.HasValue)
                 {
                     <span>· @Lang.T("blog.updated") @Tz.ToUserTime(_post.UpdatedAt.Value).ToString("dd/MM/yyyy")</span>
@@ -89,5 +95,9 @@ else
         <div class="blog-post__content">
             @((MarkupString)DisplayContent)
         </div>
+
+        <BlogShareButtons Slug="@_post.Slug" Title="@DisplayTitle" />
+
+        <RelatedPosts PostId="@_post.Id" Tags="@_post.Tags" />
     </article>
 }
