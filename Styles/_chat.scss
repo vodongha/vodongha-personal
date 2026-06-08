@@ -712,15 +712,14 @@
     }
 
     .chat-msg {
-        &__bubble {
-            .chat-msg--admin & {
-                background: #f1f5f9;
-                color: #0f172a;
-            }
-        }
-
         &__time   { color: #94a3b8; }
         &__ticks  { color: #94a3b8; }
+    }
+
+    // Flat selector — avoids the SCSS `& inside [data-theme]` selector inversion bug
+    .chat-msg--admin .chat-msg__bubble {
+        background: #f1f5f9;
+        color: #0f172a;
     }
 
     .chat-msg--admin.chat-msg--unread .chat-msg__bubble {
