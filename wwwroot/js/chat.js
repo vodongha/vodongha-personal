@@ -36,3 +36,91 @@ window.chatUtils = {
         }
     }
 };
+
+// ── Dial-code picker (pure JS — no Blazor re-render) ──────────────
+window.chatDial = {
+    _dotNetRef: null,
+
+    init: function (dotNetRef) {
+        this._dotNetRef = dotNetRef;
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const picker = document.getElementById('chatDialPicker');
+            if (picker && !picker.contains(e.target)) {
+                chatDial.close();
+            }
+        });
+    },
+
+    toggle: function () {
+        const dd = document.getElementById('chatDialDropdown');
+        if (!dd) return;
+        const isOpen = dd.style.display !== 'none';
+        if (isOpen) {
+            this.close();
+        } else {
+            dd.style.display = 'block';
+            document.getElementById('chatDialPicker')?.classList.add('chat-dial--open');
+            const search = document.getElementById('chatDialSearch');
+            if (search) { search.value = ''; this.filter(''); search.focus(); }
+        }
+    },
+
+    close: function () {
+        const dd = document.getElementById('chatDialDropdown');
+        if (dd) dd.style.display = 'none';
+        document.getElementById('chatDialPicker')?.classList.remove('chat-dial--open');
+    },
+
+    filter: function (q) {
+        const list = document.getElementById('chatDialList');
+        if (!list) return;
+        const lower = q.toLowerCase();
+        let shown = 0;
+        for (const btn of list.querySelectorAll('.chat-dial__item')) {
+            const match = !lower
+                || btn.dataset.name.toLowerCase().includes(lower)
+                || btn.dataset.dial.includes(lower)
+                || btn.dataset.region.toLowerCase().includes(lower);
+            btn.style.display = (match && shown < 50) ? '' : 'none';
+            if (match) shown++;
+        }
+        // empty state
+        let empty = list.querySelector('.chat-dial__empty-js');
+        if (shown === 0) {
+            if (!empty) {
+                empty = document.createElement('div');
+                empty.className = 'chat-dial__empty chat-dial__empty-js';
+                empty.textContent = 'Không tìm thấy';
+                list.appendChild(empty);
+            }
+            empty.style.display = '';
+        } else if (empty) {
+            empty.style.display = 'none';
+        }
+    },
+
+    select: function (btn) {
+        const region = btn.dataset.region;
+        const dial   = btn.dataset.dial;
+        const flag   = btn.querySelector('.chat-dial__flag')?.textContent ?? '';
+
+        // Update trigger label
+        const label = document.getElementById('chatDialLabel');
+        if (label) label.textContent = flag + ' ' + dial;
+
+        // Update hidden input and fire change event so Blazor picks it up
+        const hidden = document.getElementById('chatDialRegion');
+        if (hidden) {
+            hidden.value = region;
+            hidden.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        // Highlight active item
+        document.querySelectorAll('#chatDialList .chat-dial__item').forEach(b => {
+            b.classList.toggle('chat-dial__item--active', b === btn);
+        });
+
+        this.close();
+    }
+};

@@ -70,29 +70,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private bool _nameTouched;
     private bool _phoneTouched;
     private bool _emailTouched;
-    private bool _dialOpen;
-    private string _dialSearch = "";
     private Country SelectedCountry => Countries.FirstOrDefault(c => c.RegionCode == _selectedRegion) ?? Countries[0];
-
-    private IEnumerable<Country> FilteredCountries => string.IsNullOrWhiteSpace(_dialSearch)
-        ? Countries
-        : Countries.Where(c =>
-            c.Name.Contains(_dialSearch, StringComparison.OrdinalIgnoreCase) ||
-            c.Dial.Contains(_dialSearch, StringComparison.OrdinalIgnoreCase) ||
-            c.RegionCode.Contains(_dialSearch, StringComparison.OrdinalIgnoreCase));
-
-    private void SelectCountry(Country c)
-    {
-        _selectedRegion = c.RegionCode;
-        _dialOpen = false;
-        _dialSearch = "";
-    }
-
-    private void ToggleDial() { _dialOpen = !_dialOpen; if (!_dialOpen) _dialSearch = ""; }
 
     private void OnDialChanged(ChangeEventArgs e)
     {
-        _selectedRegion = e.Value?.ToString() ?? "VN";
+        _selectedRegion = e.Value?.ToString() ?? _selectedRegion;
     }
 
     private void OnPhoneInput(ChangeEventArgs e)
@@ -164,7 +146,10 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-            // Auto-select country from already-detected timezone (no external API needed)
+            // Init JS dial picker (click-outside handler)
+        await JS.InvokeVoidAsync("chatDial.init", DotNetObjectReference.Create(this));
+
+        // Auto-select country from already-detected timezone (no external API needed)
         _ = DetectCountryAsync();
 
         try
