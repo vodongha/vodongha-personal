@@ -198,6 +198,15 @@ window.setTheme = function (theme) {
     if (meta) { meta.setAttribute('content', theme === 'light' ? 'light' : 'dark'); }
 };
 
+// Returns the stored user preference, or falls back to the OS/system preference.
+// Used by Blazor components on first render to sync the toggle icon without
+// having to pass the same logic down from every page.
+window.getUserTheme = function () {
+    var stored = localStorage.getItem('theme');
+    if (stored === 'light' || stored === 'dark') { return stored; }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
+
 // ── Code block copy buttons ───────────────────────────────────────────────────
 window.initCodeCopy = function (copyLabel, copiedLabel) {
     var content = document.querySelector('.blog-post__content');

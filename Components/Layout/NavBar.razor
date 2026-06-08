@@ -76,12 +76,10 @@
                 Lang.Set(savedLang);
             }
 
-            string savedTheme = await JS.InvokeAsync<string>("localStorage.getItem", "theme") ?? "dark";
-            if (savedTheme != _theme)
-            {
-                _theme = savedTheme;
-                await JS.InvokeVoidAsync("setTheme", _theme);
-            }
+            // getUserTheme() returns the stored user preference, or falls back to the OS preference.
+            string resolvedTheme = await JS.InvokeAsync<string>("getUserTheme");
+            _theme = resolvedTheme;
+            await JS.InvokeVoidAsync("setTheme", _theme);
 
             StateHasChanged();
         }
