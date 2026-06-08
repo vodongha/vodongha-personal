@@ -1466,9 +1466,9 @@ tr.admin-row--dragover td {
 
 .skel {
     background: linear-gradient(90deg,
-        #1e1e1e 25%,
-        var(--admin-border) 50%,
-        #1e1e1e 75%
+        var(--skel-admin-base)    25%,
+        var(--skel-admin-shimmer) 50%,
+        var(--skel-admin-base)    75%
     );
     background-size: 800px 100%;
     animation: skel-shimmer 1.6s infinite linear;
@@ -1609,7 +1609,8 @@ tr.admin-row--dragover td {
 
     &__col-label {
         font-size: 0.75rem;
-        color: var(--color-text-dim);
+        // Pin to light-on-dark values — banner bg is always dark regardless of page theme.
+        color: #9ca3af;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 0.4rem;
@@ -1627,13 +1628,13 @@ tr.admin-row--dragover td {
         font-variant-numeric: tabular-nums;
         line-height: 1.1;
 
-        &--actual { color: $color-primary; }
-        &--na     { color: var(--color-text-muted); font-size: 1.4rem; }
+        &--actual { color: #6ee7b7; }  // always dark-mode green — banner bg stays dark
+        &--na     { color: #6b7280; font-size: 1.4rem; }
     }
 
     &__col-sub {
         font-size: 0.72rem;
-        color: var(--color-text-muted);
+        color: #6b7280;  // pin: always light-on-dark
         margin-top: 0.25rem;
     }
 
@@ -1648,7 +1649,7 @@ tr.admin-row--dragover td {
 
     &__updated {
         font-size: 0.72rem;
-        color: var(--color-text-muted);
+        color: #6b7280;  // pin: always light-on-dark
         margin-left: auto;
     }
 }
@@ -1662,7 +1663,7 @@ tr.admin-row--dragover td {
         justify-content: space-between;
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
-        border-bottom: 1px solid #1f2937;
+        border-bottom: 1px solid var(--admin-border);
     }
 
     &__title {
@@ -1700,7 +1701,7 @@ tr.admin-row--dragover td {
     }
 }
 
-.cost-green { color: #6ee7b7 !important; }
+.cost-green { color: $color-primary !important; }
 .cost-yellow { color: #fbbf24 !important; }
 
 .cost-sub {
@@ -1720,7 +1721,7 @@ tr.admin-row--dragover td {
     position: absolute;
     top: 0.5rem;
     left: 0.5rem;
-    color: #374151;
+    color: var(--admin-border-hover);
     font-size: 0.85rem;
     cursor: grab;
     transition: color 0.15s;
@@ -1741,8 +1742,8 @@ tr.admin-row--dragover td {
 
 .cost-card-ghost {
     opacity: 0.4;
-    background: #1a1a2e !important;
-    border: 1px dashed #4b5563 !important;
+    background: var(--admin-elevated) !important;
+    border: 1px dashed var(--admin-border-hover) !important;
 }
 
 .cost-card-chosen {
@@ -1760,7 +1761,7 @@ tr.admin-row--dragover td {
 .cost-progress {
     flex: 1;
     height: 6px;
-    background: #1f2937;
+    background: var(--admin-border);
     border-radius: 999px;
     overflow: hidden;
 
@@ -1787,7 +1788,7 @@ tr.admin-row--dragover td {
     justify-content: center;
     gap: 0.3rem;
     padding: 0.35rem 0.75rem;
-    border: 1px solid #374151;
+    border: 1px solid var(--admin-border);
     border-radius: 6px;
     background: transparent;
     color: var(--color-text-dim);
