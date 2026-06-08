@@ -82,6 +82,30 @@ using (IServiceScope scope = app.Services.CreateScope())
     await db.Database.MigrateAsync();
 }
 
+// One-time: sync secrets from ENV → DB on startup.
+// Only saves keys that have a value in ENV and are NOT yet in the DB.
+// After all keys are saved, this block becomes a no-op.
+{
+    using IServiceScope scope = app.Services.CreateScope();
+    AppSecretsService secretsSvc = scope.ServiceProvider.GetRequiredService<AppSecretsService>();
+    IConfiguration config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+    foreach (AppSecretDefinition def in AppSecretsService.Definitions)
+    {
+        // Skip if already in DB
+        if (await secretsSvc.HasOverrideAsync(def.Key))
+        {
+            continue;
+        }
+
+        string? value = config[def.Key];
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            await secretsSvc.SaveAsync(def.Key, value);
+        }
+    }
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
