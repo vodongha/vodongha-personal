@@ -36,14 +36,39 @@
                 <div class="chat-form__group">
                     <label class="chat-form__label">@Lang.T("chat.form.phone")</label>
                     <div class="chat-phone">
-                        <select class="chat-phone__dial" @onchange="OnDialChanged">
-                            @foreach (Country c in Countries)
+                        <div class="chat-dial @(_dialOpen ? "chat-dial--open" : "")">
+                            <button type="button" class="chat-dial__trigger" @onclick="ToggleDial">
+                                @SelectedCountry.Flag @SelectedCountry.Dial
+                                <i class="bi bi-chevron-down chat-dial__caret"></i>
+                            </button>
+                            @if (_dialOpen)
                             {
-                                <option value="@c.RegionCode" selected="@(c.RegionCode == _selectedRegion)">
-                                    @c.Flag @c.Dial
-                                </option>
+                                <div class="chat-dial__dropdown">
+                                    <input class="chat-dial__search"
+                                           type="text"
+                                           placeholder="Tìm quốc gia..."
+                                           @bind="_dialSearch"
+                                           @bind:event="oninput"
+                                           autofocus />
+                                    <div class="chat-dial__list">
+                                        @foreach (Country c in FilteredCountries.Take(50))
+                                        {
+                                            <button type="button"
+                                                    class="chat-dial__item @(c.RegionCode == _selectedRegion ? "chat-dial__item--active" : "")"
+                                                    @onclick="() => SelectCountry(c)">
+                                                <span class="chat-dial__flag">@c.Flag</span>
+                                                <span class="chat-dial__name">@c.Name</span>
+                                                <span class="chat-dial__code">@c.Dial</span>
+                                            </button>
+                                        }
+                                        @if (!FilteredCountries.Any())
+                                        {
+                                            <div class="chat-dial__empty">Không tìm thấy</div>
+                                        }
+                                    </div>
+                                </div>
                             }
-                        </select>
+                        </div>
                         <input class="chat-phone__number @(_phoneTouched && !IsValidPhone(_phone) ? "chat-form__input--error" : "")"
                                type="tel" placeholder="@Lang.T("chat.form.phone.placeholder")"
                                value="@_phone"
