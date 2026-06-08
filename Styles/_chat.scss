@@ -220,7 +220,120 @@
 .chat-phone {
     display: flex;
     gap: 0.4rem;
+}
 
+// ── Custom dial-code picker ───────────────────────────────────────
+.chat-dial {
+    position: relative;
+    flex-shrink: 0;
+
+    &__trigger {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: var(--color-bg-card, #0f0f0f);
+        border: 1px solid var(--color-border, #2a2a2a);
+        border-radius: 8px;
+        padding: 0.5rem 0.5rem;
+        color: var(--color-text, #e5e7eb);
+        font-size: 0.875rem;
+        font-family: inherit;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: border-color 150ms;
+        height: 100%;
+
+        &:hover, .chat-dial--open & { border-color: #6ee7b7; }
+    }
+
+    &__caret {
+        font-size: 0.65rem;
+        opacity: 0.6;
+        transition: transform 150ms;
+        .chat-dial--open & { transform: rotate(180deg); }
+    }
+
+    &__dropdown {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        z-index: 100;
+        background: var(--color-bg-elevated, #1a1a1a);
+        border: 1px solid var(--color-border, #2a2a2a);
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        width: 220px;
+        overflow: hidden;
+    }
+
+    &__search {
+        display: block;
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--color-border, #2a2a2a);
+        padding: 0.5rem 0.75rem;
+        color: var(--color-text, #e5e7eb);
+        font-size: 0.8rem;
+        font-family: inherit;
+        outline: none;
+
+        &::placeholder { color: var(--color-text-muted, #6b7280); }
+    }
+
+    &__list {
+        max-height: 220px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+
+        &::-webkit-scrollbar { width: 4px; }
+        &::-webkit-scrollbar-thumb { background: var(--color-border, #2a2a2a); border-radius: 2px; }
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 0.45rem 0.75rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-family: inherit;
+        color: var(--color-text, #e5e7eb);
+        text-align: left;
+        transition: background 100ms;
+
+        &:hover { background: var(--color-bg-card, #141414); }
+        &--active { background: rgba(110, 231, 183, 0.1); color: #6ee7b7; }
+    }
+
+    &__flag { font-size: 1rem; flex-shrink: 0; }
+
+    &__name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.78rem;
+    }
+
+    &__code {
+        font-size: 0.75rem;
+        color: var(--color-text-muted, #6b7280);
+        flex-shrink: 0;
+    }
+
+    &__empty {
+        padding: 0.75rem;
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--color-text-muted, #6b7280);
+    }
+}
+
+.chat-phone {
     &__dial {
         background: #0f0f0f;
         border: 1px solid #2a2a2a;
