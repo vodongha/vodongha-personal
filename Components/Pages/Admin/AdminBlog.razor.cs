@@ -27,6 +27,7 @@ public partial class AdminBlog : ComponentBase, IDisposable
         }
     }
 
+    private bool _loading = true;
     private List<BlogPost> _posts = [];
     private BlogPost Editing = new();
     private bool ShowForm;
@@ -46,7 +47,12 @@ public partial class AdminBlog : ComponentBase, IDisposable
         await LoadAsync();
     }
 
-    private async Task LoadAsync() => _posts = await BlogSvc.GetAllAsync();
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        _posts = await BlogSvc.GetAllAsync();
+        _loading = false;
+    }
 
     private void OpenAdd() { Editing = new BlogPost { CreatedAt = DateTime.UtcNow }; _isNew = true; ShowForm = true; }
 

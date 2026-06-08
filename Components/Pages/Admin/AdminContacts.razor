@@ -19,7 +19,31 @@
             }
         </header>
 
-        @if (Messages.Count == 0)
+        @if (_loading)
+        {
+            <div class="admin-tbl-skel">
+                <div class="admin-tbl-skel__head">
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                </div>
+                @for (int i = 0; i < 8; i++)
+                {
+                    <div class="admin-tbl-skel__row">
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--btn"></div>
+                    </div>
+                }
+            </div>
+        }
+        else if (Messages.Count == 0)
         {
             <div class="admin-empty">
                 <i class="bi bi-inbox" style="font-size:3rem;opacity:.3"></i>

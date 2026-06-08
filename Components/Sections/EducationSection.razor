@@ -4,7 +4,24 @@
         <h2 class="section__title">@Lang.T("edu.title")</h2>
     </div>
 
-    @if (_items is not null)
+    @if (_items is null)
+    {
+        <div class="timeline-skel">
+            @for (int i = 0; i < 3; i++)
+            {
+                <div class="timeline-skel__item">
+                    <div class="timeline-skel__dot"></div>
+                    <div class="timeline-skel__content">
+                        <div class="timeline-skel__role"></div>
+                        <div class="timeline-skel__period"></div>
+                        <div class="timeline-skel__company"></div>
+                        <div class="timeline-skel__desc"></div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
     {
         <div class="timeline">
             @foreach (Education item in VisibleItems)

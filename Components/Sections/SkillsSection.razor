@@ -5,7 +5,28 @@
         <p class="section__subtitle">@Lang.T("skills.subtitle")</p>
     </div>
 
-    @if (_grouped is not null)
+    @if (_grouped is null)
+    {
+        <div class="skills-skel">
+            @for (int c = 0; c < 3; c++)
+            {
+                <div class="skills-skel__cat">
+                    <div class="skills-skel__cat-title"></div>
+                    @for (int i = 0; i < 4; i++)
+                    {
+                        <div class="skills-skel__item">
+                            <div class="skills-skel__item-header">
+                                <div class="skills-skel__item-name"></div>
+                                <div class="skills-skel__item-pct"></div>
+                            </div>
+                            <div class="skills-skel__bar"></div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else
     {
         <div class="skills__grid">
             @foreach (KeyValuePair<string, List<Skill>> category in VisibleCategories)
