@@ -69,14 +69,7 @@
 
                 <button class="chat-form__submit" @onclick="StartChat"
                         disabled="@(!CanStartChat || _loading)">
-                    @if (_loading)
-                    {
-                        <i class="bi bi-arrow-clockwise admin-spin"></i>
-                    }
-                    else
-                    {
-                        <span>@Lang.T("chat.form.start") <i class="bi bi-arrow-right"></i></span>
-                    }
+                    <span>@Lang.T("chat.form.start") <i class="bi bi-arrow-right"></i></span>
                 </button>
             </div>
         }
