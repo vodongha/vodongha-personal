@@ -87,10 +87,21 @@
 
     private async Task ToggleTheme()
     {
-        // Read actual data-theme from the DOM and flip it — avoids the race where
-        // _theme hasn't been synced yet (OnAfterRenderAsync still in flight).
-        _theme = await JS.InvokeAsync<string>("toggleTheme");
-        StateHasChanged();
+        // toggleTheme() reads data-theme directly from the DOM and flips it —
+        // avoids the race where _theme hasn't been synced yet.
+        // Defined inline in App.razor so it's always available regardless of
+        // whether the browser has a stale cached admin.js.
+        try
+        {
+            _theme = await JS.InvokeAsync<string>("toggleTheme");
+        }
+        catch
+        {
+            // Hard fallback: flip _theme directly.
+            _theme = _theme == "dark" ? "light" : "dark";
+            try { await JS.InvokeVoidAsync("setTheme", _theme); } catch { }
+            try { await JS.InvokeVoidAsync("localStorage.setItem", "theme", _theme); } catch { }
+        }
     }
 
     private async Task ToggleLang()
