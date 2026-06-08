@@ -13,6 +13,7 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private SiteSettingService SettingSvc { get; set; } = default!;
+    [Inject] private PushNotificationService PushSvc { get; set; } = default!;
 
     private int _unreadChatCount;
     private int _unreadMessagesCount;
@@ -54,8 +55,34 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
                 // Keep localStorage in sync so the public site matches.
                 await JS.InvokeVoidAsync("localStorage.setItem", "theme", _theme);
                 StateHasChanged();
+
+                // Subscribe admin device for push notifications (non-critical)
+                _ = SubscribeAdminPushAsync();
             }
             catch { }
+        }
+    }
+
+    private async Task SubscribeAdminPushAsync()
+    {
+        try
+        {
+            string? subscriptionJson = await JS.InvokeAsync<string?>("pushUtils.subscribe");
+            if (string.IsNullOrEmpty(subscriptionJson))
+            {
+                return;
+            }
+
+            using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(subscriptionJson);
+            string endpoint = doc.RootElement.GetProperty("endpoint").GetString() ?? "";
+            string p256dh   = doc.RootElement.GetProperty("keys").GetProperty("p256dh").GetString() ?? "";
+            string auth     = doc.RootElement.GetProperty("keys").GetProperty("auth").GetString() ?? "";
+
+            await PushSvc.SaveSubscriptionAsync(endpoint, p256dh, auth, chatSessionId: null, isAdmin: true);
+        }
+        catch
+        {
+            // Non-critical — silently ignore
         }
     }
 

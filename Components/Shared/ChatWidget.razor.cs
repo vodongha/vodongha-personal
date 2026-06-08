@@ -16,6 +16,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
+    [Inject] private PushNotificationService PushSvc { get; set; } = default!;
 
     private enum ChatState { Closed, Form, Chat }
 
@@ -309,10 +310,35 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             _messages = (await ChatSvc.GetMessagesAsync(session.Id))
                 .Select(m => new ChatMessageDto(m.Id, m.Content, m.IsFromUser, m.SentAt))
                 .ToList();
+            // Ask for push permission — fire-and-forget, non-critical
+            _ = SubscribePushAsync(session.Id, isAdmin: false);
         }
         finally
         {
             _loading = false;
+        }
+    }
+
+    private async Task SubscribePushAsync(int? chatSessionId, bool isAdmin)
+    {
+        try
+        {
+            string? subscriptionJson = await JS.InvokeAsync<string?>("pushUtils.subscribe");
+            if (string.IsNullOrEmpty(subscriptionJson))
+            {
+                return;
+            }
+
+            using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(subscriptionJson);
+            string endpoint = doc.RootElement.GetProperty("endpoint").GetString() ?? "";
+            string p256dh   = doc.RootElement.GetProperty("keys").GetProperty("p256dh").GetString() ?? "";
+            string auth     = doc.RootElement.GetProperty("keys").GetProperty("auth").GetString() ?? "";
+
+            await PushSvc.SaveSubscriptionAsync(endpoint, p256dh, auth, chatSessionId, isAdmin);
+        }
+        catch
+        {
+            // Push subscription is non-critical — silently ignore errors
         }
     }
 
