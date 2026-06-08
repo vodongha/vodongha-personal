@@ -125,6 +125,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private bool _pendingScrollToUnread;
     private bool _pushDenied;   // true when Notification.permission === 'denied'
+    private string _pushHelpUrl = "https://support.google.com/chrome/answer/3220216"; // default Chrome
 
     private static bool IsValidEmail(string email)
     {
@@ -334,7 +335,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         try
         {
             string permission = await JS.InvokeAsync<string>("pushUtils.getPermission");
-            _pushDenied = permission == "denied";
+            if (permission == "denied")
+            {
+                _pushHelpUrl = await JS.InvokeAsync<string>("pushUtils.getNotificationHelpUrl");
+                _pushDenied = true;
+            }
             await InvokeAsync(StateHasChanged);
         }
         catch { /* non-critical */ }

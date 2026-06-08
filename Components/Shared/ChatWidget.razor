@@ -169,7 +169,7 @@
                 <div class="chat-push-hint">
                     <i class="bi bi-bell-slash"></i>
                     <span>@Lang.T("chat.push.denied")</span>
-                    <a href="https://support.google.com/chrome/answer/3220216" target="_blank" rel="noopener" class="chat-push-hint__link">
+                    <a href="@_pushHelpUrl" target="_blank" rel="noopener" class="chat-push-hint__link">
                         @Lang.T("chat.push.howto")
                     </a>
                     <button class="chat-push-hint__close" @onclick="() => _pushDenied = false" title="Đóng">
