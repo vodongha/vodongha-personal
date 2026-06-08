@@ -8,7 +8,20 @@ window.healthChart = (function () {
         return gradient;
     }
 
+    function getThemeColors() {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        return {
+            grid:    isLight ? 'rgba(0,0,0,0.07)'  : '#1f1f1f',
+            ticks:   isLight ? '#64748b'            : '#4b5563',
+            ttBg:    isLight ? '#ffffff'            : '#1a1a1a',
+            ttBorder:isLight ? '#e2e8f0'            : '#2a2a2a',
+            ttTitle: isLight ? '#64748b'            : '#9ca3af',
+            ttBody:  isLight ? '#0f172a'            : '#e5e7eb',
+        };
+    }
+
     function buildConfig(labels, values, lineColor, label, unit) {
+        const c = getThemeColors();
         return {
             type: 'line',
             data: {
@@ -25,9 +38,9 @@ window.healthChart = (function () {
                     fill: true,
                     backgroundColor: function (context) {
                         const chart = context.chart;
-                        const { ctx: c, chartArea } = chart;
+                        const { ctx: ch, chartArea } = chart;
                         if (!chartArea) return 'transparent';
-                        const gradient = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                        const gradient = ch.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
                         gradient.addColorStop(0, lineColor + '44');
                         gradient.addColorStop(1, lineColor + '00');
                         return gradient;
@@ -42,11 +55,11 @@ window.healthChart = (function () {
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: '#1a1a1a',
-                        borderColor: '#2a2a2a',
+                        backgroundColor: c.ttBg,
+                        borderColor: c.ttBorder,
                         borderWidth: 1,
-                        titleColor: '#9ca3af',
-                        bodyColor: '#e5e7eb',
+                        titleColor: c.ttTitle,
+                        bodyColor: c.ttBody,
                         callbacks: {
                             label: function (ctx) {
                                 return ' ' + ctx.parsed.y + ' ' + unit;
@@ -56,18 +69,18 @@ window.healthChart = (function () {
                 },
                 scales: {
                     x: {
-                        grid: { color: '#1f1f1f' },
+                        grid: { color: c.grid },
                         ticks: {
-                            color: '#4b5563',
+                            color: c.ticks,
                             font: { size: 10 },
                             maxRotation: 0,
                             maxTicksLimit: 6,
                         }
                     },
                     y: {
-                        grid: { color: '#1f1f1f' },
+                        grid: { color: c.grid },
                         ticks: {
-                            color: '#4b5563',
+                            color: c.ticks,
                             font: { size: 10 },
                             callback: function (val) { return val + ' ' + unit; }
                         },
@@ -101,6 +114,26 @@ window.healthChart = (function () {
             if (instances[canvasId]) {
                 instances[canvasId].destroy();
                 delete instances[canvasId];
+            }
+        },
+
+        // Rebuild all active charts with new theme colors (call after theme toggle)
+        onThemeChange: function () {
+            for (const id of Object.keys(instances)) {
+                const chart = instances[id];
+                if (!chart) continue;
+                const th = getThemeColors();
+                // Update grid + tick colors
+                chart.options.scales.x.grid.color  = th.grid;
+                chart.options.scales.y.grid.color  = th.grid;
+                chart.options.scales.x.ticks.color = th.ticks;
+                chart.options.scales.y.ticks.color = th.ticks;
+                // Update tooltip colors
+                chart.options.plugins.tooltip.backgroundColor = th.ttBg;
+                chart.options.plugins.tooltip.borderColor     = th.ttBorder;
+                chart.options.plugins.tooltip.titleColor      = th.ttTitle;
+                chart.options.plugins.tooltip.bodyColor       = th.ttBody;
+                chart.update('none'); // 'none' = skip animation
             }
         }
     };
