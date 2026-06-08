@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.EntityFrameworkCore;
 using vodongha.Data;
 using vodongha.Data.Models;
@@ -13,7 +12,7 @@ public partial class AdminCv : ComponentBase, IDisposable
 {
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private SiteSettingService SettingsSvc { get; set; } = default!;
-    [Inject] private NavigationManager Nav { get; set; } = default!;
+    [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private AdminLocalizationService Loc { get; set; } = default!;
 
     private CvData? _data;
@@ -75,11 +74,11 @@ public partial class AdminCv : ComponentBase, IDisposable
         _selectedTemplate = t;
     }
 
-    private void Download()
+    private async Task Download()
     {
-        // Navigate to the API endpoint — PDF is streamed directly over HTTP,
-        // avoiding the 32KB SignalR message size limit.
-        Nav.NavigateTo($"/api/cv/download?template={_selectedTemplate}", forceLoad: true);
+        // Open PDF in a new tab — avoids navigating away from the current page
+        // and bypasses the chrome-error context restriction on window.location.
+        await JS.InvokeVoidAsync("open", $"/api/cv/download?template={_selectedTemplate}", "_blank");
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
