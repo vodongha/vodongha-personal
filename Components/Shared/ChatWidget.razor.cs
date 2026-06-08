@@ -188,23 +188,16 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                         _lastReadMessageId = lastReadResult.Value;
                         _unreadCount = _messages.Count(m => !m.IsFromUser && m.Id > _lastReadMessageId);
 
-                        if (_unreadCount > 0)
-                        {
-                            // Keep closed so badge shows; divider will be set when user opens
-                            _state = ChatState.Closed;
-                        }
-                        else
-                        {
-                            _state = ChatState.Chat;
-                        }
+                        // Always stay closed on page load — user opens manually or via notification
+                        _state = ChatState.Closed;
                     }
                     else
                     {
-                        // First visit or no saved pointer — mark all current messages as read
+                        // No saved read pointer — mark all as read, stay closed
                         _lastReadMessageId = _messages.Count > 0 ? _messages.Max(m => m.Id) : 0;
                         _unreadCount = 0;
                         _ = SaveLastReadAsync();
-                        _state = ChatState.Chat;
+                        _state = ChatState.Closed;
                     }
 
                     // Restore admin-read pointer (for ✓✓ on user's outgoing messages)
