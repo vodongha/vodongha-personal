@@ -12,10 +12,12 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
     [Inject] private ChatService ChatSvc { get; set; } = default!;
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private SiteSettingService SettingSvc { get; set; } = default!;
 
     private int _unreadChatCount;
     private int _unreadMessagesCount;
     private bool _menuOpen;
+    private string _theme = "dark";
 
     protected override async Task OnInitializedAsync()
     {
@@ -31,14 +33,44 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
         {
             try
             {
-                string? stored = await JS.InvokeAsync<string?>("localStorage.getItem", "adminLang");
-                if (stored == "EN" || stored == "VI")
+                string? storedLang = await JS.InvokeAsync<string?>("localStorage.getItem", "adminLang");
+                if (storedLang == "EN" || storedLang == "VI")
                 {
-                    Loc.SetLang(stored);
+                    Loc.SetLang(storedLang);
                 }
+
+                // Read from DB first (admin explicit choice), fall back to OS preference via JS.
+                string? dbTheme = await SettingSvc.GetAsync("admin.theme");
+                if (dbTheme == "light" || dbTheme == "dark")
+                {
+                    _theme = dbTheme;
+                }
+                else
+                {
+                    // No admin preference saved yet — use OS/system preference.
+                    _theme = await JS.InvokeAsync<string>("getUserTheme");
+                }
+                await JS.InvokeVoidAsync("setTheme", _theme);
+                // Keep localStorage in sync so the public site matches.
+                await JS.InvokeVoidAsync("localStorage.setItem", "theme", _theme);
+                StateHasChanged();
             }
             catch { }
         }
+    }
+
+    private async Task ToggleTheme()
+    {
+        _theme = _theme == "dark" ? "light" : "dark";
+        try
+        {
+            await JS.InvokeVoidAsync("setTheme", _theme);
+            // Persist explicit admin choice to DB (survives browser clears / other devices).
+            await SettingSvc.SetAsync("admin.theme", _theme);
+            // Also sync localStorage so the public site stays in sync for this browser.
+            await JS.InvokeVoidAsync("localStorage.setItem", "theme", _theme);
+        }
+        catch { }
     }
 
     private async Task ToggleLang()
