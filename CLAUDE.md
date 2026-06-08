@@ -494,3 +494,36 @@ Migrations apply automatically on startup. Seed data lives in `AppDbContext.OnMo
 | `Email__ResendApiKey` | Resend API key for contact form |
 
 Set with: `flyctl secrets set KEY=VALUE`
+
+## Skeleton loading
+
+All pages show animated shimmer placeholders while Blazor circuit connects and data loads. Pattern:
+
+**Admin pages** — `private bool _loading = true;` in `.razor.cs`, set to `false` after `LoadAsync()`. Razor uses `@if (_loading) { <skeleton> } else { <real content> }`.
+
+**Public sections** (SkillsSection, ProjectsSection, ExperienceSection, EducationSection, BlogSection) — data fields initialized as `null`, skeleton shown while null:
+```razor
+@if (_items is null) { <timeline-skel> }
+else { <real content> }
+```
+
+**Special cases:**
+- `HeroSection` — settings dictionary is always non-null, uses `private bool _loaded = false;` flag instead
+- `BlogPostPage` — `_loading = true` distinguishes loading from not-found; `_post is null` after `_loading = false` means 404
+- Admin pages with empty state (Contacts, Chats) use 3-branch chain: `@if (_loading) { skel } else if (count == 0) { empty } else { table }`
+
+**SCSS:**
+- Public skeletons: `Styles/_skeletons.scss` — `@keyframes skel-pub-shimmer` + `%pub-skel` extend placeholder; classes: `.hero-skel`, `.skills-skel`, `.projects-skel`, `.timeline-skel`, `.blog-skel`, `.blog-post-skel`
+- Admin skeletons: in `Styles/_admin-styles.scss` — `.admin-tbl-skel`, `.admin-chat-skel`, `.apikeys-skel`, `.cv-skel`
+
+## Current version
+
+**v2.0.4** (skeleton loading for all pages — admin + client)
+
+| Version | Changes |
+|---|---|
+| v2.0.4 | Shimmer skeleton loading for all admin pages and all public sections |
+| v2.0.3 | 6 SEO blog posts, AdminCosts skeleton, Blazor reconnect config, bilingual ReconnectModal |
+| v2.0.2 | CV PDF (QuestPDF + SkiaSharp, 3 templates), AdminCv page |
+| v2.0.1 | Chat widget (SignalR + Telegram), AdminChats |
+| v2.0.0 | Initial launch |
