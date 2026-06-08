@@ -90,6 +90,19 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
+// Redirect www → non-www canonical
+app.Use(async (context, next) =>
+{
+    HostString host = context.Request.Host;
+    if (host.Host.StartsWith("www.", StringComparison.OrdinalIgnoreCase))
+    {
+        string canonical = $"https://{host.Host[4..]}{context.Request.Path}{context.Request.QueryString}";
+        context.Response.Redirect(canonical, permanent: true);
+        return;
+    }
+    await next();
+});
+
 // Track unique visitors by IP on page requests
 app.Use(async (context, next) =>
 {
