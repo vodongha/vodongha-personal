@@ -15,6 +15,10 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     [Inject] private ToastService Toast { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
 
+    // Auto-open a specific session when navigated from a push notification (?session=ID)
+    [SupplyParameterFromQuery(Name = "session")]
+    [Parameter] public int? SessionParam { get; set; }
+
     private bool _loading = true;
     private List<ChatSession> _sessions = [];
     private List<ChatMessage> _messages = [];
@@ -40,6 +44,13 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         _sessions = await ChatSvc.GetSessionsAsync();
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
         _loading = false;
+
+        // Auto-open session from push notification query param (?session=ID)
+        if (SessionParam.HasValue && _sessions.Any(s => s.Id == SessionParam.Value))
+        {
+            _sessionParamHandled = true;
+            await SelectSession(SessionParam.Value);
+        }
     }
 
     private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
@@ -104,6 +115,20 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             .WithUrl(Nav.ToAbsoluteUri("/chathub"))
             .WithAutomaticReconnect()
             .Build();
+
+        // After reconnect, admin loses all group memberships — rejoin them
+        _hubConnection.Reconnected += async _ =>
+        {
+            await _hubConnection.InvokeAsync("JoinAdminGroup");
+            if (_selectedSessionId.HasValue)
+            {
+                await _hubConnection.InvokeAsync("JoinSession", _selectedSessionId.Value.ToString());
+            }
+            // Refresh list in case messages arrived while disconnected
+            _sessions = await ChatSvc.GetSessionsAsync();
+            _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
+            await InvokeAsync(StateHasChanged);
+        };
 
         _hubConnection.On<object>("ReceiveMessage", async msg =>
         {

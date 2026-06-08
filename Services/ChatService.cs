@@ -96,7 +96,7 @@ public class ChatService
         await _hub.Clients.Group("admin").SendAsync("SessionUpdated", session.Id);
 
         // Web push to admin devices (fire-and-forget — non-critical)
-        _ = _push.SendToAdminsAsync("💬 Tin nhắn mới", $"{session.Name}: {content}", "/admin/chats");
+        _ = _push.SendToAdminsAsync("💬 Tin nhắn mới", $"{session.Name}: {content}", $"/admin/chats?session={session.Id}");
 
         // Forward to Telegram — if topic was deleted, recreate it
         if (session.TelegramTopicId != null)
