@@ -215,6 +215,12 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                     }
 
                     await ConnectHubAsync();
+
+                    // Re-subscribe push for returning visitors — only if already granted
+                    // (avoids showing permission dialog unexpectedly on return visit).
+                    // This refreshes a stale/cleared subscription silently.
+                    _ = ResubscribeIfGrantedAsync(_sessionId.Value);
+
                     StateHasChanged();
                 }
                 else
@@ -230,6 +236,19 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         {
             // localStorage not available (SSR), ignore
         }
+    }
+
+    private async Task ResubscribeIfGrantedAsync(int sessionId)
+    {
+        try
+        {
+            string permission = await JS.InvokeAsync<string>("pushUtils.getPermission");
+            if (permission == "granted")
+            {
+                await SubscribePushAsync(sessionId, isAdmin: false);
+            }
+        }
+        catch { /* non-critical */ }
     }
 
     private async Task ToggleOpen()
