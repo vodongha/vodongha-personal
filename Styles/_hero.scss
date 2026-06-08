@@ -146,7 +146,7 @@
             position: absolute;
             inset: 8px;
             border-radius: 60% 40% 40% 60% / 60% 60% 40% 40%;
-            border: 1px solid rgba($color-secondary, 0.3);
+            border: 1px solid color-mix(in srgb, var(--color-secondary) 30%, transparent);
             animation: morph 8s ease-in-out infinite reverse, spin 15s linear infinite reverse;
         }
 
@@ -155,7 +155,9 @@
             width: 260px;
             height: 260px;
             border-radius: 50%;
-            background: linear-gradient(135deg, rgba($color-primary, 0.15) 0%, rgba($color-secondary, 0.12) 100%);
+            background: linear-gradient(135deg,
+                color-mix(in srgb, var(--color-primary) 15%, transparent) 0%,
+                color-mix(in srgb, var(--color-secondary) 12%, transparent) 100%);
             overflow: hidden;
             z-index: 1;
 
@@ -184,7 +186,7 @@
             position: absolute;
             inset: -8px;
             border-radius: 50%;
-            border: 2px solid rgba($color-primary, 0.4);
+            border: 2px solid color-mix(in srgb, var(--color-primary) 40%, transparent);
             animation: spin 20s linear infinite;
             border-top-color: $color-primary;
         }

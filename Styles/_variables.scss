@@ -1,18 +1,66 @@
-// ── Color Palette ──────────────────────────────────────────
-$color-bg:          #0d0d0d;
-$color-bg-card:     #141414;
-$color-bg-elevated: #1a1a1a;
-$color-border:      #2a2a2a;
+// ── CSS Custom Properties — Dark (default) + Light ────────────────
+:root {
+    --color-bg:          #0d0d0d;
+    --color-bg-card:     #141414;
+    --color-bg-elevated: #1a1a1a;
+    --color-border:      #2a2a2a;
 
-$color-primary:     #6ee7b7;   // emerald-300
-$color-secondary:   #818cf8;   // indigo-400
-$color-accent:      #f472b6;   // pink-400
+    --color-primary:     #6ee7b7;
+    --color-secondary:   #818cf8;
+    --color-accent:      #f472b6;
 
-$color-text:        #e5e7eb;
-$color-text-muted:  #6b7280;
-$color-text-dim:    #9ca3af;
+    --color-text:        #e5e7eb;
+    --color-text-muted:  #6b7280;
+    --color-text-dim:    #9ca3af;
 
-// ── Typography ─────────────────────────────────────────────
+    --shadow-card:              0 4px 24px rgba(0, 0, 0, 0.4);
+    --shadow-glow-primary:      0 0 40px rgba(110, 231, 183, 0.15);
+    --shadow-glow-secondary:    0 0 40px rgba(129, 140, 248, 0.15);
+
+    --color-scheme: dark;
+}
+
+[data-theme="light"] {
+    --color-bg:          #f8fafc;
+    --color-bg-card:     #ffffff;
+    --color-bg-elevated: #f1f5f9;
+    --color-border:      #e2e8f0;
+
+    --color-primary:     #059669;
+    --color-secondary:   #6366f1;
+    --color-accent:      #ec4899;
+
+    --color-text:        #0f172a;
+    --color-text-muted:  #64748b;
+    --color-text-dim:    #374151;
+
+    --shadow-card:              0 4px 24px rgba(0, 0, 0, 0.08);
+    --shadow-glow-primary:      0 0 40px rgba(5, 150, 105, 0.12);
+    --shadow-glow-secondary:    0 0 40px rgba(99, 102, 241, 0.12);
+
+    --color-scheme: light;
+}
+
+// ── SCSS aliases — reference CSS vars ─────────────────────────────
+// NOTE: do NOT use these in rgba() calls — use color-mix() instead
+$color-bg:          var(--color-bg);
+$color-bg-card:     var(--color-bg-card);
+$color-bg-elevated: var(--color-bg-elevated);
+$color-border:      var(--color-border);
+
+$color-primary:     var(--color-primary);
+$color-secondary:   var(--color-secondary);
+$color-accent:      var(--color-accent);
+
+$color-text:        var(--color-text);
+$color-text-muted:  var(--color-text-muted);
+$color-text-dim:    var(--color-text-dim);
+
+$shadow-card:               var(--shadow-card);
+$shadow-glow-primary:       var(--shadow-glow-primary);
+$shadow-glow-secondary:     var(--shadow-glow-secondary);
+
+// ── Typography ─────────────────────────────────────────────────────
 $font-sans:   'Inter', system-ui, -apple-system, sans-serif;
 $font-mono:   'JetBrains Mono', 'Fira Code', monospace;
 
@@ -27,7 +75,7 @@ $text-4xl:   2.25rem;
 $text-5xl:   3rem;
 $text-6xl:   3.75rem;
 
-// ── Spacing ────────────────────────────────────────────────
+// ── Spacing ────────────────────────────────────────────────────────
 $space-1:  0.25rem;
 $space-2:  0.5rem;
 $space-3:  0.75rem;
@@ -40,19 +88,15 @@ $space-16: 4rem;
 $space-20: 5rem;
 $space-24: 6rem;
 
-// ── Layout ─────────────────────────────────────────────────
+// ── Layout ─────────────────────────────────────────────────────────
 $container-max: 1100px;
 $nav-height:    70px;
 
-// ── Effects ────────────────────────────────────────────────
+// ── Effects ────────────────────────────────────────────────────────
 $radius-sm:  6px;
 $radius-md:  12px;
 $radius-lg:  20px;
 $radius-full: 9999px;
-
-$shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
-$shadow-glow-primary:   0 0 40px rgba(110, 231, 183, 0.15);
-$shadow-glow-secondary: 0 0 40px rgba(129, 140, 248, 0.15);
 
 $transition-fast:   150ms ease;
 $transition-base:   250ms ease;

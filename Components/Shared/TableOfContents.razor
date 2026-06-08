@@ -1,0 +1,14 @@
+@if (_show)
+{
+    <nav class="toc" aria-label="Table of contents">
+        <h3 class="toc__title"><i class="bi bi-list-ul"></i> @Lang.T("blog.toc.title")</h3>
+        <ol class="toc__list">
+            @foreach (TableOfContents.TocItem item in _items)
+            {
+                <li class="toc__item toc__item--h@(item.Level) @(_activeId == item.Id ? "is-active" : "")">
+                    <a class="toc__link" href="#@item.Id">@item.Text</a>
+                </li>
+            }
+        </ol>
+    </nav>
+}

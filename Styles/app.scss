@@ -28,8 +28,8 @@
     &__fill {
         height: 100%;
         width: 0%;
-        background: linear-gradient(90deg, #6ee7b7, #34d399);
-        box-shadow: 0 0 8px rgba(110, 231, 183, 0.7);
+        background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+        box-shadow: 0 0 8px color-mix(in srgb, var(--color-primary) 70%, transparent);
         border-radius: 0 2px 2px 0;
         transition: width 0.3s ease-out;
     }

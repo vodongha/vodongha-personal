@@ -65,7 +65,7 @@
         &:focus {
             outline: none;
             border-color: $color-primary;
-            box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
         }
 
         &::-webkit-search-cancel-button { cursor: pointer; }
@@ -229,13 +229,37 @@
 // ── Blog post page ────────────────────────────────────────────────────────────
 .blog-post {
     @include container;
-    max-width: 720px;
+    max-width: 1100px;
     padding-block: $space-24;
 
     &__back {
         @include btn-outline;
         margin-bottom: $space-8;
         font-size: $text-sm;
+    }
+
+    &__layout {
+        display: grid;
+        grid-template-columns: 1fr 260px;
+        gap: $space-12;
+        align-items: start;
+
+        @media (max-width: 1024px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__main {
+        min-width: 0;
+    }
+
+    &__sidebar {
+        position: sticky;
+        top: calc($nav-height + $space-8);
+
+        @media (max-width: 1024px) {
+            display: none;
+        }
     }
 
     &__header {
@@ -333,6 +357,61 @@
         a { color: $color-primary; text-decoration: underline; }
         ul, ol { padding-left: $space-6; margin-bottom: $space-4; }
         li { margin-bottom: $space-2; }
+    }
+}
+
+// ── Table of Contents (sidebar) ───────────────────────────────────────────────
+.toc {
+    background: $color-bg-elevated;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: $space-5;
+
+    &__title {
+        font-size: $text-sm;
+        font-weight: 600;
+        color: $color-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-family: $font-mono;
+        margin-bottom: $space-4;
+        display: flex;
+        align-items: center;
+        gap: $space-2;
+    }
+
+    &__list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: $space-1;
+    }
+
+    &__item {
+        &--h3 { padding-left: $space-4; }
+    }
+
+    &__link {
+        display: block;
+        padding: $space-1 $space-2;
+        font-size: $text-xs;
+        color: $color-text-muted;
+        border-radius: $radius-sm;
+        border-left: 2px solid transparent;
+        transition: color $transition-fast, border-color $transition-fast, background $transition-fast;
+        line-height: 1.5;
+
+        &:hover {
+            color: $color-primary;
+            background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+        }
+    }
+
+    &__item.is-active &__link {
+        color: $color-primary;
+        border-left-color: $color-primary;
+        background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+        font-weight: 500;
     }
 }
 

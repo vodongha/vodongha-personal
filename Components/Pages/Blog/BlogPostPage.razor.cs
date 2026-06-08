@@ -62,6 +62,9 @@ public partial class BlogPostPage : ComponentBase, IDisposable
         catch (ObjectDisposedException) { }
     }
 
+    // Note: TOC JS lifecycle (initToc / destroyToc) is managed by the
+    // TableOfContents component itself via its own OnAfterRenderAsync / Dispose.
+
     protected override void OnInitialized()
     {
         Tz.OnTimezoneSet += OnTimezoneUpdated;
