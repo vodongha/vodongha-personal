@@ -48,7 +48,6 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         // Auto-open session from push notification query param (?session=ID)
         if (SessionParam.HasValue && _sessions.Any(s => s.Id == SessionParam.Value))
         {
-            _sessionParamHandled = true;
             await SelectSession(SessionParam.Value);
         }
     }
