@@ -22,19 +22,29 @@ self.addEventListener('push', function (event) {
 self.addEventListener('notificationclick', function (event) {
     event.notification.close();
     const url = event.notification.data?.url || '/';
+    const isAdminUrl = url.includes('/admin/');
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (clientList) {
-            // If a tab for this origin is already open, focus it and navigate
+            // Try to find an existing tab for this origin
             for (const client of clientList) {
-                if (client.url.startsWith(self.location.origin) && 'focus' in client) {
+                if (!client.url.startsWith(self.location.origin)) continue;
+                if ('focus' in client) {
                     client.focus();
-                    return client.navigate(url);
+                    // For admin notifications: navigate to the specific session URL
+                    // For visitor notifications: stay on current page and post a message to open chat
+                    if (isAdminUrl) {
+                        return client.navigate(url);
+                    } else {
+                        // Tell the page to open the chat widget
+                        client.postMessage({ type: 'OPEN_CHAT' });
+                        return;
+                    }
                 }
             }
-            // Otherwise open a new tab
+            // No existing tab — open a new one (chat will auto-open via ?chat=open hint)
             if (clients.openWindow) {
-                return clients.openWindow(url);
+                return clients.openWindow(isAdminUrl ? url : '/?chat=open');
             }
         })
     );

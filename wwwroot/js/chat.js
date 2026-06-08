@@ -27,6 +27,20 @@ window.chatUtils = {
 
     initInput: function (dotNetRef) {
         this._dotNetRef = dotNetRef;
+
+        // Open chat when SW sends OPEN_CHAT postMessage (visitor push notification click)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data?.type === 'OPEN_CHAT' && this._dotNetRef) {
+                    this._dotNetRef.invokeMethodAsync('OpenFromNotification').catch(() => {});
+                }
+            });
+        }
+
+        // Open chat when navigated to /?chat=open (new tab opened by SW)
+        if (new URLSearchParams(window.location.search).get('chat') === 'open' && this._dotNetRef) {
+            this._dotNetRef.invokeMethodAsync('OpenFromNotification').catch(() => {});
+        }
     },
 
     onMsgInput: function (textarea) {

@@ -438,6 +438,24 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
+    // Called by SW postMessage / ?chat=open URL when visitor clicks a push notification
+    [Microsoft.JSInterop.JSInvokable]
+    public async Task OpenFromNotification()
+    {
+        if (_state == ChatState.Closed)
+        {
+            _state = _sessionId.HasValue ? ChatState.Chat : ChatState.Form;
+            if (_state == ChatState.Chat)
+            {
+                SetUnreadDivider();
+                _unreadCount = 0;
+                _ = SaveLastReadAsync();
+                _pendingScrollToUnread = true;
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
     // Called from JS (chatUtils.onMsgInput) via DotNet.invokeMethod — no Blazor bind needed
     [Microsoft.JSInterop.JSInvokable]
     public async Task SendMessageFromJs() => await SendMessage();
