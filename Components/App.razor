@@ -19,11 +19,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="@(ssrTheme == "light" ? "light" : "dark light")" />
-    @* FOUC-prevention script — executes before any CSS paint.
-       Priority: (1) data-theme already on <html> from server cookie → sync meta + exit;
-       (2) cookie client-side; (3) localStorage; (4) OS prefers-color-scheme.
-       Guarantees zero flash even if the server-side cookie read is unavailable. *@
-    <script>(function(){var h=document.documentElement,t=h.getAttribute('data-theme');if(t==='light'||t==='dark'){var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute('content',t);return;}try{var ck=document.cookie.split(';').map(function(c){return c.trim();}).find(function(c){return c.startsWith('theme=');});if(ck){var v=ck.split('=')[1];if(v==='light'||v==='dark'){t=v;}}}catch(e){}if(!t){try{t=localStorage.getItem('theme');}catch(e){}}if(t!=='light'&&t!=='dark'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';}h.setAttribute('data-theme',t);var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute('content',t);})()</script>
+    @* FOUC-prevention + core theme functions.
+       Inline here so they are always served fresh with the HTML — never affected
+       by a stale browser-cached admin.js. admin.js may redefine them later (same
+       code), which is harmless.
+       FOUC priority: (1) data-theme already on <html> from server cookie → sync meta + exit;
+       (2) cookie client-side; (3) localStorage; (4) OS prefers-color-scheme. *@
+    <script>
+      // ── FOUC prevention ───────────────────────────────────────────
+      (function(){var h=document.documentElement,t=h.getAttribute('data-theme');if(t==='light'||t==='dark'){var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute('content',t);return;}try{var ck=document.cookie.split(';').map(function(c){return c.trim();}).find(function(c){return c.startsWith('theme=');});if(ck){var v=ck.split('=')[1];if(v==='light'||v==='dark'){t=v;}}}catch(e){}if(!t){try{t=localStorage.getItem('theme');}catch(e){}}if(t!=='light'&&t!=='dark'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';}h.setAttribute('data-theme',t);var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute('content',t);})();
+      // ── Theme helpers (inline = always fresh, immune to admin.js cache) ──
+      window.setTheme=function(t){t=t||'dark';document.documentElement.setAttribute('data-theme',t);document.cookie='theme='+t+';path=/;max-age=31536000;samesite=lax';var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute('content',t==='light'?'light':'dark');};
+      window.toggleTheme=function(){var cur=document.documentElement.getAttribute('data-theme')||'dark';var next=cur==='light'?'dark':'light';window.setTheme(next);try{localStorage.setItem('theme',next);}catch(e){}return next;};
+      window.getUserTheme=function(){try{var ck=document.cookie.split(';').map(function(c){return c.trim();}).find(function(c){return c.startsWith('theme=');});if(ck){var v=ck.split('=')[1];if(v==='light'||v==='dark')return v;}}catch(e){}try{var s=localStorage.getItem('theme');if(s==='light'||s==='dark')return s;}catch(e){}return window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';};
+    </script>
     <meta name="description" content="Võ Đông Hà — Full-Stack Developer specialising in .NET, Blazor and PostgreSQL. Personal site showcasing projects, experience and blog." />
     <meta name="author" content="Võ Đông Hà" />
     <!-- Open Graph -->
