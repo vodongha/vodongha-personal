@@ -238,7 +238,18 @@
         transition: border-color 150ms;
         box-sizing: border-box;
 
+        &::placeholder { color: var(--color-text-muted); }
         &:focus { border-color: $color-primary; }
+
+        // Override browser autofill background & text so it respects the current theme
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 1000px var(--admin-bg) inset;
+            -webkit-text-fill-color: var(--color-text);
+            caret-color: var(--color-text);
+            transition: background-color 5000s ease-in-out 0s;
+        }
     }
     &__textarea { min-height: 100px; resize: vertical; }
     &__textarea--tall { min-height: 300px; }
