@@ -1,6 +1,20 @@
 @use 'variables' as *;
 @use 'mixins' as *;
 
+// ── Reading progress bar ───────────────────────────────────────────────────────
+#reading-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: $color-primary;
+    z-index: 9999;
+    transition: width 0.1s linear;
+    pointer-events: none;
+}
+
+// ── Blog section ──────────────────────────────────────────────────────────────
 .blog {
     background: $color-bg-elevated;
 
@@ -12,6 +26,92 @@
     }
 }
 
+// ── Blog filter (search + tag filter) ────────────────────────────────────────
+.blog-filter {
+    @include container;
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+    margin-bottom: $space-8;
+
+    &__search-wrap {
+        position: relative;
+        max-width: 480px;
+    }
+
+    &__search-icon {
+        position: absolute;
+        left: $space-4;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $color-text-muted;
+        font-size: $text-sm;
+        pointer-events: none;
+    }
+
+    &__input {
+        width: 100%;
+        padding: $space-3 $space-4 $space-3 2.5rem;
+        background: $color-bg;
+        border: 1px solid $color-border;
+        border-radius: $radius-full;
+        color: $color-text;
+        font-size: $text-sm;
+        font-family: $font-sans;
+        transition: border-color $transition-fast, box-shadow $transition-fast;
+
+        &::placeholder { color: $color-text-muted; }
+
+        &:focus {
+            outline: none;
+            border-color: $color-primary;
+            box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
+        }
+
+        &::-webkit-search-cancel-button { cursor: pointer; }
+    }
+
+    &__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: $space-2;
+    }
+
+    &__tag {
+        padding: $space-1 $space-3;
+        border-radius: $radius-full;
+        border: 1px solid $color-border;
+        background: transparent;
+        color: $color-text-muted;
+        font-size: $text-xs;
+        font-family: $font-sans;
+        cursor: pointer;
+        transition: all $transition-fast;
+        white-space: nowrap;
+
+        &:hover {
+            border-color: $color-primary;
+            color: $color-primary;
+        }
+
+        &--active {
+            background: $color-primary;
+            border-color: $color-primary;
+            color: #000;
+            font-weight: 600;
+        }
+    }
+
+    &__empty {
+        @include container;
+        text-align: center;
+        color: $color-text-muted;
+        padding-block: $space-12;
+        font-size: $text-sm;
+    }
+}
+
+// ── Blog card ─────────────────────────────────────────────────────────────────
 .blog-card {
     @include card;
     display: flex;
@@ -49,10 +149,27 @@
         flex: 1;
     }
 
+    &__meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: $space-2;
+    }
+
     &__date {
         font-size: $text-xs;
         color: $color-text-muted;
         font-family: $font-mono;
+    }
+
+    &__read-time {
+        font-size: $text-xs;
+        color: $color-text-muted;
+        font-family: $font-mono;
+        display: flex;
+        align-items: center;
+        gap: $space-1;
+        white-space: nowrap;
     }
 
     &__title {
@@ -93,6 +210,7 @@
     }
 }
 
+// ── Blog post page ────────────────────────────────────────────────────────────
 .blog-post {
     @include container;
     max-width: 720px;
@@ -121,7 +239,8 @@
     &__meta {
         display: flex;
         align-items: center;
-        gap: $space-4;
+        flex-wrap: wrap;
+        gap: $space-3;
         font-size: $text-sm;
         color: $color-text-muted;
         font-family: $font-mono;
