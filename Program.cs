@@ -126,6 +126,7 @@ app.Use(async (context, next) =>
 
     await next(context);
 });
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
