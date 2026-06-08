@@ -180,6 +180,17 @@ window.initReadingProgress = function () {
     window._readingProgressHandler(); // initial call
 };
 
+// ── Back to top button ────────────────────────────────────────────────────────
+(function () {
+    var btn = null;
+    function getBtn() { return btn || (btn = document.getElementById('back-to-top')); }
+    window.addEventListener('scroll', function () {
+        var b = getBtn();
+        if (!b) return;
+        b.classList.toggle('is-visible', window.scrollY > 400);
+    }, { passive: true });
+})();
+
 // ── Theme toggle ──────────────────────────────────────────────────────────────
 window.setTheme = function (theme) {
     document.documentElement.setAttribute('data-theme', theme || 'dark');

@@ -13,6 +13,50 @@
 @use 'skeletons';
 @use 'not-found';
 
+// ── Back to top button ─────────────────────────────────────────────
+#back-to-top {
+    position: fixed;
+    bottom: 6rem;   // above chat FAB (2rem bottom + 56px height + 1rem gap ≈ 5.5rem)
+    right: 2rem;
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-full;
+    border: 1px solid $color-border;
+    background: $color-bg-elevated;
+    color: $color-text-muted;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 990;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity $transition-base, transform $transition-base,
+                border-color $transition-fast, color $transition-fast,
+                background $transition-base;
+
+    &.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    &:hover {
+        border-color: $color-primary;
+        color: $color-primary;
+        background: color-mix(in srgb, var(--color-primary) 8%, var(--color-bg-elevated));
+    }
+
+    @media (max-width: 480px) {
+        bottom: calc(2rem + 56px + 0.75rem); // above chat FAB on mobile
+        right: 1rem;
+        width: 36px;
+        height: 36px;
+    }
+}
+
 // ── Global navigation loading bar ─────────────────────────────────
 #nav-loading-bar {
     position: fixed;
