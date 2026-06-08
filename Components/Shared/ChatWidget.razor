@@ -11,7 +11,7 @@
                     <div class="chat-header__status">@Lang.T("chat.status")</div>
                 </div>
             </div>
-            <button class="chat-header__close" @onclick="Close" title="@Lang.T("chat.close")">
+            <button type="button" class="chat-header__close" @onclick="Close" title="@Lang.T("chat.close")">
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
@@ -151,7 +151,7 @@
     </div>
 }
 
-<button class="chat-fab" @onclick="ToggleOpen" title="@Lang.T("chat.fab.title")">
+<button type="button" class="chat-fab" @onclick="ToggleOpen" title="@Lang.T("chat.fab.title")">
     @if (_state == ChatState.Closed)
     {
         <i class="bi bi-chat-dots-fill"></i>
