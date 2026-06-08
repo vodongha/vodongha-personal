@@ -192,6 +192,18 @@ window.initReadingProgress = function () {
 })();
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
+// Reads the *actual* data-theme on <html> and flips it.
+// Returns the new theme string so the Blazor component can update its icon state.
+// Using the DOM as source-of-truth avoids race conditions where the C# _theme
+// field hasn't been synced yet when the user clicks the toggle button.
+window.toggleTheme = function () {
+    var current = document.documentElement.getAttribute('data-theme') || 'dark';
+    var next = current === 'light' ? 'dark' : 'light';
+    window.setTheme(next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    return next;
+};
+
 window.setTheme = function (theme) {
     var t = theme || 'dark';
     document.documentElement.setAttribute('data-theme', t);

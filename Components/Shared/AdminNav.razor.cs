@@ -61,14 +61,14 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
 
     private async Task ToggleTheme()
     {
-        _theme = _theme == "dark" ? "light" : "dark";
         try
         {
-            await JS.InvokeVoidAsync("setTheme", _theme);
+            // Read actual data-theme from DOM and flip — avoids the race where _theme
+            // hasn't been synced from DB yet when the user clicks the toggle button.
+            _theme = await JS.InvokeAsync<string>("toggleTheme");
             // Persist explicit admin choice to DB (survives browser clears / other devices).
             await SettingSvc.SetAsync("admin.theme", _theme);
-            // Also sync localStorage so the public site stays in sync for this browser.
-            await JS.InvokeVoidAsync("localStorage.setItem", "theme", _theme);
+            StateHasChanged();
         }
         catch { }
     }
