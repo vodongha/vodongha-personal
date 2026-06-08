@@ -547,8 +547,21 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             await InvokeAsync(StateHasChanged);
         });
 
-        await _hubConnection.StartAsync();
-        await _hubConnection.InvokeAsync("JoinSession", _sessionId.Value.ToString());
+        // Retry up to 4 times with exponential backoff — handles transient EAGAIN (resource unavailable)
+        int[] delays = [500, 1500, 3000, 6000];
+        for (int attempt = 0; attempt <= delays.Length; attempt++)
+        {
+            try
+            {
+                await _hubConnection.StartAsync();
+                await _hubConnection.InvokeAsync("JoinSession", _sessionId.Value.ToString());
+                return; // success
+            }
+            catch when (attempt < delays.Length)
+            {
+                await Task.Delay(delays[attempt]);
+            }
+        }
     }
 
     protected override void OnInitialized()
