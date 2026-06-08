@@ -182,7 +182,7 @@
                 <textarea class="chat-input__field" id="chatMsgInput" rows="1"
                           placeholder="@Lang.T("chat.placeholder")"
                           oninput="chatUtils.onMsgInput(this)"
-                          @onkeydown="OnKeyDown"></textarea>
+                          onkeydown="chatUtils.onMsgKeyDown(event)"></textarea>
                 <button class="chat-input__send" id="chatSendBtn"
                         @onclick="SendMessage" disabled>
                     <i class="bi bi-send-fill"></i>

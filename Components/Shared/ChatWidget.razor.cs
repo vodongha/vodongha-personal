@@ -440,6 +440,9 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     // Called from JS (chatUtils.onMsgInput) via DotNet.invokeMethod — no Blazor bind needed
     [Microsoft.JSInterop.JSInvokable]
+    public async Task SendMessageFromJs() => await SendMessage();
+
+    [Microsoft.JSInterop.JSInvokable]
     public void OnTypingInput()
     {
         if (_hubConnection == null || !_sessionId.HasValue) return;
@@ -474,13 +477,6 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         return Task.CompletedTask;
     }
 
-    private async Task OnKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter" && !e.ShiftKey)
-        {
-            await SendMessage();
-        }
-    }
 
     private async Task ConnectHubAsync()
     {

@@ -47,6 +47,16 @@ window.chatUtils = {
         }
     },
 
+    onMsgKeyDown: function (e) {
+        // Enter without Shift → send (prevent newline)
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (this._dotNetRef) {
+                this._dotNetRef.invokeMethodAsync('SendMessageFromJs').catch(() => {});
+            }
+        }
+    },
+
     getMsgInput: function () {
         return document.getElementById('chatMsgInput')?.value ?? '';
     },
