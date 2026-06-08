@@ -160,8 +160,10 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-            // Init JS dial picker (click-outside handler)
-        await JS.InvokeVoidAsync("chatDial.init", DotNetObjectReference.Create(this));
+            // Init JS helpers — pass DotNetRef for typing indicator callback
+        DotNetObjectReference<ChatWidget> dotNetRef = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("chatDial.init", dotNetRef);
+        await JS.InvokeVoidAsync("chatUtils.initInput", dotNetRef);
 
         // Auto-select country from already-detected timezone (no external API needed)
         _ = DetectCountryAsync();
@@ -379,13 +381,21 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private async Task SendMessage()
     {
-        if (string.IsNullOrWhiteSpace(_inputText) || _sending || !_sessionId.HasValue)
+        if (_sending || !_sessionId.HasValue)
         {
             return;
         }
 
-        string content = _inputText.Trim();
-        _inputText = "";    // @bind:event="oninput" ensures Blazor tracks this correctly
+        // Read value directly from DOM — no Blazor bind round-trip
+        string raw = await JS.InvokeAsync<string>("chatUtils.getMsgInput");
+        string content = raw?.Trim() ?? "";
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            return;
+        }
+
+        // Clear input immediately via JS — no re-render needed
+        await JS.InvokeVoidAsync("chatUtils.clearMsgInput");
         _sending = true;
 
         // Stop typing indicator — fire-and-forget, no need to await
@@ -418,9 +428,9 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
         catch
         {
-            // Revert on failure
+            // Revert on failure — restore text to input
             _messages.Remove(optimistic);
-            _inputText = content;
+            await JS.InvokeVoidAsync("chatUtils.setMsgInput", content);
         }
         finally
         {
@@ -428,8 +438,9 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
-    // Called by @bind:after — _inputText already updated by @bind, no args needed
-    private void OnTypingInput()
+    // Called from JS (chatUtils.onMsgInput) via DotNet.invokeMethod — no Blazor bind needed
+    [Microsoft.JSInterop.JSInvokable]
+    public void OnTypingInput()
     {
         if (_hubConnection == null || !_sessionId.HasValue) return;
         _typingCts?.Cancel();
