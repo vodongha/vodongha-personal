@@ -199,11 +199,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                     Slug = "vibe-coding-la-gi",
                     Summary = "Vibe coding: lập trình bằng ngôn ngữ tự nhiên, để AI tạo code. Xu hướng mới hay tương lai thực sự của nghề developer? Khám phá góc nhìn thực tế tại đây.",
                     SummaryEn = "Vibe coding means describing ideas in plain language and letting AI write the code. Is this just a trend or the real future of software development? Find out.",
-                    CoverImageUrl = "https://cdn.sanity.io/images/bj34pdbp/migration/285b93a3e464a3cd61067037083f75f1b902f2a5-4800x2520.png?w=3840&q=75&fit=clip&auto=format",
+                    CoverImageUrl = "https://images.unsplash.com/photo-1565687981296-535f09db714e?w=1200&auto=format&fit=crop&q=80",
                     Tags = "Vibe Coding,AI,Developer Experience,Claude,Productivity,Future of Programming,AI Coding",
                     IsPublished = true,
                     CreatedAt = new DateTime(2026, 6, 7, 0, 0, 0, DateTimeKind.Utc),
-                    Content = @"<p><img src=""https://cdn.sanity.io/images/bj34pdbp/migration/285b93a3e464a3cd61067037083f75f1b902f2a5-4800x2520.png?w=3840&q=75&fit=clip&auto=format"" alt=""Vibe Coding — lập trình cùng AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+                    Content = @"<p><img src=""https://images.unsplash.com/photo-1565687981296-535f09db714e?w=1200&auto=format&fit=crop&q=80"" alt=""Vibe Coding — lập trình cùng AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
 <p>Đầu năm 2025, Andrej Karpathy — cựu giám đốc AI của Tesla và là một trong những nhà nghiên cứu AI hàng đầu thế giới — đăng một tweet ngắn gọn mà sau đó trở thành định nghĩa cho một xu hướng mới: <strong>Vibe Coding</strong>.</p>
 
@@ -301,7 +301,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 <p>Vibe coding đẩy tiếp xu hướng đó: thay vì viết từng function, developer <strong>thiết kế kiến trúc, định nghĩa behaviour, và đảm bảo chất lượng</strong>.</p>
 
 <p>Nếu bạn chưa thử vibe coding trong một project thực tế, đây là thời điểm tốt để bắt đầu. Không cần chờ đến khi nó ""hoàn hảo"" — công cụ hiện tại đã đủ tốt để tăng tốc độ làm việc của bạn lên đáng kể.</p>",
-                    ContentEn = @"<p><img src=""https://cdn.sanity.io/images/bj34pdbp/migration/285b93a3e464a3cd61067037083f75f1b902f2a5-4800x2520.png?w=3840&q=75&fit=clip&auto=format"" alt=""Vibe Coding — programming with AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
+                    ContentEn = @"<p><img src=""https://images.unsplash.com/photo-1565687981296-535f09db714e?w=1200&auto=format&fit=crop&q=80"" alt=""Vibe Coding — programming with AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
 <p>In early 2025, Andrej Karpathy — former AI Director at Tesla and one of the world's leading AI researchers — posted a short tweet that went on to define a new trend: <strong>Vibe Coding</strong>.</p>
 
