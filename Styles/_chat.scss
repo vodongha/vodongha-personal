@@ -447,6 +447,43 @@
     30% { opacity: 1; transform: translateY(-3px); }
 }
 
+// ── Push denied hint banner ───────────────────────────────────────
+.chat-push-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(251, 191, 36, 0.1);
+    border-top: 1px solid rgba(251, 191, 36, 0.25);
+    font-size: 0.72rem;
+    color: #d97706;
+    flex-wrap: wrap;
+
+    i { flex-shrink: 0; }
+
+    span { flex: 1; min-width: 0; }
+
+    &__link {
+        color: #d97706;
+        text-decoration: underline;
+        white-space: nowrap;
+        flex-shrink: 0;
+        &:hover { color: #b45309; }
+    }
+
+    &__close {
+        background: none;
+        border: none;
+        color: #d97706;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+        flex-shrink: 0;
+        opacity: 0.7;
+        &:hover { opacity: 1; }
+    }
+}
+
 // ── Input bar ─────────────────────────────────────────────────────
 .chat-input {
     display: flex;

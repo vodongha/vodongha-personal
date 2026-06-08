@@ -120,6 +120,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private int _unreadDividerIndex = -1;  // index in _messages where the "new messages" divider is shown
 
     private bool _pendingScrollToUnread;
+    private bool _pushDenied;   // true when Notification.permission === 'denied'
 
     private static bool IsValidEmail(string email)
     {
@@ -312,11 +313,24 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                 .ToList();
             // Ask for push permission — fire-and-forget, non-critical
             _ = SubscribePushAsync(session.Id, isAdmin: false);
+            // Check if previously denied so we can show the hint banner
+            _ = CheckPushPermissionAsync();
         }
         finally
         {
             _loading = false;
         }
+    }
+
+    private async Task CheckPushPermissionAsync()
+    {
+        try
+        {
+            string permission = await JS.InvokeAsync<string>("pushUtils.getPermission");
+            _pushDenied = permission == "denied";
+            await InvokeAsync(StateHasChanged);
+        }
+        catch { /* non-critical */ }
     }
 
     private async Task SubscribePushAsync(int? chatSessionId, bool isAdmin)
