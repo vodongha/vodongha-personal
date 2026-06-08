@@ -141,7 +141,7 @@ public class ChatService
             });
 
         // Web push to visitor device (fire-and-forget — non-critical)
-        _ = _push.SendToSessionAsync(sessionId, "💬 Bạn có tin nhắn mới", "Nhấn để xem tin nhắn", "/");
+        _ = _push.SendToSessionAsync(sessionId, "💬 Bạn có tin nhắn mới", content, "/");
 
         // Forward to Telegram in the background — failure is non-critical
         if (session.TelegramTopicId != null)

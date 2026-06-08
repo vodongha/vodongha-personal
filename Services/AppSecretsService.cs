@@ -23,8 +23,11 @@ public class AppSecretsService
         new("Neon:ProjectId",     "Neon Project ID",      "Project ID from Neon console (e.g. red-fire-...)", "Neon",     Sensitive: false),
         new("Telegram:BotToken",  "Telegram Bot Token",   "Bot token from @BotFather for chat notifications",  "Telegram", Sensitive: true),
         new("Telegram:ChatId",    "Telegram Chat ID",     "Chat / channel ID where notifications are sent",    "Telegram", Sensitive: false),
-        new("Email:ResendApiKey", "Resend API Key",       "API key for Resend transactional email service",    "Email",    Sensitive: true),
-        new("Email:NotifyTo",     "Notification Email",   "Email address that receives contact notifications", "Email",    Sensitive: false),
+        new("Email:ResendApiKey",   "Resend API Key",        "API key for Resend transactional email service",                          "Email",    Sensitive: true),
+        new("Email:NotifyTo",       "Notification Email",    "Email address that receives contact notifications",                       "Email",    Sensitive: false),
+        new("Push:VapidPublicKey",  "VAPID Public Key",      "Web Push public key (base64url). Generate once — changing breaks all existing subscriptions.", "Web Push", Sensitive: false),
+        new("Push:VapidPrivateKey", "VAPID Private Key",     "Web Push private key (base64url). Keep secret.",                         "Web Push", Sensitive: true),
+        new("Push:VapidSubject",    "VAPID Subject",         "Contact email for Web Push (e.g. mailto:you@example.com)",               "Web Push", Sensitive: false),
     ];
 
     // ─── Private fields ───────────────────────────────────────────────────────

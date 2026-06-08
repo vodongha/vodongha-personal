@@ -11,25 +11,28 @@ public class PushNotificationService
 {
     private readonly IDbContextFactory<AppDbContext> _dbFactory;
     private readonly ILogger<PushNotificationService> _logger;
+    private readonly AppSecretsService _secrets;
+    private readonly IConfiguration _config;
     private readonly WebPushClient _client;
-    private readonly VapidDetails _vapid;
 
-    public string PublicKey { get; }
+    // Lazily resolved so DB overrides (set after startup) take effect on next send.
+    private string GetPublicKey()  => _secrets.GetValue("Push:VapidPublicKey")  ?? _config["Push:VapidPublicKey"]  ?? "";
+    private string GetPrivateKey() => _secrets.GetValue("Push:VapidPrivateKey") ?? _config["Push:VapidPrivateKey"] ?? "";
+    private string GetSubject()    => _secrets.GetValue("Push:VapidSubject")    ?? _config["Push:VapidSubject"]    ?? "mailto:admin@example.com";
+
+    public string PublicKey => GetPublicKey();
 
     public PushNotificationService(
         IDbContextFactory<AppDbContext> dbFactory,
         ILogger<PushNotificationService> logger,
+        AppSecretsService secrets,
         IConfiguration config)
     {
         _dbFactory = dbFactory;
-        _logger = logger;
-
-        PublicKey = config["Push:VapidPublicKey"] ?? "";
-        string privateKey = config["Push:VapidPrivateKey"] ?? "";
-        string subject = config["Push:VapidSubject"] ?? "mailto:admin@example.com";
-
-        _vapid = new VapidDetails(subject, PublicKey, privateKey);
-        _client = new WebPushClient();
+        _logger    = logger;
+        _secrets   = secrets;
+        _config    = config;
+        _client    = new WebPushClient();
     }
 
     // ── Subscription management ───────────────────────────────────────────────
@@ -112,7 +115,8 @@ public class PushNotificationService
             try
             {
                 WebPush.PushSubscription pushSub = new(sub.Endpoint, sub.P256DH, sub.Auth);
-                await _client.SendNotificationAsync(pushSub, payload, _vapid);
+                VapidDetails vapid = new(GetSubject(), GetPublicKey(), GetPrivateKey());
+                await _client.SendNotificationAsync(pushSub, payload, vapid);
             }
             catch (WebPushException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Gone
                                             || ex.StatusCode == System.Net.HttpStatusCode.NotFound)
