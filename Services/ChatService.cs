@@ -11,12 +11,15 @@ public class ChatService
     private readonly IDbContextFactory<AppDbContext> _dbFactory;
     private readonly TelegramService _telegram;
     private readonly IHubContext<ChatHub> _hub;
+    private readonly PushNotificationService _push;
 
-    public ChatService(IDbContextFactory<AppDbContext> dbFactory, TelegramService telegram, IHubContext<ChatHub> hub)
+    public ChatService(IDbContextFactory<AppDbContext> dbFactory, TelegramService telegram,
+        IHubContext<ChatHub> hub, PushNotificationService push)
     {
         _dbFactory = dbFactory;
         _telegram = telegram;
         _hub = hub;
+        _push = push;
     }
 
     public async Task<ChatSession> CreateSessionAsync(string name, string phone, string email)
@@ -92,6 +95,9 @@ public class ChatService
         // Notify admin group immediately after DB save
         await _hub.Clients.Group("admin").SendAsync("SessionUpdated", session.Id);
 
+        // Web push to admin devices (fire-and-forget — non-critical)
+        _ = _push.SendToAdminsAsync("💬 Tin nhắn mới", $"{session.Name}: {content}", "/admin/chats");
+
         // Forward to Telegram — if topic was deleted, recreate it
         if (session.TelegramTopicId != null)
         {
@@ -133,6 +139,9 @@ public class ChatService
                 isFromUser = message.IsFromUser,
                 sentAt = message.SentAt
             });
+
+        // Web push to visitor device (fire-and-forget — non-critical)
+        _ = _push.SendToSessionAsync(sessionId, "💬 Bạn có tin nhắn mới", "Nhấn để xem tin nhắn", "/");
 
         // Forward to Telegram in the background — failure is non-critical
         if (session.TelegramTopicId != null)
@@ -200,6 +209,9 @@ public class ChatService
                 isFromUser = message.IsFromUser,
                 sentAt = message.SentAt
             });
+
+        // Web push to visitor device (fire-and-forget)
+        _ = _push.SendToSessionAsync(session.Id, "💬 Bạn có tin nhắn mới", "Nhấn để xem tin nhắn", "/");
     }
 
     /// <summary>

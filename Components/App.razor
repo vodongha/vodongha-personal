@@ -1,4 +1,5 @@
 @inject IHttpContextAccessor HttpContextAccessor
+@inject PushNotificationService PushSvc
 @{
     HttpContext? ctx = HttpContextAccessor.HttpContext;
     string clientIp = ctx?.Request.Headers["Fly-Client-IP"].FirstOrDefault()
@@ -93,6 +94,8 @@
             }
         });
     </script>
+    <script src="js/push.js"></script>
+    <script>pushUtils.init('@PushSvc.PublicKey');</script>
     <script src="js/admin.js"></script>
     <script src="js/chat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>

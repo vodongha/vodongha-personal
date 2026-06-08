@@ -60,6 +60,7 @@ builder.Services.AddScoped<LanguageService>();
 builder.Services.AddScoped<SiteSettingService>();
 builder.Services.AddScoped<VisitorService>();
 builder.Services.AddScoped<ToastService>();
+builder.Services.AddSingleton<PushNotificationService>();
 builder.Services.AddHttpClient<TelegramService>()
     .AddTypedClient((http, sp) => new TelegramService(http, sp.GetRequiredService<AppSecretsService>()));
 builder.Services.AddScoped<ChatService>();
@@ -234,6 +235,32 @@ app.MapGet("/api/cv/download", async (
     }
 }).RequireAuthorization();
 
+// ── Web Push subscription endpoints ──────────────────────────────────────────
+
+app.MapPost("/api/push/subscribe", async (HttpContext ctx, PushNotificationService pushSvc) =>
+{
+    var body = await ctx.Request.ReadFromJsonAsync<PushSubscribeRequest>();
+    if (body is null || string.IsNullOrEmpty(body.Endpoint))
+    {
+        return Results.BadRequest();
+    }
+
+    await pushSvc.SaveSubscriptionAsync(body.Endpoint, body.P256DH, body.Auth, body.ChatSessionId, body.IsAdmin);
+    return Results.Ok();
+}).DisableAntiforgery();
+
+app.MapDelete("/api/push/unsubscribe", async (HttpContext ctx, PushNotificationService pushSvc) =>
+{
+    var body = await ctx.Request.ReadFromJsonAsync<PushUnsubscribeRequest>();
+    if (body is null || string.IsNullOrEmpty(body.Endpoint))
+    {
+        return Results.BadRequest();
+    }
+
+    await pushSvc.RemoveSubscriptionAsync(body.Endpoint);
+    return Results.Ok();
+}).DisableAntiforgery();
+
 app.MapPost("/api/telegram/webhook", async (HttpContext ctx, ChatService chatService, IConfiguration config) =>
 {
     string secret = config["Telegram:WebhookSecret"] ?? "";
@@ -290,3 +317,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+// ── DTOs ──────────────────────────────────────────────────────────────────────
+record PushSubscribeRequest(string Endpoint, string P256DH, string Auth, int? ChatSessionId, bool IsAdmin);
+record PushUnsubscribeRequest(string Endpoint);
