@@ -492,3 +492,100 @@
         &:disabled { opacity: 0.4; cursor: not-allowed; }
     }
 }
+
+// ── Light theme overrides ─────────────────────────────────────────
+[data-theme="light"] {
+    .chat-fab {
+        box-shadow: 0 4px 20px color-mix(in srgb, var(--color-primary) 30%, transparent);
+        &:hover { box-shadow: 0 6px 28px color-mix(in srgb, var(--color-primary) 45%, transparent); }
+        &__badge { border-color: #ffffff; }
+    }
+
+    .chat-panel {
+        background: #ffffff;
+        border-color: #e2e8f0;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .chat-header {
+        background: #f8fafc;
+        border-bottom-color: #e2e8f0;
+
+        &__name  { color: #0f172a; }
+        &__close {
+            color: #64748b;
+            &:hover { color: #0f172a; }
+        }
+    }
+
+    .chat-form {
+        &__title    { color: #0f172a; }
+        &__subtitle { color: #64748b; }
+        &__label    { color: #64748b; }
+
+        &__input {
+            background: #f1f5f9;
+            border-color: #e2e8f0;
+            color: #0f172a;
+            &::placeholder { color: #94a3b8; }
+        }
+    }
+
+    .chat-phone {
+        &__dial {
+            background: #f1f5f9;
+            border-color: #e2e8f0;
+            color: #0f172a;
+            option { background: #f8fafc; }
+        }
+        &__number {
+            background: #f1f5f9;
+            border-color: #e2e8f0;
+            color: #0f172a;
+            &::placeholder { color: #94a3b8; }
+        }
+    }
+
+    .chat-messages {
+        &::-webkit-scrollbar-thumb { background: #e2e8f0; }
+    }
+
+    .chat-msg {
+        &__bubble {
+            .chat-msg--admin & {
+                background: #f1f5f9;
+                color: #0f172a;
+            }
+        }
+
+        &__time   { color: #94a3b8; }
+        &__ticks  { color: #94a3b8; }
+    }
+
+    .chat-msg--admin.chat-msg--unread .chat-msg__bubble {
+        background: #dcfce7;
+        border-left-color: var(--color-primary);
+    }
+
+    .chat-date-divider {
+        &::before,
+        &::after { background: rgba(0, 0, 0, 0.08); }
+        span { color: #94a3b8; }
+    }
+
+    .chat-typing {
+        background: #f1f5f9;
+        span { background: #94a3b8; }
+    }
+
+    .chat-input {
+        border-top-color: #e2e8f0;
+
+        &__field {
+            background: #f1f5f9;
+            border-color: #e2e8f0;
+            color: #0f172a;
+            &::placeholder { color: #94a3b8; }
+        }
+    }
+}

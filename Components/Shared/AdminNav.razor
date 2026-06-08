@@ -26,6 +26,18 @@
         <a href="/admin/api-keys" class="admin-nav__item @(IsActive("/admin/api-keys") ? "admin-nav__item--active" : "")"><i class="bi bi-key"></i> @Loc.T("API Keys")</a>
         <a href="/admin/settings" class="admin-nav__item @(IsActive("/admin/settings") ? "admin-nav__item--active" : "")"><i class="bi bi-gear"></i> @Loc.T("Settings")</a>
     </nav>
+    <button class="admin-theme-toggle" @onclick="ToggleTheme" title="Toggle theme">
+        @if (_theme == "dark")
+        {
+            <i class="bi bi-sun admin-theme-toggle__icon"></i>
+            <span class="admin-theme-toggle__label">Light</span>
+        }
+        else
+        {
+            <i class="bi bi-moon-stars admin-theme-toggle__icon"></i>
+            <span class="admin-theme-toggle__label">Dark</span>
+        }
+    </button>
     <button class="admin-lang-toggle" @onclick="ToggleLang" title="Switch language">
         <i class="bi bi-translate admin-lang-toggle__icon"></i>
         <span class="admin-lang-toggle__label">

@@ -1,5 +1,17 @@
 // ── CSS Custom Properties — Dark (default) + Light ────────────────
 :root {
+    // ── Admin-specific surface tokens ──────────────────────────────
+    --admin-bg:           #0f0f0f;
+    --admin-surface:      #141414;
+    --admin-elevated:     #1a1a1a;
+    --admin-border:       #2a2a2a;
+    --admin-border-hover: #4a4a4a;
+    --admin-hover:        #1f1f1f;
+    --admin-table-header: #111827;
+    --admin-table-odd:    #0d0d0d;
+    --admin-table-even:   #121212;
+    --admin-table-hover:  #1e2a24;
+
     --color-bg:          #0d0d0d;
     --color-bg-card:     #141414;
     --color-bg-elevated: #1a1a1a;
@@ -39,6 +51,18 @@
     --shadow-glow-secondary:    0 0 40px rgba(99, 102, 241, 0.12);
 
     --color-scheme: light;
+
+    // ── Admin surface tokens (light) ───────────────────────────────
+    --admin-bg:           #f1f5f9;
+    --admin-surface:      #ffffff;
+    --admin-elevated:     #f8fafc;
+    --admin-border:       #e2e8f0;
+    --admin-border-hover: #94a3b8;
+    --admin-hover:        #f1f5f9;
+    --admin-table-header: #eff6ff;
+    --admin-table-odd:    #ffffff;
+    --admin-table-even:   #f8fafc;
+    --admin-table-hover:  #f0fdf4;
 }
 
 // ── SCSS aliases — reference CSS vars ─────────────────────────────

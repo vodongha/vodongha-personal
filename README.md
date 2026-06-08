@@ -19,6 +19,10 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Contact form** — all fields required, blur validation, i18n error messages, "Send" disabled until valid; messages saved to DB + email notification via Resend
 - **Visitor counter** — unique visitors tracked by IP, displayed in the footer
 - **Browser timezone** — all timestamps display in the visitor's local timezone (detected via browser JS)
+- **Dark / Light mode** — toggle in navbar; defaults to OS `prefers-color-scheme`; user choice persisted in localStorage
+- **Blog enhancements** — view count per post, related posts, share buttons (copy link, LinkedIn, X), sticky table of contents (≥4 headings), copy button on code blocks, reading progress bar
+- **Dynamic sitemap** — `/sitemap.xml` with all published posts; `robots.txt`
+- **UX** — back-to-top button (appears at 400 px scroll), lazy loading on blog card cover images
 
 ### Live chat widget
 - Floating chat button on all public pages
@@ -47,6 +51,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Settings** — bio (VI/EN), social links, avatar upload
 - **CV / Resume PDF** — generate a polished PDF CV from live DB data; 3 modern templates (Dark Sidebar, Minimal, Professional); template picker with live preview that matches PDF layout; avatar center-cropped via SkiaSharp; Vietnamese text via Noto Sans font
 - **Mobile responsive** — fixed bottom navigation bar on screens ≤ 768px
+- **Dark / Light mode** — toggle in sidebar; user preference stored in DB (`SiteSettings`), survives browser clears; defaults to OS preference on first use; syncs localStorage so public site stays consistent
 
 ---
 
