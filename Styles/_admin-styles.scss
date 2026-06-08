@@ -955,17 +955,22 @@ tr.admin-row--dragover td {
     border-radius: 12px;
     padding: 1rem 1.25rem;
     cursor: pointer;
-    transition: border-color 150ms;
+    transition: border-color 150ms, background 150ms, box-shadow 150ms;
     display: flex;
     align-items: center;
     gap: 1rem;
 
     &:hover { border-color: var(--admin-border-hover); }
-    &--active { border-color: rgba($color-primary, 0.5) !important; background: rgba($color-primary, 0.04); }
+
+    &--active {
+        border-color: color-mix(in srgb, var(--color-primary) 60%, transparent) !important;
+        background: color-mix(in srgb, var(--color-primary) 6%, var(--admin-surface)) !important;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
+    }
 
     &--unread {
-        border-color: rgba($color-primary, 0.5);
-        background: rgba($color-primary, 0.06);
+        border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+        background: color-mix(in srgb, var(--color-primary) 5%, var(--admin-surface));
 
         .chat-session-card__name { color: $color-text; }
     }
