@@ -17,6 +17,8 @@
     display: flex;
     flex-direction: column;
     gap: $space-3;
+    text-decoration: none;
+    color: inherit;
     cursor: pointer;
     overflow: hidden;
     padding: 0;

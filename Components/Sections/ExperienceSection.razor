@@ -67,7 +67,7 @@
         @if (_items.Count > InitialCount)
         {
             <div class="section__expand">
-                <button class="section__expand-btn" @onclick="Toggle">
+                <button type="button" class="section__expand-btn" @onclick="Toggle">
                     @if (_expanded)
                     {
                         <i class="bi bi-chevron-up"></i> @Lang.T("common.showless")
