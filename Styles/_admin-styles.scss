@@ -967,7 +967,7 @@ tr.admin-row--dragover td {
         border-color: rgba($color-primary, 0.5);
         background: rgba($color-primary, 0.06);
 
-        .chat-session-card__name { color: #fff; }
+        .chat-session-card__name { color: $color-text; }
     }
 
     &__info { flex: 1; min-width: 0; }
@@ -1002,6 +1002,16 @@ tr.admin-row--dragover td {
     flex-direction: column;
     height: 480px;
     overflow: hidden;
+}
+
+.chat-admin-session-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: .625rem;
+    border-bottom: 1px solid var(--admin-border);
+    padding: .875rem 1rem;
+    background: var(--admin-bg);
 }
 
 .chat-admin-messages {
