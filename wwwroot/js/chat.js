@@ -129,10 +129,7 @@ window.chatDial = {
         const pos = input.selectionStart;
         let val = input.value;
 
-        // Strip leading zero
-        if (val.startsWith('0')) val = val.slice(1);
-
-        // Keep only digits, spaces, hyphens
+        // Keep only digits, spaces, hyphens — leading zero is stripped server-side
         const cleaned = val.replace(/[^\d\s\-]/g, '');
 
         if (cleaned !== input.value) {
