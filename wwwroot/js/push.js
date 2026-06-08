@@ -21,6 +21,34 @@ window.pushUtils = {
         return Notification.permission; // 'default' | 'granted' | 'denied'
     },
 
+    getNotificationHelpUrl: function () {
+        const ua = navigator.userAgent;
+        const isIOS = /iPad|iPhone|iPod/.test(ua);
+        const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+        const isFirefox = /Firefox\//.test(ua);
+        const isEdge = /Edg\//.test(ua);
+        const isSamsungBrowser = /SamsungBrowser\//.test(ua);
+        const isOpera = /OPR\/|Opera\//.test(ua);
+
+        if (isIOS || isSafari) {
+            return 'https://support.apple.com/guide/safari/customize-website-notifications-sfri40734/mac';
+        }
+        if (isFirefox) {
+            return 'https://support.mozilla.org/kb/push-notifications-firefox';
+        }
+        if (isEdge) {
+            return 'https://support.microsoft.com/microsoft-edge/manage-website-notifications-in-microsoft-edge';
+        }
+        if (isSamsungBrowser) {
+            return 'https://www.samsung.com/global/galaxy/apps/samsung-internet/';
+        }
+        if (isOpera) {
+            return 'https://help.opera.com/latest/web-preferences/';
+        }
+        // Default: Chrome / Chromium
+        return 'https://support.google.com/chrome/answer/3220216';
+    },
+
     /// Register SW + subscribe. Returns serialized subscription JSON or null on failure.
     subscribe: async function () {
         if (!this.isSupported() || !this._vapidPublicKey) return null;
