@@ -87,9 +87,10 @@
 
     private async Task ToggleTheme()
     {
-        _theme = _theme == "dark" ? "light" : "dark";
-        await JS.InvokeVoidAsync("setTheme", _theme);
-        await JS.InvokeVoidAsync("localStorage.setItem", "theme", _theme);
+        // Read actual data-theme from the DOM and flip it — avoids the race where
+        // _theme hasn't been synced yet (OnAfterRenderAsync still in flight).
+        _theme = await JS.InvokeAsync<string>("toggleTheme");
+        StateHasChanged();
     }
 
     private async Task ToggleLang()
