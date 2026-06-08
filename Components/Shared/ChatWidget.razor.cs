@@ -102,7 +102,16 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
-    private string FullPhone => $"{SelectedCountry.Dial}{new string(_phone.Where(char.IsDigit).ToArray())}";
+    private string FullPhone
+    {
+        get
+        {
+            string digits = new string(_phone.Where(char.IsDigit).ToArray());
+            // Strip leading zero before prepending dial code (e.g. 0929... → +84929...)
+            if (digits.StartsWith('0')) digits = digits[1..];
+            return $"{SelectedCountry.Dial}{digits}";
+        }
+    }
 
     private ChatState _state = ChatState.Closed;
     private string _name = "";
