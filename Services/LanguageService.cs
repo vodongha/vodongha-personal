@@ -113,6 +113,8 @@ public class LanguageService
         ["chat.yesterday"]      = "Hôm qua",
         ["chat.sent"]           = "Đã gửi",
         ["chat.read"]           = "Đã đọc",
+        ["chat.push.denied"]    = "Thông báo bị chặn. Bật lại để nhận tin nhắn khi có phản hồi.",
+        ["chat.push.howto"]     = "Hướng dẫn",
         ["chat.fab.title"]      = "Chat với mình",
     };
 
@@ -211,6 +213,8 @@ public class LanguageService
         ["chat.yesterday"]      = "Yesterday",
         ["chat.sent"]           = "Sent",
         ["chat.read"]           = "Read",
+        ["chat.push.denied"]    = "Notifications blocked. Enable them to get replies.",
+        ["chat.push.howto"]     = "How to enable",
         ["chat.fab.title"]      = "Chat with me",
     };
 }
