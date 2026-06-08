@@ -252,6 +252,39 @@ app.MapPost("/api/telegram/webhook", async (HttpContext ctx, ChatService chatSer
     return Results.Ok();
 }).DisableAntiforgery();
 
+app.MapGet("/sitemap.xml", async (BlogService blogSvc) =>
+{
+    List<vodongha.Data.Models.BlogPost> posts = await blogSvc.GetAllSlugsForSitemapAsync();
+    System.Text.StringBuilder sb = new();
+    sb.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    sb.AppendLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
+
+    // Static pages
+    foreach (string staticUrl in new[] { "", "/#projects", "/#blog", "/#contact" })
+    {
+        sb.AppendLine("  <url>");
+        sb.AppendLine($"    <loc>https://vodongha.id.vn/{staticUrl}</loc>");
+        sb.AppendLine("    <changefreq>monthly</changefreq>");
+        sb.AppendLine("    <priority>0.8</priority>");
+        sb.AppendLine("  </url>");
+    }
+
+    // Blog posts
+    foreach (vodongha.Data.Models.BlogPost post in posts)
+    {
+        string lastmod = (post.UpdatedAt ?? post.CreatedAt).ToString("yyyy-MM-dd");
+        sb.AppendLine("  <url>");
+        sb.AppendLine($"    <loc>https://vodongha.id.vn/blog/{post.Slug}</loc>");
+        sb.AppendLine($"    <lastmod>{lastmod}</lastmod>");
+        sb.AppendLine("    <changefreq>weekly</changefreq>");
+        sb.AppendLine("    <priority>0.9</priority>");
+        sb.AppendLine("  </url>");
+    }
+
+    sb.AppendLine("</urlset>");
+    return Results.Content(sb.ToString(), "application/xml");
+});
+
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

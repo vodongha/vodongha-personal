@@ -1,0 +1,25 @@
+<div class="share-buttons">
+    <span class="share-buttons__label">@Lang.T("blog.share.title")</span>
+    <div class="share-buttons__group">
+        <button type="button" class="share-btn share-btn--copy @(_copied ? "is-copied" : "")" @onclick="CopyLinkAsync" title="@Lang.T("blog.share.copy")">
+            @if (_copied)
+            {
+                <i class="bi bi-check2"></i>
+                <span>@Lang.T("blog.share.copied")</span>
+            }
+            else
+            {
+                <i class="bi bi-link-45deg"></i>
+                <span>@Lang.T("blog.share.copy")</span>
+            }
+        </button>
+        <button type="button" class="share-btn share-btn--linkedin" @onclick="ShareLinkedInAsync" title="LinkedIn">
+            <i class="bi bi-linkedin"></i>
+            <span>LinkedIn</span>
+        </button>
+        <button type="button" class="share-btn share-btn--x" @onclick="ShareXAsync" title="X / Twitter">
+            <i class="bi bi-twitter-x"></i>
+            <span>X</span>
+        </button>
+    </div>
+</div>

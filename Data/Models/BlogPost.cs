@@ -15,4 +15,5 @@ public class BlogPost
     public bool IsPublished { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
+    public int ViewCount { get; set; }
 }
