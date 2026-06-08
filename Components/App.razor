@@ -5,16 +5,21 @@
         ?? ctx?.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',')[0].Trim()
         ?? ctx?.Connection.RemoteIpAddress?.ToString()
         ?? "";
+    // Read the theme cookie set by the user's explicit toggle so the server can
+    // pre-render data-theme on <html> — eliminates the dark flash entirely.
+    string? themeCookie = ctx?.Request.Cookies["theme"];
+    string ssrTheme = (themeCookie == "light" || themeCookie == "dark") ? themeCookie : "";
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" @(ssrTheme != "" ? (MarkupString)$"data-theme=\"{ssrTheme}\"" : (MarkupString)"")>
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="dark light" />
-    @* Theme FOUC prevention — must run before CSS renders *@
-    <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute('content',t);})()</script>
+    <meta name="color-scheme" content="@(ssrTheme == "light" ? "light" : "dark light")" />
+    @* OS-preference fallback — only runs when no cookie is present (first-time visitors).
+       When the server already set data-theme from the cookie, this script is a no-op. *@
+    <script>(function(){var h=document.documentElement;if(!h.getAttribute('data-theme')||h.getAttribute('data-theme')===''){var t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';h.setAttribute('data-theme',t);var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute('content',t);}})()</script>
     <meta name="description" content="Võ Đông Hà — Full-Stack Developer specialising in .NET, Blazor and PostgreSQL. Personal site showcasing projects, experience and blog." />
     <meta name="author" content="Võ Đông Hà" />
     <!-- Open Graph -->
