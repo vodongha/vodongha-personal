@@ -221,19 +221,25 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             _sessionLastSeenId[_selectedSessionId.Value] = _messages.Max(m => m.Id);
         }
 
-        // Leave old session group
+        // Leave old session group — swallow hub errors (may not be connected yet)
         if (_selectedSessionId.HasValue && _hubConnection != null)
         {
-            await _hubConnection.InvokeAsync("LeaveSession", _selectedSessionId.Value.ToString());
+            try { await _hubConnection.InvokeAsync("LeaveSession", _selectedSessionId.Value.ToString()); }
+            catch { /* ignore disconnected hub */ }
         }
 
         _selectedSessionId = sessionId;
         _selectedSession = _sessions.FirstOrDefault(s => s.Id == sessionId);
-        bool sessionHasUnread = _selectedSession?.HasUnread ?? false;
-        _messages = await ChatSvc.GetMessagesAsync(sessionId);
+        _messages = [];
         _replyText = "";
         _otherIsTyping = false;
         _userReadUpToId = 0;
+
+        // Show the chat panel immediately — don't wait for messages to load
+        StateHasChanged();
+
+        bool sessionHasUnread = _selectedSession?.HasUnread ?? false;
+        _messages = await ChatSvc.GetMessagesAsync(sessionId);
 
         // Determine the divider boundary
         if (_sessionLastSeenId.TryGetValue(sessionId, out int storedLastSeen))
@@ -279,10 +285,11 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         }
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
 
-        // Join new session group
+        // Join new session group — swallow hub errors (may not be connected yet)
         if (_hubConnection != null)
         {
-            await _hubConnection.InvokeAsync("JoinSession", sessionId.ToString());
+            try { await _hubConnection.InvokeAsync("JoinSession", sessionId.ToString()); }
+            catch { /* ignore disconnected hub — real-time won't work but messages loaded from DB */ }
         }
 
         // Scroll to unread divider if there are new messages, otherwise scroll to bottom
