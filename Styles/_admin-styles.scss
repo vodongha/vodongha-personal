@@ -1,18 +1,14 @@
-@use 'variables' as *;
-
-// Tell the browser this UI is already dark — prevents system dark-mode from
-// inverting or recolouring any element (form controls, scrollbars, etc.)
-html { color-scheme: dark; }
+﻿@use 'variables' as *;
 
 // ── Layout ──────────────────────────────────────────────────────
-.admin-shell { display: flex; min-height: 100vh; background: #0f0f0f; color: $color-text; font-family: $font-sans; }
+.admin-shell { display: flex; min-height: 100vh; background: var(--admin-bg); color: $color-text; font-family: $font-sans; }
 
 // ── Sidebar ──────────────────────────────────────────────────────
 .admin-sidebar {
     width: 220px;
     min-height: 100vh;
-    background: #141414;
-    border-right: 1px solid #2a2a2a;
+    background: var(--admin-surface);
+    border-right: 1px solid var(--admin-border);
     display: flex;
     flex-direction: column;
     padding: 1.5rem 0;
@@ -25,10 +21,10 @@ html { color-scheme: dark; }
         font-size: 1.25rem;
         font-weight: 700;
         padding: 0 1.5rem 1.5rem;
-        border-bottom: 1px solid #2a2a2a;
+        border-bottom: 1px solid var(--admin-border);
         margin-bottom: 1rem;
         span { color: $color-primary; }
-        .dot { color: #6b7280; }
+        .dot { color: var(--color-text-muted); }
     }
 
     &__logout {
@@ -50,7 +46,7 @@ html { color-scheme: dark; }
         padding: 0.625rem 0.75rem;
         border-radius: 8px;
         font-size: 0.875rem;
-        color: #6b7280;
+        color: var(--color-text-muted);
         transition: background 150ms, color 150ms;
         background: transparent;
         border: none;
@@ -61,7 +57,7 @@ html { color-scheme: dark; }
 
         i { font-size: 1rem; }
 
-        &:hover { background: #1f1f1f; color: $color-text; }
+        &:hover { background: var(--admin-hover); color: $color-text; }
         &--active { background: rgba($color-primary, 0.1); color: $color-primary; }
     }
 }
@@ -91,8 +87,8 @@ html { color-scheme: dark; }
 
 .admin-card {
     position: relative;
-    background: #141414;
-    border: 1px solid #2a2a2a;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
     padding: 1.5rem 1rem;
     display: flex;
@@ -136,12 +132,12 @@ html { color-scheme: dark; }
         align-items: center;
         justify-content: center;
         line-height: 1;
-        border: 2px solid #141414;
+        border: 2px solid var(--admin-surface);
         pointer-events: none;
     }
 }
 
-.admin-card:hover .cost-card-drag-handle { color: #6b7280; }
+.admin-card:hover .cost-card-drag-handle { color: var(--color-text-muted); }
 
 // ── Table ─────────────────────────────────────────────────────────
 .admin-table-wrap { overflow-x: auto; }
@@ -151,11 +147,11 @@ html { color-scheme: dark; }
     border-collapse: collapse;
     font-size: 0.875rem;
 
-    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #1f1f1f; }
-    th { background: #111827; color: #6ee7b7; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
-    tbody tr:nth-child(odd)  td { background: #0d0d0d; }
-    tbody tr:nth-child(even) td { background: #121212; }
-    tr:hover td { background: #1e2a24 !important; }
+    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--admin-hover); }
+    th { background: var(--admin-table-header); color: #6ee7b7; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    tbody tr:nth-child(odd)  td { background: var(--admin-table-odd); }
+    tbody tr:nth-child(even) td { background: var(--admin-table-even); }
+    tr:hover td { background: var(--admin-table-hover) !important; }
 
     &__actions { display: flex; gap: 0.5rem; }
 }
@@ -188,8 +184,8 @@ html { color-scheme: dark; }
     &:active:not(:disabled) { transform: scale(0.97); }
     &:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 
-    &--primary { background: $color-primary; color: #0d0d0d; }
-    &--ghost { background: transparent; color: #6b7280; border: 1px solid #2a2a2a; &:hover { color: $color-text; border-color: #4a4a4a; } }
+    &--primary { background: $color-primary; color: var(--admin-table-odd); }
+    &--ghost { background: transparent; color: var(--color-text-muted); border: 1px solid var(--admin-border); &:hover { color: $color-text; border-color: var(--admin-border-hover); } }
     &--danger { background: rgba(239,68,68,0.1); color: #ef4444; &:hover { background: rgba(239,68,68,0.2); opacity: 1; } }
     &--full { width: 100%; justify-content: center; }
     &--sm { padding: 0.3rem 0.6rem; font-size: 0.8rem; }
@@ -209,8 +205,8 @@ html { color-scheme: dark; }
 }
 
 .admin-modal {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
+    background: var(--admin-elevated);
+    border: 1px solid var(--admin-border);
     border-radius: 16px;
     padding: 2rem;
     width: 100%;
@@ -228,11 +224,11 @@ html { color-scheme: dark; }
 .admin-form {
     &__group { margin-bottom: 1rem; }
     &__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    &__label { display: block; font-size: 0.8rem; color: #6b7280; margin-bottom: 0.4rem; font-weight: 500; }
+    &__label { display: block; font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 0.4rem; font-weight: 500; }
     &__input {
         width: 100%;
-        background: #0f0f0f;
-        border: 1px solid #2a2a2a;
+        background: var(--admin-bg);
+        border: 1px solid var(--admin-border);
         border-radius: 8px;
         padding: 0.6rem 0.75rem;
         color: $color-text;
@@ -268,7 +264,7 @@ html { color-scheme: dark; }
         color: $color-primary;
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
-        border-bottom: 1px solid #2a2a2a;
+        border-bottom: 1px solid var(--admin-border);
     }
 }
 
@@ -278,13 +274,13 @@ html { color-scheme: dark; }
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #0f0f0f;
+    background: var(--admin-bg);
 
     &__box {
         width: 100%;
         max-width: 380px;
-        background: #141414;
-        border: 1px solid #2a2a2a;
+        background: var(--admin-surface);
+        border: 1px solid var(--admin-border);
         border-radius: 16px;
         padding: 2.5rem 2rem;
     }
@@ -296,7 +292,7 @@ html { color-scheme: dark; }
         text-align: center;
         margin-bottom: 1.5rem;
         span:first-child { color: $color-primary; }
-        span:last-child { color: #6b7280; }
+        span:last-child { color: var(--color-text-muted); }
     }
 
     &__title {
@@ -326,7 +322,7 @@ html { color-scheme: dark; }
     height: 1.25rem;
     padding: 0 0.3rem;
     background: $color-primary;
-    color: #0d0d0d;
+    color: var(--admin-table-odd);
     border-radius: 9999px;
     font-size: 0.65rem;
     font-weight: 700;
@@ -362,8 +358,8 @@ html { color-scheme: dark; }
 }
 
 .admin-message-body {
-    background: #0f0f0f;
-    border: 1px solid #2a2a2a;
+    background: var(--admin-bg);
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
     padding: 1rem 1.25rem;
     font-size: 0.9rem;
@@ -375,7 +371,7 @@ html { color-scheme: dark; }
 
 .admin-drag-handle {
     cursor: grab;
-    color: #4a4a4a;
+    color: var(--admin-border-hover);
     text-align: center;
     user-select: none;
 
@@ -385,7 +381,7 @@ html { color-scheme: dark; }
 
 tr.admin-row--dragging {
     opacity: 0.4;
-    background: #1a1a1a;
+    background: var(--admin-elevated);
 }
 
 tr.admin-row--dragover td {
@@ -460,7 +456,7 @@ tr.admin-row--dragover td {
     border-radius: 50%;
     overflow: hidden;
     cursor: pointer;
-    border: 2px solid #2a2a2a;
+    border: 2px solid var(--admin-border);
     transition: border-color 200ms;
 
     &:hover { border-color: $color-primary; }
@@ -469,9 +465,9 @@ tr.admin-row--dragover td {
 
     &__placeholder {
         width: 100%; height: 100%;
-        background: #1a1a1a;
+        background: var(--admin-elevated);
         display: flex; align-items: center; justify-content: center;
-        font-size: 3rem; color: #4a4a4a;
+        font-size: 3rem; color: var(--admin-border-hover);
     }
 
     &__overlay {
@@ -495,17 +491,17 @@ tr.admin-row--dragover td {
     margin: 0.5rem 0.75rem 0;
     padding: 0.525rem 0.75rem;
     background: transparent;
-    border: 1px solid #2a2a2a;
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
-    color: #6b7280;
+    color: var(--color-text-muted);
     transition: background 150ms, color 150ms;
     font-family: inherit;
     width: calc(100% - 1.5rem);
 
-    &:hover { background: #1f1f1f; color: $color-text; }
+    &:hover { background: var(--admin-hover); color: $color-text; }
 
     &__icon { font-size: 1rem; flex-shrink: 0; }
 
@@ -521,6 +517,36 @@ tr.admin-row--dragover td {
     &__sep { opacity: 0.3; margin: 0 0.1rem; }
     &__opt { color: #4b5563; transition: color 150ms; }
     &__opt--active { color: $color-primary; font-weight: 700; }
+}
+
+// ── Theme toggle ──────────────────────────────────────────────────
+.admin-theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin: 0.5rem 0.75rem 0;
+    padding: 0.525rem 0.75rem;
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    transition: background 150ms, color 150ms;
+    font-family: inherit;
+    width: calc(100% - 1.5rem);
+
+    &:hover { background: var(--admin-hover); color: $color-text; }
+
+    &__icon { font-size: 1rem; flex-shrink: 0; }
+
+    &__label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+    }
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -545,7 +571,7 @@ tr.admin-row--dragover td {
         top: 50%;
         transform: translateY(-50%);
         font-size: 0.8rem;
-        color: #6b7280;
+        color: var(--color-text-muted);
         pointer-events: none;
     }
 }
@@ -579,8 +605,8 @@ tr.admin-row--dragover td {
 }
 
 .admin-page-size {
-    background: #0f0f0f;
-    border: 1px solid #2a2a2a;
+    background: var(--admin-bg);
+    border: 1px solid var(--admin-border);
     border-radius: 8px;
     color: #e5e7eb;
     font-size: 0.8rem;
@@ -592,7 +618,7 @@ tr.admin-row--dragover td {
     transition: border-color 150ms;
     &:hover { border-color: #3a3a3a; }
     &:focus { border-color: #6ee7b7; }
-    option { background: #1a1a1a; }
+    option { background: var(--admin-elevated); }
 }
 
 // ── QuickGrid dark theme ──────────────────────────────────────────
@@ -601,7 +627,7 @@ tr.admin-row--dragover td {
     border-collapse: collapse;
     font-size: 0.875rem;
 
-    thead tr { background: #111827; }
+    thead tr { background: var(--admin-table-header); }
 
     th {
         padding: 0.6rem 1rem;
@@ -642,13 +668,13 @@ tr.admin-row--dragover td {
 
     td {
         padding: 0.75rem 1rem;
-        border-bottom: 1px solid #1f1f1f;
+        border-bottom: 1px solid var(--admin-hover);
         color: $color-text;
     }
 
-    tbody tr:nth-child(odd)  td { background: #0d0d0d; }
-    tbody tr:nth-child(even) td { background: #121212; }
-    tr:hover td { background: #1e2a24 !important; }
+    tbody tr:nth-child(odd)  td { background: var(--admin-table-odd); }
+    tbody tr:nth-child(even) td { background: var(--admin-table-even); }
+    tr:hover td { background: var(--admin-table-hover) !important; }
 
     // Hide filler rows QuickGrid renders as <tr><td></td>...</tr> (no class, all tds empty)
     tbody tr:not(:has(> td:not(:empty))) { display: none !important; }
@@ -686,7 +712,7 @@ tr.admin-row--dragover td {
         flex-direction: row !important;
         padding: 0 !important;
         border-right: none !important;
-        border-top: 1px solid #2a2a2a !important;
+        border-top: 1px solid var(--admin-border) !important;
         z-index: 100 !important;
         overflow-x: auto !important;
         overflow-y: hidden !important;
@@ -717,9 +743,10 @@ tr.admin-row--dragover td {
     // Hide all nav items except Dashboard (--pinned) — only target items inside .admin-nav
     .admin-nav .admin-nav__item:not(.admin-nav__item--pinned) { display: none !important; }
 
-    // Dashboard | Lang | Logout — Dashboard & Logout wider, Lang toggle narrow
+    // Dashboard | Theme | Lang | Logout — Dashboard & Logout wider, toggles narrow
     .admin-nav__item,
     .admin-lang-toggle,
+    .admin-theme-toggle,
     .admin-sidebar__logout .admin-nav__item {
         flex: 2 1 0 !important;
         flex-direction: column !important;
@@ -740,19 +767,20 @@ tr.admin-row--dragover td {
         i { font-size: 1.1rem !important; line-height: 1 !important; }
     }
 
-    // Lang toggle mobile: narrower than Dashboard/Logout
+    // Theme + Lang toggles mobile: narrower than Dashboard/Logout
+    .admin-theme-toggle,
     .admin-lang-toggle {
         flex: 1 1 0 !important; // narrower — Dashboard & Logout each get flex:2
         background: transparent !important;
-        border-left: 1px solid #2a2a2a !important;
-        border-right: 1px solid #2a2a2a !important;
+        border-right: 1px solid var(--admin-border) !important;
 
         &__icon { font-size: 1.05rem !important; line-height: 1 !important; }
 
-        &__label {
-            font-size: 0.5rem !important;
-            gap: 0.05rem !important;
-        }
+        &__label { font-size: 0.5rem !important; }
+    }
+
+    .admin-theme-toggle {
+        border-left: 1px solid var(--admin-border) !important;
     }
 
     // Logout form must also carry its own flex weight (button inside gets flex but form defaults to auto)
@@ -879,7 +907,7 @@ tr.admin-row--dragover td {
     align-items: center;
     justify-content: center;
     height: 480px;
-    color: #6b7280;
+    color: var(--color-text-muted);
     font-size: .875rem;
 }
 
@@ -907,12 +935,12 @@ tr.admin-row--dragover td {
 
     &::-webkit-scrollbar { width: 4px; }
     &::-webkit-scrollbar-track { background: transparent; }
-    &::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+    &::-webkit-scrollbar-thumb { background: var(--admin-border); border-radius: 2px; }
 }
 
 .chat-session-card {
-    background: #141414;
-    border: 1px solid #2a2a2a;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
     padding: 1rem 1.25rem;
     cursor: pointer;
@@ -933,7 +961,7 @@ tr.admin-row--dragover td {
 
     &__info { flex: 1; min-width: 0; }
     &__name { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.15rem; display: flex; align-items: center; gap: 0.4rem; }
-    &__meta { font-size: 0.75rem; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    &__meta { font-size: 0.75rem; color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     &__right {
         display: flex;
@@ -943,7 +971,7 @@ tr.admin-row--dragover td {
         flex-shrink: 0;
     }
 
-    &__time { font-size: 0.7rem; color: #6b7280; }
+    &__time { font-size: 0.7rem; color: var(--color-text-muted); }
 
     &__delete {
         opacity: 0;
@@ -956,8 +984,8 @@ tr.admin-row--dragover td {
 }
 
 .chat-admin-window {
-    background: #141414;
-    border: 1px solid #2a2a2a;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
     display: flex;
     flex-direction: column;
@@ -976,20 +1004,20 @@ tr.admin-row--dragover td {
 
     &::-webkit-scrollbar { width: 4px; }
     &::-webkit-scrollbar-track { background: transparent; }
-    &::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+    &::-webkit-scrollbar-thumb { background: var(--admin-border); border-radius: 2px; }
 }
 
 .chat-admin-input {
     display: flex;
     gap: 0.75rem;
     padding: 1rem;
-    border-top: 1px solid #2a2a2a;
+    border-top: 1px solid var(--admin-border);
     align-items: flex-end;
 
     textarea {
         flex: 1;
-        background: #0f0f0f;
-        border: 1px solid #2a2a2a;
+        background: var(--admin-bg);
+        border: 1px solid var(--admin-border);
         border-radius: 8px;
         padding: 0.6rem 0.75rem;
         color: #e5e7eb;
@@ -1032,7 +1060,7 @@ tr.admin-row--dragover td {
         min-width: 2rem;
         height: 2rem;
         background: transparent !important;
-        border: 1px solid #2a2a2a !important;
+        border: 1px solid var(--admin-border) !important;
         border-radius: 6px;
         color: $color-text-muted !important;
         // Hide original unicode chars (‹ › « ») that may not render in all fonts
@@ -1082,8 +1110,8 @@ tr.admin-row--dragover td {
 
 .health-card {
     position: relative;
-    background: #141414;
-    border: 1px solid #2a2a2a;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
     padding: 1rem 1.1rem;
     display: flex;
@@ -1134,7 +1162,7 @@ tr.admin-row--dragover td {
 
     &__label {
         font-size: 0.7rem;
-        color: #6b7280;
+        color: var(--color-text-muted);
         text-transform: uppercase;
         letter-spacing: 0.06em;
         margin-bottom: 0.2rem;
@@ -1196,8 +1224,8 @@ tr.admin-row--dragover td {
 }
 
 .health-chart-card {
-    background: #141414;
-    border: 1px solid #2a2a2a;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
     overflow: hidden;
 
@@ -1206,7 +1234,7 @@ tr.admin-row--dragover td {
         align-items: center;
         justify-content: space-between;
         padding: 0.875rem 1rem 0.5rem;
-        border-bottom: 1px solid #1a1a1a;
+        border-bottom: 1px solid var(--admin-elevated);
         gap: 0.5rem;
     }
 
@@ -1225,8 +1253,8 @@ tr.admin-row--dragover td {
         font-size: 0.7rem;
         color: #4b5563;
         font-family: $font-mono;
-        background: #0f0f0f;
-        border: 1px solid #2a2a2a;
+        background: var(--admin-bg);
+        border: 1px solid var(--admin-border);
         border-radius: 4px;
         padding: 0.1rem 0.4rem;
     }
@@ -1282,7 +1310,7 @@ tr.admin-row--dragover td {
         display: flex;
         gap: 1rem;
         padding: .75rem 1rem;
-        background: #111827;
+        background: var(--admin-table-header);
         border-bottom: 1px solid #1e1e1e;
         align-items: center;
     }
@@ -1291,11 +1319,11 @@ tr.admin-row--dragover td {
         display: flex;
         gap: 1rem;
         padding: .75rem 1rem;
-        border-bottom: 1px solid #141414;
+        border-bottom: 1px solid var(--admin-surface);
         align-items: center;
 
         &:last-child { border-bottom: none; }
-        &:nth-child(even) { background: #0d0d0d; }
+        &:nth-child(even) { background: var(--admin-table-odd); }
     }
 
     &__cell {
@@ -1323,7 +1351,7 @@ tr.admin-row--dragover td {
         align-items: center;
         gap: .875rem;
         padding: .875rem 1rem;
-        background: #141414;
+        background: var(--admin-surface);
         border: 1px solid #1e1e1e;
         border-radius: 10px;
     }
@@ -1353,7 +1381,7 @@ tr.admin-row--dragover td {
         align-items: center;
         gap: .75rem;
         padding: .875rem 1rem;
-        background: #111827;
+        background: var(--admin-table-header);
         border-bottom: 1px solid #1e1e1e;
     }
 
@@ -1367,7 +1395,7 @@ tr.admin-row--dragover td {
         align-items: center;
         gap: 1rem;
         padding: .75rem 1rem;
-        border-bottom: 1px solid #141414;
+        border-bottom: 1px solid var(--admin-surface);
 
         &:last-child { border-bottom: none; }
     }
@@ -1428,7 +1456,7 @@ tr.admin-row--dragover td {
 .skel {
     background: linear-gradient(90deg,
         #1e1e1e 25%,
-        #2a2a2a 50%,
+        var(--admin-border) 50%,
         #1e1e1e 75%
     );
     background-size: 800px 100%;
@@ -1451,7 +1479,7 @@ tr.admin-row--dragover td {
 .cost-skeleton {
     &__banner {
         background: linear-gradient(135deg, #141418 0%, #131820 100%);
-        border: 1px solid #2a2a2a;
+        border: 1px solid var(--admin-border);
         border-radius: 12px;
         padding: 1.5rem 2rem;
         margin-bottom: 2rem;
@@ -1474,7 +1502,7 @@ tr.admin-row--dragover td {
 
     &__banner-divider {
         width: 1px;
-        background: #2a2a2a;
+        background: var(--admin-border);
         align-self: stretch;
         flex-shrink: 0;
     }
@@ -1485,7 +1513,7 @@ tr.admin-row--dragover td {
         gap: 0.75rem;
         margin-top: 1.25rem;
         padding-top: 1rem;
-        border-top: 1px solid #2a2a2a;
+        border-top: 1px solid var(--admin-border);
     }
 
     &__section {
@@ -1498,7 +1526,7 @@ tr.admin-row--dragover td {
         justify-content: space-between;
         margin-bottom: 1rem;
         padding-bottom: 0.75rem;
-        border-bottom: 1px solid #2a2a2a;
+        border-bottom: 1px solid var(--admin-border);
     }
 
     &__cards {
@@ -1508,8 +1536,8 @@ tr.admin-row--dragover td {
     }
 
     &__card {
-        background: #141414;
-        border: 1px solid #2a2a2a;
+        background: var(--admin-surface);
+        border: 1px solid var(--admin-border);
         border-radius: 12px;
         padding: 1rem 1rem 1rem 0.75rem;
         display: flex;
@@ -1589,12 +1617,12 @@ tr.admin-row--dragover td {
         line-height: 1.1;
 
         &--actual { color: $color-primary; }
-        &--na     { color: #6b7280; font-size: 1.4rem; }
+        &--na     { color: var(--color-text-muted); font-size: 1.4rem; }
     }
 
     &__col-sub {
         font-size: 0.72rem;
-        color: #6b7280;
+        color: var(--color-text-muted);
         margin-top: 0.25rem;
     }
 
@@ -1667,7 +1695,7 @@ tr.admin-row--dragover td {
 .cost-sub {
     display: block;
     font-size: 0.7rem;
-    color: #6b7280;
+    color: var(--color-text-muted);
     margin-top: 0.1rem;
 }
 
@@ -1690,7 +1718,7 @@ tr.admin-row--dragover td {
     &:active { cursor: grabbing; }
 }
 
-.health-card:hover .cost-card-drag-handle { color: #6b7280; }
+.health-card:hover .cost-card-drag-handle { color: var(--color-text-muted); }
 
 .health-chart-card .cost-card-drag-handle {
     position: static;  // override absolute — sits inline in header flex row
@@ -1698,7 +1726,7 @@ tr.admin-row--dragover td {
     font-size: 0.9rem;
 }
 
-.health-chart-card:hover .cost-card-drag-handle { color: #6b7280; }
+.health-chart-card:hover .cost-card-drag-handle { color: var(--color-text-muted); }
 
 .cost-card-ghost {
     opacity: 0.4;
@@ -1811,7 +1839,7 @@ tr.admin-row--dragover td {
 
 .cost-note {
     font-size: 0.78rem;
-    color: #6b7280;
+    color: var(--color-text-muted);
     margin-top: 0.75rem;
     line-height: 1.6;
 
@@ -1834,7 +1862,7 @@ tr.admin-row--dragover td {
     align-items: flex-start;
     gap: 0.5rem;
     font-size: 0.8rem;
-    color: #6b7280;
+    color: var(--color-text-muted);
     background: #0f1623;
     border: 1px solid #1f2937;
     border-radius: 8px;
@@ -1860,7 +1888,7 @@ tr.admin-row--dragover td {
     align-items: center;
     gap: 1rem;
     padding: 0.9rem 1.1rem;
-    border-bottom: 1px solid #1a1a1a;
+    border-bottom: 1px solid var(--admin-elevated);
     transition: background 150ms;
 
     &:last-child { border-bottom: none; }
@@ -1885,7 +1913,7 @@ tr.admin-row--dragover td {
     &__key {
         font-family: $font-mono;
         font-size: 0.72rem;
-        color: #6b7280;
+        color: var(--color-text-muted);
         margin-bottom: 0.2rem;
     }
 
@@ -1974,7 +2002,7 @@ tr.admin-row--dragover td {
     grid-template-columns: 220px 1fr;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid #2a2a2a;
+    border: 1px solid var(--admin-border);
     max-width: 860px;
 
     &__sidebar {
@@ -2091,7 +2119,7 @@ tr.admin-row--dragover td {
             flex-shrink: 0;
         }
 
-        .cv-preview__name  { font-size: 1.1rem; color: #111827; text-align: left; }
+        .cv-preview__name  { font-size: 1.1rem; color: var(--admin-table-header); text-align: left; }
         .cv-preview__title { color: #059669; text-align: left; margin-bottom: 0; }
 
         .cv-preview__section-label {
@@ -2159,11 +2187,11 @@ tr.admin-row--dragover td {
 // ── Template picker ───────────────────────────────────────────────────────
 .cv-template-picker {
     &__title { font-size: 0.9rem; font-weight: 600; color: #fff; margin: 0 0 0.25rem; }
-    &__hint  { font-size: 0.72rem; color: #6b7280; margin: 0 0 1rem; }
+    &__hint  { font-size: 0.72rem; color: var(--color-text-muted); margin: 0 0 1rem; }
 }
 
 .cv-tpl-card {
-    border: 2px solid #2a2a2a;
+    border: 2px solid var(--admin-border);
     border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
@@ -2176,7 +2204,7 @@ tr.admin-row--dragover td {
     &__label {
         padding: 0.4rem 0.6rem;
         font-size: 0.75rem; font-weight: 600; color: #d1d5db;
-        background: #1a1a1a;
+        background: var(--admin-elevated);
         display: flex; align-items: center; gap: 0.35rem;
         i { color: $color-primary; }
     }
@@ -2292,7 +2320,7 @@ tr.admin-row--dragover td {
     overflow: hidden;
     box-shadow: 0 2px 12px rgba(0,0,0,.3);
     font-family: 'Noto Sans', sans-serif;
-    color: #111827;
+    color: var(--admin-table-header);
 
     &__header {
         display: flex;
@@ -2311,7 +2339,7 @@ tr.admin-row--dragover td {
     &__name {
         font-size: 1.3rem;
         font-weight: 700;
-        color: #111827;
+        color: var(--admin-table-header);
         line-height: 1.2;
     }
 
@@ -2403,7 +2431,7 @@ tr.admin-row--dragover td {
     overflow: hidden;
     box-shadow: 0 2px 12px rgba(0,0,0,.3);
     font-family: 'Noto Sans', sans-serif;
-    color: #111827;
+    color: var(--admin-table-header);
 
     &__header {
         display: flex;
@@ -2533,3 +2561,4 @@ tr.admin-row--dragover td {
     .cv-preview__entry-link { color: #059669; }
     .cv-preview__tech       { color: #059669; }
 }
+
