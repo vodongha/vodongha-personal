@@ -186,7 +186,7 @@
 
     &--primary { background: $color-primary; color: var(--admin-table-odd); }
     &--ghost { background: transparent; color: var(--color-text-muted); border: 1px solid var(--admin-border); &:hover { color: $color-text; border-color: var(--admin-border-hover); } }
-    &--danger { background: transparent; color: var(--color-text-muted); border: 1px solid var(--admin-border); &:hover { background: rgba(239,68,68,0.1); color: #ef4444; border-color: rgba(239,68,68,0.3); opacity: 1; } }
+    &--danger { background: rgba(239,68,68,0.08); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); &:hover { background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.5); opacity: 1; } }
     &--full { width: 100%; justify-content: center; }
     &--sm { padding: 0.3rem 0.6rem; font-size: 0.8rem; }
 }
