@@ -14,6 +14,7 @@
         @if (!string.IsNullOrEmpty(_post.CoverImageUrl))
         {
             <meta property="og:image" content="@_post.CoverImageUrl" />
+            <meta name="twitter:image" content="@_post.CoverImageUrl" />
         }
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="@DisplayTitle — Võ Đông Hà" />
@@ -21,6 +22,9 @@
         <link rel="canonical" href="https://vodongha.id.vn/blog/@_post.Slug" />
     </HeadContent>
 }
+
+@* Reading progress bar — fixed at top, only on blog post pages *@
+<div id="reading-progress-bar"></div>
 
 @if (_loading)
 {
@@ -56,16 +60,18 @@ else
     <article class="blog-post">
         <a href="/#blog" class="blog-post__back">
             <i class="bi bi-arrow-left"></i>
-            Quay lại
+            @Lang.T("blog.back")
         </a>
 
         <header class="blog-post__header">
             <h1 class="blog-post__title">@DisplayTitle</h1>
             <div class="blog-post__meta">
                 <span><i class="bi bi-calendar3"></i> @Tz.ToUserTime(_post.CreatedAt).ToString("dd/MM/yyyy")</span>
+                <span>·</span>
+                <span><i class="bi bi-clock"></i> @ReadingMinutes @Lang.T("blog.readtime")</span>
                 @if (_post.UpdatedAt.HasValue)
                 {
-                    <span>· Cập nhật @Tz.ToUserTime(_post.UpdatedAt.Value).ToString("dd/MM/yyyy")</span>
+                    <span>· @Lang.T("blog.updated") @Tz.ToUserTime(_post.UpdatedAt.Value).ToString("dd/MM/yyyy")</span>
                 }
             </div>
 

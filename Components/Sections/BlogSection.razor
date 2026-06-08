@@ -35,14 +35,46 @@
         }
         else
         {
-            <div class="blog__grid">
-                @foreach (BlogPost post in VisiblePosts)
-                {
-                    <BlogCard Item="post" />
-                }
+            <div class="blog-filter">
+                <div class="blog-filter__search-wrap">
+                    <i class="bi bi-search blog-filter__search-icon"></i>
+                    <input class="blog-filter__input" type="search"
+                           placeholder="@Lang.T("blog.search")"
+                           @bind="_searchQuery" @bind:event="oninput" />
+                </div>
+                <div class="blog-filter__tags">
+                    <button type="button"
+                            class="blog-filter__tag @(_selectedTag is null ? "blog-filter__tag--active" : "")"
+                            @onclick="() => SelectTag(null)">
+                        @Lang.T("blog.filter.all")
+                    </button>
+                    @foreach (string tag in AllTags)
+                    {
+                        string t = tag;
+                        <button type="button"
+                                class="blog-filter__tag @(_selectedTag == t ? "blog-filter__tag--active" : "")"
+                                @onclick="() => SelectTag(t)">
+                            @t
+                        </button>
+                    }
+                </div>
             </div>
 
-            @if (_posts.Count > InitialCount)
+            @if (!VisiblePosts.Any())
+            {
+                <p class="blog-filter__empty">@Lang.T("blog.results.empty")</p>
+            }
+            else
+            {
+                <div class="blog__grid">
+                    @foreach (BlogPost post in VisiblePosts)
+                    {
+                        <BlogCard Item="post" />
+                    }
+                </div>
+            }
+
+            @if (HasMore)
             {
                 <div class="section__expand">
                     <button type="button" class="section__expand-btn" @onclick="Toggle">

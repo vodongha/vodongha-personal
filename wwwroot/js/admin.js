@@ -124,3 +124,31 @@ document.addEventListener('blur', function (e) {
     if (!sel) return;
     sel.closest('.admin-select-wrap').classList.remove('is-open');
 }, true);
+
+// ── Reading progress bar ───────────────────────────────────────────────────────
+window.initReadingProgress = function () {
+    var bar = document.getElementById('reading-progress-bar');
+    if (!bar) return;
+
+    window._readingProgressHandler = function () {
+        var content = document.querySelector('.blog-post__content');
+        if (!content || !bar) return;
+        var top = content.getBoundingClientRect().top + window.scrollY;
+        var height = content.offsetHeight;
+        var scrolled = window.scrollY - top;
+        var pct = Math.min(100, Math.max(0, (scrolled / height) * 100));
+        bar.style.width = pct + '%';
+    };
+
+    window.addEventListener('scroll', window._readingProgressHandler, { passive: true });
+    window._readingProgressHandler(); // initial call
+};
+
+window.destroyReadingProgress = function () {
+    if (window._readingProgressHandler) {
+        window.removeEventListener('scroll', window._readingProgressHandler);
+        window._readingProgressHandler = null;
+    }
+    var bar = document.getElementById('reading-progress-bar');
+    if (bar) bar.style.width = '0%';
+};

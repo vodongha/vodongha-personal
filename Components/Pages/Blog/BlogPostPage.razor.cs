@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using vodongha.Data.Models;
 using vodongha.Services;
 
@@ -9,6 +10,7 @@ public partial class BlogPostPage : ComponentBase, IDisposable
     [Inject] private BlogService BlogSvc { get; set; } = default!;
     [Inject] private LanguageService Lang { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
+    [Inject] private IJSRuntime JS { get; set; } = default!;
 
     [Parameter] public string Slug { get; set; } = string.Empty;
 
@@ -19,6 +21,18 @@ public partial class BlogPostPage : ComponentBase, IDisposable
     private string DisplaySummary => Lang.IsVi ? (_post?.Summary ?? "") : (_post?.SummaryEn ?? _post?.Summary ?? "");
     private string DisplayContent => Lang.IsVi ? (_post?.Content ?? "") : (_post?.ContentEn ?? _post?.Content ?? "");
 
+    private int ReadingMinutes
+    {
+        get
+        {
+            string? html = Lang.IsVi ? _post?.Content : (_post?.ContentEn ?? _post?.Content);
+            if (string.IsNullOrEmpty(html)) return 1;
+            string text = System.Text.RegularExpressions.Regex.Replace(html, "<[^>]+>", " ");
+            int words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+            return Math.Max(1, (int)Math.Ceiling(words / 200.0));
+        }
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         Lang.OnChange -= StateHasChanged;
@@ -26,6 +40,17 @@ public partial class BlogPostPage : ComponentBase, IDisposable
         _post = await BlogSvc.GetBySlugAsync(Slug);
         _loading = false;
         Lang.OnChange += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _post is null) return;
+        try
+        {
+            await JS.InvokeVoidAsync("initReadingProgress");
+        }
+        catch (JSDisconnectedException) { }
+        catch (ObjectDisposedException) { }
     }
 
     protected override void OnInitialized()
@@ -39,5 +64,6 @@ public partial class BlogPostPage : ComponentBase, IDisposable
     {
         Lang.OnChange -= StateHasChanged;
         Tz.OnTimezoneSet -= OnTimezoneUpdated;
+        _ = JS.InvokeVoidAsync("destroyReadingProgress");
     }
 }

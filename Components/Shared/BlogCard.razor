@@ -6,7 +6,10 @@
         </div>
     }
     <div class="blog-card__body">
-        <span class="blog-card__date">@Tz.ToUserTime(Item.CreatedAt).ToString("dd/MM/yyyy")</span>
+        <div class="blog-card__meta-row">
+            <span class="blog-card__date">@Tz.ToUserTime(Item.CreatedAt).ToString("dd/MM/yyyy")</span>
+            <span class="blog-card__read-time"><i class="bi bi-clock"></i> @ReadingMinutes @Lang.T("blog.readtime")</span>
+        </div>
         <h3 class="blog-card__title">@(Lang.IsVi ? Item.Title : (Item.TitleEn ?? Item.Title))</h3>
         <p class="blog-card__summary">@(Lang.IsVi ? Item.Summary : (Item.SummaryEn ?? Item.Summary))</p>
 
