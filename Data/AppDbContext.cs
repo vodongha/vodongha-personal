@@ -132,6 +132,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     <li><strong>Dùng cho việc khám phá:</strong> Claude giỏi trả lời ""có cách nào tốt hơn không?"" hay ""pattern này có vấn đề gì?"" — dùng như một senior dev để pair với, không chỉ để generate code.</li>
 </ol>
 
+<h2>Câu hỏi thường gặp</h2>
+
+<h3>Claude Code phù hợp với project nhỏ hay chỉ dành cho enterprise?</h3>
+<p>Phù hợp với mọi quy mô. Lợi thế lớn nhất thể hiện ở codebase phức tạp — nơi việc giữ context nhiều file là thách thức thật sự. Với project nhỏ, lợi ích ít hơn nhưng vẫn rõ rệt ở khâu test và refactor. Tôi cũng dùng Claude Code để xây dựng chính vodongha.id.vn theo phong cách vibe coding, hoàn toàn khác với cách làm việc nghiêm túc trên konfipay.</p>
+
+<h3>Mất bao lâu để làm quen với Claude Code?</h3>
+<p>Vài ngày để thoải mái, vài tuần để thực sự hiệu quả. Điểm khó nhất là học cách đặt câu hỏi đủ ngữ cảnh. Tạo file <code>CLAUDE.md</code> cho project ngay từ đầu — thói quen này rút ngắn đáng kể thời gian làm quen.</p>
+
+<h3>Có lo ngại bảo mật khi paste code lên AI không?</h3>
+<p>Anthropic cam kết không dùng code bạn gửi để train model (theo API agreement). Quy tắc đơn giản: không paste connection string, secret, hay data production — chỉ paste logic code. Đây là nguyên tắc khi dùng bất kỳ AI coding assistant nào.</p>
+
+<h3>Claude Code có thể tự viết toàn bộ feature mà không cần review không?</h3>
+<p>Không nên. Đặc biệt với payment logic, auth flow, database migration — review từng dòng bất kể ai viết. Mức độ review nên tỉ lệ với hậu quả nếu code sai.</p>
+
 <h2>Kết luận</h2>
 <p>Claude Code không thay thế tư duy của developer — nó <strong>khuếch đại</strong> tốc độ và độ chính xác của từng quyết định kỹ thuật. Developer biết kiến trúc tốt, biết đặt câu hỏi đúng, biết review kết quả nghiêm túc sẽ hưởng lợi nhiều nhất.</p>
 
@@ -185,6 +199,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     <li><strong>Work in small iterations:</strong> Don't ask for a full feature in one shot. Confirm the approach first, implement piece by piece, review before continuing.</li>
     <li><strong>Use it for exploration:</strong> Claude is great at answering ""is there a better way?"" or ""what problems might this pattern have?"" — use it as a senior dev to pair with, not just a code generator.</li>
 </ol>
+
+<h2>Frequently Asked Questions</h2>
+
+<h3>Is Claude Code suited for small projects or only enterprise?</h3>
+<p>Suitable for any scale. The biggest advantage shows on complex codebases where holding full multi-file context is a genuine challenge. For small projects the benefit is smaller but still real, especially for writing tests. I also used Claude Code to build vodongha.id.vn — this website — in a pure vibe coding style, very different from the careful approach I use on konfipay.</p>
+
+<h3>How long does it take to become comfortable with Claude Code?</h3>
+<p>A few days to feel at ease, a few weeks to become genuinely effective. The hardest part is writing prompts with enough context. Creating a <code>CLAUDE.md</code> file for each project from the start cuts onboarding time significantly.</p>
+
+<h3>Are there security concerns about pasting code into AI?</h3>
+<p>Anthropic doesn't use your API-submitted code to train models (per API agreement). Simple rule: never paste connection strings, secrets, or production data — only logic code. This applies to any AI coding tool.</p>
+
+<h3>Can Claude Code write an entire feature without any review?</h3>
+<p>It shouldn't. Especially for payment logic, auth flows, and database migrations — read every line regardless of who wrote it. Review effort should scale with the consequence of the code being wrong.</p>
 
 <h2>Conclusion</h2>
 <p>Claude Code doesn't replace a developer's thinking — it <strong>amplifies</strong> the speed and accuracy of every technical decision. Developers with strong architectural thinking, who ask the right questions and review results seriously, benefit the most.</p>
@@ -300,7 +328,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
 <p>Vibe coding đẩy tiếp xu hướng đó: thay vì viết từng function, developer <strong>thiết kế kiến trúc, định nghĩa behaviour, và đảm bảo chất lượng</strong>.</p>
 
-<p>Nếu bạn chưa thử vibe coding trong một project thực tế, đây là thời điểm tốt để bắt đầu. Không cần chờ đến khi nó ""hoàn hảo"" — công cụ hiện tại đã đủ tốt để tăng tốc độ làm việc của bạn lên đáng kể.</p>",
+<p>Nếu bạn chưa thử vibe coding trong một project thực tế, đây là thời điểm tốt để bắt đầu. Không cần chờ đến khi nó ""hoàn hảo"" — công cụ hiện tại đã đủ tốt để tăng tốc độ làm việc của bạn lên đáng kể.</p>
+
+<h2>Câu hỏi thường gặp</h2>
+
+<h3>Vibe coding có phù hợp với người mới học lập trình không?</h3>
+<p>Có thể bắt đầu được, nhưng sẽ khó khi cần hiểu hoặc debug kết quả. Vibe coding hiệu quả nhất khi bạn đã có nền tảng — cần đủ kiến thức để nhận ra khi AI sai. Người mới nên học cơ bản trước, dùng AI như công cụ tăng tốc thay vì thay thế quá trình học.</p>
+
+<h3>Vibe coding có an toàn cho production code không?</h3>
+<p>Tuỳ loại code. UI component, SCSS, test — tương đối an toàn và tiết kiệm thời gian đáng kể. Payment logic, auth flow, database migration — cần review từng dòng. Trên vodongha.id.vn, tôi vibe code hầu hết mọi thứ và chỉ review kỹ phần auth cookie và email API.</p>
+
+<h3>Mất bao lâu để xây một website như vodongha.id.vn bằng vibe coding?</h3>
+<p>Khoảng 2-3 tuần part-time từ ý tưởng đến deploy. So với làm thuần tay, vibe coding tiết kiệm ~60-70% thời gian ở phần boilerplate và styling. Thời gian còn lại dành cho kiến trúc và logic.</p>
+
+<p>Muốn biết cụ thể cách deploy và setup database cho dự án vibe coding? Đọc thêm <a href=""/blog/deploy-dotnet-fly-io-2025"">Deploy .NET 10 lên Fly.io</a> và <a href=""/blog/building-with-ai-experience-with-claude-code"">Trải nghiệm thực tế dùng Claude Code</a>.</p>",
                     ContentEn = @"<p><img src=""https://images.unsplash.com/photo-1565687981296-535f09db714e?w=1200&auto=format&fit=crop&q=80"" alt=""Vibe Coding — programming with AI"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
 <p>In early 2025, Andrej Karpathy — former AI Director at Tesla and one of the world's leading AI researchers — posted a short tweet that went on to define a new trend: <strong>Vibe Coding</strong>.</p>
@@ -398,7 +439,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
 <p>Vibe coding continues that trend: instead of writing every function, developers <strong>design architecture, define behaviour, and ensure quality</strong>.</p>
 
-<p>If you haven't tried vibe coding in a real project yet, now is a great time to start. No need to wait for it to be ""perfect"" — the current tools are already good enough to meaningfully accelerate your work.</p>"
+<p>If you haven't tried vibe coding in a real project yet, now is a great time to start. No need to wait for it to be ""perfect"" — the current tools are already good enough to meaningfully accelerate your work.</p>
+
+<h2>Frequently Asked Questions</h2>
+
+<h3>Is vibe coding suitable for beginners?</h3>
+<p>You can start with it, but debugging the output is hard without a foundation. Vibe coding works best when you already know enough to recognise when AI is wrong. Beginners should learn the basics first and use AI as an accelerator, not a replacement for learning.</p>
+
+<h3>Is vibe coding safe for production code?</h3>
+<p>Depends on the type. UI components, SCSS, tests — relatively safe and a real time-saver. Payment logic, auth flows, migrations — review every line. On vodongha.id.vn, I vibe coded almost everything and reviewed closely the auth cookie and email API integration.</p>
+
+<h3>How long does it take to build a site like vodongha.id.vn with vibe coding?</h3>
+<p>About 2-3 weeks part-time from idea to deploy. Compared to writing everything by hand, vibe coding saves roughly 60-70% of the time on boilerplate and styling, leaving more time for architecture and logic.</p>
+
+<p>Want the specifics on deploying and setting up the database for a vibe-coded project? Read <a href=""/blog/deploy-dotnet-fly-io-2025"">Deploy .NET 10 to Fly.io</a> and <a href=""/blog/building-with-ai-experience-with-claude-code"">one year with Claude Code on a real codebase</a>.</p>"
                 },
                 new BlogPost
                 {
@@ -512,6 +566,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     <li>Đang trong quá trình học — làm tay giúp bạn hiểu sâu hơn nhờ AI</li>
 </ul>
 
+<h2>Câu hỏi thường gặp</h2>
+
+<h3>Nên học kỹ năng nào trước?</h3>
+<p>Prompt engineering trước tiên — nó ảnh hưởng đến mọi tương tác với AI. Tiếp theo là context management với CLAUDE.md. Hai kỹ năng này tạo nền tảng cho những kỹ năng còn lại.</p>
+
+<h3>Mất bao lâu để thấy kết quả rõ ràng?</h3>
+<p>Thường trong 2-4 tuần dùng hàng ngày. Tôi thấy tác động rõ nhất khi hoàn thành vodongha.id.vn — website cá nhân xây bằng Blazor .NET 10 — từ ý tưởng đến deploy trong ~2 tuần part-time, nhờ áp dụng đủ cả 5 kỹ năng này.</p>
+
+<h3>Các kỹ năng này có áp dụng được cho Copilot và Cursor không?</h3>
+<p>Hoàn toàn. Prompt engineering, context management, critical verification, iterative decomposition đều agnostic với tool. Chỉ tool-task matching cần điều chỉnh theo từng công cụ cụ thể.</p>
+
 <h2>Kết luận</h2>
 <p>AI là công cụ khuếch đại, không phải công cụ thay thế. Developer giỏi nhất trong kỷ nguyên AI không phải người có nhiều AI tool nhất — mà là người <strong>biết dùng chúng đúng lúc, đúng chỗ, với mức độ tin tưởng phù hợp</strong>.</p>
 
@@ -615,6 +680,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     <li>You need genuine creativity or deep domain knowledge AI doesn't have</li>
     <li>You're actively learning — doing it by hand with AI guidance builds understanding better than having AI do it for you</li>
 </ul>
+
+<h2>Frequently Asked Questions</h2>
+
+<h3>Which skill should I start with?</h3>
+<p>Prompt engineering first — it affects every AI interaction. Then context management with a CLAUDE.md file. These two form the foundation for the other skills.</p>
+
+<h3>How long before you see clear results?</h3>
+<p>Usually within 2-4 weeks of daily use. I noticed the clearest impact after finishing vodongha.id.vn — a personal site built with Blazor .NET 10 — from concept to deploy in roughly 2 weeks part-time, applying all five skills together.</p>
+
+<h3>Do these skills apply to Copilot and Cursor too?</h3>
+<p>Completely. Prompt engineering, context management, critical verification, and iterative decomposition are tool-agnostic. Only tool-task matching needs adjustment per specific tool.</p>
 
 <h2>Conclusion</h2>
 <p>AI is an amplifier, not a replacement. The best developers in the AI era aren't the ones with the most AI tools — they're the ones who <strong>use them at the right time, in the right place, with the right level of trust</strong>.</p>
@@ -955,7 +1031,9 @@ jobs:
 <h2>Kết luận</h2>
 <p>Blazor và React đều là lựa chọn tốt trong 2025 — nhưng cho những mục đích khác nhau. Blazor thắng khi team là .NET và app là internal/enterprise. React thắng khi cần SEO, performance public-facing, hoặc ecosystem rộng.</p>
 
-<p>Cá nhân tôi dùng cả hai và thấy Blazor ngày càng mature — vodongha.id.vn chạy Blazor Server và hoạt động tốt. Nếu bạn đang xây dựng stack mới và team là .NET, hãy thử Blazor trước khi mặc định chọn React.</p>",
+<p>Cá nhân tôi dùng cả hai và thấy Blazor ngày càng mature — vodongha.id.vn chạy Blazor Server và hoạt động tốt. Nếu bạn đang xây dựng stack mới và team là .NET, hãy thử Blazor trước khi mặc định chọn React.</p>
+
+<p>Nếu bạn đã chọn Blazor và muốn setup đầy đủ từ deploy đến database, đọc thêm <a href=""/blog/deploy-dotnet-fly-io-2025"">Deploy .NET 10 lên Fly.io</a> và <a href=""/blog/postgresql-entity-framework-core-best-practices"">PostgreSQL + EF Core best practices</a> — cả hai đều từ kinh nghiệm xây dựng vodongha.id.vn.</p>",
                     ContentEn = @"<p><img src=""https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=1200&auto=format&fit=crop&q=80"" alt=""Blazor vs React 2025"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
 <p>The question I get asked most often when discussing my tech stack: <em>""Why Blazor instead of React?""</em>. As a developer using both in production — Blazor WASM/Server for konfipay and vodongha.id.vn, React for other projects — I have a practical perspective to offer.</p>
@@ -1025,7 +1103,9 @@ jobs:
 <h2>Conclusion</h2>
 <p>Both Blazor and React are strong choices in 2025 — but for different purposes. Blazor wins when the team is .NET and the app is internal or enterprise-facing. React wins when you need SEO, public-facing performance, or a wide ecosystem.</p>
 
-<p>I use both professionally and find Blazor increasingly mature — vodongha.id.vn runs on Blazor Server and works well. If you're building a new stack and your team is .NET, give Blazor a try before defaulting to React.</p>"
+<p>I use both professionally and find Blazor increasingly mature — vodongha.id.vn runs on Blazor Server and works well. If you're building a new stack and your team is .NET, give Blazor a try before defaulting to React.</p>
+
+<p>If you've chosen Blazor and want the full setup from deploy to database, read <a href=""/blog/deploy-dotnet-fly-io-2025"">Deploy .NET 10 to Fly.io</a> and <a href=""/blog/postgresql-entity-framework-core-best-practices"">PostgreSQL + EF Core best practices</a> — both from building vodongha.id.vn.</p>"
                 },
                 new BlogPost
                 {
