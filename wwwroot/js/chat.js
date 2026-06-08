@@ -21,6 +21,53 @@ window.chatUtils = {
         try { sessionStorage.setItem(CACHE_KEY, country); } catch { }
         return country;
     },
+    // ── Message input helpers (no Blazor bind round-trip) ────────────
+    _dotNetRef: null,
+    _typingThrottle: null,
+
+    initInput: function (dotNetRef) {
+        this._dotNetRef = dotNetRef;
+    },
+
+    onMsgInput: function (textarea) {
+        // Toggle send button based on content
+        const btn = document.getElementById('chatSendBtn');
+        if (btn) btn.disabled = !textarea.value.trim();
+
+        // Auto-resize textarea
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+
+        // Throttled typing indicator — fire max once per 1.5s
+        if (!this._typingThrottle && this._dotNetRef) {
+            this._typingThrottle = setTimeout(() => {
+                this._typingThrottle = null;
+                this._dotNetRef.invokeMethodAsync('OnTypingInput').catch(() => {});
+            }, 300);
+        }
+    },
+
+    getMsgInput: function () {
+        return document.getElementById('chatMsgInput')?.value ?? '';
+    },
+
+    clearMsgInput: function () {
+        const el = document.getElementById('chatMsgInput');
+        if (!el) return;
+        el.value = '';
+        el.style.height = 'auto';
+        const btn = document.getElementById('chatSendBtn');
+        if (btn) btn.disabled = true;
+    },
+
+    setMsgInput: function (text) {
+        const el = document.getElementById('chatMsgInput');
+        if (!el) return;
+        el.value = text;
+        const btn = document.getElementById('chatSendBtn');
+        if (btn) btn.disabled = !text?.trim();
+    },
+
     scrollToBottom: function (elementId) {
         var el = document.getElementById(elementId);
         if (el) el.scrollTop = el.scrollHeight;

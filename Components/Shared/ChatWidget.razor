@@ -179,13 +179,12 @@
             }
 
             <div class="chat-input">
-                <textarea class="chat-input__field" rows="1" placeholder="@Lang.T("chat.placeholder")"
-                          @bind="_inputText"
-                          @bind:event="oninput"
-                          @bind:after="OnTypingInput"
+                <textarea class="chat-input__field" id="chatMsgInput" rows="1"
+                          placeholder="@Lang.T("chat.placeholder")"
+                          oninput="chatUtils.onMsgInput(this)"
                           @onkeydown="OnKeyDown"></textarea>
-                <button class="chat-input__send" @onclick="SendMessage"
-                        disabled="@(string.IsNullOrWhiteSpace(_inputText) || _sending)">
+                <button class="chat-input__send" id="chatSendBtn"
+                        @onclick="SendMessage" disabled>
                     <i class="bi bi-send-fill"></i>
                 </button>
             </div>
