@@ -2,7 +2,7 @@
     @if (!string.IsNullOrEmpty(Item.CoverImageUrl))
     {
         <div class="blog-card__cover">
-            <img src="@Item.CoverImageUrl" alt="@(Lang.IsVi ? Item.Title : (Item.TitleEn ?? Item.Title))" />
+            <img src="@Item.CoverImageUrl" alt="@(Lang.IsVi ? Item.Title : (Item.TitleEn ?? Item.Title))" loading="lazy" />
         </div>
     }
     <div class="blog-card__body">

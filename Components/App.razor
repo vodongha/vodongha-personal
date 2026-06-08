@@ -47,6 +47,9 @@
 <body>
     <div id="nav-loading-bar"><div id="nav-loading-bar__fill"></div></div>
     <Routes />
+    <button id="back-to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i class="bi bi-chevron-up"></i>
+    </button>
     <ReconnectModal />
     <script>window.getTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;</script>
     <script>window.__clientIp = '@clientIp';</script>
