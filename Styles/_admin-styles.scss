@@ -6,7 +6,7 @@
 // ── Sidebar ──────────────────────────────────────────────────────
 .admin-sidebar {
     width: 220px;
-    height: 100vh;
+    min-height: 100vh;
     background: var(--admin-surface);
     border-right: 1px solid var(--admin-border);
     display: flex;
@@ -15,7 +15,6 @@
     position: sticky;
     top: 0;
     flex-shrink: 0;
-    overflow: hidden;
 
     &__logo {
         font-family: $font-mono;
@@ -26,6 +25,14 @@
         margin-bottom: 1rem;
         span { color: $color-primary; }
         .dot { color: var(--color-text-muted); }
+    }
+
+    &__top-controls {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0 0.75rem 0.75rem;
+        border-bottom: 1px solid var(--admin-border);
+        margin-bottom: 0.5rem;
     }
 
     &__logout {
@@ -39,9 +46,6 @@
     flex-direction: column;
     gap: 0.25rem;
     padding: 0 0.75rem;
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
 
     &__item {
         display: flex;
