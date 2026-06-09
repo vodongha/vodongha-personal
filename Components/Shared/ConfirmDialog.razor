@@ -2,14 +2,14 @@
 {
     <div class="admin-modal-overlay" @onclick="Cancel">
         <div class="admin-modal admin-modal--sm" @onclick:stopPropagation>
-            <h2 class="admin-modal__title" style="color:#f87171">Xác nhận xoá</h2>
+            <h2 class="admin-modal__title" style="color:#f87171">Confirm delete</h2>
             <p style="margin-bottom:1rem;opacity:.7">@Message</p>
-            <p style="margin-bottom:0.5rem;font-size:0.8rem;opacity:.5">Nhập <strong style="opacity:1;color:#f87171">Delete</strong> để xác nhận</p>
+            <p style="margin-bottom:0.5rem;font-size:0.8rem;opacity:.5">Type <strong style="opacity:1;color:#f87171">Delete</strong> to confirm</p>
             <input class="admin-form__input" @bind="_input" @bind:event="oninput"
                    placeholder="Delete" autocomplete="off" />
             <div class="admin-modal__footer">
-                <button class="admin-btn admin-btn--ghost" @onclick="Cancel">Huỷ</button>
-                <button class="admin-btn admin-btn--danger" @onclick="Confirm" disabled="@(_input != "Delete")">Xoá</button>
+                <button class="admin-btn admin-btn--ghost" @onclick="Cancel">Cancel</button>
+                <button class="admin-btn admin-btn--danger" @onclick="Confirm" disabled="@(_input != "Delete")">Delete</button>
             </div>
         </div>
     </div>
@@ -17,7 +17,7 @@
 
 @code {
     [Parameter] public bool Show { get; set; }
-    [Parameter] public string Message { get; set; } = "Bạn có chắc muốn xoá mục này không?";
+    [Parameter] public string Message { get; set; } = "Are you sure you want to delete this item?";
     [Parameter] public EventCallback OnConfirm { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
 

@@ -1,5 +1,5 @@
-# Local development với PostgreSQL local (không cần Neon)
-# Chạy: docker compose -f docker-compose.dev.yml up
+# Local development with local PostgreSQL (no Neon required)
+# Run: docker compose -f docker-compose.dev.yml up
 
 services:
   app:
