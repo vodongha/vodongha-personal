@@ -6,6 +6,10 @@
         <span>vdh</span><span class="dot">.</span><span>admin</span>
     </div>
     <div class="admin-sidebar__top-controls">
+        <a href="/" target="_blank" class="admin-view-website">
+            <i class="bi bi-box-arrow-up-right"></i>
+            <span>@Loc.T("View website")</span>
+        </a>
         <button type="button" class="admin-theme-toggle" @onclick="ToggleTheme" title="Toggle theme">
             @if (_theme == "dark")
             {
@@ -28,9 +32,9 @@
         </button>
     </div>
     <nav class="admin-nav">
-        <!-- Dashboard — standalone -->
+        <!-- Menu — mobile only pinned item -->
         <a href="/admin" class="admin-nav__item admin-nav__item--pinned @(IsActive("/admin", exact: true) ? "admin-nav__item--active" : "")">
-            <i class="bi bi-grid"></i> @Loc.T("Dashboard")
+            <i class="bi bi-list"></i> @Loc.T("Menu")
         </a>
 
         <!-- Portfolio -->
@@ -104,6 +108,10 @@
             </div>
         </div>
     </nav>
+    <a href="/" target="_blank" class="admin-view-website admin-view-website--mobile">
+        <i class="bi bi-box-arrow-up-right"></i>
+        <span>@Loc.T("View website")</span>
+    </a>
     <button type="button" class="admin-theme-toggle admin-theme-toggle--mobile" @onclick="ToggleTheme" title="Toggle theme">
         @if (_theme == "dark")
         {
