@@ -182,21 +182,46 @@ Compiled CSS is **not committed**. `dotnet build` compiles automatically via `As
 ## Git workflow
 
 ```
-develop  →  PR  →  master  →  Fly.io auto-deploy (~2 min)
-                      ↓
-                  develop  ← auto-synced by sync-develop.yml
+feature/* ──┐
+bug/*    ──→  develop  →  PR → develop  →  PR → master  →  Fly.io auto-deploy (~2 min)
+                                                                 ↓
+hotfix/* ───────────────────────────────────→  PR → master       ↓
+                                                           develop ← auto-synced
 ```
 
-`master` is branch-protected — no direct push. All changes via `develop` → PR. After merge, `develop` is automatically synced from `master` via the `sync-develop` workflow.
+| Branch type | Base | PR target | Use for |
+|---|---|---|---|
+| `feature/description` | `develop` | `develop` | New features |
+| `bug/description` | `develop` | `develop` | Non-urgent fixes |
+| `hotfix/description` | `master` | `master` | Urgent production fixes |
+
+**Feature / bug — standard flow:**
 
 ```bash
-git checkout develop
-# make changes...
-git add <files>
-git commit -m "describe the change"
-git push origin develop
-gh pr create --title "..." --base master --head develop
+git checkout develop && git pull origin develop
+git checkout -b feature/my-feature
+
+# ... make changes ...
+git push origin feature/my-feature
+gh pr create --title "Add my feature" --base develop --head feature/my-feature
+
+# After PR merged into develop → open PR develop → master
+gh pr create --title "v2.x.x — description" --base master --head develop
 ```
+
+**Hotfix — bypass develop:**
+
+```bash
+git checkout master && git pull origin master
+git checkout -b hotfix/urgent-fix
+
+# ... fix ...
+git push origin hotfix/urgent-fix
+gh pr create --title "Fix: description" --base master --head hotfix/urgent-fix
+# After merge → sync-develop.yml automatically syncs develop ← master
+```
+
+`master` is branch-protected — no direct push. After every merge to `master`, tag a release and `develop` is automatically synced via `sync-develop.yml`.
 
 ---
 
