@@ -1,19 +1,18 @@
 ﻿@use 'variables' as *;
 
 // ── Layout ──────────────────────────────────────────────────────
-.admin-shell { display: flex; min-height: 100vh; background: var(--admin-bg); color: $color-text; font-family: $font-sans; }
+.admin-shell { display: flex; height: 100vh; overflow: hidden; background: var(--admin-bg); color: $color-text; font-family: $font-sans; }
 
 // ── Sidebar ──────────────────────────────────────────────────────
 .admin-sidebar {
     width: 220px;
-    min-height: 100vh;
+    height: 100vh;
+    overflow-y: auto;
     background: var(--admin-surface);
     border-right: 1px solid var(--admin-border);
     display: flex;
     flex-direction: column;
     padding: 1.5rem 0;
-    position: sticky;
-    top: 0;
     flex-shrink: 0;
 
     &__logo {
@@ -74,8 +73,10 @@
 // ── Main ──────────────────────────────────────────────────────────
 .admin-main {
     flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 2rem;
-    overflow-x: auto;
 }
 
 .admin-header {
