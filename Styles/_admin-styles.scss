@@ -2813,7 +2813,18 @@ tr.admin-row--dragover td {
 
     tr + tr td { border-top: 1px solid var(--admin-border); }
 
-    &__path  { padding: 0.5rem 0.5rem 0.5rem 0; color: var(--color-text); font-family: $font-mono; font-size: 0.8rem; width: 60%; word-break: break-all; }
+    &__path  {
+        padding: 0.5rem 0.5rem 0.5rem 0;
+        color: var(--color-text);
+        font-family: $font-mono;
+        font-size: 0.8rem;
+        // max-width: 0 is the trick that makes text-overflow work inside table cells
+        max-width: 0;
+        width: 60%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
     &__count { padding: 0.5rem; color: $color-primary; font-weight: 600; text-align: right; white-space: nowrap; }
 
     &__bar-cell { padding: 0.5rem 0; width: 30%; }

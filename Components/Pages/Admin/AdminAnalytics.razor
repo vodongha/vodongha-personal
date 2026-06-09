@@ -79,7 +79,7 @@
                                 @foreach ((string path, int count) in _topPages)
                                 {
                                     <tr>
-                                        <td class="analytics-table__path">@path</td>
+                                        <td class="analytics-table__path" title="@path">@path</td>
                                         <td class="analytics-table__count">@count</td>
                                     </tr>
                                 }
@@ -105,7 +105,7 @@
                                 @foreach ((string country, int count) in _topCountries)
                                 {
                                     <tr>
-                                        <td class="analytics-table__path">@country</td>
+                                        <td class="analytics-table__path" title="@country">@country</td>
                                         <td class="analytics-table__count">@count</td>
                                     </tr>
                                 }
@@ -129,7 +129,7 @@
                             @foreach ((string referrer, int count) in _topReferrers)
                             {
                                 <tr>
-                                    <td class="analytics-table__path">@referrer</td>
+                                    <td class="analytics-table__path" title="@referrer">@referrer</td>
                                     <td class="analytics-table__count">@count</td>
                                     <td class="analytics-table__bar-cell">
                                         <div class="analytics-table__bar"
