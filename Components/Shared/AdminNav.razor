@@ -6,10 +6,6 @@
         <span>vdh</span><span class="dot">.</span><span>admin</span>
     </div>
     <div class="admin-sidebar__top-controls">
-        <a href="/" target="_blank" class="admin-view-website">
-            <i class="bi bi-box-arrow-up-right"></i>
-            <span>Website</span>
-        </a>
         <button type="button" class="admin-theme-toggle" @onclick="ToggleTheme" title="Toggle theme">
             @if (_theme == "dark")
             {
@@ -108,6 +104,9 @@
             </div>
         </div>
     </nav>
+    <a href="/" target="_blank" class="admin-nav__item admin-sidebar__view-website">
+        <i class="bi bi-box-arrow-up-right"></i> Website
+    </a>
     <a href="/" target="_blank" class="admin-view-website admin-view-website--mobile">
         <i class="bi bi-box-arrow-up-right"></i>
         <span>Website</span>
