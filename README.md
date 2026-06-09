@@ -49,21 +49,21 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Chats** — live chat sessions; clicking a session opens it instantly; sessions auto-reorder by latest message; real-time typing indicator and read receipts; hub group rejoined automatically after SignalR reconnect; push notification URL includes `?session=ID` so clicking it auto-opens the right conversation
 - **API Keys** — manage secrets (VAPID, Telegram, Resend…) stored encrypted in DB; synced from Fly.io ENV on first startup
 - **Server Health** — live memory + DB response time charts (Chart.js), auto-refresh every 30 s; chart colors adapt to light/dark theme on toggle
+- **Analytics** — self-hosted page view dashboard: daily views chart, top pages, top countries (geo IP via ip-api.com), top referrers; 7/30/90 day period selector; GDPR-safe (no IP stored)
 - **Settings** — bio (VI/EN), social links, avatar upload
 - **CV / Resume PDF** — generate a polished PDF CV; 3 templates (Dark Sidebar, Minimal, Professional); template picker colors work in light mode
 - **Shimmer skeleton loading** — all admin pages and all public sections show animated placeholders while data loads
-- **Mobile responsive** — fixed bottom navigation bar on screens ≤ 768 px; admin chat is full-screen on mobile with back button
+- **Mobile responsive** — fixed bottom navigation bar on screens ≤ 768 px; collapsible grouped sidebar nav on desktop (Portfolio / Communication / Insights / System); admin chat is full-screen on mobile with back button
 - **Dark / Light mode** — complete coverage across public site, chat widget, admin panel, and Chart.js charts
 
-### v2.0.6 — Scroll-to-top position fix
-- **Fix** — scroll-to-top button repositioned above both Chat FAB and AI FAB; updated for desktop and mobile breakpoints
+### v2.0.5 — Analytics, admin nav groups, AI widget
 
-### v2.0.5 — AI floating widget
-- **AI widget** — floating robot FAB button opens a chat panel powered by Google Gemini (`gemini-2.0-flash`); positioned above the Chat FAB
-- **Conversation** — history maintained per session, typing indicator (animated dots), suggestion chips on welcome screen, 15-question session limit
-- **Context-aware** — `AiService` builds a system prompt from live DB data (bio, skills, experience, education, featured projects) with a 30-minute cache
-- **Admin** — Gemini API key and model configurable in `/admin/api-keys` under the new Gemini section (encrypted via `AppSecretsService`)
-- **i18n** — `ai.*` keys for all widget strings in both VI and EN
+- **Self-hosted analytics** — `/admin/analytics` dashboard: daily views line chart, top pages + countries bar charts, top referrers table; 7/30/90 day period selector; GDPR-safe geo IP (ip-api.com, no IP stored)
+- **Admin sidebar groups** — collapsible nav groups (Portfolio / Communication / Insights / System); auto-opens active section; sidebar scrolls independently from content
+- **Mobile bottom bar** — equal-width buttons with dividers: Menu | Website | Dark | VI/EN | Logout; Menu links to Dashboard
+- **SCSS refactor** — mobile styles extracted to `_admin-mobile.scss` and `_client-mobile.scss`
+- **AI widget** — floating robot FAB powered by Google Gemini (`gemini-2.0-flash`); conversation history, typing indicator, suggestion chips, 15-question limit; context built from live DB data with 30-min cache
+- **Fix** — scroll-to-top button repositioned above both Chat FAB and AI FAB
 
 ### v2.0.4 — Security & quality hardening
 - **Security** — `[Authorize(Roles="Admin")]` on SignalR admin group; push subscription `IsAdmin` determined server-side; constant-time login comparison; rate limiting (10 req / 5 min) on `/api/auth/login`
@@ -113,8 +113,8 @@ vodongha-personal/
 │   │   ├── Home.razor          # Landing page (InteractiveServer)
 │   │   ├── Blog/               # BlogPostPage (dynamic SEO per post)
 │   │   └── Admin/              # Login, Dashboard, Skills, Projects, Blog,
-│   │                           #   Education, Experience, Contacts, Chats,
-│   │                           #   Health, Settings (each: .razor + .razor.cs)
+│   │                           #   Education, Experience, Contacts, Chats, Analytics,
+│   │                           #   Health, Costs, Settings, CV, ApiKeys (each: .razor + .razor.cs)
 │   ├── Sections/               # HeroSection, SkillsSection, ProjectsSection,
 │   │                           #   ExperienceSection, EducationSection,
 │   │                           #   BlogSection, ContactSection
@@ -128,6 +128,7 @@ vodongha-personal/
 ├── Hubs/
 │   └── ChatHub.cs              # SignalR hub — session groups, typing events
 ├── Services/
+│   ├── AnalyticsService.cs     # Page view tracking — geo IP, daily/top queries
 │   ├── ChatService.cs          # Chat sessions, messages, Telegram webhook handler
 │   ├── TelegramService.cs      # Telegram Bot API — topics, messages, typing
 │   ├── HealthMonitorService.cs # Singleton — collects server metrics every 30s
@@ -136,10 +137,13 @@ vodongha-personal/
 ├── Styles/
 │   ├── app.scss                # Public site → wwwroot/app.css
 │   ├── admin.scss              # Admin → wwwroot/admin.css
+│   ├── _admin-mobile.scss      # Admin mobile overrides (bottom nav, page-specific)
+│   ├── _client-mobile.scss     # Cross-component client mobile overrides
 │   └── _*.scss                 # Partials (variables, base, nav, chat, ...)
 ├── wwwroot/js/
 │   ├── admin.js                # Event delegation for admin UI
-│   ├── chat.js                 # chatUtils — scroll, country detection (ipinfo.io)
+│   ├── analytics-charts.js     # Chart.js wrappers for analytics page
+│   ├── chat.js                 # chatUtils — scroll, country detection
 │   └── healthChart.js          # Chart.js init/update/destroy wrappers
 ├── Migrations/
 ├── Dockerfile
