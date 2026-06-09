@@ -57,7 +57,7 @@ public class ChatService
         await db.SaveChangesAsync();
 
         // Automated welcome message — saved to DB so it loads when widget connects
-        string firstName = name.Trim().Split(' ').Last(); // lấy tên (phần cuối)
+        string firstName = name.Trim().Split(' ').Last(); // extract first name (last word)
         ChatMessage welcome = new()
         {
             ChatSessionId = session.Id,
