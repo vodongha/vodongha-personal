@@ -7,7 +7,7 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 - **Live:** https://vodongha.id.vn
 - **Repo:** https://github.com/vodongha/vodongha-personal
 - **Admin:** https://vodongha.id.vn/admin/login
-- **Project file:** `vodongha-personal.csproj` (RootNamespace: `vodongha`, AssemblyName: `vodongha-personal`)
+- **Project file:** `vodongha-personal.csproj` (RootNamespace: `VodonghaPersonal`, AssemblyName: `vodongha-personal`)
 
 ## Technology stack
 
