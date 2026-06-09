@@ -36,19 +36,47 @@
                 <div class="chat-form__group">
                     <label class="chat-form__label">@Lang.T("chat.form.phone")</label>
                     <div class="chat-phone">
-                        <select class="chat-phone__dial" @onchange="OnDialChanged">
-                            @foreach (Country c in Countries)
-                            {
-                                <option value="@c.RegionCode" selected="@(c.RegionCode == _selectedRegion)">
-                                    @c.Flag @c.Dial
-                                </option>
-                            }
-                        </select>
+                        @* Dial picker — fully JS-driven to avoid Blazor re-render disrupting other inputs *@
+                        <div class="chat-dial" id="chatDialPicker">
+                            <button type="button" class="chat-dial__trigger"
+                                    onclick="chatDial.toggle()"
+                                    id="chatDialTrigger">
+                                <span id="chatDialLabel">@SelectedCountry.Flag @SelectedCountry.Dial</span>
+                                <i class="bi bi-chevron-down chat-dial__caret"></i>
+                            </button>
+                            <div class="chat-dial__dropdown" id="chatDialDropdown" style="display:none">
+                                <div class="chat-dial__search-wrap">
+                                    <i class="bi bi-search"></i>
+                                    <input class="chat-dial__search" type="text"
+                                           id="chatDialSearch"
+                                           placeholder="Tìm quốc gia..."
+                                           oninput="chatDial.filter(this.value)" />
+                                </div>
+                                <div class="chat-dial__list" id="chatDialList">
+                                    @foreach (Country c in Countries)
+                                    {
+                                        <button type="button"
+                                                class="chat-dial__item @(c.RegionCode == _selectedRegion ? "chat-dial__item--active" : "")"
+                                                data-region="@c.RegionCode"
+                                                data-dial="@c.Dial"
+                                                data-name="@c.Name"
+                                                onclick="chatDial.select(this)">
+                                            <span class="chat-dial__flag">@c.Flag</span>
+                                            <span class="chat-dial__name">@c.Name</span>
+                                            <span class="chat-dial__code">@c.Dial</span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            <input type="hidden" id="chatDialRegion" value="@_selectedRegion"
+                                   @onchange="e => _selectedRegion = e.Value?.ToString() ?? _selectedRegion" />
+                        </div>
                         <input class="chat-phone__number @(_phoneTouched && !IsValidPhone(_phone) ? "chat-form__input--error" : "")"
-                               type="tel" placeholder="@Lang.T("chat.form.phone.placeholder")"
-                               value="@_phone"
-                               @oninput="OnPhoneInput"
-                               @onblur="() => _phoneTouched = true" />
+                               type="tel" id="chatPhoneInput"
+                               placeholder="@Lang.T("chat.form.phone.placeholder")"
+                               oninput="chatDial.cleanPhone(this)"
+                               @onchange="OnPhoneInput"
+                               @onblur="OnPhoneBlur" />
                     </div>
                     @if (_phoneTouched && !IsValidPhone(_phone))
                     {
@@ -67,7 +95,7 @@
                     }
                 </div>
 
-                <button class="chat-form__submit" @onclick="StartChat"
+                <button type="button" class="chat-form__submit" @onclick="StartChat"
                         disabled="@(!CanStartChat || _loading)">
                     <span>@Lang.T("chat.form.start") <i class="bi bi-arrow-right"></i></span>
                 </button>
@@ -136,14 +164,27 @@
                 }
             </div>
 
+            @if (_pushDenied)
+            {
+                <div class="chat-push-hint">
+                    <i class="bi bi-bell-slash"></i>
+                    <span>@Lang.T("chat.push.denied")</span>
+                    <a href="@_pushHelpUrl" target="_blank" rel="noopener" class="chat-push-hint__link">
+                        @Lang.T("chat.push.howto")
+                    </a>
+                    <button type="button" class="chat-push-hint__close" @onclick="() => _pushDenied = false" title="Đóng">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            }
+
             <div class="chat-input">
-                <textarea class="chat-input__field" rows="1" placeholder="@Lang.T("chat.placeholder")"
-                          @bind="_inputText"
-                          @bind:event="oninput"
-                          @bind:after="OnTypingInput"
-                          @onkeydown="OnKeyDown"></textarea>
-                <button class="chat-input__send" @onclick="SendMessage"
-                        disabled="@(string.IsNullOrWhiteSpace(_inputText) || _sending)">
+                <textarea class="chat-input__field" id="chatMsgInput" rows="1"
+                          placeholder="@Lang.T("chat.placeholder")"
+                          oninput="chatUtils.onMsgInput(this)"
+                          onkeydown="chatUtils.onMsgKeyDown(event)"></textarea>
+                <button type="button" class="chat-input__send" id="chatSendBtn"
+                        @onclick="SendMessage" disabled>
                     <i class="bi bi-send-fill"></i>
                 </button>
             </div>
@@ -151,7 +192,10 @@
     </div>
 }
 
-<button type="button" class="chat-fab" @onclick="ToggleOpen" title="@Lang.T("chat.fab.title")">
+<button type="button" class="chat-fab" @onclick="ToggleOpen"
+        title="@Lang.T("chat.fab.title")"
+        aria-label="@(_state == ChatState.Closed ? Lang.T("chat.fab.open") : Lang.T("chat.fab.close"))"
+        aria-expanded="@(_state != ChatState.Closed ? "true" : "false")">
     @if (_state == ChatState.Closed)
     {
         <i class="bi bi-chat-dots-fill"></i>

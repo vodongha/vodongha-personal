@@ -12,7 +12,7 @@
     <main class="admin-main">
         <header class="admin-header">
             <h1 class="admin-header__title">@Loc.T("Projects")</h1>
-            <button class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> @Loc.T("Add new")</button>
+            <button type="button" class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> @Loc.T("Add new")</button>
         </header>
 
         <div class="admin-toolbar">
@@ -97,11 +97,11 @@
         <div class="paginator">
             <span class="paginator-summary">@Filtered.Count items</span>
             <nav>
-                <button @onclick="() => GoPage(0)" disabled="@(_page == 0)">«</button>
-                <button @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">‹</button>
+                <button type="button" @onclick="() => GoPage(0)" disabled="@(_page == 0)">«</button>
+                <button type="button" @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">‹</button>
                 <span>Page @(_page + 1) of @TotalPages</span>
-                <button @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">›</button>
-                <button @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">»</button>
+                <button type="button" @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">›</button>
+                <button type="button" @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">»</button>
             </nav>
         </div>
         } @* end else (not loading) *@

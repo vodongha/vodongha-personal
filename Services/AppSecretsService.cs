@@ -36,7 +36,9 @@ public class AppSecretsService
 
     // In-memory cache: key → plaintext value (from DB)
     private readonly Dictionary<string, string> _cache = [];
-    private bool _loaded = false;
+    // volatile ensures cross-thread visibility — reads outside the semaphore
+    // see a consistent value once the load completes inside the lock.
+    private volatile bool _loaded = false;
     private readonly SemaphoreSlim _loadLock = new(1, 1);
 
     private const string ProtectorPurpose = "AppSecrets.v1";
