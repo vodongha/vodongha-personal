@@ -27,17 +27,17 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 ### Live chat widget
 - Floating chat button on all public pages
 - Visitor fills a contact form (name *, phone *, email *) then chats in real-time
-- Country code dropdown with flag emoji (full list via Google libphonenumber), **auto-detected from visitor's IP** via ipinfo.io (browser-side call); falls back to timezone
-- Phone validated per country's numbering plan (libphonenumber); email validated on blur
-- Name, phone, email all show inline blur-validation errors with i18n messages
-- Auto welcome message on session start
-- Real-time typing indicators (both sides)
-- Read receipts: ✓ sent, ✓✓ read
-- Date dividers (Today / Hôm nay / Yesterday / Hôm qua / dd/MM/yyyy) — fully translated VI/EN
-- All chat widget strings translated (VI/EN), re-renders instantly on language switch
+- **Searchable country code dropdown** — pure JS, full list with flag emoji, filterable by name or dial code; auto-detected from visitor IP via ipinfo.io
+- Phone validated per country's numbering plan (libphonenumber); email validated on blur; leading zero stripped server-side
+- Input lag-free — textarea and dial picker handled entirely in JS (no Blazor round-trip per keystroke); Enter sends, Shift+Enter newline
+- Real-time typing indicators (both sides); read receipts: ✓ sent, ✓✓ read
+- Date dividers (Today / Yesterday / dd/MM/yyyy) — fully bilingual VI/EN
 - Unread badge on FAB; "New messages" divider when reopening with unread messages
-- Messages forwarded to a Telegram group — one forum topic per session
-- Telegram topic auto-recreated if deleted; session delete synced with Telegram
+- **Web Push notifications** — admin receives a browser push when a new message arrives; click notification jumps directly to that session
+- Notification permission denied → amber banner with browser-specific "How to enable" link
+- Messages forwarded to Telegram — one forum topic per session; topic auto-recreated if deleted
+- SignalR reconnect with exponential backoff (handles Fly.io cold-start EAGAIN errors)
+- Full light / dark mode support
 
 ### Admin panel
 - **Dashboard** — overview stats (visitors, messages, chats, server health)
@@ -46,12 +46,14 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Blog** — write and publish posts (VI + EN), auto-slug from Vietnamese title
 - **Education / Experience** — manage timeline entries
 - **Messages** — contact form submissions with unread badge, mark read, delete, reply
-- **Chats** — live chat sessions with real-time messages, typing indicator, read receipts
-- **Server Health** — live memory + DB response time charts (Chart.js), auto-refresh every 30s
+- **Chats** — live chat sessions; clicking a session opens it instantly; sessions auto-reorder by latest message; real-time typing indicator and read receipts; hub group rejoined automatically after SignalR reconnect; push notification URL includes `?session=ID` so clicking it auto-opens the right conversation
+- **API Keys** — manage secrets (VAPID, Telegram, Resend…) stored encrypted in DB; synced from Fly.io ENV on first startup
+- **Server Health** — live memory + DB response time charts (Chart.js), auto-refresh every 30 s; chart colors adapt to light/dark theme on toggle
 - **Settings** — bio (VI/EN), social links, avatar upload
-- **CV / Resume PDF** — generate a polished PDF CV from live DB data; 3 modern templates (Dark Sidebar, Minimal, Professional); template picker with live preview that matches PDF layout; avatar center-cropped via SkiaSharp; Vietnamese text via Noto Sans font
-- **Mobile responsive** — fixed bottom navigation bar on screens ≤ 768px
-- **Dark / Light mode** — toggle in sidebar; user preference stored in DB (`SiteSettings`), survives browser clears; defaults to OS preference on first use; syncs localStorage so public site stays consistent
+- **CV / Resume PDF** — generate a polished PDF CV; 3 templates (Dark Sidebar, Minimal, Professional); template picker colors work in light mode
+- **Shimmer skeleton loading** — all admin pages and all public sections show animated placeholders while data loads
+- **Mobile responsive** — fixed bottom navigation bar on screens ≤ 768 px; admin chat is full-screen on mobile with back button
+- **Dark / Light mode** — complete coverage across public site, chat widget, admin panel, and Chart.js charts
 
 ### v2.0.4 — Security & quality hardening
 - **Security** — `[Authorize(Roles="Admin")]` on SignalR admin group; push subscription `IsAdmin` determined server-side; constant-time login comparison; rate limiting (10 req / 5 min) on `/api/auth/login`

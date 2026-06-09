@@ -16,6 +16,10 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     [Inject] private ToastService Toast { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
 
+    // Auto-open a specific session when navigated from a push notification (?session=ID)
+    [SupplyParameterFromQuery(Name = "session")]
+    [Parameter] public int? SessionParam { get; set; }
+
     private bool _loading = true;
     private List<ChatSession> _sessions = [];
     private List<ChatMessage> _messages = [];
@@ -41,6 +45,12 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         _sessions = await ChatSvc.GetSessionsAsync();
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
         _loading = false;
+
+        // Auto-open session from push notification query param (?session=ID)
+        if (SessionParam.HasValue && _sessions.Any(s => s.Id == SessionParam.Value))
+        {
+            await SelectSession(SessionParam.Value);
+        }
     }
 
     private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
@@ -105,6 +115,20 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             .WithUrl(Nav.ToAbsoluteUri("/chathub"))
             .WithAutomaticReconnect()
             .Build();
+
+        // After reconnect, admin loses all group memberships — rejoin them
+        _hubConnection.Reconnected += async _ =>
+        {
+            await _hubConnection.InvokeAsync("JoinAdminGroup");
+            if (_selectedSessionId.HasValue)
+            {
+                await _hubConnection.InvokeAsync("JoinSession", _selectedSessionId.Value.ToString());
+            }
+            // Refresh list in case messages arrived while disconnected
+            _sessions = await ChatSvc.GetSessionsAsync();
+            _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
+            await InvokeAsync(StateHasChanged);
+        };
 
         _hubConnection.On<object>("ReceiveMessage", async msg =>
         {
@@ -214,19 +238,25 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             _sessionLastSeenId[_selectedSessionId.Value] = _messages.Max(m => m.Id);
         }
 
-        // Leave old session group
+        // Leave old session group — swallow hub errors (may not be connected yet)
         if (_selectedSessionId.HasValue && _hubConnection != null)
         {
-            await _hubConnection.InvokeAsync("LeaveSession", _selectedSessionId.Value.ToString());
+            try { await _hubConnection.InvokeAsync("LeaveSession", _selectedSessionId.Value.ToString()); }
+            catch { /* ignore disconnected hub */ }
         }
 
         _selectedSessionId = sessionId;
         _selectedSession = _sessions.FirstOrDefault(s => s.Id == sessionId);
-        bool sessionHasUnread = _selectedSession?.HasUnread ?? false;
-        _messages = await ChatSvc.GetMessagesAsync(sessionId);
+        _messages = [];
         _replyText = "";
         _otherIsTyping = false;
         _userReadUpToId = 0;
+
+        // Show the chat panel immediately — don't wait for messages to load
+        StateHasChanged();
+
+        bool sessionHasUnread = _selectedSession?.HasUnread ?? false;
+        _messages = await ChatSvc.GetMessagesAsync(sessionId);
 
         // Determine the divider boundary
         if (_sessionLastSeenId.TryGetValue(sessionId, out int storedLastSeen))
@@ -272,10 +302,11 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         }
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
 
-        // Join new session group
+        // Join new session group — swallow hub errors (may not be connected yet)
         if (_hubConnection != null)
         {
-            await _hubConnection.InvokeAsync("JoinSession", sessionId.ToString());
+            try { await _hubConnection.InvokeAsync("JoinSession", sessionId.ToString()); }
+            catch { /* ignore disconnected hub — real-time won't work but messages loaded from DB */ }
         }
 
         // Scroll to unread divider if there are new messages, otherwise scroll to bottom

@@ -58,6 +58,11 @@ public class LanguageService
         ["blog.toc.title"]      = "Mục lục",
         ["blog.views"]          = "lượt xem",
         ["blog.related.title"]  = "Bài viết liên quan",
+        ["blog.viewall"]        = "Xem tất cả bài viết",
+        ["blog.page.prev"]      = "Trước",
+        ["blog.page.next"]      = "Tiếp",
+        ["blog.page.of"]        = "trong",
+        ["blog.page.count"]     = "bài viết",
         ["blog.share.title"]    = "Chia sẻ bài viết",
         ["blog.share.copy"]     = "Sao chép liên kết",
         ["blog.share.copied"]   = "Đã sao chép!",
@@ -108,6 +113,8 @@ public class LanguageService
         ["chat.yesterday"]      = "Hôm qua",
         ["chat.sent"]           = "Đã gửi",
         ["chat.read"]           = "Đã đọc",
+        ["chat.push.denied"]    = "Thông báo bị chặn. Bật lại để nhận tin nhắn khi có phản hồi.",
+        ["chat.push.howto"]     = "Hướng dẫn",
         ["chat.fab.title"]      = "Chat với mình",
     };
 
@@ -151,6 +158,11 @@ public class LanguageService
         ["blog.toc.title"]      = "Contents",
         ["blog.views"]          = "views",
         ["blog.related.title"]  = "Related posts",
+        ["blog.viewall"]        = "View all posts",
+        ["blog.page.prev"]      = "Previous",
+        ["blog.page.next"]      = "Next",
+        ["blog.page.of"]        = "of",
+        ["blog.page.count"]     = "posts",
         ["blog.share.title"]    = "Share this post",
         ["blog.share.copy"]     = "Copy link",
         ["blog.share.copied"]   = "Copied!",
@@ -201,6 +213,8 @@ public class LanguageService
         ["chat.yesterday"]      = "Yesterday",
         ["chat.sent"]           = "Sent",
         ["chat.read"]           = "Read",
+        ["chat.push.denied"]    = "Notifications blocked. Enable them to get replies.",
+        ["chat.push.howto"]     = "How to enable",
         ["chat.fab.title"]      = "Chat with me",
     };
 }

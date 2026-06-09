@@ -24,6 +24,7 @@
     <PackageReference Include="QuestPDF" Version="2026.5.0" />
     <PackageReference Include="Resend" Version="0.5.1" />
     <PackageReference Include="SkiaSharp" Version="3.116.1" />
+    <PackageReference Include="WebPush" Version="1.0.13" />
   </ItemGroup>
 
 </Project>

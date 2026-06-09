@@ -198,16 +198,40 @@ window.initReadingProgress = function () {
 })();
 
 // ── Theme toggle ──────────────────────────────────────────────────────────────
+// Reads the *actual* data-theme on <html> and flips it.
+// Returns the new theme string so the Blazor component can update its icon state.
+// Using the DOM as source-of-truth avoids race conditions where the C# _theme
+// field hasn't been synced yet when the user clicks the toggle button.
+window.toggleTheme = function () {
+    var current = document.documentElement.getAttribute('data-theme') || 'dark';
+    var next = current === 'light' ? 'dark' : 'light';
+    window.setTheme(next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    return next;
+};
+
 window.setTheme = function (theme) {
-    document.documentElement.setAttribute('data-theme', theme || 'dark');
+    var t = theme || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    // Persist as a cookie so the server can pre-render data-theme on <html>
+    // on the next request — eliminates the dark-flash on reload entirely.
+    document.cookie = 'theme=' + t + ';path=/;max-age=31536000;samesite=lax';
     var meta = document.querySelector('meta[name="color-scheme"]');
-    if (meta) { meta.setAttribute('content', theme === 'light' ? 'light' : 'dark'); }
+    if (meta) { meta.setAttribute('content', t === 'light' ? 'light' : 'dark'); }
 };
 
 // Returns the stored user preference, or falls back to the OS/system preference.
 // Used by Blazor components on first render to sync the toggle icon without
 // having to pass the same logic down from every page.
 window.getUserTheme = function () {
+    // Cookie is the authoritative source (also readable server-side).
+    var cookie = document.cookie.split(';').map(function(c){return c.trim();})
+        .find(function(c){return c.startsWith('theme=');});
+    if (cookie) {
+        var val = cookie.split('=')[1];
+        if (val === 'light' || val === 'dark') { return val; }
+    }
+    // Fallback: localStorage (legacy), then OS preference.
     var stored = localStorage.getItem('theme');
     if (stored === 'light' || stored === 'dark') { return stored; }
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
