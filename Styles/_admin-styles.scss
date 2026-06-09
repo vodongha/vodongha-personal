@@ -40,17 +40,22 @@
 
     &__collapse-btn {
         background: transparent;
-        border: none;
+        border: 1px solid var(--admin-border);
         color: var(--color-text-muted);
         cursor: pointer;
-        padding: 0.3rem;
+        padding: 0;
+        width: 24px;
+        height: 24px;
         border-radius: 6px;
         display: flex;
         align-items: center;
+        justify-content: center;
         flex-shrink: 0;
-        transition: background 150ms, color 150ms;
-        i { font-size: 0.85rem; }
-        &:hover { background: var(--admin-hover); color: $color-text; }
+        transition: background 150ms, color 150ms, border-color 150ms;
+        i { font-size: 0.75rem; }
+        &:hover { background: var(--admin-hover); color: $color-text; border-color: var(--admin-border-hover); }
+
+        @media (max-width: 768px) { display: none !important; }
     }
 
     &__top-controls {
@@ -61,6 +66,12 @@
         border-bottom: 1px solid var(--admin-border);
         margin-bottom: 0.5rem;
         white-space: nowrap;
+
+        // Desktop: icon-only — labels hidden, tooltip via title attr
+        @media (min-width: 769px) {
+            .admin-ctrl__label { display: none; }
+            .admin-ctrl { padding: 0.45rem; }
+        }
     }
 
     // ── Collapsed state (desktop only) ──
@@ -189,11 +200,9 @@
         border: none;
         cursor: pointer;
         font-family: inherit;
-        font-size: 0.75rem;
+        font-size: 0.82rem;
         font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: var(--color-text-muted);
+        color: var(--color-text-dim);
         transition: color 150ms, background 150ms;
 
         &:hover { background: var(--admin-hover); color: $color-text; }
