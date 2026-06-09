@@ -9,14 +9,14 @@
 
     <main class="admin-main">
         <header class="admin-header">
-            <h1 class="admin-header__title">Analytics</h1>
+            <h1 class="admin-header__title">@Loc.T("Analytics")</h1>
             <div class="analytics-period-tabs">
                 @foreach (int d in new[] { 7, 30, 90 })
                 {
                     <button type="button"
                             class="admin-btn admin-btn--sm @(_days == d ? "admin-btn--primary" : "admin-btn--ghost")"
                             @onclick="() => SetDays(d)">
-                        @d days
+                        @d @Loc.T("days")
                     </button>
                 }
             </div>
@@ -36,25 +36,25 @@
             <!-- Stat cards -->
             <div class="analytics-stat-row">
                 <div class="analytics-stat-card">
-                    <span class="analytics-stat-card__label">Last @_days days</span>
+                    <span class="analytics-stat-card__label">@Loc.T("Last @_days days").Replace("@_days", _days.ToString())</span>
                     <span class="analytics-stat-card__value">@_total.ToString("N0")</span>
-                    <span class="analytics-stat-card__sub">page views</span>
+                    <span class="analytics-stat-card__sub">@Loc.T("page views")</span>
                 </div>
                 <div class="analytics-stat-card">
-                    <span class="analytics-stat-card__label">All time</span>
+                    <span class="analytics-stat-card__label">@Loc.T("All time")</span>
                     <span class="analytics-stat-card__value">@_totalAll.ToString("N0")</span>
-                    <span class="analytics-stat-card__sub">page views</span>
+                    <span class="analytics-stat-card__sub">@Loc.T("page views")</span>
                 </div>
                 <div class="analytics-stat-card">
-                    <span class="analytics-stat-card__label">Daily avg</span>
+                    <span class="analytics-stat-card__label">@Loc.T("Daily avg")</span>
                     <span class="analytics-stat-card__value">@((_total / (double)_days).ToString("F1"))</span>
-                    <span class="analytics-stat-card__sub">views / day</span>
+                    <span class="analytics-stat-card__sub">@Loc.T("views / day")</span>
                 </div>
             </div>
 
             <!-- Daily views line chart -->
             <div class="analytics-panel">
-                <h2 class="analytics-panel__title">Daily views — last @_days days</h2>
+                <h2 class="analytics-panel__title">@Loc.T("Daily views") — @_days @Loc.T("days")</h2>
                 <div class="analytics-chart-box">
                     <canvas id="chart-daily"></canvas>
                 </div>
@@ -64,10 +64,10 @@
             <div class="analytics-grid-2">
                 <!-- Top pages -->
                 <div class="analytics-panel">
-                    <h2 class="analytics-panel__title">Top pages</h2>
+                    <h2 class="analytics-panel__title">@Loc.T("Top pages")</h2>
                     @if (_topPages.Count == 0)
                     {
-                        <p class="analytics-empty">No data yet</p>
+                        <p class="analytics-empty">@Loc.T("No data yet")</p>
                     }
                     else
                     {
@@ -90,10 +90,10 @@
 
                 <!-- Top countries -->
                 <div class="analytics-panel">
-                    <h2 class="analytics-panel__title">Top countries</h2>
+                    <h2 class="analytics-panel__title">@Loc.T("Top countries")</h2>
                     @if (_topCountries.Count == 0)
                     {
-                        <p class="analytics-empty">No geo data yet — refreshes as visitors arrive</p>
+                        <p class="analytics-empty">@Loc.T("No geo data yet — refreshes as visitors arrive")</p>
                     }
                     else
                     {
@@ -117,10 +117,10 @@
 
             <!-- Referrers -->
             <div class="analytics-panel">
-                <h2 class="analytics-panel__title">Top referrers</h2>
+                <h2 class="analytics-panel__title">@Loc.T("Top referrers")</h2>
                 @if (_topReferrers.Count == 0)
                 {
-                    <p class="analytics-empty">No referrer data yet</p>
+                    <p class="analytics-empty">@Loc.T("No referrer data yet")</p>
                 }
                 else
                 {
