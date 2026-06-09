@@ -135,7 +135,8 @@ vodongha-personal/
 │   │   │   ├── AdminChats.razor + .cs       # live chat sessions, real-time messages, typing, read receipts
 │   │   │   ├── AdminHealth.razor + .cs      # server health: memory + DB ping charts, snapshot table
 │   │   │   ├── AdminSettings.razor + .cs    # avatar upload, social links, bio
-│   │   │   └── AdminCv.razor + .cs          # CV PDF download — template picker, live preview per template
+│   │   │   ├── AdminCv.razor + .cs          # CV PDF download — template picker, live preview per template
+│   │   │   └── AdminAnalytics.razor + .cs   # /admin/analytics — page views, daily chart, top pages/countries/referrers
 │   │   ├── Error.razor
 │   │   └── NotFound.razor
 │   ├── Sections/                     # One file per landing page section
@@ -151,7 +152,7 @@ vodongha-personal/
 │       ├── BlogCard.razor            # Reusable blog post card
 │       ├── ConfirmDialog.razor       # Delete confirmation modal (type "Delete" to enable button)
 │       ├── ChatWidget.razor + .cs    # Floating chat button on all public pages (InteractiveServer)
-│       ├── AdminNav.razor + .cs      # Shared admin sidebar / mobile bottom nav with unread badges
+│       ├── AdminNav.razor + .cs      # Shared admin sidebar — collapsible groups (Portfolio/Communication/Insights/System), auto-opens active group; mobile bottom bar (Menu, Website, Dark, VI/EN, Logout)
 │       └── TimezoneDetector.razor    # Invisible InteractiveServer component — reads browser IANA timezone via JS on first render, stores in TimezoneService
 ├── Data/
 │   ├── AppDbContext.cs               # EF context + seed data (Skills, Projects, Experience, Education, SiteSettings, BlogPost × 6)
@@ -163,7 +164,8 @@ vodongha-personal/
 │       ├── Education.cs
 │       ├── ContactMessage.cs
 │       ├── SiteSetting.cs            # Key-value store for site metadata
-│       └── VisitorLog.cs             # Unique visitors by IP — IpAddress, FirstSeenAt, UserAgent
+│       ├── VisitorLog.cs             # Unique visitors by IP — IpAddress, FirstSeenAt, UserAgent
+│       └── PageView.cs               # Analytics — Path, Referrer, Country (no IP stored — GDPR), CreatedAt
 ├── Services/
 │   ├── BlogService.cs
 │   ├── ProjectService.cs
@@ -179,11 +181,14 @@ vodongha-personal/
 │   ├── TelegramService.cs            # Bot API: CreateTopicAsync, SendMessageAsync (returns TopicDeleted flag), DeleteTopicAsync, SendTypingAsync
 │   ├── HealthMonitorService.cs       # Singleton + IHostedService — collects metrics every 30s, 24-snapshot circular buffer
 │   ├── TimezoneService.cs            # Scoped — stores browser IANA timezone; ToUserTime(DateTime utc); fires OnTimezoneSet event for component re-render
-│   └── CvPdfService.cs               # QuestPDF: Generate(CvData, template, avatarBytes?) → byte[]; 3 templates (0=DarkSidebar 1=Minimal 2=Professional); CropSquareTop() via SkiaSharp
+│   ├── CvPdfService.cs               # QuestPDF: Generate(CvData, template, avatarBytes?) → byte[]; 3 templates (0=DarkSidebar 1=Minimal 2=Professional); CropSquareTop() via SkiaSharp
+│   └── AnalyticsService.cs           # Page view tracking — TrackAsync (fire-and-forget from middleware), geo lookup via ip-api.com (24h cache), daily/top queries
 ├── Styles/
 │   ├── app.scss                      # Public site entry point — imports all _*.scss partials
 │   ├── admin.scss                    # Admin entry point — imports _admin-styles.scss
-│   ├── _admin-styles.scss            # All admin panel styles (BEM: .admin-*)
+│   ├── _admin-styles.scss            # All admin panel styles (BEM: .admin-*) — desktop only
+│   ├── _admin-mobile.scss            # Admin mobile overrides — bottom nav layout, page-specific mobile queries
+│   ├── _client-mobile.scss           # Cross-component client mobile overrides (stub)
 │   ├── _variables.scss               # Design tokens (colors, spacing, fonts)
 │   ├── _base.scss                    # Global styles + .section layout
 │   ├── _nav.scss
@@ -200,6 +205,7 @@ vodongha-personal/
 ├── wwwroot/
 │   └── js/
 │       ├── admin.js                  # Event delegation for admin UI (select arrow open/close)
+│       ├── analytics-charts.js       # Chart.js wrappers for analytics page (renderLine, renderBar, destroy)
 │       ├── chat.js                   # chatUtils.scrollToBottom(id), chatUtils.scrollToUnread(id)
 │       └── healthChart.js            # healthChart.init/update/destroy — Chart.js wrappers
 ├── Migrations/                       # EF Core — never modify existing migrations
@@ -218,7 +224,7 @@ Two separate CSS outputs — public and admin are completely independent:
 | SCSS entry | Output | Layout that loads it |
 |---|---|---|
 | `Styles/app.scss` | `wwwroot/app.css` | `MainLayout.razor` |
-| `Styles/admin.scss` | `wwwroot/admin.css` | `AdminLayout.razor` |
+| `Styles/admin.scss` (`@use admin-styles + admin-mobile`) | `wwwroot/admin.css` | `AdminLayout.razor` |
 
 **Compiled CSS is gitignored.** Never commit `wwwroot/app.css` or `wwwroot/admin.css`.
 
@@ -381,6 +387,29 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 builder.Services.AddSingleton<HealthMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 ```
+
+## Analytics
+
+`AnalyticsService` tracks page views for the admin analytics dashboard. Registered as `AddScoped<AnalyticsService>()`.
+
+### Data model
+
+`PageView` — `Path`, `Referrer` (domain only), `Country` (from geo IP), `CreatedAt`. **No IP address stored** (GDPR). Index on `CreatedAt`.
+
+### Tracking
+
+Middleware in `Program.cs` calls `analyticsSvc.TrackAsync(path, referrer, ip)` fire-and-forget on every qualifying GET request (same exclusion rules as visitor tracking).
+
+`TrackAsync` checks an in-memory `ConcurrentDictionary<string, (Country, ExpiresAt)>` geo cache (static, survives scopes). On cache miss, `LookupAndCacheAsync(ip)` calls `http://ip-api.com/json/{ip}?fields=country` (free, 45 req/min) with a 3-second timeout. The country is awaited before saving the `PageView` record so it is always stored on the first visit.
+
+### Dashboard — `/admin/analytics`
+
+- Period selector: 7 / 30 / 90 days
+- Stat cards: views in period, all-time total, daily average
+- Daily views line chart (Chart.js)
+- Top pages + Top countries bar charts + tables (ellipsis truncation, tooltip on hover, max-height scroll)
+- Top referrers table with relative bar
+- Chart rendering uses `_pendingChartRender` flag — set after data load, consumed in `OnAfterRenderAsync` — so charts render exactly once per data load without double-render race.
 
 ## Blog
 
@@ -552,13 +581,12 @@ else { <real content> }
 
 ## Current version
 
-**v2.0.6**
+**v2.0.5**
 
 | Version | Changes |
 |---|---|
-| v2.0.6 | Fix scroll-to-top button position — stacked above both Chat FAB and AI FAB |
-| v2.0.5 | AI floating widget (Google Gemini) — FAB + chat panel above ChatWidget; AiService with 30-min context cache built from DB; Gemini API key managed in admin API Keys; `ai.*` i18n keys VI/EN |
-| v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping (`type="button"` on all non-submit buttons); accessibility (aria-label/aria-expanded, focus-visible); code quality (ChatHubParser, DotNetObjectReference disposal, N+1 fix, typing indicator cache); DI fix; git workflow updated (feature/bug → develop, hotfix → master) |
+| v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix |
+| v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping; accessibility; code quality; DI fix; git workflow updated |
 | v2.0.3 | Web Push notifications, searchable dial-code picker, chat light/dark mode, admin chat UX fixes, API Keys admin, blog pagination, skeleton loading, theme system fixes |
 | v2.0.2 | CV PDF (QuestPDF + SkiaSharp, 3 templates), AdminCv page |
 | v2.0.1 | Chat widget (SignalR + Telegram), AdminChats |
