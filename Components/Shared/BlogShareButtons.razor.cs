@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using vodongha.Services;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Shared;
+namespace VodonghaPersonal.Components.Shared;
 
 public partial class BlogShareButtons : ComponentBase, IDisposable
 {
@@ -13,7 +13,7 @@ public partial class BlogShareButtons : ComponentBase, IDisposable
     [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
 
     private bool _copied;
-    private string PostUrl => $"https://vodongha.id.vn/blog/{Slug}";
+    private string PostUrl => $"https://VodonghaPersonal.id.vn/blog/{Slug}";
 
     private async Task CopyLinkAsync()
     {

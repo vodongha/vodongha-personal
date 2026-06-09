@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace vodongha.Migrations
+namespace VodonghaPersonal.Migrations
 {
     /// <inheritdoc />
     public partial class FixGracTechnologies : Migration

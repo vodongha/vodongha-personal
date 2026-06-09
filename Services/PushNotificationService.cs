@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using vodongha.Data;
-using vodongha.Data.Models;
+using VodonghaPersonal.Data;
+using VodonghaPersonal.Data.Models;
 using WebPush;
-using PushSubscriptionModel = vodongha.Data.Models.PushSubscription;
+using PushSubscriptionModel = VodonghaPersonal.Data.Models.PushSubscription;
 
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 public class PushNotificationService
 {

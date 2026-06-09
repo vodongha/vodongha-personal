@@ -1,4 +1,4 @@
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 public class AdminLocalizationService
 {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using vodongha.Services;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Sections;
+namespace VodonghaPersonal.Components.Sections;
 
 public partial class HeroSection : ComponentBase, IDisposable
 {

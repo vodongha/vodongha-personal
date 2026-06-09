@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace vodongha.Migrations
+namespace VodonghaPersonal.Migrations
 {
     /// <inheritdoc />
     public partial class UpdateSocialLinks : Migration
@@ -22,7 +22,7 @@ namespace vodongha.Migrations
                 keyColumn: "Id",
                 keyValue: 12,
                 column: "Value",
-                value: "https://www.facebook.com/vodongha.fb");
+                value: "https://www.facebook.com/VodonghaPersonal.fb");
         }
 
         /// <inheritdoc />

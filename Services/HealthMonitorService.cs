@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using vodongha.Data;
+using VodonghaPersonal.Data;
 
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 public record HealthMetricSnapshot(
     DateTime Timestamp,

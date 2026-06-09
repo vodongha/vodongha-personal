@@ -2,7 +2,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 public class TelegramService
 {

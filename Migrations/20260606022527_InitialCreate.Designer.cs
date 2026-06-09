@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using vodongha.Data;
+using VodonghaPersonal.Data;
 
 #nullable disable
 
-namespace vodongha.Migrations
+namespace VodonghaPersonal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260606022527_InitialCreate")]
@@ -25,7 +25,7 @@ namespace vodongha.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("vodongha.Data.Models.BlogPost", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.BlogPost", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -73,7 +73,7 @@ namespace vodongha.Migrations
                     b.ToTable("BlogPosts");
                 });
 
-            modelBuilder.Entity("vodongha.Data.Models.ContactMessage", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.ContactMessage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -108,7 +108,7 @@ namespace vodongha.Migrations
                     b.ToTable("ContactMessages");
                 });
 
-            modelBuilder.Entity("vodongha.Data.Models.Project", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -156,16 +156,16 @@ namespace vodongha.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(2026, 6, 6, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Web cá nhân được xây dựng với Blazor Web App .NET 10 và PostgreSQL.",
-                            GitHubUrl = "https://github.com/vodongha/vodongha.id.vn",
+                            GitHubUrl = "https://github.com/vodongha/VodonghaPersonal.id.vn",
                             IsFeatured = true,
-                            LiveUrl = "https://vodongha.id.vn",
+                            LiveUrl = "https://VodonghaPersonal.id.vn",
                             Order = 1,
                             Technologies = "Blazor,.NET 10,PostgreSQL,SCSS",
                             Title = "Personal Website"
                         });
                 });
 
-            modelBuilder.Entity("vodongha.Data.Models.Skill", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.Skill", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

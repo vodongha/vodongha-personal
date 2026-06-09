@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using vodongha.Services;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Pages.Admin;
+namespace VodonghaPersonal.Components.Pages.Admin;
 
 public partial class AdminApiKeys : ComponentBase, IDisposable
 {
@@ -41,7 +41,7 @@ public partial class AdminApiKeys : ComponentBase, IDisposable
         await InvokeAsync(StateHasChanged);
 
         // Load DB overrides
-        List<vodongha.Data.Models.AppSecret> dbSecrets = await Secrets.GetAllAsync();
+        List<VodonghaPersonal.Data.Models.AppSecret> dbSecrets = await Secrets.GetAllAsync();
         _dbValues = dbSecrets.ToDictionary(s => s.Key, s => s.Value);
 
         // Load env values for all defined keys

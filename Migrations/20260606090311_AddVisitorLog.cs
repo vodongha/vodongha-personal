@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace vodongha.Migrations
+namespace VodonghaPersonal.Migrations
 {
     /// <inheritdoc />
     public partial class AddVisitorLog : Migration

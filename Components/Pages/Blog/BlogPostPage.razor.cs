@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using vodongha.Data.Models;
-using vodongha.Services;
+using VodonghaPersonal.Data.Models;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Pages.Blog;
+namespace VodonghaPersonal.Components.Pages.Blog;
 
 public partial class BlogPostPage : ComponentBase, IDisposable
 {

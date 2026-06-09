@@ -1,4 +1,4 @@
-namespace vodongha.Components.Shared;
+namespace VodonghaPersonal.Components.Shared;
 
 /// <summary>
 /// Parses the anonymous object pushed by SignalR hub methods (ReceiveMessage) into a typed record.

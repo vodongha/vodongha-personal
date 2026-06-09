@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Text.RegularExpressions;
-using vodongha.Services;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Shared;
+namespace VodonghaPersonal.Components.Shared;
 
 public partial class TableOfContents : ComponentBase, IDisposable
 {

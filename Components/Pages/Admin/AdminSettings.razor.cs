@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.JSInterop;
-using vodongha.Services;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Pages.Admin;
+namespace VodonghaPersonal.Components.Pages.Admin;
 
 public partial class AdminSettings : ComponentBase, IDisposable
 {

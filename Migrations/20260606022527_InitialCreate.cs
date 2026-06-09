@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace vodongha.Migrations
+namespace VodonghaPersonal.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -94,7 +94,7 @@ namespace vodongha.Migrations
             migrationBuilder.InsertData(
                 table: "Projects",
                 columns: new[] { "Id", "CreatedAt", "Description", "GitHubUrl", "ImageUrl", "IsFeatured", "LiveUrl", "Order", "Technologies", "Title" },
-                values: new object[] { 1, new DateTime(2026, 6, 6, 0, 0, 0, 0, DateTimeKind.Utc), "Web cá nhân được xây dựng với Blazor Web App .NET 10 và PostgreSQL.", "https://github.com/vodongha/vodongha.id.vn", null, true, "https://vodongha.id.vn", 1, "Blazor,.NET 10,PostgreSQL,SCSS", "Personal Website" });
+                values: new object[] { 1, new DateTime(2026, 6, 6, 0, 0, 0, 0, DateTimeKind.Utc), "Web cá nhân được xây dựng với Blazor Web App .NET 10 và PostgreSQL.", "https://github.com/vodongha/VodonghaPersonal.id.vn", null, true, "https://VodonghaPersonal.id.vn", 1, "Blazor,.NET 10,PostgreSQL,SCSS", "Personal Website" });
 
             migrationBuilder.InsertData(
                 table: "Skills",

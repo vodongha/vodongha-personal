@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
-using vodongha.Data;
-using vodongha.Services;
+using VodonghaPersonal.Data;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Shared;
+namespace VodonghaPersonal.Components.Shared;
 
 public partial class AdminNav : ComponentBase, IAsyncDisposable
 {

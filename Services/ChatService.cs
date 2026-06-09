@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
-using vodongha.Data;
-using vodongha.Data.Models;
-using vodongha.Hubs;
+using VodonghaPersonal.Data;
+using VodonghaPersonal.Data.Models;
+using VodonghaPersonal.Hubs;
 
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 public class ChatService
 {

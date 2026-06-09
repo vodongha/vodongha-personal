@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Components;
-using vodongha.Data.Models;
-using vodongha.Services;
+using VodonghaPersonal.Data.Models;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Sections;
+namespace VodonghaPersonal.Components.Sections;
 
 public partial class BlogSection : ComponentBase, IDisposable
 {

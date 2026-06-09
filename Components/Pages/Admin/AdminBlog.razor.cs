@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
-using vodongha.Data.Models;
-using vodongha.Services;
+using VodonghaPersonal.Data.Models;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Pages.Admin;
+namespace VodonghaPersonal.Components.Pages.Admin;
 
 public partial class AdminBlog : ComponentBase, IDisposable
 {

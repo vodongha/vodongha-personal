@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
-using vodongha.Data;
-using vodongha.Data.Models;
+using VodonghaPersonal.Data;
+using VodonghaPersonal.Data.Models;
 
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 /// <summary>
 /// Manages application API keys/secrets stored in the database.

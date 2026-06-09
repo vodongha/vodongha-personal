@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
-using vodongha.Components.Shared;
-using vodongha.Data.Models;
-using vodongha.Services;
+using VodonghaPersonal.Components.Shared;
+using VodonghaPersonal.Data.Models;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Pages.Admin;
+namespace VodonghaPersonal.Components.Pages.Admin;
 
 public partial class AdminChats : ComponentBase, IAsyncDisposable
 {

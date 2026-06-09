@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using PhoneNumbers;
-using vodongha.Data.Models;
-using vodongha.Services;
+using VodonghaPersonal.Data.Models;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Shared;
+namespace VodonghaPersonal.Components.Shared;
 
 public partial class ChatWidget : ComponentBase, IAsyncDisposable
 {

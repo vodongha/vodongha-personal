@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using vodongha.Data;
+using VodonghaPersonal.Data;
 
 #nullable disable
 
-namespace vodongha.Migrations
+namespace VodonghaPersonal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260606131623_AddBlogPost2_AiSkills")]
@@ -44,7 +44,7 @@ namespace vodongha.Migrations
                     b.ToTable("DataProtectionKeys");
                 });
 
-            modelBuilder.Entity("vodongha.Data.Models.BlogPost", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.BlogPost", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,7 +132,7 @@ namespace vodongha.Migrations
                         });
                 });
 
-            modelBuilder.Entity("vodongha.Data.Models.ContactMessage", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.ContactMessage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -167,7 +167,7 @@ namespace vodongha.Migrations
                     b.ToTable("ContactMessages");
                 });
 
-            modelBuilder.Entity("vodongha.Data.Models.Education", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.Education", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -234,7 +234,7 @@ namespace vodongha.Migrations
                         });
                 });
 
-            modelBuilder.Entity("vodongha.Data.Models.Experience", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.Experience", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -405,7 +405,7 @@ namespace vodongha.Migrations
                         });
                 });
 
-            modelBuilder.Entity("vodongha.Data.Models.Project", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -516,14 +516,14 @@ namespace vodongha.Migrations
                             DescriptionEn = "Personal website built with Blazor Web App .NET 10 and PostgreSQL. Auto-deployed to Fly.io via GitHub Actions with SCSS dark theme.",
                             GitHubUrl = "https://github.com/vodongha/vodongha-personal",
                             IsFeatured = true,
-                            LiveUrl = "https://vodongha.id.vn",
+                            LiveUrl = "https://VodonghaPersonal.id.vn",
                             Order = 2,
                             Technologies = "Blazor,.NET 10,PostgreSQL,SCSS,Fly.io,Docker",
                             Title = "Personal Website"
                         });
                 });
 
-            modelBuilder.Entity("vodongha.Data.Models.SiteSetting", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.SiteSetting", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -617,11 +617,11 @@ namespace vodongha.Migrations
                         {
                             Id = 12,
                             Key = "Facebook",
-                            Value = "https://www.facebook.com/vodongha.fb"
+                            Value = "https://www.facebook.com/VodonghaPersonal.fb"
                         });
                 });
 
-            modelBuilder.Entity("vodongha.Data.Models.Skill", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.Skill", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -843,7 +843,7 @@ namespace vodongha.Migrations
                         });
                 });
 
-            modelBuilder.Entity("vodongha.Data.Models.VisitorLog", b =>
+            modelBuilder.Entity("VodonghaPersonal.Data.Models.VisitorLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

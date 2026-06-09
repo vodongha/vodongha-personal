@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using vodongha.Data;
-using vodongha.Data.Models;
+using VodonghaPersonal.Data;
+using VodonghaPersonal.Data.Models;
 
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 public class SkillService(IDbContextFactory<AppDbContext> dbFactory)
 {

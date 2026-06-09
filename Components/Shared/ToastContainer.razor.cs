@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using vodongha.Services;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Shared;
+namespace VodonghaPersonal.Components.Shared;
 
 public partial class ToastContainer : ComponentBase, IDisposable
 {

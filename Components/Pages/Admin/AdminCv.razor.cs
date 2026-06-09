@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
-using vodongha.Data;
-using vodongha.Data.Models;
-using vodongha.Services;
+using VodonghaPersonal.Data;
+using VodonghaPersonal.Data.Models;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Pages.Admin;
+namespace VodonghaPersonal.Components.Pages.Admin;
 
 public partial class AdminCv : ComponentBase, IDisposable
 {
