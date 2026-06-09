@@ -87,14 +87,14 @@ public partial class AdminAnalytics : ComponentBase, IDisposable
             {
                 string[] pageLabels = _topPages.Select(p => p.Path).ToArray();
                 int[]    pageCounts = _topPages.Select(p => p.Count).ToArray();
-                await JS.InvokeVoidAsync("analyticsCharts.renderBar", "chart-pages", pageLabels, pageCounts);
+                await JS.InvokeVoidAsync("analyticsCharts.renderBar", "chart-pages", pageLabels, pageCounts, "#22c9b7");
             }
 
             if (_topCountries.Count > 0)
             {
                 string[] countryLabels = _topCountries.Select(c => c.Country).ToArray();
                 int[]    countryCounts = _topCountries.Select(c => c.Count).ToArray();
-                await JS.InvokeVoidAsync("analyticsCharts.renderBar", "chart-countries", countryLabels, countryCounts);
+                await JS.InvokeVoidAsync("analyticsCharts.renderBar", "chart-countries", countryLabels, countryCounts, "#f59e0b");
             }
         }
         catch (JSDisconnectedException) { }
