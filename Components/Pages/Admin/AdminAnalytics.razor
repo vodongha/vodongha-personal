@@ -1,0 +1,147 @@
+@page "/admin/analytics"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">Analytics</h1>
+            <div class="analytics-period-tabs">
+                @foreach (int d in new[] { 7, 30, 90 })
+                {
+                    <button type="button"
+                            class="admin-btn admin-btn--sm @(_days == d ? "admin-btn--primary" : "admin-btn--ghost")"
+                            @onclick="() => SetDays(d)">
+                        @d days
+                    </button>
+                }
+            </div>
+        </header>
+
+        @if (_loading)
+        {
+            <div class="analytics-skeleton">
+                <div class="analytics-stat-row">
+                    @for (int i = 0; i < 3; i++) { <div class="skeleton-box analytics-stat-card"></div> }
+                </div>
+                <div class="skeleton-box analytics-chart-box"></div>
+            </div>
+        }
+        else
+        {
+            <!-- Stat cards -->
+            <div class="analytics-stat-row">
+                <div class="analytics-stat-card">
+                    <span class="analytics-stat-card__label">Last @_days days</span>
+                    <span class="analytics-stat-card__value">@_total.ToString("N0")</span>
+                    <span class="analytics-stat-card__sub">page views</span>
+                </div>
+                <div class="analytics-stat-card">
+                    <span class="analytics-stat-card__label">All time</span>
+                    <span class="analytics-stat-card__value">@_totalAll.ToString("N0")</span>
+                    <span class="analytics-stat-card__sub">page views</span>
+                </div>
+                <div class="analytics-stat-card">
+                    <span class="analytics-stat-card__label">Daily avg</span>
+                    <span class="analytics-stat-card__value">@((_total / (double)_days).ToString("F1"))</span>
+                    <span class="analytics-stat-card__sub">views / day</span>
+                </div>
+            </div>
+
+            <!-- Daily views line chart -->
+            <div class="analytics-panel">
+                <h2 class="analytics-panel__title">Daily views — last @_days days</h2>
+                <div class="analytics-chart-box">
+                    <canvas id="chart-daily"></canvas>
+                </div>
+            </div>
+
+            <!-- Two-column tables -->
+            <div class="analytics-grid-2">
+                <!-- Top pages -->
+                <div class="analytics-panel">
+                    <h2 class="analytics-panel__title">Top pages</h2>
+                    @if (_topPages.Count == 0)
+                    {
+                        <p class="analytics-empty">No data yet</p>
+                    }
+                    else
+                    {
+                        <div class="analytics-chart-box analytics-chart-box--sm">
+                            <canvas id="chart-pages"></canvas>
+                        </div>
+                        <table class="analytics-table">
+                            <tbody>
+                                @foreach ((string path, int count) in _topPages)
+                                {
+                                    <tr>
+                                        <td class="analytics-table__path">@path</td>
+                                        <td class="analytics-table__count">@count</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+
+                <!-- Top countries -->
+                <div class="analytics-panel">
+                    <h2 class="analytics-panel__title">Top countries</h2>
+                    @if (_topCountries.Count == 0)
+                    {
+                        <p class="analytics-empty">No geo data yet — refreshes as visitors arrive</p>
+                    }
+                    else
+                    {
+                        <div class="analytics-chart-box analytics-chart-box--sm">
+                            <canvas id="chart-countries"></canvas>
+                        </div>
+                        <table class="analytics-table">
+                            <tbody>
+                                @foreach ((string country, int count) in _topCountries)
+                                {
+                                    <tr>
+                                        <td class="analytics-table__path">@country</td>
+                                        <td class="analytics-table__count">@count</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+
+            <!-- Referrers -->
+            <div class="analytics-panel">
+                <h2 class="analytics-panel__title">Top referrers</h2>
+                @if (_topReferrers.Count == 0)
+                {
+                    <p class="analytics-empty">No referrer data yet</p>
+                }
+                else
+                {
+                    <table class="analytics-table">
+                        <tbody>
+                            @foreach ((string referrer, int count) in _topReferrers)
+                            {
+                                <tr>
+                                    <td class="analytics-table__path">@referrer</td>
+                                    <td class="analytics-table__count">@count</td>
+                                    <td class="analytics-table__bar-cell">
+                                        <div class="analytics-table__bar"
+                                             style="width: @((count * 100 / _topReferrers[0].Count).ToString("F0"))%">
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        }
+    </main>
+</div>
