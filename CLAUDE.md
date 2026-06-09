@@ -32,46 +32,80 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 
 ## Git workflow
 
-**All commits go to `develop`. `master` is production-only — never commit directly to `master`.**
-
 ```
-develop  →  Pull Request  →  master  →  Fly.io auto-deploy
-                                ↓
-                            develop  ← auto-synced by sync-develop.yml
+feature/* ──┐
+bug/*    ──→  develop  →  PR → develop (merged)  →  PR → master  →  Fly.io auto-deploy
+                                                                          ↓
+hotfix/* ──────────────────────────────────────────────→  PR → master    ↓
+                                                                    develop ← auto-synced by sync-develop.yml
 ```
 
-### Daily workflow
+### Branch rules
+
+| Branch type | Base branch | PR target | When to use |
+|---|---|---|---|
+| `feature/short-description` | `develop` | `develop` | New feature |
+| `bug/short-description` | `develop` | `develop` | Non-urgent bug fix |
+| `hotfix/short-description` | `master` | `master` | Urgent production fix |
+
+**`master` is production-only — never commit directly.** All feature/bug work goes through `develop` first. Hotfixes bypass `develop` and go straight to `master`; `develop` picks them up via auto-sync.
+
+### Feature / bug workflow
 
 ```bash
-# Always work on develop
-git checkout develop
+# 1. Branch from develop
+git checkout develop && git pull origin develop
+git checkout -b feature/my-feature   # or bug/my-fix
 
-# Make changes, commit
+# 2. Make changes, commit, push
 git add <files>
-git commit -m "short description of what changed"
-git push origin develop
+git commit -m "short description"
+git push origin feature/my-feature
 
-# Open PR: develop → master
-gh pr create --title "PR title" --body "description" --base master --head develop
+# 3. PR: feature → develop
+gh pr create --title "Add my feature" --base develop --head feature/my-feature
 
-# After merge, master deploys automatically to Fly.io
+# 4. After PR merged into develop → immediately open PR: develop → master
+gh pr create --title "v2.x.x — description" --base master --head develop
+
+# 5. Merge develop → master → Fly.io auto-deploys
+# 6. sync-develop.yml auto-syncs develop ← master (no action needed)
+```
+
+### Hotfix workflow
+
+```bash
+# 1. Branch from master
+git checkout master && git pull origin master
+git checkout -b hotfix/urgent-fix
+
+# 2. Make changes, commit, push
+git add <files>
+git commit -m "Fix: short description"
+git push origin hotfix/urgent-fix
+
+# 3. PR: hotfix → master (bypasses develop)
+gh pr create --title "Fix: urgent description" --base master --head hotfix/urgent-fix
+
+# 4. Merge → Fly.io auto-deploys
+# 5. sync-develop.yml auto-syncs develop ← master (hotfix lands in develop automatically)
 ```
 
 ### PR conventions
 
-- One PR per feature or fix
-- Title: short imperative phrase ("Add blog post", "Fix mobile layout")
-- Base branch: always `master`
-- Merge with merge commit (no squash, no rebase)
+- Title: short imperative phrase ("Add blog pagination", "Fix mobile nav overlap")
+- Merge with **merge commit** (no squash, no rebase)
+- Tag a release after each merge to `master` (see Releases below)
 
 ### Releases
 
-After significant merges, tag a release on GitHub:
+After each merge to `master`, tag the release:
 
 ```bash
-git tag v1.x.x
-git push origin v1.x.x
-gh release create v1.x.x --title "v1.x.x — description" --notes "changelog"
+git checkout master && git pull origin master
+git tag v2.x.x
+git push origin v2.x.x
+gh release create v2.x.x --title "v2.x.x — description" --notes "changelog"
 ```
 
 ## Solution structure
@@ -522,7 +556,7 @@ else { <real content> }
 
 | Version | Changes |
 |---|---|
-| v2.0.4 | Security hardening (SignalR admin group auth, rate limiting, constant-time login, push IsAdmin server-side), WCAG AA contrast fixes, loading bar scoping (type="button" on all non-submit buttons), invalid CSS fixes (rgba→color-mix), accessibility (aria-label/aria-expanded on FAB, focus-visible outlines), code quality (ChatHubParser extracted, DotNetObjectReference disposal, N+1 reduction in AdminChats, typing indicator topic ID cache), DI lifetime fix (AddDbContext conflict) |
+| v2.0.4 | Security hardening (SignalR admin group auth, rate limiting, constant-time login, push IsAdmin server-side), WCAG AA contrast fixes, loading bar scoping (type="button" on all non-submit buttons), invalid CSS fixes (rgba→color-mix), accessibility (aria-label/aria-expanded on FAB, focus-visible outlines), code quality (ChatHubParser extracted, DotNetObjectReference disposal, N+1 reduction in AdminChats, typing indicator topic ID cache), DI lifetime fix (AddDbContext conflict), git workflow updated (feature/bug → develop, hotfix → master) |
 | v2.0.3 | Web Push notifications, searchable dial-code picker, chat light/dark mode, admin chat UX fixes (session open, list reorder, reconnect), API Keys admin, blog pagination, skeleton loading, theme system fixes |
 | v2.0.2 | CV PDF (QuestPDF + SkiaSharp, 3 templates), AdminCv page |
 | v2.0.1 | Chat widget (SignalR + Telegram), AdminChats |
