@@ -867,6 +867,8 @@ tr.admin-row--dragover td {
     // Hide all nav items except Menu (--pinned) and all groups — only target items inside .admin-nav
     .admin-nav .admin-nav__item:not(.admin-nav__item--pinned) { display: none !important; }
     .admin-nav .admin-nav-group { display: none !important; }
+    // Re-show pinned Menu item (desktop hides it; mobile must override)
+    .admin-nav .admin-nav__item--pinned { display: flex !important; }
 
     // Menu | View website | Theme | Lang | Logout
     .admin-nav__item,
