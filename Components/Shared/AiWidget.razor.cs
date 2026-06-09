@@ -10,8 +10,6 @@ public partial class AiWidget : ComponentBase, IDisposable
     [Inject] private LanguageService Lang { get; set; } = default!;
     [Inject] private AppSecretsService Secrets { get; set; } = default!;
 
-    private const int MaxQuestions = 15;
-
     private readonly record struct AiDisplayMessage(string Text, bool IsUser);
 
     private readonly List<AiDisplayMessage>    _messages = [];
@@ -21,7 +19,6 @@ public partial class AiWidget : ComponentBase, IDisposable
     private bool   _open          = false;
     private bool   _thinking      = false;
     private int    _questionCount = 0;
-    private bool   _limitReached  => _questionCount >= MaxQuestions;
 
     protected override void OnInitialized() => Lang.OnChange += OnLangChanged;
 
@@ -31,7 +28,7 @@ public partial class AiWidget : ComponentBase, IDisposable
     private async Task SendAsync()
     {
         string question = _input.Trim();
-        if (string.IsNullOrEmpty(question) || _thinking || _limitReached)
+        if (string.IsNullOrEmpty(question) || _thinking)
         {
             return;
         }
