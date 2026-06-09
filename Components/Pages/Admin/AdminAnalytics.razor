@@ -40,12 +40,12 @@
                     <span class="analytics-stat-card__value">@_total.ToString("N0")</span>
                     <span class="analytics-stat-card__sub">@Loc.T("page views")</span>
                 </div>
-                <div class="analytics-stat-card">
+                <div class="analytics-stat-card analytics-stat-card--teal">
                     <span class="analytics-stat-card__label">@Loc.T("All time")</span>
                     <span class="analytics-stat-card__value">@_totalAll.ToString("N0")</span>
                     <span class="analytics-stat-card__sub">@Loc.T("page views")</span>
                 </div>
-                <div class="analytics-stat-card">
+                <div class="analytics-stat-card analytics-stat-card--green">
                     <span class="analytics-stat-card__label">@Loc.T("Daily avg")</span>
                     <span class="analytics-stat-card__value">@((_total / (double)_days).ToString("F1"))</span>
                     <span class="analytics-stat-card__sub">@Loc.T("views / day")</span>
