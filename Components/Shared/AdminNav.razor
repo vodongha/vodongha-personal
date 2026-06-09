@@ -5,6 +5,28 @@
     <div class="admin-sidebar__logo">
         <span>vdh</span><span class="dot">.</span><span>admin</span>
     </div>
+    <div class="admin-sidebar__top-controls">
+        <button type="button" class="admin-theme-toggle" @onclick="ToggleTheme" title="Toggle theme">
+            @if (_theme == "dark")
+            {
+                <i class="bi bi-sun admin-theme-toggle__icon"></i>
+                <span class="admin-theme-toggle__label">Light</span>
+            }
+            else
+            {
+                <i class="bi bi-moon-stars admin-theme-toggle__icon"></i>
+                <span class="admin-theme-toggle__label">Dark</span>
+            }
+        </button>
+        <button type="button" class="admin-lang-toggle" @onclick="ToggleLang" title="Switch language">
+            <i class="bi bi-translate admin-lang-toggle__icon"></i>
+            <span class="admin-lang-toggle__label">
+                <span class="@(Loc.Lang == "VI" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">VI</span>
+                <span class="admin-lang-toggle__sep">|</span>
+                <span class="@(Loc.Lang == "EN" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">EN</span>
+            </span>
+        </button>
+    </div>
     <nav class="admin-nav">
         <a href="/admin" class="admin-nav__item admin-nav__item--pinned @(IsActive("/admin", exact: true) ? "admin-nav__item--active" : "")"><i class="bi bi-grid"></i> @Loc.T("Dashboard")</a>
         <a href="/admin/skills" class="admin-nav__item @(IsActive("/admin/skills") ? "admin-nav__item--active" : "")"><i class="bi bi-bar-chart"></i> @Loc.T("Skills")</a>
@@ -27,26 +49,6 @@
         <a href="/admin/api-keys" class="admin-nav__item @(IsActive("/admin/api-keys") ? "admin-nav__item--active" : "")"><i class="bi bi-key"></i> @Loc.T("API Keys")</a>
         <a href="/admin/settings" class="admin-nav__item @(IsActive("/admin/settings") ? "admin-nav__item--active" : "")"><i class="bi bi-gear"></i> @Loc.T("Settings")</a>
     </nav>
-    <button type="button" class="admin-theme-toggle" @onclick="ToggleTheme" title="Toggle theme">
-        @if (_theme == "dark")
-        {
-            <i class="bi bi-sun admin-theme-toggle__icon"></i>
-            <span class="admin-theme-toggle__label">Light</span>
-        }
-        else
-        {
-            <i class="bi bi-moon-stars admin-theme-toggle__icon"></i>
-            <span class="admin-theme-toggle__label">Dark</span>
-        }
-    </button>
-    <button type="button" class="admin-lang-toggle" @onclick="ToggleLang" title="Switch language">
-        <i class="bi bi-translate admin-lang-toggle__icon"></i>
-        <span class="admin-lang-toggle__label">
-            <span class="@(Loc.Lang == "VI" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">VI</span>
-            <span class="admin-lang-toggle__sep">|</span>
-            <span class="@(Loc.Lang == "EN" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">EN</span>
-        </span>
-    </button>
     <form method="post" action="/admin/logout" class="admin-sidebar__logout">
         <button type="submit" class="admin-nav__item admin-nav__item--logout"><i class="bi bi-box-arrow-left"></i> @Loc.T("Logout")</button>
     </form>

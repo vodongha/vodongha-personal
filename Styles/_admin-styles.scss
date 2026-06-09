@@ -27,6 +27,14 @@
         .dot { color: var(--color-text-muted); }
     }
 
+    &__top-controls {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0 0.75rem 0.75rem;
+        border-bottom: 1px solid var(--admin-border);
+        margin-bottom: 0.5rem;
+    }
+
     &__logout {
         margin-top: auto;
         padding: 1rem 1rem 0;
