@@ -1,4 +1,4 @@
-# vodongha.id.vn — CLAUDE.md
+﻿# vodongha.id.vn — CLAUDE.md
 
 ## Project overview
 
@@ -152,7 +152,7 @@ vodongha-personal/
 │       ├── BlogCard.razor            # Reusable blog post card
 │       ├── ConfirmDialog.razor       # Delete confirmation modal (type "Delete" to enable button)
 │       ├── ChatWidget.razor + .cs    # Floating chat button on all public pages (InteractiveServer)
-│       ├── AdminNav.razor + .cs      # Shared admin sidebar — collapsible groups (Portfolio/Communication/Insights/System), auto-opens active group; mobile bottom bar (Menu, Website, Dark, VI/EN, Logout)
+│       ├── AdminNav.razor + .cs      # Shared admin sidebar — collapsible groups (Portfolio/Communication/Insights/System), auto-opens active group; collapsible sidebar (64px icon-only ↔ 220px expanded, chevron toggle in logo area, state in localStorage key `admin-sidebar-collapsed`); compact icon-only top controls (Website/Dark/Lang, labels hidden on desktop, `title` tooltip on hover); all group headers and nav items have `title` tooltips; group header style: no uppercase, 0.82rem, color-text-dim; clicking a group header when collapsed expands sidebar first; desktop only — mobile bottom bar (4 items: Menu / Dark icon-only / VI|EN active-only / Logout icon-only; Website removed)
 │       └── TimezoneDetector.razor    # Invisible InteractiveServer component — reads browser IANA timezone via JS on first render, stores in TimezoneService
 ├── Data/
 │   ├── AppDbContext.cs               # EF context + seed data (Skills, Projects, Experience, Education, SiteSettings, BlogPost × 6)
@@ -585,7 +585,7 @@ else { <real content> }
 
 | Version | Changes |
 |---|---|
-| v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix |
+| v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix; collapsible sidebar (icon-only collapsed mode, localStorage); icon-only top controls with tooltips; mobile bottom bar 4-item; Dashboard → /admin/analytics |
 | v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping; accessibility; code quality; DI fix; git workflow updated |
 | v2.0.3 | Web Push notifications, searchable dial-code picker, chat light/dark mode, admin chat UX fixes, API Keys admin, blog pagination, skeleton loading, theme system fixes |
 | v2.0.2 | CV PDF (QuestPDF + SkiaSharp, 3 templates), AdminCv page |
