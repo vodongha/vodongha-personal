@@ -208,6 +208,9 @@ public class AdminLocalizationService
         ["Saved successfully"] = "Lưu thành công",
         ["DB override removed"] = "Đã xoá ghi đè DB",
 
+        // Nav
+        ["Menu"] = "Menu",
+
         // Nav groups
         ["Portfolio"]     = "Portfolio",
         ["Communication"] = "Liên lạc",
