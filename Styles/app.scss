@@ -17,7 +17,7 @@
 // ── Back to top button ─────────────────────────────────────────────
 #back-to-top {
     position: fixed;
-    bottom: 6rem;   // above chat FAB (2rem bottom + 56px height + 1rem gap ≈ 5.5rem)
+    bottom: calc(2rem + 56px + 0.75rem + 48px + 0.75rem); // above both chat + AI FABs
     right: 2rem;
     width: 40px;
     height: 40px;
@@ -51,7 +51,7 @@
     }
 
     @media (max-width: 480px) {
-        bottom: calc(2rem + 56px + 0.75rem); // above chat FAB on mobile
+        bottom: calc(2rem + 56px + 0.5rem + 44px + 0.5rem); // above both chat + AI FABs on mobile
         right: 1rem;
         width: 36px;
         height: 36px;
