@@ -118,7 +118,7 @@ public class LanguageService
         ["chat.fab.title"]      = "Chat với mình",
         // AI widget
         ["ai.label"]        = "AI",
-        ["ai.title"]        = "Hỏi tôi bất cứ điều gì",
+        ["ai.title"]        = "Chat với AI",
         ["ai.subtitle"]     = "Trợ lý AI sẽ trả lời các câu hỏi về tôi dựa trên thông tin thực tế",
         ["ai.welcome"]      = "Xin chào! Bạn muốn biết gì về Võ Đông Hà? Chọn một câu hỏi gợi ý hoặc tự đặt câu hỏi.",
         ["ai.placeholder"]  = "Đặt câu hỏi về kỹ năng, dự án, kinh nghiệm...",
@@ -229,7 +229,7 @@ public class LanguageService
         ["chat.fab.title"]      = "Chat with me",
         // AI widget
         ["ai.label"]        = "AI",
-        ["ai.title"]        = "Ask me anything",
+        ["ai.title"]        = "Chat with AI",
         ["ai.subtitle"]     = "AI assistant answers questions about me based on real data",
         ["ai.welcome"]      = "Hi! What would you like to know about Võ Đông Hà? Pick a suggestion or ask your own question.",
         ["ai.placeholder"]  = "Ask about skills, projects, experience...",
