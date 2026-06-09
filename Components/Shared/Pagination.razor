@@ -1,7 +1,7 @@
 @if (TotalPages > 1)
 {
     <nav class="pagination" aria-label="Blog pagination">
-        <button class="pagination__btn pagination__btn--prev"
+        <button type="button" class="pagination__btn pagination__btn--prev"
                 disabled="@(CurrentPage <= 1)"
                 @onclick="() => OnPageChange.InvokeAsync(CurrentPage - 1)">
             <i class="bi bi-chevron-left"></i>
@@ -18,7 +18,7 @@
                 else
                 {
                     int p = page;
-                    <button class="pagination__page @(p == CurrentPage ? "pagination__page--active" : "")"
+                    <button type="button" class="pagination__page @(p == CurrentPage ? "pagination__page--active" : "")"
                             @onclick="() => OnPageChange.InvokeAsync(p)"
                             aria-current="@(p == CurrentPage ? "page" : null)">
                         @p
@@ -27,7 +27,7 @@
             }
         </div>
 
-        <button class="pagination__btn pagination__btn--next"
+        <button type="button" class="pagination__btn pagination__btn--next"
                 disabled="@(CurrentPage >= TotalPages)"
                 @onclick="() => OnPageChange.InvokeAsync(CurrentPage + 1)">
             <span>@Lang.T("blog.page.next")</span>

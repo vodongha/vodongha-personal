@@ -117,7 +117,6 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private string _name = "";
     private string _phone = "";
     private string _email = "";
-    private string _inputText = "";
     private bool _loading;
     private bool _sending;
     private bool _otherIsTyping;
@@ -135,6 +134,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private bool _pendingScrollToUnread;
     private bool _pushDenied;   // true when Notification.permission === 'denied'
     private string _pushHelpUrl = "https://support.google.com/chrome/answer/3220216"; // default Chrome
+    private DotNetObjectReference<ChatWidget>? _dotNetRef;
 
     private static bool IsValidEmail(string email)
     {
@@ -160,10 +160,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-            // Init JS helpers — pass DotNetRef for typing indicator callback
-        DotNetObjectReference<ChatWidget> dotNetRef = DotNetObjectReference.Create(this);
-        await JS.InvokeVoidAsync("chatDial.init", dotNetRef);
-        await JS.InvokeVoidAsync("chatUtils.initInput", dotNetRef);
+            // Init JS helpers — pass DotNetRef for typing indicator callback.
+            // Stored as a field so it can be disposed when the component is torn down.
+        _dotNetRef = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("chatDial.init", _dotNetRef);
+        await JS.InvokeVoidAsync("chatUtils.initInput", _dotNetRef);
 
         // Auto-select country from already-detected timezone (no external API needed)
         _ = DetectCountryAsync();
@@ -196,7 +197,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                         // No saved read pointer — mark all as read, stay closed
                         _lastReadMessageId = _messages.Count > 0 ? _messages.Max(m => m.Id) : 0;
                         _unreadCount = 0;
-                        _ = SaveLastReadAsync();
+                        _ = InvokeAsync(SaveLastReadAsync);
                         _state = ChatState.Closed;
                     }
 
@@ -524,14 +525,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         {
             _otherIsTyping = false;
 
-            string json = System.Text.Json.JsonSerializer.Serialize(msg);
-            using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(json);
-            System.Text.Json.JsonElement root = doc.RootElement;
-
-            int id = root.TryGetProperty("id", out System.Text.Json.JsonElement idEl) ? idEl.GetInt32() : 0;
-            string content = root.TryGetProperty("content", out System.Text.Json.JsonElement contentEl) ? contentEl.GetString() ?? "" : "";
-            bool isFromUser = root.TryGetProperty("isFromUser", out System.Text.Json.JsonElement fromEl) && fromEl.GetBoolean();
-            DateTime sentAt = root.TryGetProperty("sentAt", out System.Text.Json.JsonElement sentEl) ? sentEl.GetDateTime() : DateTime.UtcNow;
+            ChatHubParser.HubMessage parsed = ChatHubParser.Parse(msg);
+            int id = parsed.Id;
+            string content = parsed.Content;
+            bool isFromUser = parsed.IsFromUser;
+            DateTime sentAt = parsed.SentAt;
 
             _messages.Add(new ChatMessageDto(id, content, isFromUser, sentAt));
 
@@ -695,6 +693,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         Tz.OnTimezoneSet -= OnTimezoneUpdated;
         Lang.OnChange -= OnLangChanged;
         _typingCts?.Cancel();
+        _dotNetRef?.Dispose();
         if (_hubConnection != null)
         {
             await _hubConnection.DisposeAsync();

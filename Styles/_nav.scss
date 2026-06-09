@@ -91,6 +91,11 @@
             border-color: $color-primary;
             color: $color-primary;
         }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
     }
 
     &__theme-toggle {
@@ -126,6 +131,11 @@
             border-color: $color-primary;
             color: $color-primary;
         }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
     }
 
     &__dropdown {
@@ -158,6 +168,12 @@
         transition: background 150ms;
 
         &:hover { background: $color-border; }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: -2px;
+            background: $color-border;
+        }
 
         &--danger {
             color: #ef4444;

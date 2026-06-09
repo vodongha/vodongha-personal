@@ -15,7 +15,7 @@
             </h1>
             <div class="health-refresh">
                 <span class="health-refresh__label">@Loc.T("Cache"): 5 @Loc.T("min")</span>
-                <button class="admin-btn admin-btn--ghost admin-btn--sm" @onclick="Refresh" disabled="@_loading">
+                <button type="button" class="admin-btn admin-btn--ghost admin-btn--sm" @onclick="Refresh" disabled="@_loading">
                     <i class="bi bi-arrow-clockwise @(_loading ? "admin-spin" : "")"></i> @Loc.T("Refresh")
                 </button>
             </div>

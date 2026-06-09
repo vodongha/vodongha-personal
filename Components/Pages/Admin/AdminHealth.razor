@@ -13,7 +13,7 @@
             <h1 class="admin-header__title">@Loc.T("Server Status")</h1>
             <div class="health-refresh">
                 <span class="health-refresh__label">@Loc.T("Auto-refresh"): @_countdown s</span>
-                <button class="admin-btn admin-btn--ghost admin-btn--sm" @onclick="Refresh">
+                <button type="button" class="admin-btn admin-btn--ghost admin-btn--sm" @onclick="Refresh">
                     <i class="bi bi-arrow-clockwise @(_isRefreshing ? "admin-spin" : "")"></i> @Loc.T("Refresh")
                 </button>
             </div>
@@ -180,11 +180,11 @@
             <div class="paginator">
                 <span class="paginator-summary">@_snapshots.Count @Loc.T("items")</span>
                 <nav>
-                    <button @onclick="() => GoPage(0)" disabled="@(_page == 0)">«</button>
-                    <button @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">‹</button>
+                    <button type="button" @onclick="() => GoPage(0)" disabled="@(_page == 0)">«</button>
+                    <button type="button" @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">‹</button>
                     <span>@Loc.T("Page") @(_page + 1) / @TotalPages</span>
-                    <button @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">›</button>
-                    <button @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">»</button>
+                    <button type="button" @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">›</button>
+                    <button type="button" @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">»</button>
                 </nav>
             </div>
         </div>
