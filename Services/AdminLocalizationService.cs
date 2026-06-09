@@ -33,7 +33,7 @@ public class AdminLocalizationService
         ["Chats"] = "Chat",
         ["Settings"] = "Thông tin",
         ["Logout"] = "Đăng xuất",
-        ["View website"] = "Xem website",
+        ["View website"] = "Website",
 
         // Common
         ["page"] = "trang",
