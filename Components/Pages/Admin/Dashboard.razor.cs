@@ -8,6 +8,7 @@ namespace vodongha.Components.Pages.Admin;
 
 public partial class Dashboard : ComponentBase, IAsyncDisposable
 {
+    [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private ChatService ChatSvc { get; set; } = default!;
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
@@ -23,6 +24,7 @@ public partial class Dashboard : ComponentBase, IAsyncDisposable
 
     protected override async Task OnInitializedAsync()
     {
+        Nav.NavigateTo("/admin/analytics", replace: true);
         Loc.OnChanged += OnLangChanged;
         _dotNetRef = DotNetObjectReference.Create(this);
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
