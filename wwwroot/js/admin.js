@@ -1,3 +1,9 @@
+// ── File input trigger (replaces eval-based click) ───────────────────────────
+window.clickFileInput = function (inputId) {
+    var el = document.getElementById(inputId);
+    if (el) { el.click(); }
+};
+
 // ── Sortable cards ────────────────────────────────────────────────────────────
 window.initSortableCards = function (gridId, dotnetRef, prefKey) {
     var el = document.getElementById(gridId);

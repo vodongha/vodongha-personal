@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
+using vodongha.Components.Shared;
 using vodongha.Data.Models;
 using vodongha.Services;
 
@@ -138,14 +139,11 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
                 return;
             }
 
-            string json = System.Text.Json.JsonSerializer.Serialize(msg);
-            using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(json);
-            System.Text.Json.JsonElement root = doc.RootElement;
-
-            int id = root.TryGetProperty("id", out System.Text.Json.JsonElement idEl) ? idEl.GetInt32() : 0;
-            string content = root.TryGetProperty("content", out System.Text.Json.JsonElement contentEl) ? contentEl.GetString() ?? "" : "";
-            bool isFromUser = root.TryGetProperty("isFromUser", out System.Text.Json.JsonElement fromEl) && fromEl.GetBoolean();
-            DateTime sentAt = root.TryGetProperty("sentAt", out System.Text.Json.JsonElement sentEl) ? sentEl.GetDateTime() : DateTime.UtcNow;
+            ChatHubParser.HubMessage parsed = ChatHubParser.Parse(msg);
+            int id = parsed.Id;
+            string content = parsed.Content;
+            bool isFromUser = parsed.IsFromUser;
+            DateTime sentAt = parsed.SentAt;
 
             // Skip admin's own replies — already shown via optimistic update in SendReply.
             // Only process incoming user messages here.
@@ -157,8 +155,16 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             {
                 _sessionLastReadId = id;
                 await ChatSvc.MarkSessionReadAsync(_selectedSessionId.Value);
+                // Update in-memory session state to reflect the new message
+                ChatSession? liveSession = _sessions.FirstOrDefault(s => s.Id == _selectedSessionId.Value);
+                if (liveSession != null)
+                {
+                    liveSession.LastMessageAt = sentAt;
+                    liveSession.HasUnread = false; // just marked read above
+                    _sessions.Remove(liveSession);
+                    _sessions.Insert(0, liveSession);
+                }
             }
-            _sessions = await ChatSvc.GetSessionsAsync();
             _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
             await InvokeAsync(StateHasChanged);
             await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "adminChatMessages");
@@ -201,10 +207,21 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             await InvokeAsync(StateHasChanged);
         });
 
-        // Refresh session list when any session gets a new message
+        // Refresh session list when any session gets a new message.
+        // Fetch only the affected session instead of reloading all sessions (avoids N+1 per message).
         _hubConnection.On<int>("SessionUpdated", async updatedSessionId =>
         {
-            _sessions = await ChatSvc.GetSessionsAsync();
+            ChatSession? updated = await ChatSvc.GetSessionAsync(updatedSessionId);
+            if (updated != null)
+            {
+                int idx = _sessions.FindIndex(s => s.Id == updatedSessionId);
+                if (idx >= 0)
+                {
+                    _sessions.RemoveAt(idx);
+                }
+                // New/updated sessions always move to the top (most recent first)
+                _sessions.Insert(0, updated);
+            }
             _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
             await InvokeAsync(StateHasChanged);
         });

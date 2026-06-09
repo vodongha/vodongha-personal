@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using vodongha.Services;
 
@@ -22,6 +23,7 @@ public class ChatHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"session_{sessionId}");
     }
 
+    [Authorize(Roles = "Admin")]
     public async Task JoinAdminGroup()
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, "admin");

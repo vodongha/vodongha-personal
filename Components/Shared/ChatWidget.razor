@@ -95,7 +95,7 @@
                     }
                 </div>
 
-                <button class="chat-form__submit" @onclick="StartChat"
+                <button type="button" class="chat-form__submit" @onclick="StartChat"
                         disabled="@(!CanStartChat || _loading)">
                     <span>@Lang.T("chat.form.start") <i class="bi bi-arrow-right"></i></span>
                 </button>
@@ -172,7 +172,7 @@
                     <a href="@_pushHelpUrl" target="_blank" rel="noopener" class="chat-push-hint__link">
                         @Lang.T("chat.push.howto")
                     </a>
-                    <button class="chat-push-hint__close" @onclick="() => _pushDenied = false" title="Đóng">
+                    <button type="button" class="chat-push-hint__close" @onclick="() => _pushDenied = false" title="Đóng">
                         <i class="bi bi-x"></i>
                     </button>
                 </div>
@@ -183,7 +183,7 @@
                           placeholder="@Lang.T("chat.placeholder")"
                           oninput="chatUtils.onMsgInput(this)"
                           onkeydown="chatUtils.onMsgKeyDown(event)"></textarea>
-                <button class="chat-input__send" id="chatSendBtn"
+                <button type="button" class="chat-input__send" id="chatSendBtn"
                         @onclick="SendMessage" disabled>
                     <i class="bi bi-send-fill"></i>
                 </button>
@@ -192,7 +192,10 @@
     </div>
 }
 
-<button type="button" class="chat-fab" @onclick="ToggleOpen" title="@Lang.T("chat.fab.title")">
+<button type="button" class="chat-fab" @onclick="ToggleOpen"
+        title="@Lang.T("chat.fab.title")"
+        aria-label="@(_state == ChatState.Closed ? Lang.T("chat.fab.open") : Lang.T("chat.fab.close"))"
+        aria-expanded="@(_state != ChatState.Closed ? "true" : "false")">
     @if (_state == ChatState.Closed)
     {
         <i class="bi bi-chat-dots-fill"></i>

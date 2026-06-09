@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
 using vodongha.Data;
 using vodongha.Data.Models;
 using vodongha.Hubs;
@@ -12,14 +13,31 @@ public class ChatService
     private readonly TelegramService _telegram;
     private readonly IHubContext<ChatHub> _hub;
     private readonly PushNotificationService _push;
+    private readonly ILogger<ChatService> _logger;
+
+    // Short-lived cache: sessionId → TelegramTopicId, avoids a DB query on every typing event.
+    // ChatService is scoped, so this cache lives for the duration of a single SignalR hub invocation.
+    // A static dictionary is intentional: typing events come from different scopes; we want to share the cache.
+    private static readonly ConcurrentDictionary<int, long?> s_topicIdCache = new();
 
     public ChatService(IDbContextFactory<AppDbContext> dbFactory, TelegramService telegram,
-        IHubContext<ChatHub> hub, PushNotificationService push)
+        IHubContext<ChatHub> hub, PushNotificationService push, ILogger<ChatService> logger)
     {
         _dbFactory = dbFactory;
         _telegram = telegram;
         _hub = hub;
         _push = push;
+        _logger = logger;
+    }
+
+    /// <summary>
+    /// Runs a task in the background, logging any exception rather than silently swallowing it.
+    /// </summary>
+    private void FireAndForget(Task task)
+    {
+        _ = task.ContinueWith(
+            t => _logger.LogWarning(t.Exception, "Background task failed"),
+            TaskContinuationOptions.OnlyOnFaulted);
     }
 
     public async Task<ChatSession> CreateSessionAsync(string name, string phone, string email)
@@ -73,8 +91,7 @@ public class ChatService
                 session.TelegramTopicId = topicId;
                 // Fire-and-forget the contact info pin — no need to block user
                 string info = $"👤 {session.Name}\n📞 {session.Phone}\n📧 {session.Email}";
-                _ = _telegram.SendMessageAsync(info, topicId.Value)
-                             .ContinueWith(_ => Task.CompletedTask);
+                FireAndForget(_telegram.SendMessageAsync(info, topicId.Value));
             }
         }
 
@@ -147,8 +164,7 @@ public class ChatService
         if (session.TelegramTopicId != null)
         {
             long topicId = session.TelegramTopicId.Value;
-            _ = _telegram.SendMessageAsync($"🔵 [Admin] {content}", topicId)
-                         .ContinueWith(_ => Task.CompletedTask);
+            FireAndForget(_telegram.SendMessageAsync($"🔵 [Admin] {content}", topicId));
         }
 
         return message;
@@ -238,6 +254,9 @@ public class ChatService
         dbSession.TelegramTopicId = newTopicId;
         await db.SaveChangesAsync();
 
+        // Invalidate typing cache so it picks up the new topic ID
+        s_topicIdCache[session.Id] = newTopicId;
+
         // Re-pin contact info in the new topic
         string info = $"👤 {session.Name}\n📞 {session.Phone}\n📧 {session.Email}\n⚠️ Topic was recreated — previous history is in the old topic.";
         await _telegram.SendMessageAsync(info, newTopicId.Value);
@@ -293,11 +312,18 @@ public class ChatService
 
     public async Task SendTypingToTelegramAsync(int sessionId)
     {
-        await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
-        ChatSession? session = await db.ChatSessions.FindAsync(sessionId);
-        if (session?.TelegramTopicId != null)
+        // Use the static cache to avoid a DB query on every keystroke.
+        // Cache is invalidated when the topic is recreated in ForwardUserMessageToTelegramAsync.
+        if (!s_topicIdCache.TryGetValue(sessionId, out long? topicId))
         {
-            await _telegram.SendTypingAsync(session.TelegramTopicId.Value);
+            await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
+            topicId = (await db.ChatSessions.FindAsync(sessionId))?.TelegramTopicId;
+            s_topicIdCache[sessionId] = topicId;
+        }
+
+        if (topicId.HasValue)
+        {
+            await _telegram.SendTypingAsync(topicId.Value);
         }
     }
 

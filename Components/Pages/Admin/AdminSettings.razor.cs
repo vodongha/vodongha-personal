@@ -1,17 +1,14 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
-using vodongha.Data;
-using vodongha.Data.Models;
 using vodongha.Services;
 
 namespace vodongha.Components.Pages.Admin;
 
 public partial class AdminSettings : ComponentBase, IDisposable
 {
-    [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
+    [Inject] private SiteSettingService SettingsSvc { get; set; } = default!;
     [Inject] private ToastService Toast { get; set; } = default!;
     [Inject] private IWebHostEnvironment Env { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
@@ -22,7 +19,7 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
     private async Task TriggerFilePicker()
     {
-        await JS.InvokeVoidAsync("eval", "document.getElementById('avatarFileInput').click()");
+        await JS.InvokeVoidAsync("clickFileInput", "avatarFileInput");
     }
 
     private async Task OnAvatarFileChange(InputFileChangeEventArgs e)
@@ -66,9 +63,8 @@ public partial class AdminSettings : ComponentBase, IDisposable
     {
         Loc.OnChanged += OnLangChanged;
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        List<SiteSetting> settings = await db.SiteSettings.ToListAsync();
-        foreach (SiteSetting s in settings)
+        Dictionary<string, string> settings = await SettingsSvc.GetAllAsync();
+        foreach (KeyValuePair<string, string> s in settings)
         {
             Val[s.Key] = s.Value;
         }
@@ -76,14 +72,7 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
     private async Task SaveAll()
     {
-        await using AppDbContext db = await DbFactory.CreateDbContextAsync();
-        foreach (KeyValuePair<string, string> kvp in Val)
-        {
-            SiteSetting? setting = await db.SiteSettings.FirstOrDefaultAsync(s => s.Key == kvp.Key);
-            if (setting != null) { setting.Value = kvp.Value; }
-            else { db.SiteSettings.Add(new SiteSetting { Key = kvp.Key, Value = kvp.Value }); }
-        }
-        await db.SaveChangesAsync();
+        await SettingsSvc.SaveAllAsync(Val);
         Toast.Show("Đã lưu cài đặt thành công");
     }
 

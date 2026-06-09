@@ -19,14 +19,14 @@
                 <i class="bi bi-chat-dots"></i>
                 @Lang.T("nav.contact")
             </a>
-            <button class="nav__theme-toggle" @onclick="ToggleTheme" title="Toggle theme">
+            <button type="button" class="nav__theme-toggle" @onclick="ToggleTheme" title="Toggle theme">
                 @if (_theme == "dark") { <i class="bi bi-sun"></i> } else { <i class="bi bi-moon-stars"></i> }
             </button>
-            <button class="nav__lang-toggle" @onclick="ToggleLang" title="Switch language">
+            <button type="button" class="nav__lang-toggle" @onclick="ToggleLang" title="Switch language">
                 @if (Lang.IsVi) { <span>EN</span> } else { <span>VI</span> }
             </button>
             <div class="nav__user">
-                <button class="nav__avatar-btn" @onclick="ToggleDropdown" title="Admin">
+                <button type="button" class="nav__avatar-btn" @onclick="ToggleDropdown" title="Admin">
                     <i class="bi bi-person-circle"></i>
                 </button>
                 @if (_showDropdown)

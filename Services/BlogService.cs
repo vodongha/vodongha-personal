@@ -74,11 +74,26 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory)
                 .Where(b => b.IsPublished && b.Id != postId)
                 .OrderByDescending(b => b.CreatedAt)
                 .Take(count)
+                .Select(b => new BlogPost
+                {
+                    Id = b.Id, Title = b.Title, TitleEn = b.TitleEn,
+                    Slug = b.Slug, Summary = b.Summary, SummaryEn = b.SummaryEn,
+                    Tags = b.Tags, CoverImageUrl = b.CoverImageUrl,
+                    CreatedAt = b.CreatedAt, IsPublished = b.IsPublished
+                })
                 .ToListAsync();
         }
 
+        // Project only the fields needed for scoring — avoids loading full Content HTML into memory
         List<BlogPost> all = await db.BlogPosts
             .Where(b => b.IsPublished && b.Id != postId)
+            .Select(b => new BlogPost
+            {
+                Id = b.Id, Title = b.Title, TitleEn = b.TitleEn,
+                Slug = b.Slug, Summary = b.Summary, SummaryEn = b.SummaryEn,
+                Tags = b.Tags, CoverImageUrl = b.CoverImageUrl,
+                CreatedAt = b.CreatedAt, IsPublished = b.IsPublished
+            })
             .ToListAsync();
 
         return all
