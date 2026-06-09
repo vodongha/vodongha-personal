@@ -561,6 +561,10 @@ tr.admin-row--dragover td {
     &__opt--active { color: $color-primary; font-weight: 700; }
 }
 
+// Mobile-only copies hidden on desktop
+.admin-theme-toggle--mobile,
+.admin-lang-toggle--mobile { display: none; }
+
 // ── Theme toggle ──────────────────────────────────────────────────
 .admin-theme-toggle {
     display: flex;
@@ -761,6 +765,7 @@ tr.admin-row--dragover td {
         -webkit-overflow-scrolling: touch;
 
         &__logo { display: none !important; }
+        &__top-controls { display: none !important; }
 
         // Make the logout <form> a proper flex item (same row as nav items)
         &__logout {
@@ -787,8 +792,8 @@ tr.admin-row--dragover td {
 
     // Dashboard | Theme | Lang | Logout — Dashboard & Logout wider, toggles narrow
     .admin-nav__item,
-    .admin-lang-toggle,
-    .admin-theme-toggle,
+    .admin-lang-toggle--mobile,
+    .admin-theme-toggle--mobile,
     .admin-sidebar__logout .admin-nav__item {
         flex: 2 1 0 !important;
         flex-direction: column !important;
@@ -810,18 +815,18 @@ tr.admin-row--dragover td {
     }
 
     // Theme + Lang toggles mobile: narrower than Dashboard/Logout
-    .admin-theme-toggle,
-    .admin-lang-toggle {
-        flex: 1 1 0 !important; // narrower — Dashboard & Logout each get flex:2
+    .admin-theme-toggle--mobile,
+    .admin-lang-toggle--mobile {
+        display: flex !important;
+        flex: 1 1 0 !important;
         background: transparent !important;
         border-right: 1px solid var(--admin-border) !important;
 
         &__icon { font-size: 1.05rem !important; line-height: 1 !important; }
-
         &__label { font-size: 0.65rem !important; }
     }
 
-    .admin-theme-toggle {
+    .admin-theme-toggle--mobile {
         border-left: 1px solid var(--admin-border) !important;
     }
 
