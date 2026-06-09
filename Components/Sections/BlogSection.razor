@@ -8,7 +8,7 @@
     @if (_posts is null)
     {
         <div class="blog-skel">
-            @for (int i = 0; i < 3; i++)
+            @for (int i = 0; i < PreviewCount; i++)
             {
                 <div class="blog-skel__card">
                     <div class="blog-skel__img"></div>
@@ -27,68 +27,28 @@
             }
         </div>
     }
+    else if (_posts.Count == 0)
+    {
+        <p style="text-align:center;color:#6b7280">@Lang.T("blog.empty")</p>
+    }
     else
     {
-        @if (_posts.Count == 0)
-        {
-            <p style="text-align:center;color:#6b7280">@Lang.T("blog.empty")</p>
-        }
-        else
-        {
-            <div class="blog-filter">
-                <div class="blog-filter__search-wrap">
-                    <i class="bi bi-search blog-filter__search-icon"></i>
-                    <input class="blog-filter__input" type="search"
-                           placeholder="@Lang.T("blog.search")"
-                           @bind="_searchQuery" @bind:event="oninput" />
-                </div>
-                <div class="blog-filter__tags">
-                    <button type="button"
-                            class="blog-filter__tag @(_selectedTag is null ? "blog-filter__tag--active" : "")"
-                            @onclick="() => SelectTag(null)">
-                        @Lang.T("blog.filter.all")
-                    </button>
-                    @foreach (string tag in AllTags)
-                    {
-                        string t = tag;
-                        <button type="button"
-                                class="blog-filter__tag @(_selectedTag == t ? "blog-filter__tag--active" : "")"
-                                @onclick="() => SelectTag(t)">
-                            @t
-                        </button>
-                    }
-                </div>
-            </div>
+        <div class="blog__grid">
+            @foreach (BlogPost post in _posts.Take(PreviewCount))
+            {
+                <BlogCard Item="post" />
+            }
+        </div>
 
-            @if (!VisiblePosts.Any())
-            {
-                <p class="blog-filter__empty">@Lang.T("blog.results.empty")</p>
-            }
-            else
-            {
-                <div class="blog__grid">
-                    @foreach (BlogPost post in VisiblePosts)
-                    {
-                        <BlogCard Item="post" />
-                    }
-                </div>
-            }
-
-            @if (HasMore)
-            {
-                <div class="section__expand">
-                    <button type="button" class="section__expand-btn" @onclick="Toggle">
-                        @if (_expanded)
-                        {
-                            <i class="bi bi-chevron-up"></i> @Lang.T("common.showless")
-                        }
-                        else
-                        {
-                            <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore")
-                        }
-                    </button>
-                </div>
-            }
-        }
+        <div class="section__expand">
+            <a href="/blog" class="section__expand-btn">
+                <i class="bi bi-grid"></i>
+                @Lang.T("blog.viewall")
+                @if (_posts.Count > PreviewCount)
+                {
+                    <span class="blog-section__count">(@_posts.Count)</span>
+                }
+            </a>
+        </div>
     }
 </section>

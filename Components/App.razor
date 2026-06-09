@@ -1,20 +1,39 @@
 @inject IHttpContextAccessor HttpContextAccessor
+@inject PushNotificationService PushSvc
 @{
     HttpContext? ctx = HttpContextAccessor.HttpContext;
     string clientIp = ctx?.Request.Headers["Fly-Client-IP"].FirstOrDefault()
         ?? ctx?.Request.Headers["X-Forwarded-For"].FirstOrDefault()?.Split(',')[0].Trim()
         ?? ctx?.Connection.RemoteIpAddress?.ToString()
         ?? "";
+    // Read the theme cookie set by the user's explicit toggle so the server can
+    // pre-render data-theme on <html> — eliminates the dark flash entirely.
+    // Using nullable string: when null, Blazor omits the attribute so the FOUC
+    // script can apply the full fallback chain (cookie → localStorage → OS).
+    string? themeCookie = ctx?.Request.Cookies["theme"];
+    string? ssrTheme = (themeCookie == "light" || themeCookie == "dark") ? themeCookie : null;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="@ssrTheme">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="dark" />
-    @* Theme FOUC prevention — must run before CSS renders *@
-    <script>(function(){var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);})()</script>
+    <meta name="color-scheme" content="@(ssrTheme == "light" ? "light" : "dark light")" />
+    @* FOUC-prevention + core theme functions.
+       Inline here so they are always served fresh with the HTML — never affected
+       by a stale browser-cached admin.js. admin.js may redefine them later (same
+       code), which is harmless.
+       FOUC priority: (1) data-theme already on <html> from server cookie → sync meta + exit;
+       (2) cookie client-side; (3) localStorage; (4) OS prefers-color-scheme. *@
+    <script>
+      // ── FOUC prevention ───────────────────────────────────────────
+      (function(){var h=document.documentElement,t=h.getAttribute('data-theme');if(t==='light'||t==='dark'){var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute('content',t);return;}try{var ck=document.cookie.split(';').map(function(c){return c.trim();}).find(function(c){return c.startsWith('theme=');});if(ck){var v=ck.split('=')[1];if(v==='light'||v==='dark'){t=v;}}}catch(e){}if(!t){try{t=localStorage.getItem('theme');}catch(e){}}if(t!=='light'&&t!=='dark'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';}h.setAttribute('data-theme',t);var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute('content',t);})();
+      // ── Theme helpers (inline = always fresh, immune to admin.js cache) ──
+      window.setTheme=function(t){t=t||'dark';document.documentElement.setAttribute('data-theme',t);document.cookie='theme='+t+';path=/;max-age=31536000;samesite=lax';var m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute('content',t==='light'?'light':'dark');};
+      window.toggleTheme=function(){var cur=document.documentElement.getAttribute('data-theme')||'dark';var next=cur==='light'?'dark':'light';window.setTheme(next);try{localStorage.setItem('theme',next);}catch(e){}if(window.healthChart)window.healthChart.onThemeChange();return next;};
+      window.getUserTheme=function(){try{var ck=document.cookie.split(';').map(function(c){return c.trim();}).find(function(c){return c.startsWith('theme=');});if(ck){var v=ck.split('=')[1];if(v==='light'||v==='dark')return v;}}catch(e){}try{var s=localStorage.getItem('theme');if(s==='light'||s==='dark')return s;}catch(e){}return window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';};
+    </script>
     <meta name="description" content="Võ Đông Hà — Full-Stack Developer specialising in .NET, Blazor and PostgreSQL. Personal site showcasing projects, experience and blog." />
     <meta name="author" content="Võ Đông Hà" />
     <!-- Open Graph -->
@@ -75,6 +94,8 @@
             }
         });
     </script>
+    <script src="js/push.js"></script>
+    <script>pushUtils.init('@PushSvc.PublicKey');</script>
     <script src="js/admin.js"></script>
     <script src="js/chat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>

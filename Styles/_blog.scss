@@ -256,6 +256,15 @@
     &__sidebar {
         position: sticky;
         top: calc($nav-height + $space-8);
+        // Constrain height so a long TOC scrolls instead of overflowing the viewport.
+        max-height: calc(100vh - #{$nav-height} - #{$space-8} * 2);
+        overflow-y: auto;
+        // Hide scrollbar visually but keep it functional.
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-border) transparent;
+        &::-webkit-scrollbar       { width: 4px; }
+        &::-webkit-scrollbar-track { background: transparent; }
+        &::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
 
         @media (max-width: 1024px) {
             display: none;
@@ -412,6 +421,130 @@
         border-left-color: $color-primary;
         background: color-mix(in srgb, var(--color-primary) 8%, transparent);
         font-weight: 500;
+    }
+}
+
+// ── Blog list page ────────────────────────────────────────────────────────────
+.blog-list-page {
+    @include container;
+    max-width: $container-max;
+    padding-block: $space-24;
+
+    &__header {
+        text-align: center;
+        margin-bottom: $space-12;
+
+        .section__label { display: block; margin-bottom: $space-3; }
+        .section__title { margin-bottom: $space-4; }
+        .section__subtitle { color: $color-text-muted; }
+    }
+
+    &__count {
+        font-size: $text-sm;
+        color: $color-text-muted;
+        font-family: $font-mono;
+        margin-bottom: $space-6;
+        display: block;
+    }
+}
+
+// ── Blog section "view all" count badge ───────────────────────────────────────
+.blog-section__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.4rem;
+    height: 1.4rem;
+    padding: 0 $space-2;
+    background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+    color: $color-primary;
+    border-radius: $radius-full;
+    font-size: $text-xs;
+    font-family: $font-mono;
+    font-weight: 600;
+    margin-left: $space-1;
+}
+
+// ── Pagination ────────────────────────────────────────────────────────────────
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $space-2;
+    margin-top: $space-12;
+    flex-wrap: wrap;
+
+    &__btn {
+        display: inline-flex;
+        align-items: center;
+        gap: $space-2;
+        padding: $space-2 $space-4;
+        border-radius: $radius-full;
+        border: 1px solid $color-border;
+        background: transparent;
+        color: $color-text-muted;
+        font-size: $text-sm;
+        font-family: $font-sans;
+        cursor: pointer;
+        transition: all $transition-fast;
+        white-space: nowrap;
+
+        &:hover:not(:disabled) {
+            border-color: $color-primary;
+            color: $color-primary;
+        }
+
+        &:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+    }
+
+    &__pages {
+        display: flex;
+        align-items: center;
+        gap: $space-1;
+    }
+
+    &__page {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.25rem;
+        height: 2.25rem;
+        border-radius: $radius-sm;
+        border: 1px solid transparent;
+        background: transparent;
+        color: $color-text-muted;
+        font-size: $text-sm;
+        font-family: $font-mono;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        &:hover:not(&--active) {
+            border-color: $color-border;
+            color: $color-text;
+            background: $color-bg-elevated;
+        }
+
+        &--active {
+            background: $color-primary;
+            border-color: $color-primary;
+            color: #000;
+            font-weight: 700;
+            cursor: default;
+        }
+    }
+
+    &__ellipsis {
+        min-width: 2.25rem;
+        height: 2.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: $color-text-muted;
+        font-size: $text-sm;
+        user-select: none;
     }
 }
 
