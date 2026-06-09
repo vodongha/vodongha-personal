@@ -552,12 +552,14 @@ else { <real content> }
 
 ## Current version
 
-**v2.0.4**
+**v2.0.6**
 
 | Version | Changes |
 |---|---|
-| v2.0.4 | Security hardening (SignalR admin group auth, rate limiting, constant-time login, push IsAdmin server-side), WCAG AA contrast fixes, loading bar scoping (type="button" on all non-submit buttons), invalid CSS fixes (rgba→color-mix), accessibility (aria-label/aria-expanded on FAB, focus-visible outlines), code quality (ChatHubParser extracted, DotNetObjectReference disposal, N+1 reduction in AdminChats, typing indicator topic ID cache), DI lifetime fix (AddDbContext conflict), git workflow updated (feature/bug → develop, hotfix → master) |
-| v2.0.3 | Web Push notifications, searchable dial-code picker, chat light/dark mode, admin chat UX fixes (session open, list reorder, reconnect), API Keys admin, blog pagination, skeleton loading, theme system fixes |
+| v2.0.6 | Fix scroll-to-top button position — stacked above both Chat FAB and AI FAB |
+| v2.0.5 | AI floating widget (Google Gemini) — FAB + chat panel above ChatWidget; AiService with 30-min context cache built from DB; Gemini API key managed in admin API Keys; `ai.*` i18n keys VI/EN |
+| v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping (`type="button"` on all non-submit buttons); accessibility (aria-label/aria-expanded, focus-visible); code quality (ChatHubParser, DotNetObjectReference disposal, N+1 fix, typing indicator cache); DI fix; git workflow updated (feature/bug → develop, hotfix → master) |
+| v2.0.3 | Web Push notifications, searchable dial-code picker, chat light/dark mode, admin chat UX fixes, API Keys admin, blog pagination, skeleton loading, theme system fixes |
 | v2.0.2 | CV PDF (QuestPDF + SkiaSharp, 3 templates), AdminCv page |
 | v2.0.1 | Chat widget (SignalR + Telegram), AdminChats |
 | v2.0.0 | Initial launch |
