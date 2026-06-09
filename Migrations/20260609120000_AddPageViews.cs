@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace vodongha.Migrations
 {
-    /// <inheritdoc />
+    [Migration("20260609120000_AddPageViews")]
     public partial class AddPageViews : Migration
     {
         /// <inheritdoc />
