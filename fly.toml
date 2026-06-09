@@ -2,7 +2,7 @@
 # Docs: https://fly.io/docs/reference/configuration/
 
 app = "vodongha"
-primary_region = "sin"  # Singapore — gần Việt Nam nhất
+primary_region = "sin"  # Singapore — closest region to Vietnam
 
 [build]
   dockerfile = "Dockerfile"
