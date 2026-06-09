@@ -55,13 +55,23 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Mobile responsive** — fixed bottom navigation bar on screens ≤ 768 px; admin chat is full-screen on mobile with back button
 - **Dark / Light mode** — complete coverage across public site, chat widget, admin panel, and Chart.js charts
 
+### v2.0.6 — Scroll-to-top position fix
+- **Fix** — scroll-to-top button repositioned above both Chat FAB and AI FAB; updated for desktop and mobile breakpoints
+
+### v2.0.5 — AI floating widget
+- **AI widget** — floating robot FAB button opens a chat panel powered by Google Gemini (`gemini-2.0-flash`); positioned above the Chat FAB
+- **Conversation** — history maintained per session, typing indicator (animated dots), suggestion chips on welcome screen, 15-question session limit
+- **Context-aware** — `AiService` builds a system prompt from live DB data (bio, skills, experience, education, featured projects) with a 30-minute cache
+- **Admin** — Gemini API key and model configurable in `/admin/api-keys` under the new Gemini section (encrypted via `AppSecretsService`)
+- **i18n** — `ai.*` keys for all widget strings in both VI and EN
+
 ### v2.0.4 — Security & quality hardening
 - **Security** — `[Authorize(Roles="Admin")]` on SignalR admin group; push subscription `IsAdmin` determined server-side; constant-time login comparison; rate limiting (10 req / 5 min) on `/api/auth/login`
-- **WCAG AA** — chat timestamp contrast fixed (2.5:1 → 4.6:1); admin button text contrast corrected for light mode; invalid `rgba(var(--css-var))` replaced with `color-mix()` throughout
-- **Accessibility** — `aria-label` + `aria-expanded` on chat FAB; `:focus-visible` outlines on all interactive controls (nav toggles, dropdown items, expand buttons, delete button)
-- **Loading bar scoping** — `type="button"` added to all non-submit buttons (toggles, scroll, pagination, chat send, toast close, etc.); loading bar no longer fires on in-page interactions
-- **Code quality** — `ChatHubParser` shared helper extracted; `DotNetObjectReference` stored as field and disposed; `AdminChats` N+1 eliminated (in-memory session update); typing indicator topic ID cached to skip DB query per keystroke
-- **DI fix** — removed `AddDbContext<AppDbContext>` (scoped) that conflicted with `AddDbContextFactory` (singleton) on startup
+- **WCAG AA** — chat timestamp contrast fixed (2.5:1 → 4.6:1); admin button contrast corrected for light mode; invalid `rgba(var(--css-var))` replaced with `color-mix()` throughout
+- **Accessibility** — `aria-label` + `aria-expanded` on chat FAB; `:focus-visible` outlines on all interactive controls
+- **Loading bar scoping** — `type="button"` on all non-submit buttons; loading bar no longer fires on dropdowns, toggles, pagination, or scroll actions
+- **Code quality** — `ChatHubParser` extracted; `DotNetObjectReference` disposed; `AdminChats` N+1 eliminated; typing indicator topic ID cached; git workflow updated (feature/bug → develop, hotfix → master)
+- **DI fix** — removed conflicting `AddDbContext` alongside `AddDbContextFactory`
 
 ---
 
