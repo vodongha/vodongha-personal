@@ -37,12 +37,26 @@
 }
 
 // ── View website link (sidebar desktop + mobile) ─────────────────
-.admin-sidebar__view-website {
-    margin: 0 0.75rem;
-    text-decoration: none;
-}
-
 .admin-view-website {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin: 0.5rem 0.75rem 0;
+    padding: 0.525rem 0.75rem;
+    background: transparent;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: background 150ms, color 150ms;
+    width: calc(100% - 1.5rem);
+
+    i { font-size: 1rem; flex-shrink: 0; }
+    &:hover { background: var(--admin-hover); color: $color-text; }
+
     &--mobile { display: none; }
 }
 
