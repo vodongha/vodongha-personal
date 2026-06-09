@@ -518,12 +518,12 @@ else { <real content> }
 
 ## Current version
 
-**v2.0.4** (skeleton loading for all pages — admin + client)
+**v2.0.4**
 
 | Version | Changes |
 |---|---|
-| v2.0.4 | Shimmer skeleton loading for all admin pages and all public sections |
-| v2.0.3 | 6 SEO blog posts, AdminCosts skeleton, Blazor reconnect config, bilingual ReconnectModal |
+| v2.0.4 | Security hardening (SignalR admin group auth, rate limiting, constant-time login, push IsAdmin server-side), WCAG AA contrast fixes, loading bar scoping (type="button" on all non-submit buttons), invalid CSS fixes (rgba→color-mix), accessibility (aria-label/aria-expanded on FAB, focus-visible outlines), code quality (ChatHubParser extracted, DotNetObjectReference disposal, N+1 reduction in AdminChats, typing indicator topic ID cache), DI lifetime fix (AddDbContext conflict) |
+| v2.0.3 | Web Push notifications, searchable dial-code picker, chat light/dark mode, admin chat UX fixes (session open, list reorder, reconnect), API Keys admin, blog pagination, skeleton loading, theme system fixes |
 | v2.0.2 | CV PDF (QuestPDF + SkiaSharp, 3 templates), AdminCv page |
 | v2.0.1 | Chat widget (SignalR + Telegram), AdminChats |
 | v2.0.0 | Initial launch |

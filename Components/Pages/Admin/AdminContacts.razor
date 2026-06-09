@@ -99,7 +99,7 @@
                     <div class="admin-message-body">@((MarkupString)System.Web.HttpUtility.HtmlEncode(Selected.Message).Replace("\n", "<br/>"))</div>
                     <div class="admin-modal__footer">
                         <a class="admin-btn admin-btn--ghost" href="mailto:@Selected.Email?subject=Re: @Uri.EscapeDataString(Selected.Subject)"><i class="bi bi-reply"></i> Reply</a>
-                        <button class="admin-btn admin-btn--primary" @onclick="CloseMessage">@Loc.T("Cancel")</button>
+                        <button type="button" class="admin-btn admin-btn--primary" @onclick="CloseMessage">@Loc.T("Cancel")</button>
                     </div>
                 </div>
             </div>

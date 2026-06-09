@@ -53,6 +53,14 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Mobile responsive** — fixed bottom navigation bar on screens ≤ 768px
 - **Dark / Light mode** — toggle in sidebar; user preference stored in DB (`SiteSettings`), survives browser clears; defaults to OS preference on first use; syncs localStorage so public site stays consistent
 
+### v2.0.4 — Security & quality hardening
+- **Security** — `[Authorize(Roles="Admin")]` on SignalR admin group; push subscription `IsAdmin` determined server-side; constant-time login comparison; rate limiting (10 req / 5 min) on `/api/auth/login`
+- **WCAG AA** — chat timestamp contrast fixed (2.5:1 → 4.6:1); admin button text contrast corrected for light mode; invalid `rgba(var(--css-var))` replaced with `color-mix()` throughout
+- **Accessibility** — `aria-label` + `aria-expanded` on chat FAB; `:focus-visible` outlines on all interactive controls (nav toggles, dropdown items, expand buttons, delete button)
+- **Loading bar scoping** — `type="button"` added to all non-submit buttons (toggles, scroll, pagination, chat send, toast close, etc.); loading bar no longer fires on in-page interactions
+- **Code quality** — `ChatHubParser` shared helper extracted; `DotNetObjectReference` stored as field and disposed; `AdminChats` N+1 eliminated (in-memory session update); typing indicator topic ID cached to skip DB query per keystroke
+- **DI fix** — removed `AddDbContext<AppDbContext>` (scoped) that conflicted with `AddDbContextFactory` (singleton) on startup
+
 ---
 
 ## Tech stack

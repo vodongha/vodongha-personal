@@ -16,6 +16,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
+    [Inject] private PushNotificationService PushSvc { get; set; } = default!;
 
     private enum ChatState { Closed, Form, Chat }
 
@@ -73,14 +74,18 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private void OnDialChanged(ChangeEventArgs e)
     {
-        _selectedRegion = e.Value?.ToString() ?? "VN";
+        _selectedRegion = e.Value?.ToString() ?? _selectedRegion;
     }
 
+    // Called on @onchange (blur) — reads the JS-cleaned value into _phone
     private void OnPhoneInput(ChangeEventArgs e)
     {
-        string raw = e.Value?.ToString() ?? "";
-        if (raw.StartsWith("0")) raw = raw[1..];
-        _phone = new string(raw.Where(c => char.IsDigit(c) || c == ' ' || c == '-').ToArray());
+        _phone = e.Value?.ToString() ?? "";
+    }
+
+    private void OnPhoneBlur()
+    {
+        _phoneTouched = true;
     }
 
     private bool IsValidPhone(string phone)
@@ -97,13 +102,21 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
-    private string FullPhone => $"{SelectedCountry.Dial}{new string(_phone.Where(char.IsDigit).ToArray())}";
+    private string FullPhone
+    {
+        get
+        {
+            string digits = new string(_phone.Where(char.IsDigit).ToArray());
+            // Strip leading zero before prepending dial code (e.g. 0929... → +84929...)
+            if (digits.StartsWith('0')) digits = digits[1..];
+            return $"{SelectedCountry.Dial}{digits}";
+        }
+    }
 
     private ChatState _state = ChatState.Closed;
     private string _name = "";
     private string _phone = "";
     private string _email = "";
-    private string _inputText = "";
     private bool _loading;
     private bool _sending;
     private bool _otherIsTyping;
@@ -119,6 +132,9 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private int _unreadDividerIndex = -1;  // index in _messages where the "new messages" divider is shown
 
     private bool _pendingScrollToUnread;
+    private bool _pushDenied;   // true when Notification.permission === 'denied'
+    private string _pushHelpUrl = "https://support.google.com/chrome/answer/3220216"; // default Chrome
+    private DotNetObjectReference<ChatWidget>? _dotNetRef;
 
     private static bool IsValidEmail(string email)
     {
@@ -144,7 +160,13 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-            // Auto-select country from already-detected timezone (no external API needed)
+            // Init JS helpers — pass DotNetRef for typing indicator callback.
+            // Stored as a field so it can be disposed when the component is torn down.
+        _dotNetRef = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("chatDial.init", _dotNetRef);
+        await JS.InvokeVoidAsync("chatUtils.initInput", _dotNetRef);
+
+        // Auto-select country from already-detected timezone (no external API needed)
         _ = DetectCountryAsync();
 
         try
@@ -167,23 +189,16 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                         _lastReadMessageId = lastReadResult.Value;
                         _unreadCount = _messages.Count(m => !m.IsFromUser && m.Id > _lastReadMessageId);
 
-                        if (_unreadCount > 0)
-                        {
-                            // Keep closed so badge shows; divider will be set when user opens
-                            _state = ChatState.Closed;
-                        }
-                        else
-                        {
-                            _state = ChatState.Chat;
-                        }
+                        // Always stay closed on page load — user opens manually or via notification
+                        _state = ChatState.Closed;
                     }
                     else
                     {
-                        // First visit or no saved pointer — mark all current messages as read
+                        // No saved read pointer — mark all as read, stay closed
                         _lastReadMessageId = _messages.Count > 0 ? _messages.Max(m => m.Id) : 0;
                         _unreadCount = 0;
-                        _ = SaveLastReadAsync();
-                        _state = ChatState.Chat;
+                        _ = InvokeAsync(SaveLastReadAsync);
+                        _state = ChatState.Closed;
                     }
 
                     // Restore admin-read pointer (for ✓✓ on user's outgoing messages)
@@ -194,6 +209,12 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                     }
 
                     await ConnectHubAsync();
+
+                    // Re-subscribe push for returning visitors — only if already granted
+                    // (avoids showing permission dialog unexpectedly on return visit).
+                    // This refreshes a stale/cleared subscription silently.
+                    _ = ResubscribeIfGrantedAsync(_sessionId.Value);
+
                     StateHasChanged();
                 }
                 else
@@ -209,6 +230,19 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         {
             // localStorage not available (SSR), ignore
         }
+    }
+
+    private async Task ResubscribeIfGrantedAsync(int sessionId)
+    {
+        try
+        {
+            string permission = await JS.InvokeAsync<string>("pushUtils.getPermission");
+            if (permission == "granted")
+            {
+                await SubscribePushAsync(sessionId, isAdmin: false);
+            }
+        }
+        catch { /* non-critical */ }
     }
 
     private async Task ToggleOpen()
@@ -309,6 +343,10 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             _messages = (await ChatSvc.GetMessagesAsync(session.Id))
                 .Select(m => new ChatMessageDto(m.Id, m.Content, m.IsFromUser, m.SentAt))
                 .ToList();
+            // Ask for push permission — fire-and-forget, non-critical
+            _ = SubscribePushAsync(session.Id, isAdmin: false);
+            // Check if previously denied so we can show the hint banner
+            _ = CheckPushPermissionAsync();
         }
         finally
         {
@@ -316,15 +354,61 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
+    private async Task CheckPushPermissionAsync()
+    {
+        try
+        {
+            string permission = await JS.InvokeAsync<string>("pushUtils.getPermission");
+            if (permission == "denied")
+            {
+                _pushHelpUrl = await JS.InvokeAsync<string>("pushUtils.getNotificationHelpUrl");
+                _pushDenied = true;
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+        catch { /* non-critical */ }
+    }
+
+    private async Task SubscribePushAsync(int? chatSessionId, bool isAdmin)
+    {
+        try
+        {
+            string? subscriptionJson = await JS.InvokeAsync<string?>("pushUtils.subscribe");
+            if (string.IsNullOrEmpty(subscriptionJson))
+            {
+                return;
+            }
+
+            using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(subscriptionJson);
+            string endpoint = doc.RootElement.GetProperty("endpoint").GetString() ?? "";
+            string p256dh   = doc.RootElement.GetProperty("keys").GetProperty("p256dh").GetString() ?? "";
+            string auth     = doc.RootElement.GetProperty("keys").GetProperty("auth").GetString() ?? "";
+
+            await PushSvc.SaveSubscriptionAsync(endpoint, p256dh, auth, chatSessionId, isAdmin);
+        }
+        catch
+        {
+            // Push subscription is non-critical — silently ignore errors
+        }
+    }
+
     private async Task SendMessage()
     {
-        if (string.IsNullOrWhiteSpace(_inputText) || _sending || !_sessionId.HasValue)
+        if (_sending || !_sessionId.HasValue)
         {
             return;
         }
 
-        string content = _inputText.Trim();
-        _inputText = "";    // @bind:event="oninput" ensures Blazor tracks this correctly
+        // Read value directly from DOM — no Blazor bind round-trip
+        string raw = await JS.InvokeAsync<string>("chatUtils.getMsgInput");
+        string content = raw?.Trim() ?? "";
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            return;
+        }
+
+        // Clear input immediately via JS — no re-render needed
+        await JS.InvokeVoidAsync("chatUtils.clearMsgInput");
         _sending = true;
 
         // Stop typing indicator — fire-and-forget, no need to await
@@ -357,9 +441,9 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
         catch
         {
-            // Revert on failure
+            // Revert on failure — restore text to input
             _messages.Remove(optimistic);
-            _inputText = content;
+            await JS.InvokeVoidAsync("chatUtils.setMsgInput", content);
         }
         finally
         {
@@ -367,8 +451,30 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
-    // Called by @bind:after — _inputText already updated by @bind, no args needed
-    private void OnTypingInput()
+    // Called by SW postMessage / ?chat=open URL when visitor clicks a push notification
+    [Microsoft.JSInterop.JSInvokable]
+    public async Task OpenFromNotification()
+    {
+        if (_state == ChatState.Closed)
+        {
+            _state = _sessionId.HasValue ? ChatState.Chat : ChatState.Form;
+            if (_state == ChatState.Chat)
+            {
+                SetUnreadDivider();
+                _unreadCount = 0;
+                _ = SaveLastReadAsync();
+                _pendingScrollToUnread = true;
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    // Called from JS (chatUtils.onMsgInput) via DotNet.invokeMethod — no Blazor bind needed
+    [Microsoft.JSInterop.JSInvokable]
+    public async Task SendMessageFromJs() => await SendMessage();
+
+    [Microsoft.JSInterop.JSInvokable]
+    public void OnTypingInput()
     {
         if (_hubConnection == null || !_sessionId.HasValue) return;
         _typingCts?.Cancel();
@@ -402,13 +508,6 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         return Task.CompletedTask;
     }
 
-    private async Task OnKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter" && !e.ShiftKey)
-        {
-            await SendMessage();
-        }
-    }
 
     private async Task ConnectHubAsync()
     {
@@ -426,14 +525,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         {
             _otherIsTyping = false;
 
-            string json = System.Text.Json.JsonSerializer.Serialize(msg);
-            using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(json);
-            System.Text.Json.JsonElement root = doc.RootElement;
-
-            int id = root.TryGetProperty("id", out System.Text.Json.JsonElement idEl) ? idEl.GetInt32() : 0;
-            string content = root.TryGetProperty("content", out System.Text.Json.JsonElement contentEl) ? contentEl.GetString() ?? "" : "";
-            bool isFromUser = root.TryGetProperty("isFromUser", out System.Text.Json.JsonElement fromEl) && fromEl.GetBoolean();
-            DateTime sentAt = root.TryGetProperty("sentAt", out System.Text.Json.JsonElement sentEl) ? sentEl.GetDateTime() : DateTime.UtcNow;
+            ChatHubParser.HubMessage parsed = ChatHubParser.Parse(msg);
+            int id = parsed.Id;
+            string content = parsed.Content;
+            bool isFromUser = parsed.IsFromUser;
+            DateTime sentAt = parsed.SentAt;
 
             _messages.Add(new ChatMessageDto(id, content, isFromUser, sentAt));
 
@@ -486,8 +582,21 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             await InvokeAsync(StateHasChanged);
         });
 
-        await _hubConnection.StartAsync();
-        await _hubConnection.InvokeAsync("JoinSession", _sessionId.Value.ToString());
+        // Retry up to 4 times with exponential backoff — handles transient EAGAIN (resource unavailable)
+        int[] delays = [500, 1500, 3000, 6000];
+        for (int attempt = 0; attempt <= delays.Length; attempt++)
+        {
+            try
+            {
+                await _hubConnection.StartAsync();
+                await _hubConnection.InvokeAsync("JoinSession", _sessionId.Value.ToString());
+                return; // success
+            }
+            catch when (attempt < delays.Length)
+            {
+                await Task.Delay(delays[attempt]);
+            }
+        }
     }
 
     protected override void OnInitialized()
@@ -496,7 +605,14 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         Lang.OnChange += OnLangChanged;
     }
 
-    private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
+    private void OnTimezoneUpdated()
+    {
+        // Timezone only affects timestamps inside the open chat — skip re-render if closed
+        if (_state != ChatState.Closed)
+        {
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
     private void OnLangChanged() => InvokeAsync(StateHasChanged);
 
     // Map IANA timezone → ISO country code
@@ -543,7 +659,13 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             if (!string.IsNullOrWhiteSpace(code) && Countries.Any(c => c.RegionCode == code))
             {
                 _selectedRegion = code;
-                await InvokeAsync(StateHasChanged);
+                // Only re-render if form is currently visible — avoids a flash
+                // when ipinfo.io returns while the chat panel is still closed.
+                // When user opens the form later, _selectedRegion is already correct.
+                if (_state != ChatState.Closed)
+                {
+                    await InvokeAsync(StateHasChanged);
+                }
                 return;
             }
         }
@@ -571,6 +693,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         Tz.OnTimezoneSet -= OnTimezoneUpdated;
         Lang.OnChange -= OnLangChanged;
         _typingCts?.Cancel();
+        _dotNetRef?.Dispose();
         if (_hubConnection != null)
         {
             await _hubConnection.DisposeAsync();

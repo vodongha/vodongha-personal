@@ -2,7 +2,10 @@ using Resend;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Threading.RateLimiting;
 using vodongha.Components;
 using vodongha.Data;
 using vodongha.Hubs;
@@ -32,18 +35,18 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<AppDbContext>();
-
-// Use DbContextFactory to avoid concurrency issues in Blazor Server
+// Use DbContextFactory for all DB access — avoids scoped/singleton DI conflicts in Blazor Server.
+// The transient registration below allows health checks (and any code requiring a raw AppDbContext)
+// to obtain one via the factory without registering a separate scoped AddDbContext.
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
            .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 
-// Also register scoped DbContext (used by health checks and migration)
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-           .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
+builder.Services.AddTransient<AppDbContext>(sp =>
+    sp.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext());
+
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>();
 
 builder.Services.AddOptions();
 builder.Services.AddHttpClient<ResendClient>();
@@ -60,6 +63,7 @@ builder.Services.AddScoped<LanguageService>();
 builder.Services.AddScoped<SiteSettingService>();
 builder.Services.AddScoped<VisitorService>();
 builder.Services.AddScoped<ToastService>();
+builder.Services.AddSingleton<PushNotificationService>();
 builder.Services.AddHttpClient<TelegramService>()
     .AddTypedClient((http, sp) => new TelegramService(http, sp.GetRequiredService<AppSecretsService>()));
 builder.Services.AddScoped<ChatService>();
@@ -72,6 +76,19 @@ builder.Services.AddSingleton<CostMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 builder.Services.AddHttpContextAccessor();
 
+// Rate limiter — 10 login attempts per 5 minutes per IP to prevent brute-force
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("login", limiterOptions =>
+    {
+        limiterOptions.Window = TimeSpan.FromMinutes(5);
+        limiterOptions.PermitLimit = 10;
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        limiterOptions.QueueLimit = 0;
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
 WebApplication app = builder.Build();
 
 // Auto migrate on startup
@@ -79,6 +96,30 @@ using (IServiceScope scope = app.Services.CreateScope())
 {
     AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+}
+
+// One-time: sync secrets from ENV → DB on startup.
+// Only saves keys that have a value in ENV and are NOT yet in the DB.
+// After all keys are saved, this block becomes a no-op.
+{
+    using IServiceScope scope = app.Services.CreateScope();
+    AppSecretsService secretsSvc = scope.ServiceProvider.GetRequiredService<AppSecretsService>();
+    IConfiguration config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+    foreach (AppSecretDefinition def in AppSecretsService.Definitions)
+    {
+        // Skip if already in DB
+        if (await secretsSvc.HasOverrideAsync(def.Key))
+        {
+            continue;
+        }
+
+        string? value = config[def.Key];
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            await secretsSvc.SaveAsync(def.Key, value);
+        }
+    }
 }
 
 if (!app.Environment.IsDevelopment())
@@ -125,6 +166,8 @@ app.Use(async (context, next) =>
 
     await next(context);
 });
+app.UseRouting();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
@@ -136,7 +179,16 @@ app.MapPost("/admin/do-login", async (HttpContext ctx, IConfiguration config) =>
     string password = ctx.Request.Form["password"].ToString();
     string adminUser = config["Admin:Username"] ?? "admin";
     string adminPass = config["Admin:Password"] ?? "changeme";
-    if (username == adminUser && password == adminPass)
+
+    // Constant-time comparison to prevent timing attacks
+    bool usernameMatch = CryptographicOperations.FixedTimeEquals(
+        System.Text.Encoding.UTF8.GetBytes(username.PadRight(adminUser.Length)),
+        System.Text.Encoding.UTF8.GetBytes(adminUser.PadRight(username.Length)));
+    bool passwordMatch = CryptographicOperations.FixedTimeEquals(
+        System.Text.Encoding.UTF8.GetBytes(password.PadRight(adminPass.Length)),
+        System.Text.Encoding.UTF8.GetBytes(adminPass.PadRight(password.Length)));
+
+    if (usernameMatch && passwordMatch && username.Length == adminUser.Length && password.Length == adminPass.Length)
     {
         System.Security.Claims.Claim[] claims = [new(System.Security.Claims.ClaimTypes.Name, username), new(System.Security.Claims.ClaimTypes.Role, "Admin")];
         System.Security.Claims.ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -148,13 +200,13 @@ app.MapPost("/admin/do-login", async (HttpContext ctx, IConfiguration config) =>
         ctx.Response.Redirect("/admin/login?error=1");
 
     }
-}).DisableAntiforgery();
+}).DisableAntiforgery().RequireRateLimiting("login");
 
 app.MapPost("/admin/logout", async (HttpContext ctx) =>
 {
     await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     ctx.Response.Redirect("/");
-}).DisableAntiforgery();
+}).RequireAuthorization();
 app.MapHub<ChatHub>("/chathub");
 
 app.MapGet("/api/cv/download", async (
@@ -234,6 +286,34 @@ app.MapGet("/api/cv/download", async (
     }
 }).RequireAuthorization();
 
+// ── Web Push subscription endpoints ──────────────────────────────────────────
+
+app.MapPost("/api/push/subscribe", async (HttpContext ctx, PushNotificationService pushSvc) =>
+{
+    var body = await ctx.Request.ReadFromJsonAsync<PushSubscribeRequest>();
+    if (body is null || string.IsNullOrEmpty(body.Endpoint))
+    {
+        return Results.BadRequest();
+    }
+
+    // Determine IsAdmin server-side — never trust the client to set this
+    bool isAdmin = ctx.User.Identity?.IsAuthenticated == true && ctx.User.IsInRole("Admin");
+    await pushSvc.SaveSubscriptionAsync(body.Endpoint, body.P256DH, body.Auth, body.ChatSessionId, isAdmin);
+    return Results.Ok();
+}).DisableAntiforgery();
+
+app.MapDelete("/api/push/unsubscribe", async (HttpContext ctx, PushNotificationService pushSvc) =>
+{
+    var body = await ctx.Request.ReadFromJsonAsync<PushUnsubscribeRequest>();
+    if (body is null || string.IsNullOrEmpty(body.Endpoint))
+    {
+        return Results.BadRequest();
+    }
+
+    await pushSvc.RemoveSubscriptionAsync(body.Endpoint);
+    return Results.Ok();
+}).DisableAntiforgery();
+
 app.MapPost("/api/telegram/webhook", async (HttpContext ctx, ChatService chatService, IConfiguration config) =>
 {
     string secret = config["Telegram:WebhookSecret"] ?? "";
@@ -252,8 +332,52 @@ app.MapPost("/api/telegram/webhook", async (HttpContext ctx, ChatService chatSer
     return Results.Ok();
 }).DisableAntiforgery();
 
-app.MapGet("/sitemap.xml", async (BlogService blogSvc) =>
+// ── One-time admin endpoint: sync all secrets from ENV → DB ──────────────────
+// Call POST /api/admin/sync-secrets-to-db with Basic auth (admin credentials).
+// Safe to call multiple times — skips keys with no ENV value, overwrites DB if a value exists.
+app.MapPost("/api/admin/sync-secrets-to-db", async (HttpContext ctx, AppSecretsService secretsSvc, IConfiguration config) =>
 {
+    // Validate Basic auth
+    string? authHeader = ctx.Request.Headers.Authorization.FirstOrDefault();
+    if (authHeader == null || !authHeader.StartsWith("Basic ", StringComparison.Ordinal))
+    {
+        ctx.Response.Headers.WWWAuthenticate = "Basic realm=\"admin\"";
+        return Results.Unauthorized();
+    }
+
+    string encoded = authHeader["Basic ".Length..].Trim();
+    string decoded = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
+    string[] parts = decoded.Split(':', 2);
+    string adminUser = config["Admin:Username"] ?? "admin";
+    string adminPass = config["Admin:Password"] ?? "changeme";
+
+    if (parts.Length != 2 || parts[0] != adminUser || parts[1] != adminPass)
+    {
+        ctx.Response.Headers.WWWAuthenticate = "Basic realm=\"admin\"";
+        return Results.Unauthorized();
+    }
+
+    List<object> results = [];
+
+    foreach (AppSecretDefinition def in AppSecretsService.Definitions)
+    {
+        string? value = config[def.Key];
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            results.Add(new { key = def.Key, status = "skipped", reason = "no value in ENV/config" });
+            continue;
+        }
+
+        bool ok = await secretsSvc.SaveAsync(def.Key, value);
+        results.Add(new { key = def.Key, status = ok ? "saved" : "error" });
+    }
+
+    return Results.Ok(results);
+}).DisableAntiforgery();
+
+app.MapGet("/sitemap.xml", async (BlogService blogSvc, IConfiguration config) =>
+{
+    string baseUrl = (config["App:BaseUrl"] ?? "https://vodongha.id.vn").TrimEnd('/');
     List<vodongha.Data.Models.BlogPost> posts = await blogSvc.GetAllSlugsForSitemapAsync();
     System.Text.StringBuilder sb = new();
     sb.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -263,7 +387,7 @@ app.MapGet("/sitemap.xml", async (BlogService blogSvc) =>
     foreach (string staticUrl in new[] { "", "/#projects", "/#blog", "/#contact" })
     {
         sb.AppendLine("  <url>");
-        sb.AppendLine($"    <loc>https://vodongha.id.vn/{staticUrl}</loc>");
+        sb.AppendLine($"    <loc>{baseUrl}/{staticUrl}</loc>");
         sb.AppendLine("    <changefreq>monthly</changefreq>");
         sb.AppendLine("    <priority>0.8</priority>");
         sb.AppendLine("  </url>");
@@ -274,7 +398,7 @@ app.MapGet("/sitemap.xml", async (BlogService blogSvc) =>
     {
         string lastmod = (post.UpdatedAt ?? post.CreatedAt).ToString("yyyy-MM-dd");
         sb.AppendLine("  <url>");
-        sb.AppendLine($"    <loc>https://vodongha.id.vn/blog/{post.Slug}</loc>");
+        sb.AppendLine($"    <loc>{baseUrl}/blog/{post.Slug}</loc>");
         sb.AppendLine($"    <lastmod>{lastmod}</lastmod>");
         sb.AppendLine("    <changefreq>weekly</changefreq>");
         sb.AppendLine("    <priority>0.9</priority>");
@@ -290,3 +414,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+// ── DTOs ──────────────────────────────────────────────────────────────────────
+// IsAdmin is intentionally removed from this DTO — it is always determined server-side from auth state.
+record PushSubscribeRequest(string Endpoint, string P256DH, string Auth, int? ChatSessionId);
+record PushUnsubscribeRequest(string Endpoint);
