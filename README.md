@@ -1,4 +1,4 @@
-# vodongha.id.vn
+﻿# vodongha.id.vn
 
 Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 
@@ -53,7 +53,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Settings** — bio (VI/EN), social links, avatar upload
 - **CV / Resume PDF** — generate a polished PDF CV; 3 templates (Dark Sidebar, Minimal, Professional); template picker colors work in light mode
 - **Shimmer skeleton loading** — all admin pages and all public sections show animated placeholders while data loads
-- **Mobile responsive** — fixed bottom navigation bar on screens ≤ 768 px; collapsible grouped sidebar nav on desktop (Portfolio / Communication / Insights / System); admin chat is full-screen on mobile with back button
+- **Mobile responsive** — collapsible sidebar on desktop (64 px icon-only ↔ 220 px expanded, state persisted in localStorage); 4-item fixed bottom bar on screens ≤ 768 px (Menu / Dark / VI|EN / Logout); admin chat is full-screen on mobile with back button
 - **Dark / Light mode** — complete coverage across public site, chat widget, admin panel, and Chart.js charts
 
 ---
