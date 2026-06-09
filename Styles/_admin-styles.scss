@@ -6,7 +6,7 @@
 // ── Sidebar ──────────────────────────────────────────────────────
 .admin-sidebar {
     width: 220px;
-    min-height: 100vh;
+    height: 100vh;
     background: var(--admin-surface);
     border-right: 1px solid var(--admin-border);
     display: flex;
@@ -15,6 +15,7 @@
     position: sticky;
     top: 0;
     flex-shrink: 0;
+    overflow: hidden;
 
     &__logo {
         font-family: $font-mono;
@@ -38,6 +39,9 @@
     flex-direction: column;
     gap: 0.25rem;
     padding: 0 0.75rem;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
 
     &__item {
         display: flex;
