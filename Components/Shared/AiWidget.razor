@@ -1,0 +1,114 @@
+@rendermode InteractiveServer
+@implements IDisposable
+
+@if (_open)
+{
+    <div class="ai-panel">
+        <div class="ai-header">
+            <div class="ai-header__info">
+                <div class="ai-header__avatar"><i class="bi bi-stars"></i></div>
+                <div>
+                    <div class="ai-header__name">@Lang.T("ai.title")</div>
+                    <div class="ai-header__sub">Gemini 2.0 Flash</div>
+                </div>
+            </div>
+            <button type="button" class="ai-header__close" @onclick="Close"
+                    title="@Lang.T("chat.close")" aria-label="@Lang.T("chat.close")">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div class="ai-messages" id="aiMessages">
+            @if (_messages.Count == 0)
+            {
+                <div class="ai-welcome">
+                    <div class="ai-welcome__icon"><i class="bi bi-stars"></i></div>
+                    <p class="ai-welcome__text">@Lang.T("ai.welcome")</p>
+                    <div class="ai-chips">
+                        @foreach (string s in GetSuggestions())
+                        {
+                            string q = s;
+                            <button type="button" class="ai-chip" @onclick="() => AskSuggestionAsync(q)">
+                                @q
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                @foreach (AiDisplayMessage msg in _messages)
+                {
+                    <div class="ai-msg @(msg.IsUser ? "ai-msg--user" : "ai-msg--ai")">
+                        @if (!msg.IsUser)
+                        {
+                            <div class="ai-msg__avatar"><i class="bi bi-stars"></i></div>
+                        }
+                        <div class="ai-msg__bubble">@msg.Text</div>
+                    </div>
+                }
+                @if (_thinking)
+                {
+                    <div class="ai-msg ai-msg--ai">
+                        <div class="ai-msg__avatar"><i class="bi bi-stars"></i></div>
+                        <div class="ai-msg__bubble ai-msg__bubble--typing">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="ai-input-area">
+            <div class="ai-input-row">
+                <input type="text"
+                       class="ai-input"
+                       placeholder="@Lang.T("ai.placeholder")"
+                       @bind="_input"
+                       @bind:event="oninput"
+                       @onkeydown="OnKeyDownAsync"
+                       disabled="@(_thinking || _limitReached)"
+                       maxlength="300" />
+                <button type="button" class="ai-send"
+                        @onclick="SendAsync"
+                        disabled="@(string.IsNullOrWhiteSpace(_input) || _thinking || _limitReached)"
+                        aria-label="Send">
+                    @if (_thinking)
+                    {
+                        <i class="bi bi-arrow-clockwise admin-spin"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-send-fill"></i>
+                    }
+                </button>
+            </div>
+            <div class="ai-meta">
+                @if (_limitReached)
+                {
+                    <span class="ai-meta__limit">@Lang.T("ai.limit")</span>
+                }
+                else
+                {
+                    <span class="ai-meta__counter">@_questionCount / @MaxQuestions</span>
+                }
+                <span class="ai-meta__powered">Powered by Google Gemini</span>
+            </div>
+        </div>
+    </div>
+}
+
+<button type="button" class="ai-fab @(_open ? "ai-fab--open" : "")"
+        @onclick="ToggleOpen"
+        title="@Lang.T("ai.fab.title")"
+        aria-label="@(_open ? Lang.T("chat.close") : Lang.T("ai.fab.title"))"
+        aria-expanded="@(_open ? "true" : "false")">
+    @if (_open)
+    {
+        <i class="bi bi-chevron-down"></i>
+    }
+    else
+    {
+        <i class="bi bi-robot"></i>
+    }
+</button>

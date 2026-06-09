@@ -72,6 +72,8 @@ builder.Services.AddScoped<TimezoneService>();
 builder.Services.AddSingleton<AppSecretsService>();
 builder.Services.AddSingleton<HealthMonitorService>();
 builder.Services.AddScoped<CvPdfService>();
+builder.Services.AddHttpClient<AiService>();
+builder.Services.AddScoped<AiService>();
 builder.Services.AddSingleton<CostMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 builder.Services.AddHttpContextAccessor();
