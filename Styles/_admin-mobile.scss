@@ -65,17 +65,19 @@
     // Re-show pinned Menu item (desktop hides it; mobile must override)
     .admin-nav .admin-nav__item--pinned { display: flex !important; }
 
-    // All bottom bar items — equal width, same style
+    // Website button hidden on mobile — not needed in bottom bar
+    .admin-view-website--mobile { display: none !important; }
+
+    // All bottom bar items — equal width, same style (4 items: Menu, Dark, Lang, Logout)
     .admin-nav__item,
     .admin-lang-toggle--mobile,
     .admin-theme-toggle--mobile,
-    .admin-view-website--mobile,
     .admin-sidebar__logout .admin-nav__item {
         flex: 1 1 0 !important;
         flex-direction: column !important;
         gap: 0.15rem !important;
-        padding: 0.45rem 0.5rem 0.35rem !important;
-        font-size: 0.6rem !important;
+        padding: 0.5rem 0.5rem 0.4rem !important;
+        font-size: 0.65rem !important;
         line-height: 1 !important;
         border-radius: 0 !important;
         white-space: nowrap !important;
@@ -88,29 +90,34 @@
         border: none !important;
         border-right: 1px solid var(--admin-border) !important;
 
-        i { font-size: 1.1rem !important; line-height: 1 !important; }
+        i { font-size: 1.2rem !important; line-height: 1 !important; }
     }
 
     // Last item (Logout) — no right border
     .admin-sidebar__logout { border-right: none !important; }
 
-    .admin-theme-toggle--mobile,
+    // Dark toggle — icon only, no label
+    .admin-theme-toggle--mobile {
+        display: flex !important;
+        background: transparent !important;
+        &__icon { font-size: 1.1rem !important; }
+        &__label { display: none !important; }
+    }
+
+    // Lang toggle — show only active language, hide separator and inactive
     .admin-lang-toggle--mobile {
         display: flex !important;
         background: transparent !important;
-
-        &__icon { font-size: 1.05rem !important; line-height: 1 !important; }
-        &__label { font-size: 0.65rem !important; }
+        &__icon { font-size: 1.1rem !important; }
+        &__label {
+            font-size: 0.65rem !important;
+            .admin-lang-toggle__sep { display: none !important; }
+            .admin-lang-toggle__opt:not(.admin-lang-toggle__opt--active) { display: none !important; }
+        }
     }
 
-    // View website — mobile bottom bar
-    .admin-view-website--mobile {
-        display: flex !important;
-        background: transparent !important;
-        color: var(--color-text-muted) !important;
-        text-decoration: none !important;
-        &:hover { color: $color-primary !important; }
-    }
+    // Logout — icon only, no label
+    .admin-nav__item--logout .admin-nav__label { display: none !important; }
 
     // Logout form flex container
     .admin-sidebar__logout {
