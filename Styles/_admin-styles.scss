@@ -36,20 +36,13 @@
     }
 }
 
-// ── View website link (sidebar + mobile) ─────────────────────────
-.admin-view-website {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    padding: 0.625rem 1.5rem;
-    font-size: 0.875rem;
-    color: var(--color-text-muted);
-    transition: color 150ms, background 150ms;
+// ── View website link (sidebar desktop + mobile) ─────────────────
+.admin-sidebar__view-website {
+    margin: 0 0.75rem;
     text-decoration: none;
+}
 
-    i { font-size: 1rem; }
-    &:hover { color: $color-primary; }
-
+.admin-view-website {
     &--mobile { display: none; }
 }
 
