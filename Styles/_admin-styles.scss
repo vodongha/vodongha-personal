@@ -2520,10 +2520,14 @@ tr.admin-row--dragover td {
     background: var(--admin-surface);
     border: 1px solid var(--admin-border);
     border-radius: 12px;
+    border-top: 3px solid $color-primary;
     padding: 1.25rem 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+
+    &--teal   { border-top-color: #22c9b7; .analytics-stat-card__value { color: #22c9b7; } }
+    &--green  { border-top-color: #4ade80; .analytics-stat-card__value { color: #4ade80; } }
 
     &__label { font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
     &__value { font-size: 2rem; font-weight: 700; color: $color-primary; line-height: 1.1; }
@@ -2593,7 +2597,7 @@ tr.admin-row--dragover td {
     &__bar-cell { padding: 0.5rem 0; width: 30%; }
     &__bar {
         height: 6px;
-        background: rgba($color-primary, 0.4);
+        background: linear-gradient(90deg, rgba(124,106,247,0.8), rgba(124,106,247,0.3));
         border-radius: 3px;
         min-width: 4px;
         transition: width 300ms ease;
