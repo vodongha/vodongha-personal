@@ -29,8 +29,9 @@
 
     &__top-controls {
         display: flex;
-        gap: 0.5rem;
-        padding: 0 0.75rem 0.75rem;
+        flex-direction: column;
+        gap: 0;
+        padding: 0 0 0.5rem;
         border-bottom: 1px solid var(--admin-border);
         margin-bottom: 0.5rem;
     }
@@ -561,10 +562,6 @@ tr.admin-row--dragover td {
     &__opt--active { color: $color-primary; font-weight: 700; }
 }
 
-// Mobile-only copies hidden on desktop
-.admin-theme-toggle--mobile,
-.admin-lang-toggle--mobile { display: none; }
-
 // ── Theme toggle ──────────────────────────────────────────────────
 .admin-theme-toggle {
     display: flex;
@@ -594,6 +591,10 @@ tr.admin-row--dragover td {
         letter-spacing: 0.02em;
     }
 }
+
+// Mobile-only copies — hidden on desktop (must come after base .admin-theme-toggle to win specificity)
+.admin-theme-toggle--mobile,
+.admin-lang-toggle--mobile { display: none; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 .admin-spin { display: inline-block; animation: spin 0.8s linear infinite; }
