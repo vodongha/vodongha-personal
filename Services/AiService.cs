@@ -99,6 +99,7 @@ public class AiService
         {
             system_instruction = new { parts = new[] { new { text = context } } },
             contents,
+            tools            = new object[] { new { google_search = new { } } },
             generationConfig = new
             {
                 maxOutputTokens = 600,
@@ -206,12 +207,11 @@ public class AiService
 
         StringBuilder sb = new();
 
-        sb.AppendLine("You are an AI assistant on Võ Đông Hà's personal portfolio website.");
-        sb.AppendLine("Answer visitors' questions about Võ Đông Hà using ONLY the context below.");
+        sb.AppendLine("You are a helpful AI assistant on Võ Đông Hà's personal portfolio website.");
+        sb.AppendLine("You can answer any question — use Google Search for real-time information (weather, news, facts, etc.).");
+        sb.AppendLine("When asked about Võ Đông Hà, use the portfolio context below as the primary source.");
         sb.AppendLine("Be friendly, concise, and professional. Keep answers under 150 words unless more detail is requested.");
         sb.AppendLine("Respond in the SAME language the visitor uses — Vietnamese if they write in Vietnamese, English otherwise.");
-        sb.AppendLine("If asked something outside this context, say honestly that you don't have that information.");
-        sb.AppendLine("Never fabricate information not present in the context.");
         sb.AppendLine();
 
         sb.AppendLine("=== ABOUT ===");
