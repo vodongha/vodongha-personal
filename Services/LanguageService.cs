@@ -116,6 +116,17 @@ public class LanguageService
         ["chat.push.denied"]    = "Thông báo bị chặn. Bật lại để nhận tin nhắn khi có phản hồi.",
         ["chat.push.howto"]     = "Hướng dẫn",
         ["chat.fab.title"]      = "Chat với mình",
+        // AI widget
+        ["ai.label"]        = "AI",
+        ["ai.title"]        = "Hỏi tôi bất cứ điều gì",
+        ["ai.subtitle"]     = "Trợ lý AI sẽ trả lời các câu hỏi về tôi dựa trên thông tin thực tế",
+        ["ai.welcome"]      = "Xin chào! Bạn muốn biết gì về Võ Đông Hà? Chọn một câu hỏi gợi ý hoặc tự đặt câu hỏi.",
+        ["ai.placeholder"]  = "Đặt câu hỏi về kỹ năng, dự án, kinh nghiệm...",
+        ["ai.questions"]    = "câu hỏi",
+        ["ai.limit"]        = "Đã đạt giới hạn phiên. Tải lại trang để tiếp tục.",
+        ["ai.error"]        = "Xảy ra lỗi, vui lòng thử lại.",
+        ["ai.unavailable"]  = "Tính năng AI chưa được cấu hình.",
+        ["ai.fab.title"]    = "Hỏi AI về tôi",
     };
 
     private static readonly Dictionary<string, string> En = new()
@@ -216,5 +227,16 @@ public class LanguageService
         ["chat.push.denied"]    = "Notifications blocked. Enable them to get replies.",
         ["chat.push.howto"]     = "How to enable",
         ["chat.fab.title"]      = "Chat with me",
+        // AI widget
+        ["ai.label"]        = "AI",
+        ["ai.title"]        = "Ask me anything",
+        ["ai.subtitle"]     = "AI assistant answers questions about me based on real data",
+        ["ai.welcome"]      = "Hi! What would you like to know about Võ Đông Hà? Pick a suggestion or ask your own question.",
+        ["ai.placeholder"]  = "Ask about skills, projects, experience...",
+        ["ai.questions"]    = "questions",
+        ["ai.limit"]        = "Session limit reached. Reload the page to continue.",
+        ["ai.error"]        = "Something went wrong, please try again.",
+        ["ai.unavailable"]  = "AI feature is not configured yet.",
+        ["ai.fab.title"]    = "Ask AI about me",
     };
 }
