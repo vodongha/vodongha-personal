@@ -67,11 +67,11 @@
                        @bind="_input"
                        @bind:event="oninput"
                        @onkeydown="OnKeyDownAsync"
-                       disabled="@(_thinking || _limitReached)"
+                       disabled="@_thinking"
                        maxlength="300" />
                 <button type="button" class="ai-send"
                         @onclick="SendAsync"
-                        disabled="@(string.IsNullOrWhiteSpace(_input) || _thinking || _limitReached)"
+                        disabled="@(string.IsNullOrWhiteSpace(_input) || _thinking)"
                         aria-label="Send">
                     @if (_thinking)
                     {
@@ -84,14 +84,6 @@
                 </button>
             </div>
             <div class="ai-meta">
-                @if (_limitReached)
-                {
-                    <span class="ai-meta__limit">@Lang.T("ai.limit")</span>
-                }
-                else
-                {
-                    <span class="ai-meta__counter">@_questionCount / @MaxQuestions</span>
-                }
                 <span class="ai-meta__powered">Powered by Google Gemini</span>
             </div>
         </div>
