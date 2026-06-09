@@ -74,17 +74,19 @@
                         <div class="analytics-chart-box analytics-chart-box--sm">
                             <canvas id="chart-pages"></canvas>
                         </div>
-                        <table class="analytics-table">
-                            <tbody>
-                                @foreach ((string path, int count) in _topPages)
-                                {
-                                    <tr>
-                                        <td class="analytics-table__path" title="@path">@path</td>
-                                        <td class="analytics-table__count">@count</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                        <div class="analytics-table-wrap">
+                            <table class="analytics-table">
+                                <tbody>
+                                    @foreach ((string path, int count) in _topPages)
+                                    {
+                                        <tr>
+                                            <td class="analytics-table__path" title="@path">@path</td>
+                                            <td class="analytics-table__count">@count</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     }
                 </div>
 
@@ -100,17 +102,19 @@
                         <div class="analytics-chart-box analytics-chart-box--sm">
                             <canvas id="chart-countries"></canvas>
                         </div>
-                        <table class="analytics-table">
-                            <tbody>
-                                @foreach ((string country, int count) in _topCountries)
-                                {
-                                    <tr>
-                                        <td class="analytics-table__path" title="@country">@country</td>
-                                        <td class="analytics-table__count">@count</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                        <div class="analytics-table-wrap">
+                            <table class="analytics-table">
+                                <tbody>
+                                    @foreach ((string country, int count) in _topCountries)
+                                    {
+                                        <tr>
+                                            <td class="analytics-table__path" title="@country">@country</td>
+                                            <td class="analytics-table__count">@count</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     }
                 </div>
             </div>
@@ -124,6 +128,7 @@
                 }
                 else
                 {
+                    <div class="analytics-table-wrap">
                     <table class="analytics-table">
                         <tbody>
                             @foreach ((string referrer, int count) in _topReferrers)
@@ -140,6 +145,7 @@
                             }
                         </tbody>
                     </table>
+                    </div>
                 }
             </div>
         }
