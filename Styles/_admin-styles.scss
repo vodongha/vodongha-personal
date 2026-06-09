@@ -8,31 +8,77 @@
     width: 220px;
     height: 100vh;
     overflow-y: auto;
+    overflow-x: hidden;
     background: var(--admin-surface);
     border-right: 1px solid var(--admin-border);
     display: flex;
     flex-direction: column;
     padding: 1.5rem 0;
     flex-shrink: 0;
+    transition: width 0.22s cubic-bezier(.4,0,.2,1);
 
     &__logo {
         font-family: $font-mono;
         font-size: 1.25rem;
         font-weight: 700;
-        padding: 0 1.5rem 1.5rem;
+        padding: 0 1rem 1.25rem;
         border-bottom: 1px solid var(--admin-border);
         margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        white-space: nowrap;
         span { color: $color-primary; }
         .dot { color: var(--color-text-muted); }
     }
 
+    &__logo-text {
+        overflow: hidden;
+        transition: opacity 0.15s, width 0.22s cubic-bezier(.4,0,.2,1);
+    }
+
+    &__collapse-btn {
+        background: transparent;
+        border: none;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        padding: 0.3rem;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        transition: background 150ms, color 150ms;
+        i { font-size: 0.85rem; }
+        &:hover { background: var(--admin-hover); color: $color-text; }
+    }
+
     &__top-controls {
         display: flex;
-        flex-direction: column;
-        gap: 0;
-        padding: 0 0 0.5rem;
+        flex-direction: row;
+        gap: 0.35rem;
+        padding: 0 0.75rem 0.75rem;
         border-bottom: 1px solid var(--admin-border);
         margin-bottom: 0.5rem;
+        white-space: nowrap;
+    }
+
+    // ── Collapsed state (desktop only) ──
+    @media (min-width: 769px) {
+        &--collapsed {
+            width: 64px;
+
+            .admin-sidebar__logo-text { opacity: 0; width: 0; overflow: hidden; }
+            .admin-sidebar__top-controls { flex-direction: column; padding: 0 0.6rem 0.75rem; gap: 0.3rem; }
+            .admin-ctrl__label { display: none; }
+            .admin-ctrl { justify-content: center; padding: 0.5rem; }
+            .admin-nav__label { display: none; }
+            .admin-nav-group__chevron { display: none; }
+            .admin-nav-group__items { max-height: 0 !important; }
+            .admin-nav-group__header { justify-content: center; padding: 0.6rem; }
+            .admin-nav-group__header-inner { gap: 0; }
+            .admin-nav__item { justify-content: center; padding: 0.6rem; }
+        }
     }
 }
 
@@ -58,6 +104,36 @@
     &:hover { background: var(--admin-hover); color: $color-text; }
 
     &--mobile { display: none; }
+}
+
+// ── Compact top-control buttons (Website / Dark / VI|EN) ────────────
+.admin-ctrl {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    flex: 1;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 150ms, color 150ms, border-color 150ms;
+
+    i { font-size: 0.95rem; flex-shrink: 0; }
+
+    &:hover { background: var(--admin-hover); color: $color-text; border-color: var(--admin-border-hover); }
+
+    &__label {
+        overflow: hidden;
+        transition: opacity 0.15s;
+    }
 }
 
 // Re-open the .admin-sidebar block so remaining rules stay nested
