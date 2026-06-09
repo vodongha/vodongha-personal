@@ -56,23 +56,6 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Mobile responsive** — fixed bottom navigation bar on screens ≤ 768 px; collapsible grouped sidebar nav on desktop (Portfolio / Communication / Insights / System); admin chat is full-screen on mobile with back button
 - **Dark / Light mode** — complete coverage across public site, chat widget, admin panel, and Chart.js charts
 
-### v2.0.5 — Analytics, admin nav groups, AI widget
-
-- **Self-hosted analytics** — `/admin/analytics` dashboard: daily views line chart, top pages + countries bar charts, top referrers table; 7/30/90 day period selector; GDPR-safe geo IP (ip-api.com, no IP stored)
-- **Admin sidebar groups** — collapsible nav groups (Portfolio / Communication / Insights / System); auto-opens active section; sidebar scrolls independently from content
-- **Mobile bottom bar** — equal-width buttons with dividers: Menu | Website | Dark | VI/EN | Logout; Menu links to Dashboard
-- **SCSS refactor** — mobile styles extracted to `_admin-mobile.scss` and `_client-mobile.scss`
-- **AI widget** — floating robot FAB powered by Google Gemini (`gemini-2.0-flash`); conversation history, typing indicator, suggestion chips, 15-question limit; context built from live DB data with 30-min cache
-- **Fix** — scroll-to-top button repositioned above both Chat FAB and AI FAB
-
-### v2.0.4 — Security & quality hardening
-- **Security** — `[Authorize(Roles="Admin")]` on SignalR admin group; push subscription `IsAdmin` determined server-side; constant-time login comparison; rate limiting (10 req / 5 min) on `/api/auth/login`
-- **WCAG AA** — chat timestamp contrast fixed (2.5:1 → 4.6:1); admin button contrast corrected for light mode; invalid `rgba(var(--css-var))` replaced with `color-mix()` throughout
-- **Accessibility** — `aria-label` + `aria-expanded` on chat FAB; `:focus-visible` outlines on all interactive controls
-- **Loading bar scoping** — `type="button"` on all non-submit buttons; loading bar no longer fires on dropdowns, toggles, pagination, or scroll actions
-- **Code quality** — `ChatHubParser` extracted; `DotNetObjectReference` disposed; `AdminChats` N+1 eliminated; typing indicator topic ID cached; git workflow updated (feature/bug → develop, hotfix → master)
-- **DI fix** — removed conflicting `AddDbContext` alongside `AddDbContextFactory`
-
 ---
 
 ## Tech stack
