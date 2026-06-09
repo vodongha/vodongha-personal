@@ -15,7 +15,7 @@ public class AnalyticsService(IDbContextFactory<AppDbContext> dbFactory, IHttpCl
     {
         try
         {
-            // Use cached country; trigger background lookup for cache miss — no request latency
+            // Await geo lookup directly — TrackAsync is already called fire-and-forget from middleware
             string? country = null;
             if (_geoCache.TryGetValue(ip, out (string Country, DateTime ExpiresAt) cached) && cached.ExpiresAt > DateTime.UtcNow)
             {
@@ -23,7 +23,7 @@ public class AnalyticsService(IDbContextFactory<AppDbContext> dbFactory, IHttpCl
             }
             else if (IsPublicIp(ip))
             {
-                _ = Task.Run(() => LookupAndCacheAsync(ip));
+                country = await LookupAndCacheAsync(ip);
             }
 
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
@@ -112,7 +112,7 @@ public class AnalyticsService(IDbContextFactory<AppDbContext> dbFactory, IHttpCl
         return await db.PageViews.CountAsync(p => days == 0 || p.CreatedAt >= since);
     }
 
-    private async Task LookupAndCacheAsync(string ip)
+    private async Task<string?> LookupAndCacheAsync(string ip)
     {
         try
         {
@@ -121,10 +121,11 @@ public class AnalyticsService(IDbContextFactory<AppDbContext> dbFactory, IHttpCl
             GeoResponse? response = await http.GetFromJsonAsync<GeoResponse>($"http://ip-api.com/json/{ip}?fields=country");
             string country = response?.Country ?? "Unknown";
             _geoCache[ip] = (country, DateTime.UtcNow.AddHours(24));
+            return country;
         }
         catch
         {
-            // Silently fail — country stays null for this IP until next attempt
+            return null;
         }
     }
 

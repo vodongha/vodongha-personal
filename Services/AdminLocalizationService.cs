@@ -208,6 +208,28 @@ public class AdminLocalizationService
         ["Saved successfully"] = "Lưu thành công",
         ["DB override removed"] = "Đã xoá ghi đè DB",
 
+        // Nav groups
+        ["Portfolio"]     = "Portfolio",
+        ["Communication"] = "Liên lạc",
+        ["Insights"]      = "Thống kê",
+        ["System"]        = "Hệ thống",
+
+        // Analytics
+        ["Analytics"] = "Thống kê",
+        ["days"] = "ngày",
+        ["Last @_days days"] = "@_days ngày qua",
+        ["page views"] = "lượt xem",
+        ["All time"] = "Tổng cộng",
+        ["Daily avg"] = "Trung bình / ngày",
+        ["views / day"] = "lượt / ngày",
+        ["Daily views"] = "Lượt xem theo ngày",
+        ["Top pages"] = "Trang nhiều lượt nhất",
+        ["Top countries"] = "Quốc gia",
+        ["Top referrers"] = "Nguồn truy cập",
+        ["No data yet"] = "Chưa có dữ liệu",
+        ["No geo data yet — refreshes as visitors arrive"] = "Chưa có dữ liệu — cập nhật khi có visitor",
+        ["No referrer data yet"] = "Chưa có dữ liệu",
+
         // Settings
         ["Personal information"] = "Thông tin cá nhân",
         ["Introduction"] = "Giới thiệu",
