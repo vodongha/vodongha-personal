@@ -12,6 +12,7 @@ public partial class AdminAnalytics : ComponentBase
 
     private int _days = 30;
     private bool _loading = true;
+    private bool _pendingChartRender = false;
 
     private int _total;
     private int _totalAll;
@@ -23,12 +24,14 @@ public partial class AdminAnalytics : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await LoadAsync();
+        _pendingChartRender = true;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!_loading)
+        if (_pendingChartRender)
         {
+            _pendingChartRender = false;
             await RenderChartsAsync();
         }
     }
@@ -37,61 +40,63 @@ public partial class AdminAnalytics : ComponentBase
     {
         _days = days;
         _loading = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
+
         await LoadAsync();
-        _loading = false;
-        StateHasChanged();
-        await RenderChartsAsync();
+
+        _pendingChartRender = true;
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task LoadAsync()
     {
-        (_total, _totalAll, _topPages, _topCountries, _topReferrers, _daily) = await (
-            Analytics.GetTotalAsync(_days),
-            Analytics.GetTotalAsync(0),
-            Analytics.GetTopPagesAsync(_days),
-            Analytics.GetTopCountriesAsync(_days),
-            Analytics.GetTopReferrersAsync(_days),
-            Analytics.GetDailyViewsAsync(_days)
-        ).WhenAll();
-
+        List<Task> tasks =
+        [
+            LoadTotalAsync(),
+            LoadTotalAllAsync(),
+            LoadTopPagesAsync(),
+            LoadTopCountriesAsync(),
+            LoadTopReferrersAsync(),
+            LoadDailyAsync(),
+        ];
+        await Task.WhenAll(tasks);
         _loading = false;
     }
+
+    private async Task LoadTotalAsync()          { _total         = await Analytics.GetTotalAsync(_days); }
+    private async Task LoadTotalAllAsync()       { _totalAll      = await Analytics.GetTotalAsync(0); }
+    private async Task LoadTopPagesAsync()       { _topPages      = await Analytics.GetTopPagesAsync(_days); }
+    private async Task LoadTopCountriesAsync()   { _topCountries  = await Analytics.GetTopCountriesAsync(_days); }
+    private async Task LoadTopReferrersAsync()   { _topReferrers  = await Analytics.GetTopReferrersAsync(_days); }
+    private async Task LoadDailyAsync()          { _daily         = await Analytics.GetDailyViewsAsync(_days); }
 
     private async Task RenderChartsAsync()
     {
         try
         {
-            string[] dateLabels = _daily.Select(d => d.Date.ToString("MM/dd")).ToArray();
-            int[] dailyCounts = _daily.Select(d => d.Count).ToArray();
+            string[] dateLabels  = _daily.Select(d => d.Date.ToString("MM/dd")).ToArray();
+            int[]    dailyCounts = _daily.Select(d => d.Count).ToArray();
             await JS.InvokeVoidAsync("analyticsCharts.renderLine", "chart-daily", dateLabels, dailyCounts);
 
             if (_topPages.Count > 0)
             {
                 string[] pageLabels = _topPages.Select(p => p.Path).ToArray();
-                int[] pageCounts = _topPages.Select(p => p.Count).ToArray();
+                int[]    pageCounts = _topPages.Select(p => p.Count).ToArray();
                 await JS.InvokeVoidAsync("analyticsCharts.renderBar", "chart-pages", pageLabels, pageCounts);
             }
 
             if (_topCountries.Count > 0)
             {
                 string[] countryLabels = _topCountries.Select(c => c.Country).ToArray();
-                int[] countryCounts = _topCountries.Select(c => c.Count).ToArray();
+                int[]    countryCounts = _topCountries.Select(c => c.Count).ToArray();
                 await JS.InvokeVoidAsync("analyticsCharts.renderBar", "chart-countries", countryLabels, countryCounts);
             }
         }
         catch (JSDisconnectedException) { }
         catch (ObjectDisposedException) { }
-    }
-}
-
-file static class TaskExtensions
-{
-    public static async Task<(T1, T2, T3, T4, T5, T6)> WhenAll<T1, T2, T3, T4, T5, T6>(
-        this (Task<T1>, Task<T2>, Task<T3>, Task<T4>, Task<T5>, Task<T6>) tasks)
-    {
-        await Task.WhenAll(tasks.Item1, tasks.Item2, tasks.Item3, tasks.Item4, tasks.Item5, tasks.Item6);
-        return (tasks.Item1.Result, tasks.Item2.Result, tasks.Item3.Result,
-                tasks.Item4.Result, tasks.Item5.Result, tasks.Item6.Result);
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Analytics chart JS error: {ex.Message}");
+        }
     }
 }
