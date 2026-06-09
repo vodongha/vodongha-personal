@@ -24,7 +24,6 @@ public partial class Dashboard : ComponentBase, IAsyncDisposable
 
     protected override async Task OnInitializedAsync()
     {
-        Nav.NavigateTo("/admin/analytics", replace: true);
         Loc.OnChanged += OnLangChanged;
         _dotNetRef = DotNetObjectReference.Create(this);
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
@@ -35,6 +34,7 @@ public partial class Dashboard : ComponentBase, IAsyncDisposable
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
+        Nav.NavigateTo("/admin/analytics", replace: true);
         try
         {
             _menuOrder = await Secrets.GetValueAsync(MenuPrefKey) ?? "[]";
