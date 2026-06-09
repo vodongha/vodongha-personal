@@ -4,7 +4,7 @@ using vodongha.Services;
 
 namespace vodongha.Components.Pages.Admin;
 
-public partial class AdminAnalytics : ComponentBase
+public partial class AdminAnalytics : ComponentBase, IDisposable
 {
     [Inject] private AnalyticsService Analytics { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
@@ -23,9 +23,14 @@ public partial class AdminAnalytics : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        Loc.OnChanged += OnLangChanged;
         await LoadAsync();
         _pendingChartRender = true;
     }
+
+    private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Loc.OnChanged -= OnLangChanged;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
