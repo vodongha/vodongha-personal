@@ -155,7 +155,7 @@ vodongha-personal/
 │       ├── AdminNav.razor + .cs      # Shared admin sidebar — collapsible groups (Portfolio/Communication/Insights/System), auto-opens active group; collapsible sidebar (64px icon-only ↔ 220px expanded, chevron toggle in logo area, state in localStorage key `admin-sidebar-collapsed`); compact icon-only top controls (Website/Dark/Lang, labels hidden on desktop, `title` tooltip on hover); all group headers and nav items have `title` tooltips; group header style: no uppercase, 0.82rem, color-text-dim; clicking a group header when collapsed expands sidebar first; desktop only — mobile bottom bar (4 items: Menu / Dark icon-only / VI|EN active-only / Logout icon-only; Website removed)
 │       └── TimezoneDetector.razor    # Invisible InteractiveServer component — reads browser IANA timezone via JS on first render, stores in TimezoneService
 ├── Data/
-│   ├── AppDbContext.cs               # EF context + seed data (Skills, Projects, Experience, Education, SiteSettings, BlogPost × 6)
+│   ├── AppDbContext.cs               # EF context — DbSets + index/constraint definitions only. No HasData() seed — all data managed at runtime via Admin UI.
 │   └── Models/
 │       ├── Skill.cs
 │       ├── Project.cs
@@ -413,18 +413,7 @@ Middleware in `Program.cs` calls `analyticsSvc.TrackAsync(path, referrer, ip)` f
 
 ## Blog
 
-6 seed blog posts in `AppDbContext.HasData` — all bilingual VI/EN, SEO-optimized (50–60 char titles, 145–158 char meta descriptions, tags):
-
-| Id | Slug | Topic |
-|---|---|---|
-| 1 | `building-with-ai-experience-with-claude-code` | Claude Code — 1 year on .NET enterprise |
-| 2 | `ai-skills-for-developers` | 5 core AI skills for developers 2025 |
-| 3 | `vibe-coding-la-gi` | What is Vibe Coding? |
-| 4 | `deploy-dotnet-fly-io-2025` | Deploy .NET 10 to Fly.io |
-| 5 | `blazor-vs-react-2025` | Blazor vs React 2025 |
-| 6 | `postgresql-entity-framework-core-best-practices` | PostgreSQL + EF Core best practices |
-
-Posts 4→6 cross-link internally: post 4 & 6 cross-link each other; post 6 links to post 1.
+Blog posts are managed at runtime via `/admin/blog`. No seed data in code — all posts live in the database.
 
 **SEO rules for new posts:** Title 50–60 chars, Summary (meta description) 145–158 chars, H2 first (no H1 in content body), FAQ section, internal links, bilingual VI/EN content.
 
@@ -486,6 +475,44 @@ After `Set()`, the service fires `OnTimezoneSet` — all components that display
 - No `.Result` or `.Wait()` on Tasks
 - No comments unless the WHY is non-obvious
 
+## Security & code hygiene
+
+### Language — English only
+
+**All source code must be in English** — comments, variable names, string literals, config file annotations, SCSS comments, JS comments, TOML comments, YAML comments, `.env.example` annotations.
+
+- No Vietnamese in any source file. This is a hard rule, not a style preference.
+- If you write or review code containing Vietnamese text in comments or config annotations, translate it to English immediately.
+- UI-facing strings (the actual text shown to users) remain bilingual VI/EN via `LanguageService` keys — this rule applies only to code/comments.
+
+### No personal information in code
+
+**Never hardcode personal information in source files.** This includes phone numbers, email addresses, full names used as data (not as display labels), ID numbers, or any other PII.
+
+- Personal data lives in the **database only** (managed via Admin UI at runtime).
+- `AppDbContext.OnModelCreating` must NOT contain `HasData()` calls with personal information. It defines schema/indexes only.
+- Configuration values (API keys, secrets, connection strings) must use environment variables / Fly.io secrets — never hardcoded values, not even in `.env.example` (use placeholder values like `your-value-here`).
+- If you spot hardcoded PII anywhere in the codebase, remove it and record the change.
+
+### Git history hygiene
+
+If PII is accidentally committed, use `git filter-repo --replace-text` to rewrite history across all branches, then force-push. Do not leave PII in git history even if it's been removed from the working tree.
+
+```bash
+# Create replacements file
+echo "secret_value==>REDACTED" > /tmp/replacements.txt
+
+# Rewrite all history
+git filter-repo --replace-text /tmp/replacements.txt --force
+
+# Re-add remote (filter-repo removes it as a safety measure)
+git remote add origin https://github.com/vodongha/vodongha-personal.git
+
+# Force push all branches and tags
+git push --force origin master develop
+git push --force origin --tags
+```
+
 ## Admin table styles
 
 Admin tables (both `<table class="quickgrid">` and `<QuickGrid class="quickgrid">`) share the same CSS:
@@ -545,7 +572,7 @@ Never modify an existing migration. Add new migrations with:
 dotnet ef migrations add <MigrationName>
 ```
 
-Migrations apply automatically on startup. Seed data lives in `AppDbContext.OnModelCreating` via `HasData`.
+Migrations apply automatically on startup. **There is no `HasData()` seed in `AppDbContext`** — all content (skills, projects, experience, education, blog posts, settings) is managed at runtime through the Admin UI and stored in the database.
 
 ## Fly.io secrets
 
