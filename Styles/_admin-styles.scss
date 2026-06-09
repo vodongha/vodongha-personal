@@ -2806,6 +2806,13 @@ tr.admin-row--dragover td {
     @media (max-width: 900px) { grid-template-columns: 1fr; }
 }
 
+.analytics-table-wrap {
+    max-height: 280px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--admin-border) transparent;
+}
+
 .analytics-table {
     width: 100%;
     border-collapse: collapse;
