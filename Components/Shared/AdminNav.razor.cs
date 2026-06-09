@@ -20,9 +20,42 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
     private bool _menuOpen;
     private string _theme = "dark";
 
+    private static readonly Dictionary<string, string[]> _groupPaths = new()
+    {
+        ["Portfolio"]      = ["/admin/skills", "/admin/projects", "/admin/education", "/admin/experience", "/admin/blog", "/admin/cv"],
+        ["Communication"]  = ["/admin/contacts", "/admin/chats"],
+        ["Insights"]       = ["/admin/analytics", "/admin/health", "/admin/costs"],
+        ["System"]         = ["/admin/api-keys", "/admin/settings"],
+    };
+    private HashSet<string> _openGroups = [];
+
+    private void ToggleGroup(string group)
+    {
+        if (!_openGroups.Remove(group))
+        {
+            _openGroups.Add(group);
+        }
+    }
+
+    private bool IsGroupOpen(string group) => _openGroups.Contains(group);
+
+    private bool IsGroupActive(string group) =>
+        _groupPaths.TryGetValue(group, out string[]? paths) && paths.Any(p => IsActive(p));
+
     protected override async Task OnInitializedAsync()
     {
         Loc.OnChanged += OnLangChanged;
+
+        // Auto-open the group that contains the current page
+        foreach (KeyValuePair<string, string[]> kvp in _groupPaths)
+        {
+            if (kvp.Value.Any(p => IsActive(p)))
+            {
+                _openGroups.Add(kvp.Key);
+                break;
+            }
+        }
+
         _unreadChatCount = await ChatSvc.GetUnreadCountAsync();
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         _unreadMessagesCount = await db.ContactMessages.CountAsync(m => !m.IsRead);

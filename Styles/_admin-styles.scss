@@ -70,6 +70,58 @@
     }
 }
 
+// ── Nav groups (collapsible) ──────────────────────────────────────
+.admin-nav-group {
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        transition: color 150ms, background 150ms;
+
+        &:hover { background: var(--admin-hover); color: $color-text; }
+    }
+
+    &__header-inner {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        i { font-size: 0.85rem; }
+    }
+
+    &__chevron {
+        font-size: 0.7rem !important;
+        transition: transform 200ms ease;
+        flex-shrink: 0;
+    }
+
+    &__items {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 220ms ease;
+        // Indent items under group header
+        .admin-nav__item { padding-left: 1.75rem; }
+    }
+
+    &--open {
+        .admin-nav-group__chevron { transform: rotate(90deg); }
+        .admin-nav-group__items { max-height: 400px; }
+    }
+
+    &--active > .admin-nav-group__header { color: $color-primary; }
+}
+
 // ── Main ──────────────────────────────────────────────────────────
 .admin-main {
     flex: 1;
