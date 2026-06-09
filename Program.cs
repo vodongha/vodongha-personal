@@ -77,6 +77,7 @@ builder.Services.AddScoped<AiService>();
 builder.Services.AddSingleton<CostMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<AnalyticsService>();
 
 // Rate limiter — 10 login attempts per 5 minutes per IP to prevent brute-force
 builder.Services.AddRateLimiter(options =>
@@ -162,8 +163,11 @@ app.Use(async (context, next) =>
             ?? context.Connection.RemoteIpAddress?.ToString()
             ?? "unknown";
         string? ua = context.Request.Headers.UserAgent.FirstOrDefault();
+        string? referrer = context.Request.Headers.Referer.FirstOrDefault();
         VisitorService visitorSvc = context.RequestServices.GetRequiredService<VisitorService>();
+        AnalyticsService analyticsSvc = context.RequestServices.GetRequiredService<AnalyticsService>();
         await visitorSvc.LogAsync(ip, ua);
+        _ = analyticsSvc.TrackAsync(path, referrer, ip);
     }
 
     await next(context);
