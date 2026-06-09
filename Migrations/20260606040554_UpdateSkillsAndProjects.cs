@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace vodongha.Migrations
+namespace VodonghaPersonal.Migrations
 {
     /// <inheritdoc />
     public partial class UpdateSkillsAndProjects : Migration
@@ -23,7 +23,7 @@ namespace vodongha.Migrations
             migrationBuilder.InsertData(
                 table: "Projects",
                 columns: new[] { "Id", "CreatedAt", "Description", "GitHubUrl", "ImageUrl", "IsFeatured", "LiveUrl", "Order", "Technologies", "Title" },
-                values: new object[] { 2, new DateTime(2026, 6, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Web cá nhân xây dựng với Blazor Web App .NET 10 và PostgreSQL. Deploy tự động lên Fly.io qua GitHub Actions, SCSS dark theme.", "https://github.com/vodongha/vodongha-personal", null, true, "https://vodongha.id.vn", 2, "Blazor,.NET 10,PostgreSQL,SCSS,Fly.io,Docker", "Personal Website" });
+                values: new object[] { 2, new DateTime(2026, 6, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Web cá nhân xây dựng với Blazor Web App .NET 10 và PostgreSQL. Deploy tự động lên Fly.io qua GitHub Actions, SCSS dark theme.", "https://github.com/vodongha/vodongha-personal", null, true, "https://VodonghaPersonal.id.vn", 2, "Blazor,.NET 10,PostgreSQL,SCSS,Fly.io,Docker", "Personal Website" });
 
             migrationBuilder.UpdateData(
                 table: "Skills",
@@ -123,7 +123,7 @@ namespace vodongha.Migrations
                 keyColumn: "Id",
                 keyValue: 1,
                 columns: new[] { "CreatedAt", "Description", "GitHubUrl", "LiveUrl", "Technologies", "Title" },
-                values: new object[] { new DateTime(2026, 6, 6, 0, 0, 0, 0, DateTimeKind.Utc), "Web cá nhân được xây dựng với Blazor Web App .NET 10 và PostgreSQL.", "https://github.com/vodongha/vodongha.id.vn", "https://vodongha.id.vn", "Blazor,.NET 10,PostgreSQL,SCSS", "Personal Website" });
+                values: new object[] { new DateTime(2026, 6, 6, 0, 0, 0, 0, DateTimeKind.Utc), "Web cá nhân được xây dựng với Blazor Web App .NET 10 và PostgreSQL.", "https://github.com/vodongha/VodonghaPersonal.id.vn", "https://VodonghaPersonal.id.vn", "Blazor,.NET 10,PostgreSQL,SCSS", "Personal Website" });
 
             migrationBuilder.UpdateData(
                 table: "Skills",

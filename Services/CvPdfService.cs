@@ -2,9 +2,9 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
-using vodongha.Data.Models;
+using VodonghaPersonal.Data.Models;
 
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 public record CvData(
     string Name,

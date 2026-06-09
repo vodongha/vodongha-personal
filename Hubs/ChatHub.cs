@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using vodongha.Services;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Hubs;
+namespace VodonghaPersonal.Hubs;
 
 public class ChatHub : Hub
 {

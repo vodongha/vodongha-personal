@@ -1,4 +1,4 @@
-namespace vodongha.Data.Models;
+namespace VodonghaPersonal.Data.Models;
 
 public class PageView
 {

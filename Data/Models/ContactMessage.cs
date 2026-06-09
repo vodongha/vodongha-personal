@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace vodongha.Data.Models;
+namespace VodonghaPersonal.Data.Models;
 
 public class ContactMessage
 {

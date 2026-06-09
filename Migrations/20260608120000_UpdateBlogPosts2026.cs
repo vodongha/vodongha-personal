@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace vodongha.Migrations
+namespace VodonghaPersonal.Migrations
 {
     /// <inheritdoc />
     public partial class UpdateBlogPosts2026 : Migration
@@ -20,11 +20,11 @@ namespace vodongha.Migrations
                 columns: new[] { "Content", "ContentEn", "Summary", "SummaryEn", "Tags", "Title", "TitleEn", "UpdatedAt" },
                 values: new object[] { @"<p><img src=""https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&auto=format&fit=crop&q=80"" alt=""Xây website thực tế với Claude Code và .NET 10 Blazor"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<p>Khi tôi bắt đầu xây <strong>vodongha.id.vn</strong> vào đầu năm 2026, tôi đặt ra một quy tắc cho bản thân: toàn bộ codebase sẽ được viết với Claude Code, không có exception. Không phải vì tôi lười — mà vì tôi muốn biết thật sự công cụ này làm được gì khi gặp một dự án thực tế, không phải tutorial demo.</p>
+<p>Khi tôi bắt đầu xây <strong>VodonghaPersonal.id.vn</strong> vào đầu năm 2026, tôi đặt ra một quy tắc cho bản thân: toàn bộ codebase sẽ được viết với Claude Code, không có exception. Không phải vì tôi lười — mà vì tôi muốn biết thật sự công cụ này làm được gì khi gặp một dự án thực tế, không phải tutorial demo.</p>
 
 <p>Kết quả? Phức tạp hơn tôi nghĩ. Có những lúc tôi ngồi nhìn màn hình và nghĩ ""thứ này kỳ diệu thật"". Cũng có những lúc tôi muốn đập bàn. Bài viết này là toàn bộ câu chuyện đó — không cắt bỏ phần xấu.</p>
 
-<h2>Stack kỹ thuật của vodongha.id.vn</h2>
+<h2>Stack kỹ thuật của VodonghaPersonal.id.vn</h2>
 
 <p>Trước khi đi vào chi tiết, để tôi nói rõ stack tôi đang dùng:</p>
 
@@ -223,13 +223,13 @@ app.Lifetime.ApplicationStarted.Register(async () =&gt;
 
 <p>Phần lớn là có, với một số hạn chế. Claude Code biết <code>[PersistentState]</code>, EF Core 10 LINQ operators, Npgsql 10 features. Nhưng nó đôi khi suggest pattern cũ (ví dụ: <code>GroupJoin/SelectMany</code> thay vì <code>LeftJoin</code>) nếu bạn không explicitly mention .NET 10. Luôn khai báo rõ version trong prompt hoặc <code>CLAUDE.md</code>.</p>
 
-<h3>Mất bao lâu để xây vodongha.id.vn với Claude Code?</h3>
+<h3>Mất bao lâu để xây VodonghaPersonal.id.vn với Claude Code?</h3>
 
 <p>Khoảng 3-4 tuần part-time. Ước tính nếu làm tay hoàn toàn sẽ mất gấp đôi. Nhưng tôi cũng mất nhiều thời gian hơn dự kiến ở phần architecture refactoring — vì Claude Code tạo ra code hoạt động nhưng không đúng kiến trúc Blazor, và tôi phải sửa lại. Bài học: đầu tư vào <code>CLAUDE.md</code> từ đầu tiết kiệm rất nhiều thời gian sau.</p>
 
 <h2>Kết luận</h2>
 
-<p>Xây <strong>vodongha.id.vn</strong> với Claude Code là trải nghiệm thực sự khai sáng — theo cả nghĩa tốt và xấu. Công cụ này là real productivity multiplier khi bạn dùng đúng chỗ. Nhưng nó không thay thế được hiểu biết kiến trúc, và nó không tự review được chính nó.</p>
+<p>Xây <strong>VodonghaPersonal.id.vn</strong> với Claude Code là trải nghiệm thực sự khai sáng — theo cả nghĩa tốt và xấu. Công cụ này là real productivity multiplier khi bạn dùng đúng chỗ. Nhưng nó không thay thế được hiểu biết kiến trúc, và nó không tự review được chính nó.</p>
 
 <p>Điều quan trọng nhất tôi học được: <strong>AI viết code nhanh hơn bạn, nhưng bạn phải hiểu code đó sâu hơn AI.</strong> Vì khi production có vấn đề lúc 2 giờ sáng, bạn mới là người ngồi debug — không phải Claude Code.</p>
 
@@ -242,11 +242,11 @@ app.Lifetime.ApplicationStarted.Register(async () =&gt;
   <li><a href=""/blog/postgresql-entity-framework-core-best-practices"">PostgreSQL + EF Core: Best practices tôi dùng trong production</a></li>
 </ul>", @"<p><img src=""https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&auto=format&fit=crop&q=80"" alt=""Building a real website with Claude Code and .NET 10 Blazor"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<p>When I started building <strong>vodongha.id.vn</strong> in early 2026, I set one rule for myself: the entire codebase would be written with Claude Code — no exceptions. Not because I wanted to take shortcuts, but because I wanted to know what this tool actually does when it encounters a real project, not a tutorial demo.</p>
+<p>When I started building <strong>VodonghaPersonal.id.vn</strong> in early 2026, I set one rule for myself: the entire codebase would be written with Claude Code — no exceptions. Not because I wanted to take shortcuts, but because I wanted to know what this tool actually does when it encounters a real project, not a tutorial demo.</p>
 
 <p>The result was more complicated than I expected. There were moments where I stared at the screen thinking ""this is genuinely remarkable."" There were also moments of real frustration. This post is the complete story — I am not cutting out the bad parts.</p>
 
-<h2>The Tech Stack of vodongha.id.vn</h2>
+<h2>The Tech Stack of VodonghaPersonal.id.vn</h2>
 
 <p>Before going into the details, here is exactly what I built with:</p>
 
@@ -444,13 +444,13 @@ app.Lifetime.ApplicationStarted.Register(async () =&gt;
 
 <p>Mostly yes, with caveats. Claude Code knows about <code>[PersistentState]</code>, the new EF Core 10 LINQ operators, and Npgsql 10 features. But it will sometimes suggest older patterns — for instance, <code>GroupJoin/SelectMany/DefaultIfEmpty</code> instead of the new <code>LeftJoin</code> operator — unless you explicitly mention .NET 10 in your prompt. Always declare your target version clearly in your prompt or in a <code>CLAUDE.md</code> project context file.</p>
 
-<h3>How long did it take to build vodongha.id.vn with Claude Code?</h3>
+<h3>How long did it take to build VodonghaPersonal.id.vn with Claude Code?</h3>
 
 <p>About 3-4 weeks part-time. My estimate for doing it entirely by hand is roughly twice that. However, I also spent more time than expected on architecture refactoring — Claude Code produced working code that did not conform to proper Blazor layering, and fixing that took real effort. The lesson: invest in a solid <code>CLAUDE.md</code> from day one. It saves significantly more time than it costs.</p>
 
 <h2>Conclusion</h2>
 
-<p>Building <strong>vodongha.id.vn</strong> with Claude Code was a genuinely educational experience — in both directions. The tool is a real productivity multiplier when you use it for the right tasks. But it does not replace architectural understanding, and it cannot review itself honestly.</p>
+<p>Building <strong>VodonghaPersonal.id.vn</strong> with Claude Code was a genuinely educational experience — in both directions. The tool is a real productivity multiplier when you use it for the right tasks. But it does not replace architectural understanding, and it cannot review itself honestly.</p>
 
 <p>The most important thing I learned: <strong>AI writes code faster than you, but you need to understand that code more deeply than the AI does.</strong> When something breaks in production, you are the one debugging it — not Claude Code.</p>
 
@@ -461,7 +461,7 @@ app.Lifetime.ApplicationStarted.Register(async () =&gt;
   <li><a href=""/blog/deploy-dotnet-fly-io-2025"">Deploying a .NET App to Fly.io: A Practical Guide</a></li>
   <li><a href=""/blog/blazor-vs-react-2025"">Blazor vs React in 2025: What to Choose for a New Project</a></li>
   <li><a href=""/blog/postgresql-entity-framework-core-best-practices"">PostgreSQL + EF Core: Best Practices I Use in Production</a></li>
-</ul>", @"Tôi đã dùng Claude Code để xây vodongha.id.vn từ đầu — .NET 10, Blazor InteractiveServer, Neon PostgreSQL, Fly.io. Đây là những gì thực sự xảy ra: điểm mạnh, điểm yếu, và bài học thực chiến.", @"I built vodongha.id.vn entirely with Claude Code — .NET 10, Blazor InteractiveServer, Neon PostgreSQL, Fly.io. Here is what actually happened: the wins, the failures, and the lessons learned in production.", @"claude-code, blazor, dotnet, ai-development, fly-io, neon-postgresql, full-stack", @"Kinh nghiệm xây website thực tế với Claude Code (.NET 10 + Blazor)", @"Building a Real Website with Claude Code (.NET 10 + Blazor): My Experience", new DateTime(2026, 6, 8, 0, 0, 0, 0, DateTimeKind.Utc) });
+</ul>", @"Tôi đã dùng Claude Code để xây VodonghaPersonal.id.vn từ đầu — .NET 10, Blazor InteractiveServer, Neon PostgreSQL, Fly.io. Đây là những gì thực sự xảy ra: điểm mạnh, điểm yếu, và bài học thực chiến.", @"I built VodonghaPersonal.id.vn entirely with Claude Code — .NET 10, Blazor InteractiveServer, Neon PostgreSQL, Fly.io. Here is what actually happened: the wins, the failures, and the lessons learned in production.", @"claude-code, blazor, dotnet, ai-development, fly-io, neon-postgresql, full-stack", @"Kinh nghiệm xây website thực tế với Claude Code (.NET 10 + Blazor)", @"Building a Real Website with Claude Code (.NET 10 + Blazor): My Experience", new DateTime(2026, 6, 8, 0, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.UpdateData(
                 table: "BlogPosts",
@@ -470,7 +470,7 @@ app.Lifetime.ApplicationStarted.Register(async () =&gt;
                 columns: new[] { "Content", "ContentEn", "Summary", "SummaryEn", "Tags", "Title", "TitleEn", "UpdatedAt" },
                 values: new object[] { @"<p><img src=""https://images.unsplash.com/photo-1655720828018-edd2daec9349?w=1200&auto=format&fit=crop&q=80"" alt=""AI Skills for Developers in 2026"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<p>Đầu năm 2026, khi tôi ngồi nhìn lại codebase của <strong>vodongha.id.vn</strong> — một portfolio site Blazor .NET 10 chạy trên Fly.io với PostgreSQL Neon — tôi nhận ra một điều thú vị: gần như toàn bộ cái site này được build bằng Claude Code. Không phải ""AI hỗ trợ một chút"", mà là thực sự dùng AI agent để viết code, refactor, debug, và deploy từ đầu đến cuối.</p>
+<p>Đầu năm 2026, khi tôi ngồi nhìn lại codebase của <strong>VodonghaPersonal.id.vn</strong> — một portfolio site Blazor .NET 10 chạy trên Fly.io với PostgreSQL Neon — tôi nhận ra một điều thú vị: gần như toàn bộ cái site này được build bằng Claude Code. Không phải ""AI hỗ trợ một chút"", mà là thực sự dùng AI agent để viết code, refactor, debug, và deploy từ đầu đến cuối.</p>
 
 <p>Theo khảo sát 15,000 developer năm 2026, <strong>73% team kỹ thuật đang dùng AI coding tools hàng ngày</strong> — tăng từ 41% năm 2025 và 18% năm 2024. Con số này không còn là xu hướng nữa, nó là thực tế. Vấn đề không còn là ""có nên dùng AI không"" mà là ""dùng như thế nào cho đúng"".</p>
 
@@ -482,7 +482,7 @@ app.Lifetime.ApplicationStarted.Register(async () =&gt;
 
 <h3>Claude Code — kẻ lên ngôi bất ngờ</h3>
 <p>Ra mắt tháng 5/2025 dưới dạng terminal-based agentic coding tool, Claude Code đã làm điều không ai ngờ: chỉ trong 8 tháng, nó vượt qua cả GitHub Copilot (đã có mặt từ 2021) lẫn Cursor về mức độ hài lòng của developer. Tính đến tháng 2/2026, Claude Code chiếm <strong>41% thị phần</strong> so với Copilot 38% trong nhóm professional developers. 71% developer dùng AI agent coi Claude Code là công cụ chính.</p>
-<p>Điểm mạnh nhất: <strong>95% first-try correctness rate</strong> — cao nhất trong số các agent được test. Đây chính là lý do mình chọn Claude Code để build toàn bộ vodongha.id.vn, từ Blazor components, EF Core migrations, cho đến CI/CD pipeline trên GitHub Actions.</p>
+<p>Điểm mạnh nhất: <strong>95% first-try correctness rate</strong> — cao nhất trong số các agent được test. Đây chính là lý do mình chọn Claude Code để build toàn bộ VodonghaPersonal.id.vn, từ Blazor components, EF Core migrations, cho đến CI/CD pipeline trên GitHub Actions.</p>
 <p>File quan trọng nhất khi dùng Claude Code là <code>CLAUDE.md</code> — đây là nơi bạn khai báo project instructions, coding standards, architecture decisions. Agent sẽ đọc file này ở mỗi session. Một CLAUDE.md tốt có thể là sự khác biệt giữa AI hiểu context của bạn và AI viết code không ăn nhập gì với codebase hiện tại.</p>
 
 <h3>GitHub Copilot — vẫn phổ biến nhờ zero switching cost</h3>
@@ -533,7 +533,7 @@ Format: List issues as bullet points, then provide corrected code snippet.</code
   <li><strong>Isolate:</strong> Tách task phức tạp thành sub-tasks với context riêng biệt</li>
 </ul>
 
-<p>Khi mình build tính năng live chat với SignalR cho vodongha.id.vn, thay vì paste toàn bộ codebase vào Claude Code, mình dùng CLAUDE.md để khai báo architecture và chỉ provide context của component liên quan. Kết quả tốt hơn hẳn.</p>
+<p>Khi mình build tính năng live chat với SignalR cho VodonghaPersonal.id.vn, thay vì paste toàn bộ codebase vào Claude Code, mình dùng CLAUDE.md để khai báo architecture và chỉ provide context của component liên quan. Kết quả tốt hơn hẳn.</p>
 
 <h3>Treat prompting như system design</h3>
 <p>Cách tư duy tốt nhất: xem prompt như một interface — định nghĩa input, output, constraints, failure modes, và evaluation criteria. Đừng viết prompt như đang chat; viết như đang viết API spec.</p>
@@ -606,7 +606,7 @@ public async Task&lt;IActionResult&gt; GetUser(string id)
 
 <p>.NET 10 ra tháng 11/2025 (LTS, support đến 11/2028) với nhiều cải thiện hiệu suất: ít allocations hơn, better inlining, devirtualization tốt hơn, AVX 10.2 support, và Blazor WASM preloading. EF Core 10 thêm <code>LeftJoin</code>/<code>RightJoin</code> native, JSON columns, <strong>vector search không còn experimental</strong> (dùng <code>VECTOR_DISTANCE()</code> trên SQL Server 2025/Azure SQL).</p>
 
-<p>Workflow của mình với Claude Code cho vodongha.id.vn:</p>
+<p>Workflow của mình với Claude Code cho VodonghaPersonal.id.vn:</p>
 <ol>
   <li>Viết <code>CLAUDE.md</code> chi tiết: tech stack, coding conventions, database schema, deployment target</li>
   <li>Describe task theo format Role + Context + Task + Format</li>
@@ -648,7 +648,7 @@ public async Task&lt;IActionResult&gt; GetUser(string id)
 
 <p>Năm 2026, AI không còn là optional extra trong toolkit của developer — nó là baseline expectation. Nhưng ""biết dùng AI"" không đồng nghĩa với ""tin AI mù quáng"". Kỹ năng quan trọng nhất không phải là chọn được tool tốt nhất, mà là hiểu được giới hạn của từng tool và biết khi nào cần can thiệp của người.</p>
 
-<p>Mình xây dựng vodongha.id.vn với Claude Code và có thể khẳng định: AI tăng tốc đáng kể ở những việc có pattern rõ ràng (Blazor components, EF Core migrations, CI/CD config). Nhưng architecture decisions, security review, và business logic phức tạp vẫn cần tư duy của con người. Đó là sự cân bằng mà mình nghĩ mọi developer cần tìm ra cho chính mình.</p>
+<p>Mình xây dựng VodonghaPersonal.id.vn với Claude Code và có thể khẳng định: AI tăng tốc đáng kể ở những việc có pattern rõ ràng (Blazor components, EF Core migrations, CI/CD config). Nhưng architecture decisions, security review, và business logic phức tạp vẫn cần tư duy của con người. Đó là sự cân bằng mà mình nghĩ mọi developer cần tìm ra cho chính mình.</p>
 
 <p>Bài viết liên quan bạn có thể quan tâm:</p>
 <ul>
@@ -659,7 +659,7 @@ public async Task&lt;IActionResult&gt; GetUser(string id)
   <li><a href=""/blog/postgresql-entity-framework-core-best-practices"">PostgreSQL + EF Core: best practices từ thực tế</a></li>
 </ul>", @"<p><img src=""https://images.unsplash.com/photo-1655720828018-edd2daec9349?w=1200&auto=format&fit=crop&q=80"" alt=""AI Skills for Developers in 2026"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<p>When I look back at the codebase for <strong>vodongha.id.vn</strong> — a Blazor .NET 10 portfolio site running on Fly.io with Neon PostgreSQL — I realize something interesting: I built almost the entire thing with Claude Code. Not ""AI helped here and there,"" but genuinely used an AI agent to write code, refactor, debug, and configure deployment end-to-end.</p>
+<p>When I look back at the codebase for <strong>VodonghaPersonal.id.vn</strong> — a Blazor .NET 10 portfolio site running on Fly.io with Neon PostgreSQL — I realize something interesting: I built almost the entire thing with Claude Code. Not ""AI helped here and there,"" but genuinely used an AI agent to write code, refactor, debug, and configure deployment end-to-end.</p>
 
 <p>According to a 2026 survey of 15,000 developers, <strong>73% of engineering teams now use AI coding tools daily</strong> — up from 41% in 2025 and 18% in 2024. This is no longer a trend. It is the current reality. The question is no longer whether to use AI, but how to use it well.</p>
 
@@ -671,7 +671,7 @@ public async Task&lt;IActionResult&gt; GetUser(string id)
 
 <h3>Claude Code — the unexpected market leader</h3>
 <p>Launched in May 2025 as a terminal-based agentic coding tool, Claude Code did something no one expected: within eight months it overtook both GitHub Copilot (on the market since 2021) and Cursor in developer satisfaction. As of February 2026, Claude Code holds <strong>41% market share</strong> versus Copilot's 38% among professional developers. 71% of developers who use AI agents name Claude Code as their primary tool.</p>
-<p>The single biggest differentiator: a <strong>95% first-try correctness rate</strong> — highest among all tested agents. That is why I chose Claude Code to build vodongha.id.vn — from Blazor components and EF Core migrations to the full GitHub Actions CI/CD pipeline.</p>
+<p>The single biggest differentiator: a <strong>95% first-try correctness rate</strong> — highest among all tested agents. That is why I chose Claude Code to build VodonghaPersonal.id.vn — from Blazor components and EF Core migrations to the full GitHub Actions CI/CD pipeline.</p>
 <p>The most important file when working with Claude Code is <code>CLAUDE.md</code>. This is where you declare project instructions, coding standards, and architecture decisions. The agent loads this file at every session start. A well-written CLAUDE.md is the difference between an AI that understands your codebase context and one that generates technically correct but contextually wrong code.</p>
 
 <h3>GitHub Copilot — still dominant through zero switching cost</h3>
@@ -722,7 +722,7 @@ Format: List issues as bullet points, then provide a corrected code snippet.</co
   <li><strong>Isolate:</strong> Break complex tasks into sub-tasks with their own isolated context</li>
 </ul>
 
-<p>When I built the SignalR live chat feature for vodongha.id.vn, rather than feeding Claude Code the entire codebase, I used CLAUDE.md to declare the architecture and provided only the context for the relevant components. The output quality was substantially better than when I had tried the ""give it everything"" approach earlier in the project.</p>
+<p>When I built the SignalR live chat feature for VodonghaPersonal.id.vn, rather than feeding Claude Code the entire codebase, I used CLAUDE.md to declare the architecture and provided only the context for the relevant components. The output quality was substantially better than when I had tried the ""give it everything"" approach earlier in the project.</p>
 
 <h3>Treat prompts as system design artifacts</h3>
 <p>The most useful mental model: treat a prompt like an interface definition — specify input, expected output, constraints, failure modes, and evaluation criteria. Write it like an API spec, not a chat message.</p>
@@ -795,7 +795,7 @@ public async Task&lt;IActionResult&gt; GetUser(string id)
 
 <p>.NET 10 shipped in November 2025 (LTS, supported through November 2028) with meaningful runtime performance improvements: reduced allocations, better method inlining, improved devirtualization, AVX 10.2 support, and Blazor WASM preloading. EF Core 10 adds native <code>LeftJoin</code>/<code>RightJoin</code> operators, native JSON columns, and <strong>vector search that is no longer experimental</strong> (using <code>VECTOR_DISTANCE()</code> on SQL Server 2025 and Azure SQL).</p>
 
-<p>My Claude Code workflow for vodongha.id.vn:</p>
+<p>My Claude Code workflow for VodonghaPersonal.id.vn:</p>
 <ol>
   <li>Write a detailed <code>CLAUDE.md</code>: tech stack, coding conventions, database schema, deployment target, and any constraints</li>
   <li>Describe tasks using Role + Context + Task + Format structure</li>
@@ -837,7 +837,7 @@ public async Task&lt;IActionResult&gt; GetUser(string id)
 
 <p>In 2026, AI is not an optional extra in a developer's toolkit — it is a baseline expectation. But ""knowing how to use AI"" is not the same as ""trusting AI unconditionally."" The most important skill is not choosing the best tool; it is understanding the limits of whichever tool you choose, and knowing precisely when human judgment must override the machine.</p>
 
-<p>Building vodongha.id.vn with Claude Code confirmed this for me in practice. AI accelerated the work significantly on tasks with clear patterns: Blazor components, EF Core schema migrations, CI/CD configuration, test scaffolding. Architecture decisions, security reviews, and complex business logic still required sustained human thinking. That balance — leveraging AI's speed while maintaining genuine ownership of the output — is the discipline I think every developer needs to develop intentionally rather than accidentally.</p>
+<p>Building VodonghaPersonal.id.vn with Claude Code confirmed this for me in practice. AI accelerated the work significantly on tasks with clear patterns: Blazor components, EF Core schema migrations, CI/CD configuration, test scaffolding. Architecture decisions, security reviews, and complex business logic still required sustained human thinking. That balance — leveraging AI's speed while maintaining genuine ownership of the output — is the discipline I think every developer needs to develop intentionally rather than accidentally.</p>
 
 <p>Related posts you may find useful:</p>
 <ul>
@@ -859,7 +859,7 @@ public async Task&lt;IActionResult&gt; GetUser(string id)
 
 <p>Chưa đầy một năm sau, Collins English Dictionary đặt nó là <strong>từ của năm 2025</strong>. Merriam-Webster xếp nó vào mục ""slang &amp; trending"" từ tháng 3/2025. Wall Street Journal đưa tin về các kỹ sư chuyên nghiệp dùng nó trong môi trường thương mại từ tháng 7/2025.</p>
 
-<p>Tôi xây dựng <a href=""https://vodongha.id.vn"">vodongha.id.vn</a> — trang portfolio cá nhân này — hoàn toàn bằng Claude Code. Không phải vì tôi không thể viết code, mà vì tôi <em>chọn</em> không viết từng dòng một. Đây là những gì tôi học được sau khoảng thời gian đó.</p>
+<p>Tôi xây dựng <a href=""https://VodonghaPersonal.id.vn"">VodonghaPersonal.id.vn</a> — trang portfolio cá nhân này — hoàn toàn bằng Claude Code. Không phải vì tôi không thể viết code, mà vì tôi <em>chọn</em> không viết từng dòng một. Đây là những gì tôi học được sau khoảng thời gian đó.</p>
 
 <h2>Vibe Coding là gì — định nghĩa thực sự</h2>
 
@@ -902,7 +902,7 @@ public async Task&lt;IActionResult&gt; GetUser(string id)
 
 <p>Lưu ý quan trọng: METR một phần rút lại nghiên cứu vào tháng 2/2026, thừa nhận có vấn đề về phương pháp. Nhưng điều này không phủ nhận sự thật cốt lõi: <strong>lợi ích năng suất phân bổ không đều</strong>. Chúng rõ ràng nhất với code mới (greenfield), và sụp đổ với việc bảo trì codebase phức tạp có nhiều legacy.</p>
 
-<p>Khi tôi xây dựng vodongha.id.vn — greenfield, một developer, stack được document đầy đủ — đây chính xác là điều kiện tốt nhất cho vibe coding. Không có legacy constraints, không có institutional memory cần bảo vệ, không có reviewer khác cần thuyết phục.</p>
+<p>Khi tôi xây dựng VodonghaPersonal.id.vn — greenfield, một developer, stack được document đầy đủ — đây chính xác là điều kiện tốt nhất cho vibe coding. Không có legacy constraints, không có institutional memory cần bảo vệ, không có reviewer khác cần thuyết phục.</p>
 
 <h2>Bảo mật: Khoảng cách không thể bỏ qua</h2>
 
@@ -926,9 +926,9 @@ public async Task&lt;IActionResult&gt; GetUser(string id)
 
 <p><strong>Replit AI agent (tháng 7/2025):</strong> Xóa production database dù được hướng dẫn rõ ràng không được chỉnh sửa hệ thống.</p>
 
-<p>Với vodongha.id.vn, tôi xử lý vấn đề này bằng cách dùng pattern IDbContextFactory thay vì long-lived DbContext (AI thường sinh đúng pattern này nếu bạn mô tả yêu cầu chính xác), review mọi migration script thủ công trước khi chạy, và không bao giờ commit secrets — mọi thứ đều qua environment variables.</p>
+<p>Với VodonghaPersonal.id.vn, tôi xử lý vấn đề này bằng cách dùng pattern IDbContextFactory thay vì long-lived DbContext (AI thường sinh đúng pattern này nếu bạn mô tả yêu cầu chính xác), review mọi migration script thủ công trước khi chạy, và không bao giờ commit secrets — mọi thứ đều qua environment variables.</p>
 
-<h2>Stack của vodongha.id.vn và tại sao nó phù hợp với vibe coding</h2>
+<h2>Stack của VodonghaPersonal.id.vn và tại sao nó phù hợp với vibe coding</h2>
 
 <p>Không phải stack nào cũng ""AI-friendly"" như nhau. Đây là lý do tôi chọn stack này và nó hoạt động tốt với Claude Code:</p>
 
@@ -998,7 +998,7 @@ public class BlogService(IDbContextFactory&lt;AppDbContext&gt; factory)
 <p>Câu hỏi này đặt sai vấn đề. Developer thành thạo vibe coding vẫn phải đưa ra mọi quyết định kiến trúc quan trọng: chọn stack, thiết kế data model, định nghĩa render mode, cấu hình CI/CD, xác định security boundaries. AI là code-generation layer, không phải architect. Tương tự, developer dùng IDE với autocomplete vẫn đang ""lập trình thật"" — họ chỉ dùng tool tốt hơn.</p>
 
 <h3>Claude Code khác gì GitHub Copilot?</h3>
-<p>Copilot chủ yếu là inline autocomplete — nó gợi ý code khi bạn gõ. Claude Code là agent-mode — nó có thể đọc files trong project, chạy build, diễn giải compiler errors, và iterate nhiều bước mà không cần bạn can thiệp. Đây là sự khác biệt định tính. Khi tôi xây vodongha.id.vn, Claude Code không chỉ gợi ý từng dòng — nó đọc toàn bộ context của project và đưa ra quyết định coherent. Đó là lý do 46% senior developer thích nó.</p>
+<p>Copilot chủ yếu là inline autocomplete — nó gợi ý code khi bạn gõ. Claude Code là agent-mode — nó có thể đọc files trong project, chạy build, diễn giải compiler errors, và iterate nhiều bước mà không cần bạn can thiệp. Đây là sự khác biệt định tính. Khi tôi xây VodonghaPersonal.id.vn, Claude Code không chỉ gợi ý từng dòng — nó đọc toàn bộ context của project và đưa ra quyết định coherent. Đó là lý do 46% senior developer thích nó.</p>
 
 <h3>Vibe coding có an toàn để dùng trong production không?</h3>
 <p>Với điều kiện đúng: có. Điều kiện đó bao gồm: bạn review mọi thứ AI tạo ra trước khi deploy, có security review riêng (đặc biệt với authentication và data exposure), và không bao giờ blind-commit output của AI vào production. Sự cố Moltbook không phải do AI tạo code — mà do không có review process. 2.74x nhiều vulnerabilities là con số thật, nhưng nó đo lường code không được review. Developer có kinh nghiệm với review process tốt có thể giảm rủi ro đó xuống đáng kể.</p>
@@ -1013,7 +1013,7 @@ public class BlogService(IDbContextFactory&lt;AppDbContext&gt; factory)
 
 <p>Vibe coding năm 2026 không phải là hype đơn thuần, cũng không phải giải pháp hoàn hảo. Đó là một sự thay đổi thực sự trong cách developer tiếp cận code — với lợi ích rõ ràng (3.6 giờ/tuần tiết kiệm, 60% nhiều PR hơn, onboarding nhanh hơn gấp đôi) và rủi ro rõ ràng không kém (2.74x vulnerabilities, 86% XSS failure rate, Moltbook exposing 1.5M tokens).</p>
 
-<p>Khi tôi xây vodongha.id.vn với Claude Code, tôi không ""quên code tồn tại"" theo nghĩa literal của Karpathy. Tôi vẫn review mọi thứ, vẫn hiểu mọi architectural decision, vẫn đọc mọi migration script. Nhưng tôi không còn là người gõ từng dòng boilerplate nữa. Tôi là architect sử dụng AI như một code-generation layer.</p>
+<p>Khi tôi xây VodonghaPersonal.id.vn với Claude Code, tôi không ""quên code tồn tại"" theo nghĩa literal của Karpathy. Tôi vẫn review mọi thứ, vẫn hiểu mọi architectural decision, vẫn đọc mọi migration script. Nhưng tôi không còn là người gõ từng dòng boilerplate nữa. Tôi là architect sử dụng AI như một code-generation layer.</p>
 
 <p>Đó chính là vai trò của developer năm 2026: không phải người gõ code nhanh nhất, mà là người biết <em>chỉ đạo, verify, và chịu trách nhiệm</em> về những gì AI tạo ra.</p>
 
@@ -1023,7 +1023,7 @@ public class BlogService(IDbContextFactory&lt;AppDbContext&gt; factory)
 
 <p>Less than a year later, Collins English Dictionary named it <strong>Word of the Year 2025</strong>. Merriam-Webster listed it as ""slang &amp; trending"" in March 2025. The Wall Street Journal reported professional engineers using it commercially as early as July 2025.</p>
 
-<p>I built <a href=""https://vodongha.id.vn"">vodongha.id.vn</a> — this portfolio site — entirely with Claude Code. Not because I cannot write code, but because I <em>chose</em> not to write every line myself. Here is what I learned.</p>
+<p>I built <a href=""https://VodonghaPersonal.id.vn"">VodonghaPersonal.id.vn</a> — this portfolio site — entirely with Claude Code. Not because I cannot write code, but because I <em>chose</em> not to write every line myself. Here is what I learned.</p>
 
 <h2>What Vibe Coding Actually Means</h2>
 
@@ -1066,7 +1066,7 @@ public class BlogService(IDbContextFactory&lt;AppDbContext&gt; factory)
 
 <p>Important caveat: METR partially retracted the study in February 2026, acknowledging methodological flaws. But this does not eliminate the core insight: <strong>productivity gains are unevenly distributed</strong>. They are clearest on new greenfield work and collapse for careful maintenance of complex, long-lived codebases.</p>
 
-<p>When I built vodongha.id.vn — greenfield, one developer, a well-documented stack — these were exactly the best-case conditions for vibe coding. No legacy constraints, no institutional memory to protect, no other reviewers to convince.</p>
+<p>When I built VodonghaPersonal.id.vn — greenfield, one developer, a well-documented stack — these were exactly the best-case conditions for vibe coding. No legacy constraints, no institutional memory to protect, no other reviewers to convince.</p>
 
 <h2>Security: The Gap You Cannot Ignore</h2>
 
@@ -1091,7 +1091,7 @@ public class BlogService(IDbContextFactory&lt;AppDbContext&gt; factory)
 
 <p><strong>Replit AI agent (July 2025):</strong> Deleted a production database despite explicit instructions not to modify systems.</p>
 
-<p>For vodongha.id.vn, I addressed this by using the IDbContextFactory pattern rather than a long-lived DbContext (AI generates this correctly when you describe the requirement precisely), manually reviewing every migration script before execution, and routing all secrets through environment variables — never committed to the repository.</p>
+<p>For VodonghaPersonal.id.vn, I addressed this by using the IDbContextFactory pattern rather than a long-lived DbContext (AI generates this correctly when you describe the requirement precisely), manually reviewing every migration script before execution, and routing all secrets through environment variables — never committed to the repository.</p>
 
 <h2>Why This Stack Works Well with Vibe Coding</h2>
 
@@ -1163,7 +1163,7 @@ public class BlogService(IDbContextFactory&lt;AppDbContext&gt; factory)
 <p>This question frames the problem incorrectly. Developers skilled at vibe coding still make every meaningful architectural decision: choosing the stack, designing the data model, defining render modes, configuring the CI/CD pipeline, identifying security boundaries. AI is a code-generation layer, not an architect. Similarly, a developer using an IDE with autocomplete is still ""really programming"" — they are simply using better tools. The question worth asking is not whether the approach is legitimate, but whether the developer understands and is accountable for what gets shipped.</p>
 
 <h3>How is Claude Code different from GitHub Copilot?</h3>
-<p>Copilot is primarily inline autocomplete — it suggests code as you type. Claude Code operates in agent mode — it can read files in your project, run builds, interpret compiler errors, and iterate through multiple steps without requiring your intervention at each one. This is a qualitative difference, not just a capability upgrade. When I built vodongha.id.vn, Claude Code was not suggesting individual lines — it was reading the full project context and making coherent decisions across the codebase. This explains why 46% of senior developers prefer it: it mirrors how they think about problems, not just how they type.</p>
+<p>Copilot is primarily inline autocomplete — it suggests code as you type. Claude Code operates in agent mode — it can read files in your project, run builds, interpret compiler errors, and iterate through multiple steps without requiring your intervention at each one. This is a qualitative difference, not just a capability upgrade. When I built VodonghaPersonal.id.vn, Claude Code was not suggesting individual lines — it was reading the full project context and making coherent decisions across the codebase. This explains why 46% of senior developers prefer it: it mirrors how they think about problems, not just how they type.</p>
 
 <h3>Is it safe to use in production?</h3>
 <p>Under the right conditions: yes. Those conditions are: you review everything AI generates before deployment, you have a dedicated security review process (especially for authentication, data exposure, and input handling), and you never blindly commit AI output into production. The Moltbook incident was not caused by AI writing code — it was caused by the absence of a review process. The 2.74x vulnerability figure measures unreviewed AI code. An experienced developer with a solid review process can reduce that risk substantially. The 86% XSS failure rate is a reason to add security checks, not a reason to avoid AI-assisted development entirely.</p>
@@ -1178,11 +1178,11 @@ public class BlogService(IDbContextFactory&lt;AppDbContext&gt; factory)
 
 <p>Vibe coding in 2026 is neither pure hype nor a perfect solution. It represents a genuine shift in how developers approach code — with clear benefits (3.6 hours saved per week, 60% more PRs, onboarding twice as fast) and equally clear risks (2.74x vulnerabilities, 86% XSS failure rate, Moltbook exposing 1.5 million tokens in three days).</p>
 
-<p>When I built vodongha.id.vn with Claude Code, I did not ""forget that the code even exists"" in Karpathy's literal sense. I reviewed everything, understood every architectural decision, and read every migration script. But I stopped being the person who typed every line of boilerplate. I became an architect using AI as a code-generation layer.</p>
+<p>When I built VodonghaPersonal.id.vn with Claude Code, I did not ""forget that the code even exists"" in Karpathy's literal sense. I reviewed everything, understood every architectural decision, and read every migration script. But I stopped being the person who typed every line of boilerplate. I became an architect using AI as a code-generation layer.</p>
 
 <p>That is the developer role in 2026: not the fastest typist, but the person who can <em>direct, verify, and take responsibility</em> for what the AI produces.</p>
 
-<p>Next up: <a href=""/blog/building-with-ai-experience-with-claude-code"">Building with Claude Code: From Zero to Production — A Real-World Account</a>.</p>", @"Vibe Coding là gì và tại sao nó trở thành từ của năm 2025? Khám phá thực tế năm 2026: năng suất, bảo mật, rủi ro và bài học từ việc xây dựng vodongha.id.vn hoàn toàn bằng Claude Code.", @"What is Vibe Coding and why did it become Word of the Year 2025? Explore the 2026 reality: productivity gains, security risks, and lessons from building vodongha.id.vn entirely with Claude Code.", @"vibe-coding, ai-development, claude-code, productivity, software-engineering, dotnet, 2026", @"Vibe Coding là gì? Thực tế năm 2026", @"What Is Vibe Coding? The Reality in 2026", new DateTime(2026, 6, 8, 0, 0, 0, 0, DateTimeKind.Utc) });
+<p>Next up: <a href=""/blog/building-with-ai-experience-with-claude-code"">Building with Claude Code: From Zero to Production — A Real-World Account</a>.</p>", @"Vibe Coding là gì và tại sao nó trở thành từ của năm 2025? Khám phá thực tế năm 2026: năng suất, bảo mật, rủi ro và bài học từ việc xây dựng VodonghaPersonal.id.vn hoàn toàn bằng Claude Code.", @"What is Vibe Coding and why did it become Word of the Year 2025? Explore the 2026 reality: productivity gains, security risks, and lessons from building VodonghaPersonal.id.vn entirely with Claude Code.", @"vibe-coding, ai-development, claude-code, productivity, software-engineering, dotnet, 2026", @"Vibe Coding là gì? Thực tế năm 2026", @"What Is Vibe Coding? The Reality in 2026", new DateTime(2026, 6, 8, 0, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.UpdateData(
                 table: "BlogPosts",
@@ -1191,7 +1191,7 @@ public class BlogService(IDbContextFactory&lt;AppDbContext&gt; factory)
                 columns: new[] { "Content", "ContentEn", "Summary", "SummaryEn", "Tags", "Title", "TitleEn", "UpdatedAt" },
                 values: new object[] { @"<p><img src=""https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=1200&auto=format&fit=crop&q=80"" alt=""Deploy .NET 10 Blazor lên Fly.io với Neon PostgreSQL"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<p>Trang portfolio <strong>vodongha.id.vn</strong> của mình chạy trên .NET 10 Blazor InteractiveServer, PostgreSQL qua Neon (Singapore), và được host trên Fly.io — tất cả với chi phí gần như bằng 0 cho một site lưu lượng thấp. Bài viết này tổng hợp lại toàn bộ quá trình setup, bao gồm những cái bẫy mà mình đã tự mình vấp phải.</p>
+<p>Trang portfolio <strong>VodonghaPersonal.id.vn</strong> của mình chạy trên .NET 10 Blazor InteractiveServer, PostgreSQL qua Neon (Singapore), và được host trên Fly.io — tất cả với chi phí gần như bằng 0 cho một site lưu lượng thấp. Bài viết này tổng hợp lại toàn bộ quá trình setup, bao gồm những cái bẫy mà mình đã tự mình vấp phải.</p>
 
 <p>Nếu bạn đang muốn host một side project hoặc portfolio cá nhân với stack .NET hiện đại mà không tốn nhiều tiền, đây là bài viết dành cho bạn.</p>
 
@@ -1460,11 +1460,11 @@ jobs:
 
 <p>Hai điều cần nhớ nhất: <strong>sticky sessions</strong> (1 machine/region với Blazor Server) và <strong>IDbContextFactory</strong> (bắt buộc, không phải tùy chọn). Nếu hiểu hai điều này từ đầu, bạn sẽ tiết kiệm được rất nhiều thời gian debug.</p>
 
-<p>Trang <a href=""https://vodongha.id.vn"" target=""_blank"">vodongha.id.vn</a> của mình hiện đang chạy với đúng stack này — bạn có thể xem source code trên GitHub để tham khảo thêm.</p>
+<p>Trang <a href=""https://VodonghaPersonal.id.vn"" target=""_blank"">VodonghaPersonal.id.vn</a> của mình hiện đang chạy với đúng stack này — bạn có thể xem source code trên GitHub để tham khảo thêm.</p>
 
 <p>Nếu bạn quan tâm đến cách mình xây dựng toàn bộ site này với sự hỗ trợ của AI, đọc thêm bài <a href=""/blog/building-with-ai-experience-with-claude-code"">Kinh nghiệm dùng Claude Code để build portfolio</a>. Để hiểu sâu hơn về EF Core với PostgreSQL, xem bài <a href=""/blog/postgresql-entity-framework-core-best-practices"">PostgreSQL và EF Core: Best Practices thực tế</a>. Và nếu bạn đang phân vân giữa Blazor và React cho project tiếp theo, bài <a href=""/blog/blazor-vs-react-2025"">Blazor vs React 2025</a> có thể giúp ích.</p>", @"<p><img src=""https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=1200&auto=format&fit=crop&q=80"" alt=""Deploy .NET 10 Blazor to Fly.io with Neon PostgreSQL"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<p>My portfolio site <strong>vodongha.id.vn</strong> runs on .NET 10 Blazor InteractiveServer, PostgreSQL via Neon (Singapore region), and is hosted on Fly.io — all at effectively zero cost for a low-traffic personal site. This post documents the full setup, including every gotcha I stumbled into along the way.</p>
+<p>My portfolio site <strong>VodonghaPersonal.id.vn</strong> runs on .NET 10 Blazor InteractiveServer, PostgreSQL via Neon (Singapore region), and is hosted on Fly.io — all at effectively zero cost for a low-traffic personal site. This post documents the full setup, including every gotcha I stumbled into along the way.</p>
 
 <p>If you want to host a side project or personal portfolio with a modern .NET stack without spending much money, this is the guide for you.</p>
 
@@ -1665,7 +1665,7 @@ jobs:
 
 <h2>.NET 10 Blazor Features Worth Using</h2>
 
-<p>After upgrading vodongha.id.vn from .NET 9 to .NET 10, I adopted a few of the new Blazor features immediately.</p>
+<p>After upgrading VodonghaPersonal.id.vn from .NET 9 to .NET 10, I adopted a few of the new Blazor features immediately.</p>
 
 <p><strong>PersistentState attribute:</strong> Previously, when Blazor Server lost and re-established a connection, components would reset to their initial state. With <code>[PersistentState]</code>, you can mark properties that should survive reconnection:</p>
 
@@ -1733,7 +1733,7 @@ jobs:
 
 <p>The two things worth internalizing before you start: the <strong>sticky sessions constraint</strong> (one machine per region for Blazor Server) and <strong><code>IDbContextFactory</code></strong> (mandatory, not optional). Understanding these upfront will save you significant debugging time.</p>
 
-<p><a href=""https://vodongha.id.vn"" target=""_blank"">vodongha.id.vn</a> is currently running this exact stack — you are reading a page served by it right now.</p>
+<p><a href=""https://VodonghaPersonal.id.vn"" target=""_blank"">VodonghaPersonal.id.vn</a> is currently running this exact stack — you are reading a page served by it right now.</p>
 
 <p>If you are interested in how this entire site was built with AI assistance, read <a href=""/blog/building-with-ai-experience-with-claude-code"">my experience using Claude Code to build the portfolio</a>. For a deeper dive into EF Core patterns with PostgreSQL, see <a href=""/blog/postgresql-entity-framework-core-best-practices"">PostgreSQL and EF Core: Real-World Best Practices</a>. And if you are deciding between Blazor and React for your next project, <a href=""/blog/blazor-vs-react-2025"">Blazor vs React in 2025</a> covers that comparison in detail.</p>", @"Hướng dẫn thực tế deploy Blazor InteractiveServer .NET 10 lên Fly.io với Neon PostgreSQL, từ Dockerfile, fly.toml đến CI/CD — bao gồm các gotcha về sticky sessions và cold start.", @"A practical guide to deploying .NET 10 Blazor InteractiveServer on Fly.io with Neon PostgreSQL — covering Dockerfile, fly.toml, CI/CD pipeline, and real-world gotchas like sticky sessions and cold starts.", @"dotnet, blazor, flyio, neon-postgresql, devops, cicd, efcore, csharp", @"Deploy .NET 10 Blazor lên Fly.io với Neon PostgreSQL (2026)", @"Deploy .NET 10 Blazor to Fly.io with Neon PostgreSQL (2026)", new DateTime(2026, 6, 8, 0, 0, 0, 0, DateTimeKind.Utc) });
 
@@ -1744,7 +1744,7 @@ jobs:
                 columns: new[] { "Content", "ContentEn", "Summary", "SummaryEn", "Tags", "Title", "TitleEn", "UpdatedAt" },
                 values: new object[] { @"<p><img src=""https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&auto=format&fit=crop&q=80"" alt=""Blazor vs React 2026"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<p>Đã có hàng trăm bài so sánh Blazor vs React trên mạng. Hầu hết đều được viết bởi những người chưa thực sự ship cả hai lên production, hoặc đã cũ từ thời .NET 6–7 khi Blazor còn khá thô. Tôi muốn viết bài này từ góc nhìn thực tế hơn: tôi đang dùng Blazor Web App .NET 10 để chạy <strong>vodongha.id.vn</strong> — trang portfolio cá nhân của mình — và hằng ngày làm việc với cả React lẫn Blazor trong các dự án khác nhau.</p>
+<p>Đã có hàng trăm bài so sánh Blazor vs React trên mạng. Hầu hết đều được viết bởi những người chưa thực sự ship cả hai lên production, hoặc đã cũ từ thời .NET 6–7 khi Blazor còn khá thô. Tôi muốn viết bài này từ góc nhìn thực tế hơn: tôi đang dùng Blazor Web App .NET 10 để chạy <strong>VodonghaPersonal.id.vn</strong> — trang portfolio cá nhân của mình — và hằng ngày làm việc với cả React lẫn Blazor trong các dự án khác nhau.</p>
 
 <p>Đây không phải bài ""cái nào tốt hơn"". Đây là bài giúp bạn đưa ra quyết định đúng cho dự án của mình.</p>
 
@@ -1800,7 +1800,7 @@ jobs:
   </tbody>
 </table>
 
-<p>Trang <strong>vodongha.id.vn</strong> của tôi dùng <strong>InteractiveServer</strong>. Lý do thực dụng: Fly.io shared-cpu-1x 256MB RAM, Neon PostgreSQL ở Singapore với suspend mode. InteractiveServer cho phép SignalR live chat hoạt động tốt, và với traffic thấp của một portfolio cá nhân, memory per circuit không phải vấn đề. Nhưng tôi phải thành thật: nếu traffic tăng đột biến, mỗi visitor sẽ giữ một WebSocket circuit trên server — đây là trade-off cần tính đến.</p>
+<p>Trang <strong>VodonghaPersonal.id.vn</strong> của tôi dùng <strong>InteractiveServer</strong>. Lý do thực dụng: Fly.io shared-cpu-1x 256MB RAM, Neon PostgreSQL ở Singapore với suspend mode. InteractiveServer cho phép SignalR live chat hoạt động tốt, và với traffic thấp của một portfolio cá nhân, memory per circuit không phải vấn đề. Nhưng tôi phải thành thật: nếu traffic tăng đột biến, mỗi visitor sẽ giữ một WebSocket circuit trên server — đây là trade-off cần tính đến.</p>
 
 <p>Một pain point thực tế: <strong>Neon suspend mode + SignalR circuit init = cold start stack khá đáng sợ</strong>. Lần đầu vào trang sau khi Neon ngủ, bạn sẽ cảm thấy 1–3 giây chờ đợi. Không lý tưởng nhưng chấp nhận được cho personal project.</p>
 
@@ -1930,7 +1930,7 @@ public class BlogPostValidator : AbstractValidator&lt;BlogPostDto&gt;
 
 <p>Với React + TypeScript, bạn vẫn phải maintain hai separate type definitions, hai separate validation schemas. Tools như tRPC hay OpenAPI codegen giúp, nhưng vẫn có overhead.</p>
 
-<p>Tôi build vodongha.id.vn <a href=""/blog/building-with-ai-experience-with-claude-code"">hoàn toàn với Claude Code</a> — và một trong những điều tôi thấy thú vị là AI assist viết code Blazor/C# khá tốt, phần lớn nhờ type safety và shared models giúp AI ""hiểu"" context tốt hơn.</p>
+<p>Tôi build VodonghaPersonal.id.vn <a href=""/blog/building-with-ai-experience-with-claude-code"">hoàn toàn với Claude Code</a> — và một trong những điều tôi thấy thú vị là AI assist viết code Blazor/C# khá tốt, phần lớn nhờ type safety và shared models giúp AI ""hiểu"" context tốt hơn.</p>
 
 <h2>7. Performance thực tế: không có winner tuyệt đối</h2>
 
@@ -2007,11 +2007,11 @@ private async Task LoadDataAsync()
 
 <p>Câu trả lời thực sự phụ thuộc vào: <strong>team của bạn giỏi gì, và dự án của bạn cần gì từ ecosystem</strong>.</p>
 
-<p>Cá nhân tôi? Với enterprise .NET projects ở công ty, Blazor là lựa chọn tự nhiên và productive hơn nhiều. Với vodongha.id.vn, tôi chọn Blazor vì muốn trải nghiệm thực tế và vì tôi thích C# hơn TypeScript. Đó là lý do hoàn toàn hợp lệ.</p>
+<p>Cá nhân tôi? Với enterprise .NET projects ở công ty, Blazor là lựa chọn tự nhiên và productive hơn nhiều. Với VodonghaPersonal.id.vn, tôi chọn Blazor vì muốn trải nghiệm thực tế và vì tôi thích C# hơn TypeScript. Đó là lý do hoàn toàn hợp lệ.</p>
 
 <p>Nếu bạn quan tâm đến cách tôi build site này, đọc thêm bài <a href=""/blog/building-with-ai-experience-with-claude-code"">kinh nghiệm build với Claude Code</a> hoặc bài về <a href=""/blog/vibe-coding-la-gi"">vibe coding là gì</a>. Còn nếu bạn muốn biết AI đang thay đổi workflow của developers như thế nào, xem bài <a href=""/blog/ai-skills-for-developers"">AI skills for developers</a>.</p>", @"<p><img src=""https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=1200&auto=format&fit=crop&q=80"" alt=""Blazor vs React 2026"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<p>There are hundreds of Blazor vs React comparisons on the internet. Most are written by people who have never shipped both to production, or are outdated from the .NET 6–7 era when Blazor was genuinely rough around the edges. I want to write this from a more grounded perspective: I run <strong>vodongha.id.vn</strong> on Blazor Web App .NET 10, and I work with both React and Blazor across different projects every day.</p>
+<p>There are hundreds of Blazor vs React comparisons on the internet. Most are written by people who have never shipped both to production, or are outdated from the .NET 6–7 era when Blazor was genuinely rough around the edges. I want to write this from a more grounded perspective: I run <strong>VodonghaPersonal.id.vn</strong> on Blazor Web App .NET 10, and I work with both React and Blazor across different projects every day.</p>
 
 <p>This is not a ""which one is better"" post. It is a post to help you make the right decision for your specific project.</p>
 
@@ -2067,7 +2067,7 @@ private async Task LoadDataAsync()
   </tbody>
 </table>
 
-<p>My personal site <strong>vodongha.id.vn</strong> uses <strong>InteractiveServer</strong>. The practical reason: Fly.io shared-cpu-1x with 256MB RAM, Neon PostgreSQL in Singapore running in suspend mode. InteractiveServer makes SignalR-based live chat work cleanly, and with the low traffic of a personal portfolio, memory per circuit is not a problem. But I have to be honest: if traffic spikes, each visitor holds an open WebSocket circuit on the server. That is a real constraint for resource-limited hosting.</p>
+<p>My personal site <strong>VodonghaPersonal.id.vn</strong> uses <strong>InteractiveServer</strong>. The practical reason: Fly.io shared-cpu-1x with 256MB RAM, Neon PostgreSQL in Singapore running in suspend mode. InteractiveServer makes SignalR-based live chat work cleanly, and with the low traffic of a personal portfolio, memory per circuit is not a problem. But I have to be honest: if traffic spikes, each visitor holds an open WebSocket circuit on the server. That is a real constraint for resource-limited hosting.</p>
 
 <p>A real-world pain point I want to call out: <strong>Neon suspend mode + SignalR circuit init = a noticeable cold start stack</strong>. A visitor who hits the site after Neon has gone to sleep will wait 1–3 seconds. Not ideal, but acceptable for a personal project.</p>
 
@@ -2196,7 +2196,7 @@ public class BlogPostValidator : AbstractValidator&lt;BlogPostDto&gt;
 
 <p>With React and TypeScript, you still maintain two separate type definitions and two separate validation schemas. Tools like tRPC and OpenAPI codegen help, but there is always overhead.</p>
 
-<p>I built vodongha.id.vn <a href=""/blog/building-with-ai-experience-with-claude-code"">entirely with Claude Code</a>, and one thing I noticed is that AI assistance writes Blazor/C# code quite effectively — largely because type safety and shared models give the model cleaner context to work with.</p>
+<p>I built VodonghaPersonal.id.vn <a href=""/blog/building-with-ai-experience-with-claude-code"">entirely with Claude Code</a>, and one thing I noticed is that AI assistance writes Blazor/C# code quite effectively — largely because type safety and shared models give the model cleaner context to work with.</p>
 
 <h2>7. Real-World Performance: No Absolute Winner</h2>
 
@@ -2272,7 +2272,7 @@ private async Task LoadDataAsync()
 
 <p>The real answer depends on: <strong>what your team is fluent in, and what your project needs from the ecosystem</strong>.</p>
 
-<p>Personally — for enterprise .NET projects, Blazor is the natural and more productive choice for me. For vodongha.id.vn itself, I chose Blazor because I wanted real-world experience with it and because I prefer C# over TypeScript. Those are entirely valid reasons.</p>
+<p>Personally — for enterprise .NET projects, Blazor is the natural and more productive choice for me. For VodonghaPersonal.id.vn itself, I chose Blazor because I wanted real-world experience with it and because I prefer C# over TypeScript. Those are entirely valid reasons.</p>
 
 <p>If you are curious about how I built this site, the post on <a href=""/blog/building-with-ai-experience-with-claude-code"">building with Claude Code</a> covers the process in detail. If you are thinking about how AI is changing developer workflows more broadly, take a look at <a href=""/blog/ai-skills-for-developers"">AI skills for developers</a>. And if you want to explore the vibe coding approach I used, <a href=""/blog/vibe-coding-la-gi"">this post</a> covers it from first principles.</p>", @"So sánh thực tế Blazor .NET 10 và React 19 năm 2026: hiệu năng, rendering modes, hệ sinh thái, và khi nào nên chọn cái nào — góc nhìn từ developer đã dùng cả hai.", @"A practical 2026 comparison of Blazor .NET 10 and React 19: rendering modes, performance, ecosystem, and an honest decision framework from a developer who has shipped both.", @"Blazor, React, .NET 10, Web Development, Frontend, C#, JavaScript, Full-Stack", @"Blazor vs React năm 2026: So sánh thực tế từ developer", @"Blazor vs React in 2026: A Practical Comparison from a Full-Stack Developer", new DateTime(2026, 6, 8, 0, 0, 0, 0, DateTimeKind.Utc) });
 
@@ -2283,7 +2283,7 @@ private async Task LoadDataAsync()
                 columns: new[] { "Content", "ContentEn", "Summary", "SummaryEn", "Tags", "Title", "TitleEn", "UpdatedAt" },
                 values: new object[] { @"<p><img src=""https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=1200&auto=format&fit=crop&q=80"" alt=""PostgreSQL + EF Core Best Practices 2026"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<p>Khi xây dựng <strong>vodongha.id.vn</strong> — một Blazor Web App chạy trên Fly.io với PostgreSQL qua Neon — mình đã phải đối mặt với khá nhiều quyết định kiến trúc liên quan đến EF Core và PostgreSQL. Đây là bài tổng hợp những gì mình học được, kết hợp với những thay đổi lớn trong năm 2025-2026: EF Core 10 ra mắt với tư cách LTS mới, PostgreSQL 18 mang lại async I/O, và Neon tiếp tục cải thiện cold start. Bài này viết từ góc nhìn thực tế của một developer đang chạy production trên stack này.</p>
+<p>Khi xây dựng <strong>VodonghaPersonal.id.vn</strong> — một Blazor Web App chạy trên Fly.io với PostgreSQL qua Neon — mình đã phải đối mặt với khá nhiều quyết định kiến trúc liên quan đến EF Core và PostgreSQL. Đây là bài tổng hợp những gì mình học được, kết hợp với những thay đổi lớn trong năm 2025-2026: EF Core 10 ra mắt với tư cách LTS mới, PostgreSQL 18 mang lại async I/O, và Neon tiếp tục cải thiện cold start. Bài này viết từ góc nhìn thực tế của một developer đang chạy production trên stack này.</p>
 
 <h2>1. Bức tranh phiên bản năm 2026</h2>
 
@@ -2342,7 +2342,7 @@ var drafts = await db.BlogPosts
 
 <h2>3. IDbContextFactory — Không còn là tùy chọn trong Blazor Server</h2>
 
-<p>Đây là phần quan trọng nhất với bất kỳ ai dùng Blazor Server (InteractiveServer render mode) như vodongha.id.vn.</p>
+<p>Đây là phần quan trọng nhất với bất kỳ ai dùng Blazor Server (InteractiveServer render mode) như VodonghaPersonal.id.vn.</p>
 
 <p>Vấn đề cốt lõi: với <code>AddDbContext&lt;T&gt;()</code> thông thường, scoped <code>DbContext</code> sống suốt lifetime của Blazor circuit — có thể là hàng giờ. Điều này dẫn đến:</p>
 
@@ -2382,7 +2382,7 @@ private async Task LoadDataAsync()
 
 <h2>4. N+1 Query — Vẫn là kẻ thù số một năm 2026</h2>
 
-<p>N+1 không phải vấn đề mới nhưng vẫn là nguyên nhân phổ biến nhất của EF Core performance issues. Mình đã gặp nó khi build trang blog của vodongha.id.vn.</p>
+<p>N+1 không phải vấn đề mới nhưng vẫn là nguyên nhân phổ biến nhất của EF Core performance issues. Mình đã gặp nó khi build trang blog của VodonghaPersonal.id.vn.</p>
 
 <h3>Eager Loading với Include()</h3>
 
@@ -2501,7 +2501,7 @@ RETURNING target.id, target.updated_at;</code></pre>
 
 <h2>7. Neon Serverless — Tips Thực Tế</h2>
 
-<p>Mình đang chạy vodongha.id.vn trên Neon (Singapore region) với free tier. Đây là những gì mình học được sau nhiều tháng.</p>
+<p>Mình đang chạy VodonghaPersonal.id.vn trên Neon (Singapore region) với free tier. Đây là những gì mình học được sau nhiều tháng.</p>
 
 <h3>Cold Start Reality (2026)</h3>
 
@@ -2530,7 +2530,7 @@ RETURNING target.id, target.updated_at;</code></pre>
 
 <h3>Scale-to-Zero Trap</h3>
 
-<p>Một bẫy mình đã mắc: SignalR keepalive pings và Chart.js auto-refresh trên vodongha.id.vn đang giữ Neon compute không bao giờ suspend. Kết quả là compute chạy liên tục và tốn credits.</p>
+<p>Một bẫy mình đã mắc: SignalR keepalive pings và Chart.js auto-refresh trên VodonghaPersonal.id.vn đang giữ Neon compute không bao giờ suspend. Kết quả là compute chạy liên tục và tốn credits.</p>
 
 <p>Audit những gì đang giữ connections mở: health check endpoints, SignalR heartbeat, polling intervals. Với free tier, đây là vấn đề thực sự.</p>
 
@@ -2618,7 +2618,7 @@ modelBuilder.Entity&lt;BlogPost&gt;()
 
 <p>Nếu bạn đang deploy lên Fly.io như mình, hãy đọc thêm bài <a href=""/blog/deploy-dotnet-fly-io-2025"">Deploy .NET lên Fly.io</a> để có cái nhìn end-to-end. Và nếu tò mò về việc mình build site này thế nào với Claude Code, xem bài <a href=""/blog/building-with-ai-experience-with-claude-code"">Kinh nghiệm với Claude Code</a>. Còn nếu bạn đang cân nhắc giữa Blazor và React, bài <a href=""/blog/blazor-vs-react-2025"">Blazor vs React 2025</a> có thể giúp ích.</p>", @"<p><img src=""https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=1200&auto=format&fit=crop&q=80"" alt=""PostgreSQL + EF Core Best Practices 2026"" style=""width:100%;border-radius:12px;margin-bottom:1.5rem"" /></p>
 
-<p>When I built <strong>vodongha.id.vn</strong> — a Blazor Web App running on Fly.io with PostgreSQL via Neon — I had to make a lot of architectural decisions around EF Core and PostgreSQL. This post brings together what I learned from that experience alongside the major shifts in 2025-2026: EF Core 10 arriving as the new LTS, PostgreSQL 18 introducing async I/O, and Neon continuing to improve its cold start story. Everything here comes from running this stack in production, not just reading docs.</p>
+<p>When I built <strong>VodonghaPersonal.id.vn</strong> — a Blazor Web App running on Fly.io with PostgreSQL via Neon — I had to make a lot of architectural decisions around EF Core and PostgreSQL. This post brings together what I learned from that experience alongside the major shifts in 2025-2026: EF Core 10 arriving as the new LTS, PostgreSQL 18 introducing async I/O, and Neon continuing to improve its cold start story. Everything here comes from running this stack in production, not just reading docs.</p>
 
 <h2>1. The 2026 Version Landscape</h2>
 
@@ -2677,7 +2677,7 @@ var drafts = await db.BlogPosts
 
 <h2>3. IDbContextFactory — No Longer Optional in Blazor Server</h2>
 
-<p>This section is the most important one for anyone running Blazor Server with InteractiveServer render mode, which is exactly what vodongha.id.vn uses.</p>
+<p>This section is the most important one for anyone running Blazor Server with InteractiveServer render mode, which is exactly what VodonghaPersonal.id.vn uses.</p>
 
 <p>The core problem: with the standard <code>AddDbContext&lt;T&gt;()</code> registration, a scoped <code>DbContext</code> lives for the entire Blazor circuit lifetime — potentially hours. This leads to:</p>
 
@@ -2717,7 +2717,7 @@ private async Task LoadDataAsync()
 
 <h2>4. N+1 Queries — Still the Number One EF Core Performance Killer</h2>
 
-<p>N+1 is not a new problem, but it remains the most common cause of EF Core performance issues in 2026. I ran into it while building the blog section of vodongha.id.vn.</p>
+<p>N+1 is not a new problem, but it remains the most common cause of EF Core performance issues in 2026. I ran into it while building the blog section of VodonghaPersonal.id.vn.</p>
 
 <h3>Eager Loading with Include()</h3>
 
@@ -2834,7 +2834,7 @@ RETURNING target.id, target.updated_at;</code></pre>
 
 <h2>7. Neon Serverless — Practical Production Tips</h2>
 
-<p>I have been running vodongha.id.vn on Neon's free tier in the Singapore region for several months. Here is what the experience actually looks like.</p>
+<p>I have been running VodonghaPersonal.id.vn on Neon's free tier in the Singapore region for several months. Here is what the experience actually looks like.</p>
 
 <h3>Cold Start Numbers (2026)</h3>
 
@@ -2863,7 +2863,7 @@ RETURNING target.id, target.updated_at;</code></pre>
 
 <h3>The Scale-to-Zero Trap</h3>
 
-<p>One mistake I made on vodongha.id.vn: SignalR keepalive pings and Chart.js auto-refresh intervals were keeping the Neon compute from ever suspending. The compute ran continuously and I burned through credits much faster than expected.</p>
+<p>One mistake I made on VodonghaPersonal.id.vn: SignalR keepalive pings and Chart.js auto-refresh intervals were keeping the Neon compute from ever suspending. The compute ran continuously and I burned through credits much faster than expected.</p>
 
 <p>Audit what is keeping connections open: health check endpoints, SignalR heartbeat intervals, polling timers. On the free tier, this is a real concern. The correct pattern with <code>IDbContextFactory</code> helps here — each component operation gets a fresh, short-lived context that is disposed immediately and does not hold the compute awake between interactions.</p>
 
@@ -2948,7 +2948,7 @@ modelBuilder.Entity&lt;BlogPost&gt;()
 
 <p>Three things I would do immediately when starting a new project today: (1) register with <code>AddDbContextFactory</code> from day one for any Blazor Server app, (2) default to Projection-first with <code>Select()</code> rather than Include-first, (3) never call <code>Database.Migrate()</code> at startup — run migrations as a separate CI/CD step before deploying the application.</p>
 
-<p>If you are deploying to Fly.io as I am, the post on <a href=""/blog/deploy-dotnet-fly-io-2025"">deploying .NET to Fly.io</a> covers the end-to-end deployment workflow. If you are curious about how I built vodongha.id.vn using AI assistance, see the post on my <a href=""/blog/building-with-ai-experience-with-claude-code"">experience with Claude Code</a>. And if you are weighing Blazor against React for your next project, <a href=""/blog/blazor-vs-react-2025"">Blazor vs React 2025</a> covers the tradeoffs in detail.</p>", @"EF Core 10 LTS, PostgreSQL 18 với async I/O, IDbContextFactory trong Blazor, tránh N+1, migration zero-downtime và tips thực tế khi dùng Neon serverless.", @"EF Core 10 LTS, PostgreSQL 18 async I/O, IDbContextFactory in Blazor Server, N+1 avoidance, zero-downtime migrations, and practical Neon serverless tips for 2026.", @"postgresql,entity-framework-core,dotnet,blazor,neon,database,performance,migrations", @"PostgreSQL + EF Core: Best Practices cho năm 2026", @"PostgreSQL + EF Core: Best Practices for 2026", new DateTime(2026, 6, 8, 0, 0, 0, 0, DateTimeKind.Utc) });
+<p>If you are deploying to Fly.io as I am, the post on <a href=""/blog/deploy-dotnet-fly-io-2025"">deploying .NET to Fly.io</a> covers the end-to-end deployment workflow. If you are curious about how I built VodonghaPersonal.id.vn using AI assistance, see the post on my <a href=""/blog/building-with-ai-experience-with-claude-code"">experience with Claude Code</a>. And if you are weighing Blazor against React for your next project, <a href=""/blog/blazor-vs-react-2025"">Blazor vs React 2025</a> covers the tradeoffs in detail.</p>", @"EF Core 10 LTS, PostgreSQL 18 với async I/O, IDbContextFactory trong Blazor, tránh N+1, migration zero-downtime và tips thực tế khi dùng Neon serverless.", @"EF Core 10 LTS, PostgreSQL 18 async I/O, IDbContextFactory in Blazor Server, N+1 avoidance, zero-downtime migrations, and practical Neon serverless tips for 2026.", @"postgresql,entity-framework-core,dotnet,blazor,neon,database,performance,migrations", @"PostgreSQL + EF Core: Best Practices cho năm 2026", @"PostgreSQL + EF Core: Best Practices for 2026", new DateTime(2026, 6, 8, 0, 0, 0, 0, DateTimeKind.Utc) });
 
         }
 

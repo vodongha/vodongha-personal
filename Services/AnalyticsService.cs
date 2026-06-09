@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using System.Text.Json.Serialization;
-using vodongha.Data;
-using vodongha.Data.Models;
+using VodonghaPersonal.Data;
+using VodonghaPersonal.Data.Models;
 
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 public class AnalyticsService(IDbContextFactory<AppDbContext> dbFactory, IHttpClientFactory httpClientFactory, ILogger<AnalyticsService> logger)
 {

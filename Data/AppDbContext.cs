@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using vodongha.Data.Models;
+using VodonghaPersonal.Data.Models;
 
-namespace vodongha.Data;
+namespace VodonghaPersonal.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IDataProtectionKeyContext
 {

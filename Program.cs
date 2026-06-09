@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Threading.RateLimiting;
-using vodongha.Components;
-using vodongha.Data;
-using vodongha.Hubs;
-using vodongha.Services;
-using vodongha.Data.Models;
+using VodonghaPersonal.Components;
+using VodonghaPersonal.Data;
+using VodonghaPersonal.Hubs;
+using VodonghaPersonal.Services;
+using VodonghaPersonal.Data.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -399,8 +399,8 @@ app.MapPost("/api/admin/sync-secrets-to-db", async (HttpContext ctx, AppSecretsS
 
 app.MapGet("/sitemap.xml", async (BlogService blogSvc, IConfiguration config) =>
 {
-    string baseUrl = (config["App:BaseUrl"] ?? "https://vodongha.id.vn").TrimEnd('/');
-    List<vodongha.Data.Models.BlogPost> posts = await blogSvc.GetAllSlugsForSitemapAsync();
+    string baseUrl = (config["App:BaseUrl"] ?? "https://VodonghaPersonal.id.vn").TrimEnd('/');
+    List<VodonghaPersonal.Data.Models.BlogPost> posts = await blogSvc.GetAllSlugsForSitemapAsync();
     System.Text.StringBuilder sb = new();
     sb.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     sb.AppendLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
@@ -416,7 +416,7 @@ app.MapGet("/sitemap.xml", async (BlogService blogSvc, IConfiguration config) =>
     }
 
     // Blog posts
-    foreach (vodongha.Data.Models.BlogPost post in posts)
+    foreach (VodonghaPersonal.Data.Models.BlogPost post in posts)
     {
         string lastmod = (post.UpdatedAt ?? post.CreatedAt).ToString("yyyy-MM-dd");
         sb.AppendLine("  <url>");

@@ -1,4 +1,4 @@
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 /// <summary>
 /// Scoped per Blazor circuit. Populated once on first render by TimezoneDetector

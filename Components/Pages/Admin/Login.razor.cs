@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace vodongha.Components.Pages.Admin;
+namespace VodonghaPersonal.Components.Pages.Admin;
 
 public partial class Login : ComponentBase
 {

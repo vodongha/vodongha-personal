@@ -1,10 +1,10 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using vodongha.Data;
-using vodongha.Data.Models;
+using VodonghaPersonal.Data;
+using VodonghaPersonal.Data.Models;
 
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 /// <summary>
 /// Calls Google Gemini API with a context snapshot of the portfolio owner's data.

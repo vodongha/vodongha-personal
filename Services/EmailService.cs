@@ -1,6 +1,6 @@
 using Resend;
 
-namespace vodongha.Services;
+namespace VodonghaPersonal.Services;
 
 public class EmailService(IResend resend, AppSecretsService secrets, ILogger<EmailService> logger)
 {
@@ -19,11 +19,11 @@ public class EmailService(IResend resend, AppSecretsService secrets, ILogger<Ema
 
             EmailMessage email = new()
             {
-                From    = "vodongha.id.vn <no-reply@vodongha.id.vn>",
+                From    = "VodonghaPersonal.id.vn <no-reply@VodonghaPersonal.id.vn>",
                 To      = [notifyTo],
                 Subject = $"[Contact] {subject}",
                 TextBody = $"""
-                    Tin nhắn mới từ vodongha.id.vn
+                    Tin nhắn mới từ VodonghaPersonal.id.vn
 
                     Người gửi : {senderName}
                     Email     : {senderEmail}

@@ -1,6 +1,6 @@
 @page "/blog/{Slug}"
 @rendermode InteractiveServer
-@using vodongha.Components.Shared
+@using VodonghaPersonal.Components.Shared
 
 <PageTitle>@(DisplayTitle ?? "Blog") — Võ Đông Hà</PageTitle>
 
@@ -11,7 +11,7 @@
         <meta property="og:type" content="article" />
         <meta property="og:title" content="@DisplayTitle — Võ Đông Hà" />
         <meta property="og:description" content="@DisplaySummary" />
-        <meta property="og:url" content="https://vodongha.id.vn/blog/@_post.Slug" />
+        <meta property="og:url" content="https://VodonghaPersonal.id.vn/blog/@_post.Slug" />
         @if (!string.IsNullOrEmpty(_post.CoverImageUrl))
         {
             <meta property="og:image" content="@_post.CoverImageUrl" />
@@ -20,7 +20,7 @@
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="@DisplayTitle — Võ Đông Hà" />
         <meta name="twitter:description" content="@DisplaySummary" />
-        <link rel="canonical" href="https://vodongha.id.vn/blog/@_post.Slug" />
+        <link rel="canonical" href="https://VodonghaPersonal.id.vn/blog/@_post.Slug" />
     </HeadContent>
 }
 

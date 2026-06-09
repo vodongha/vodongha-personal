@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using vodongha.Services;
+using VodonghaPersonal.Services;
 
-namespace vodongha.Components.Layout;
+namespace VodonghaPersonal.Components.Layout;
 
 public partial class FooterSection : ComponentBase, IDisposable
 {
