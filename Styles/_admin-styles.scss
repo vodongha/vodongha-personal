@@ -68,9 +68,6 @@
     gap: 0.25rem;
     padding: 0 0.75rem;
 
-    // Menu/pinned item is mobile-only — hidden on desktop sidebar
-    &__item--pinned { display: none; }
-
     &__item {
         display: flex;
         align-items: center;
@@ -91,6 +88,8 @@
 
         &:hover { background: var(--admin-hover); color: $color-text; }
         &--active { background: rgba($color-primary, 0.1); color: $color-primary; }
+        // Menu/pinned item is mobile-only — must come after display:flex above
+        &--pinned { display: none; }
     }
 }
 
