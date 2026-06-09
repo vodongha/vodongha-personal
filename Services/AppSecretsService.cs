@@ -27,7 +27,9 @@ public class AppSecretsService
         new("Email:NotifyTo",       "Notification Email",    "Email address that receives contact notifications",                       "Email",    Sensitive: false),
         new("Push:VapidPublicKey",  "VAPID Public Key",      "Web Push public key (base64url). Generate once — changing breaks all existing subscriptions.", "Web Push", Sensitive: false),
         new("Push:VapidPrivateKey", "VAPID Private Key",     "Web Push private key (base64url). Keep secret.",                         "Web Push", Sensitive: true),
-        new("Push:VapidSubject",    "VAPID Subject",         "Contact email for Web Push (e.g. mailto:you@example.com)",               "Web Push", Sensitive: false),
+        new("Push:VapidSubject",         "VAPID Subject",         "Contact email for Web Push (e.g. mailto:you@example.com)",               "Web Push", Sensitive: false),
+        new("Gemini:ApiKey",        "Gemini API Key",        "Google Gemini API key for AI feature. Free at https://aistudio.google.com/apikey", "Gemini", Sensitive: true),
+        new("Gemini:Model",         "Gemini Model",          "Model name (default: gemini-2.0-flash). Leave blank to use default.",              "Gemini", Sensitive: false),
     ];
 
     // ─── Private fields ───────────────────────────────────────────────────────

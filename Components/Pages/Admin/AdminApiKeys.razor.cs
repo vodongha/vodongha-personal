@@ -132,11 +132,13 @@ public partial class AdminApiKeys : ComponentBase, IDisposable
 
     private static string CategoryIcon(string category) => category switch
     {
-        "Fly.io"   => "bi-airplane",
-        "Neon"     => "bi-database",
-        "Telegram" => "bi-telegram",
-        "Email"    => "bi-envelope",
-        _          => "bi-key",
+        "Fly.io"    => "bi-airplane",
+        "Neon"      => "bi-database",
+        "Telegram"  => "bi-telegram",
+        "Email"     => "bi-envelope",
+        "Web Push"  => "bi-bell",
+        "Gemini"    => "bi-stars",
+        _           => "bi-key",
     };
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
