@@ -2627,3 +2627,94 @@ tr.admin-row--dragover td {
 }
 
 
+
+
+// ── Analytics page ────────────────────────────────────────────────
+.analytics-period-tabs {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.analytics-stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.analytics-stat-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    &__label { font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    &__value { font-size: 2rem; font-weight: 700; color: $color-primary; line-height: 1.1; }
+    &__sub   { font-size: 0.8rem; color: var(--color-text-muted); }
+}
+
+.analytics-panel {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    &__title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--color-text-muted);
+        margin-bottom: 1rem;
+    }
+}
+
+.analytics-chart-box {
+    height: 220px;
+    margin-bottom: 1rem;
+
+    &--sm { height: 180px; }
+}
+
+.analytics-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+
+    @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.analytics-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+
+    tr + tr td { border-top: 1px solid var(--admin-border); }
+
+    &__path  { padding: 0.5rem 0.5rem 0.5rem 0; color: var(--color-text); font-family: $font-mono; font-size: 0.8rem; width: 60%; word-break: break-all; }
+    &__count { padding: 0.5rem; color: $color-primary; font-weight: 600; text-align: right; white-space: nowrap; }
+
+    &__bar-cell { padding: 0.5rem 0; width: 30%; }
+    &__bar {
+        height: 6px;
+        background: rgba($color-primary, 0.4);
+        border-radius: 3px;
+        min-width: 4px;
+        transition: width 300ms ease;
+    }
+}
+
+.analytics-empty {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-style: italic;
+    padding: 0.5rem 0;
+}
+
+.analytics-skeleton {
+    .analytics-stat-row { margin-bottom: 1.5rem; }
+}
