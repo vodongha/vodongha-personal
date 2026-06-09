@@ -41,6 +41,15 @@ public class AiService
     /// The last item in <paramref name="history"/> must be the user message to answer.
     /// Returns null when the API key is missing or the call fails.
     /// </summary>
+    // Fallback chain — tried in order when the preferred model returns 429/503/404
+    private static readonly string[] FallbackModels =
+    [
+        "gemini-2.5-flash-lite",
+        "gemini-2.0-flash-lite",
+        "gemini-2.0-flash",
+        "gemini-2.5-flash",
+    ];
+
     public async Task<string?> AskAsync(IReadOnlyList<AiMessage> history, CancellationToken ct = default)
     {
         string? apiKey = await _secrets.GetValueAsync("Gemini:ApiKey");
@@ -50,8 +59,11 @@ public class AiService
             return null;
         }
 
-        string model   = (await _secrets.GetValueAsync("Gemini:Model")) ?? "gemini-2.0-flash";
-        string context = await GetContextAsync();
+        string preferred = (await _secrets.GetValueAsync("Gemini:Model")) ?? "gemini-2.5-flash-lite";
+        string context   = await GetContextAsync();
+
+        // Build the candidate list: preferred first, then fallbacks (deduped)
+        List<string> candidates = [preferred, .. FallbackModels.Where(m => m != preferred)];
 
         List<object> contents = history
             .Select(m => (object)new
@@ -61,6 +73,28 @@ public class AiService
             })
             .ToList();
 
+        foreach (string model in candidates)
+        {
+            string? result = await TryCallAsync(apiKey, model, context, contents, ct);
+            if (result != null)
+            {
+                if (model != preferred)
+                {
+                    _logger.LogInformation("Gemini fell back to {Model}", model);
+                }
+
+                return result;
+            }
+        }
+
+        _logger.LogWarning("All Gemini models failed");
+        return null;
+    }
+
+    private async Task<string?> TryCallAsync(
+        string apiKey, string model, string context,
+        List<object> contents, CancellationToken ct)
+    {
         object body = new
         {
             system_instruction = new { parts = new[] { new { text = context } } },
@@ -76,17 +110,24 @@ public class AiService
 
         string url = $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={apiKey}";
 
-        using StringContent payload = new(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
-
         try
         {
+            using StringContent payload = new(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
             HttpResponseMessage res = await _http.PostAsync(url, payload, ct);
             string raw = await res.Content.ReadAsStringAsync(ct);
 
             if (!res.IsSuccessStatusCode)
             {
-                _logger.LogWarning("Gemini {Status}: {Body}", res.StatusCode, raw[..Math.Min(raw.Length, 300)]);
-                return null;
+                int status = (int)res.StatusCode;
+                _logger.LogWarning("Gemini {Model} {Status}: {Body}", model, status, raw[..Math.Min(raw.Length, 300)]);
+
+                // Only retry on transient errors — don't fallback on auth failures
+                if (status is 401 or 403)
+                {
+                    return null;
+                }
+
+                return null; // triggers next fallback
             }
 
             using JsonDocument doc = JsonDocument.Parse(raw);
@@ -103,7 +144,7 @@ public class AiService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Gemini API call failed");
+            _logger.LogError(ex, "Gemini {Model} call threw exception", model);
             return null;
         }
     }
