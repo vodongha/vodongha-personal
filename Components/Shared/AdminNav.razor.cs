@@ -19,6 +19,7 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
     private int _unreadMessagesCount;
     private bool _menuOpen;
     private string _theme = "dark";
+    private bool _collapsed;
 
     private static readonly Dictionary<string, string[]> _groupPaths = new()
     {
@@ -28,6 +29,28 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
         ["System"]         = ["/admin/api-keys", "/admin/settings"],
     };
     private HashSet<string> _openGroups = [];
+
+    private async Task ToggleSidebar()
+    {
+        _collapsed = !_collapsed;
+        try { await JS.InvokeVoidAsync("localStorage.setItem", "admin-sidebar-collapsed", _collapsed ? "true" : "false"); }
+        catch { }
+    }
+
+    private async Task OnGroupHeaderClick(string group)
+    {
+        if (_collapsed)
+        {
+            _collapsed = false;
+            try { await JS.InvokeVoidAsync("localStorage.setItem", "admin-sidebar-collapsed", "false"); }
+            catch { }
+            _openGroups.Add(group);
+        }
+        else
+        {
+            ToggleGroup(group);
+        }
+    }
 
     private void ToggleGroup(string group)
     {
@@ -67,6 +90,9 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
         {
             try
             {
+                string? savedCollapsed = await JS.InvokeAsync<string?>("localStorage.getItem", "admin-sidebar-collapsed");
+                _collapsed = savedCollapsed == "true";
+
                 string? storedLang = await JS.InvokeAsync<string?>("localStorage.getItem", "adminLang");
                 if (storedLang == "EN" || storedLang == "VI")
                 {
