@@ -204,11 +204,12 @@ vodongha-personal/
 │   └── ChatHub.cs                    # SignalR: JoinSession, LeaveSession, JoinAdminGroup, StartTyping, StopTyping, MarkRead
 ├── wwwroot/
 │   └── js/
-│       ├── admin.js                  # Event delegation, theme toggle, TOC observer, reading progress, loading bar, back-to-top, PDF download, code copy
-│       ├── analytics-charts.js       # Chart.js wrappers for analytics page (renderLine, renderBar, destroy)
-│       ├── chat.js                   # chatUtils (scroll, country detection, input helpers); chatDial (dial-code picker, phone cleaner)
-│       ├── dashboardCharts.js        # Chart.js wrappers for dashboard — renderDonut, renderHBar, renderLine, destroy, onThemeChange
-│       └── healthChart.js            # healthChart.init/update/destroy/onThemeChange — Chart.js wrappers
+│       ├── admin.js                  # Event delegation, theme toggle, TOC observer, reading progress, loading bar, back-to-top, PDF download, code copy — ES2026
+│       ├── analytics-charts.js       # Chart.js wrappers for analytics page (renderLine, renderBar, destroy) — ES2026
+│       ├── chat.js                   # chatUtils (scroll, country detection, input helpers); chatDial (dial-code picker, phone cleaner) — ES2026
+│       ├── dashboardCharts.js        # Chart.js wrappers for dashboard — renderDonut, renderHBar, renderLine, destroy, onThemeChange — ES2026
+│       ├── healthChart.js            # healthChart.init/update/destroy/onThemeChange — Chart.js wrappers — ES2026
+│       └── push.js                   # Web Push: subscribe/unsubscribe via ServiceWorker; uses ES2026 Uint8Array.fromBase64 for VAPID key decode
 ├── Migrations/                       # EF Core — never modify existing migrations
 ├── Program.cs                        # DI, middleware (visitor tracking), auth, routes
 ├── Dockerfile
@@ -629,7 +630,7 @@ else { <real content> }
 
 | Version | Changes |
 |---|---|
-| v2.0.6 | i18n all 8 admin pages (AdminSkills, AdminProjects, AdminBlog, AdminContacts, AdminChats, AdminHealth, AdminSettings, AdminCv); Lint CI (dotnet format + ESLint + Stylelint via lint.yml); ES2017+ conversion for all 5 JS files (const/let, arrow functions, template literals, optional chaining, nullish coalescing, empty catch) |
+| v2.0.6 | i18n all 8 admin pages; Lint CI (dotnet format + ESLint + Stylelint); CI & Deploy flow (deploy waits for all CI); ES2017+ → ES2026 JS (Uint8Array.fromBase64 in push.js, ecmaVersion 2026 in ESLint); SCSS Stylelint fixes (%skel placeholder, vendor prefix cleanup); admin nav Analytics label fix ("Thống kê" → "Phân tích"); cost banner light-mode color fix |
 | v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix; collapsible sidebar (icon-only collapsed mode, localStorage); icon-only top controls with tooltips; mobile bottom bar 4-item; Dashboard → /admin/analytics |
 | v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping; accessibility; code quality; DI fix; git workflow updated |
 | v2.0.3 | Web Push notifications, searchable dial-code picker, chat light/dark mode, admin chat UX fixes, API Keys admin, blog pagination, skeleton loading, theme system fixes |
