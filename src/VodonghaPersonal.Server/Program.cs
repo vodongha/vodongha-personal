@@ -9,9 +9,9 @@ using Resend;
 using VodonghaPersonal.Api;
 using VodonghaPersonal.Components;
 using VodonghaPersonal.Data;
-using VodonghaPersonal.Shared.Models;
 using VodonghaPersonal.Hubs;
 using VodonghaPersonal.Services;
+using VodonghaPersonal.Shared.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
