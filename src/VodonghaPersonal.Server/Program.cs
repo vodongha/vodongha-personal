@@ -12,6 +12,7 @@ using VodonghaPersonal.Data;
 using VodonghaPersonal.Hubs;
 using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Models;
+using VodonghaPersonal.Shared.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
