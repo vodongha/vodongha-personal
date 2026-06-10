@@ -1646,6 +1646,13 @@ tr.admin-row--dragover td {
     [data-theme="light"] & {
         background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
         border-color: #bfdbfe;
+
+        .cost-summary-banner__divider   { background: #bfdbfe; }
+        .cost-summary-banner__col-label { color: #4b6a8a; }
+        .cost-summary-banner__col-value { color: #1e3a5f; &--actual { color: #059669; } &--na { color: #64748b; } }
+        .cost-summary-banner__col-sub   { color: #64748b; }
+        .cost-summary-banner__footer    { border-top-color: #bfdbfe; }
+        .cost-summary-banner__updated   { color: #64748b; }
     }
     border-radius: 12px;
     padding: 1.5rem 2rem;
