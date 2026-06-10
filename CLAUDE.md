@@ -630,7 +630,7 @@ else { <real content> }
 
 | Version | Changes |
 |---|---|
-| v2.0.6 | i18n all 8 admin pages; Lint CI (dotnet format + ESLint + Stylelint); CI & Deploy flow (deploy waits for all CI); ES2017+ → ES2026 JS (Uint8Array.fromBase64 in push.js, ecmaVersion 2026 in ESLint); SCSS Stylelint fixes (%skel placeholder, vendor prefix cleanup); admin nav Analytics label fix ("Thống kê" → "Phân tích"); cost banner light-mode color fix |
+| v2.0.6 | i18n all 8 admin pages; Lint CI (dotnet format + ESLint + Stylelint); CI & Deploy flow; ES2026 JS (Uint8Array.fromBase64, ecmaVersion 2026); Dependencies tracker page (/admin/dependencies — NuGet/npm/CDN version checks); SCSS Stylelint fixes; analytics nav label fix; cost banner light-mode fix; Chart.js version mismatch fix (4.4.4→4.5.1) |
 | v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix; collapsible sidebar (icon-only collapsed mode, localStorage); icon-only top controls with tooltips; mobile bottom bar 4-item; Dashboard → /admin/analytics |
 | v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping; accessibility; code quality; DI fix; git workflow updated |
 | v2.0.3 | Web Push notifications, searchable dial-code picker, chat light/dark mode, admin chat UX fixes, API Keys admin, blog pagination, skeleton loading, theme system fixes |
