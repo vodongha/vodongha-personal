@@ -3585,6 +3585,20 @@ tr.admin-row--dragover td {
 .analytics-skeleton .analytics-stat-row {
   margin-bottom: 1.5rem;
 }
+.analytics-skeleton .analytics-panel {
+  margin-bottom: 1.5rem;
+}
+.analytics-skeleton .analytics-skel__panel-title {
+  height: 1.1rem;
+  width: 180px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+.analytics-skeleton .analytics-skel__table-row {
+  height: 2rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
 
 .dash-stats {
   display: grid;
