@@ -1,24 +1,22 @@
-// ── File input trigger (replaces eval-based click) ───────────────────────────
-window.clickFileInput = function (inputId) {
-    var el = document.getElementById(inputId);
-    if (el) { el.click(); }
+// ── File input trigger ────────────────────────────────────────────────────────
+window.clickFileInput = (inputId) => {
+    document.getElementById(inputId)?.click();
 };
 
 // ── Sortable cards ────────────────────────────────────────────────────────────
-window.initSortableCards = function (gridId, dotnetRef, prefKey) {
-    var el = document.getElementById(gridId);
+window.initSortableCards = (gridId, dotnetRef, prefKey) => {
+    const el = document.getElementById(gridId);
     if (!el || !window.Sortable) return;
 
-    // Apply saved order first
-    var saved = el.dataset.savedOrder;
+    const saved = el.dataset.savedOrder;
     if (saved) {
         try {
-            var ids = JSON.parse(saved);
-            ids.forEach(function (id) {
-                var card = el.querySelector('[data-card-id="' + id + '"]');
+            const ids = JSON.parse(saved);
+            ids.forEach(id => {
+                const card = el.querySelector(`[data-card-id="${id}"]`);
                 if (card) el.appendChild(card);
             });
-        } catch (e) {}
+        } catch { }
     }
 
     Sortable.create(el, {
@@ -26,9 +24,9 @@ window.initSortableCards = function (gridId, dotnetRef, prefKey) {
         ghostClass: 'cost-card-ghost',
         chosenClass: 'cost-card-chosen',
         handle: '.cost-card-drag-handle',
-        onEnd: function () {
-            var ids = Array.from(el.children)
-                .map(function (c) { return c.dataset.cardId; })
+        onEnd: () => {
+            const ids = Array.from(el.children)
+                .map(c => c.dataset.cardId)
                 .filter(Boolean);
             dotnetRef.invokeMethodAsync('SaveCardOrder', prefKey, ids);
         }
@@ -36,73 +34,76 @@ window.initSortableCards = function (gridId, dotnetRef, prefKey) {
 };
 
 // ── Mobile menu — resize-to-desktop redirect ──────────────────────────────────
-window.addDesktopResizeRedirect = function (dotnetRef, breakpoint) {
-    function onResize() {
+window.addDesktopResizeRedirect = (dotnetRef, breakpoint) => {
+    const onResize = () => {
         if (window.innerWidth > breakpoint) {
             dotnetRef.invokeMethodAsync('OnResizedToDesktop');
         }
-    }
+    };
     window._desktopResizeHandler = onResize;
     window.addEventListener('resize', onResize);
 };
 
-window.removeDesktopResizeRedirect = function () {
+window.removeDesktopResizeRedirect = () => {
     if (window._desktopResizeHandler) {
         window.removeEventListener('resize', window._desktopResizeHandler);
         window._desktopResizeHandler = null;
     }
 };
 
-// ── Global navigation loading bar ────────────────────────────────────────────
-(function () {
-    var bar   = null;
-    var fill  = null;
-    var timer = null;
-    var prog  = 0;
+// ── Global navigation loading bar ─────────────────────────────────────────────
+(() => {
+    let bar   = null;
+    let fill  = null;
+    let timer = null;
+    let prog  = 0;
 
-    function getBar() {
-        if (!bar) { bar = document.getElementById('nav-loading-bar'); fill = document.getElementById('nav-loading-bar__fill'); }
+    const getBar = () => {
+        if (!bar) {
+            bar  = document.getElementById('nav-loading-bar');
+            fill = document.getElementById('nav-loading-bar__fill');
+        }
         return bar;
-    }
+    };
 
-    function start() {
-        var b = getBar(); if (!b) return;
+    const start = () => {
+        const b = getBar(); if (!b) return;
         clearTimeout(timer);
         prog = 20;
-        fill.style.width = prog + '%';
+        fill.style.width = `${prog}%`;
         b.classList.remove('is-done');
         b.classList.add('is-loading');
         // Fake progress: creep toward 85% while waiting
-        timer = setInterval(function () {
-            if (prog < 85) { prog += (85 - prog) * 0.08; fill.style.width = prog + '%'; }
+        timer = setInterval(() => {
+            if (prog < 85) { prog += (85 - prog) * 0.08; fill.style.width = `${prog}%`; }
         }, 200);
-    }
+    };
 
-    function done() {
-        var b = getBar(); if (!b) return;
+    const done = () => {
+        const b = getBar(); if (!b) return;
         clearInterval(timer);
         b.classList.add('is-done');
-        setTimeout(function () { b.classList.remove('is-loading', 'is-done'); fill.style.width = '0%'; }, 350);
-    }
+        setTimeout(() => { b.classList.remove('is-loading', 'is-done'); fill.style.width = '0%'; }, 350);
+    };
 
-    function isInternal(href) {
+    const isInternal = (href) => {
         if (!href) return false;
         if (href.startsWith('#') || href.startsWith('javascript') || href.startsWith('mailto')) return false;
-        try { var url = new URL(href, window.location.origin); return url.origin === window.location.origin; }
-        catch (e) { return true; }
-    }
+        try { return new URL(href, window.location.origin).origin === window.location.origin; }
+        catch { return true; }
+    };
 
     // Show on internal link clicks
-    document.addEventListener('mousedown', function (e) {
-        var a = e.target.closest('a[href]');
+    document.addEventListener('mousedown', (e) => {
+        const a = e.target.closest('a[href]');
         if (a && isInternal(a.getAttribute('href')) && !a.getAttribute('download') && !a.getAttribute('target')) {
             start();
         }
     });
 
     // Show on button/submit clicks (forms, admin actions)
-    document.addEventListener('mousedown', function (e) {
-        var btn = e.target.closest('button:not([type="button"]):not(.admin-btn--ghost):not(.admin-btn--danger)');
+    document.addEventListener('mousedown', (e) => {
+        const btn = e.target.closest('button:not([type="button"]):not(.admin-btn--ghost):not(.admin-btn--danger)');
         if (btn && !btn.closest('form[method="get"]')) {
             start();
             // Auto-hide after 4s in case nothing navigates
@@ -112,53 +113,52 @@ window.removeDesktopResizeRedirect = function () {
 
     // Hide when Blazor enhanced navigation completes
     document.addEventListener('blazor:navigated', done);
-    if (window.Blazor) { try { window.Blazor.addEventListener('enhancedload', done); } catch (e) {} }
+    if (window.Blazor) { try { window.Blazor.addEventListener('enhancedload', done); } catch { } }
     window.addEventListener('load', done);
 
     // Expose for manual control
-    window.navLoading = { start: start, done: done };
+    window.navLoading = { start, done };
 })();
 
 // ── PDF download helper ───────────────────────────────────────────────────────
-window.downloadFileFromBytes = function (filename, mimeType, bytes) {
-    var blob = new Blob([new Uint8Array(bytes)], { type: mimeType });
-    var url  = URL.createObjectURL(blob);
-    var a    = document.createElement('a');
+window.downloadFileFromBytes = (filename, mimeType, bytes) => {
+    const blob = new Blob([new Uint8Array(bytes)], { type: mimeType });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
     a.href = url; a.download = filename; a.click();
     URL.revokeObjectURL(url);
 };
 
 // ── Select wrap ───────────────────────────────────────────────────────────────
 // Event delegation — works regardless of when Blazor renders the elements
-document.addEventListener('mousedown', function (e) {
-    var sel = e.target.closest('.admin-select-wrap select');
+document.addEventListener('mousedown', (e) => {
+    const sel = e.target.closest('.admin-select-wrap select');
     if (!sel) return;
-    var wrap = sel.closest('.admin-select-wrap');
-    wrap.classList.toggle('is-open');
+    sel.closest('.admin-select-wrap').classList.toggle('is-open');
 });
 
-document.addEventListener('change', function (e) {
-    var sel = e.target.closest('.admin-select-wrap select');
+document.addEventListener('change', (e) => {
+    const sel = e.target.closest('.admin-select-wrap select');
     if (!sel) return;
     sel.closest('.admin-select-wrap').classList.remove('is-open');
 });
 
-document.addEventListener('blur', function (e) {
-    var sel = e.target.closest('.admin-select-wrap select');
+document.addEventListener('blur', (e) => {
+    const sel = e.target.closest('.admin-select-wrap select');
     if (!sel) return;
     sel.closest('.admin-select-wrap').classList.remove('is-open');
 }, true);
 
 // ── Table of Contents ─────────────────────────────────────────────────────────
-window.initToc = function (dotnetRef, headingIds) {
-    var content = document.querySelector('.blog-post__content');
+window.initToc = (dotnetRef, headingIds) => {
+    const content = document.querySelector('.blog-post__content');
     if (!content) return;
 
     // 1. Inject id attributes into h2/h3 elements to match the TOC anchors
-    var headings = content.querySelectorAll('h2, h3');
-    headings.forEach(function (h) {
-        var text = h.textContent.trim();
-        var id = text.toLowerCase()
+    const headings = content.querySelectorAll('h2, h3');
+    headings.forEach(h => {
+        const id = h.textContent.trim()
+            .toLowerCase()
             .replace(/[^a-z0-9\s-]/g, '')
             .trim()
             .replace(/\s+/g, '-');
@@ -166,38 +166,36 @@ window.initToc = function (dotnetRef, headingIds) {
     });
 
     // 2. IntersectionObserver to track active heading
-    var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
             if (entry.isIntersecting) {
                 dotnetRef.invokeMethodAsync('SetActiveHeading', entry.target.id);
             }
         });
     }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
 
-    headings.forEach(function (h) { if (h.id) observer.observe(h); });
+    headings.forEach(h => { if (h.id) observer.observe(h); });
     window._tocObserver = observer;
 };
 
-window.destroyToc = function () {
-    if (window._tocObserver) {
-        window._tocObserver.disconnect();
-        window._tocObserver = null;
-    }
+window.destroyToc = () => {
+    window._tocObserver?.disconnect();
+    window._tocObserver = null;
 };
 
-// ── Reading progress bar ───────────────────────────────────────────────────────
-window.initReadingProgress = function () {
-    var bar = document.getElementById('reading-progress-bar');
+// ── Reading progress bar ──────────────────────────────────────────────────────
+window.initReadingProgress = () => {
+    const bar = document.getElementById('reading-progress-bar');
     if (!bar) return;
 
-    window._readingProgressHandler = function () {
-        var content = document.querySelector('.blog-post__content');
-        if (!content || !bar) return;
-        var top = content.getBoundingClientRect().top + window.scrollY;
-        var height = content.offsetHeight;
-        var scrolled = window.scrollY - top;
-        var pct = Math.min(100, Math.max(0, (scrolled / height) * 100));
-        bar.style.width = pct + '%';
+    window._readingProgressHandler = () => {
+        const content = document.querySelector('.blog-post__content');
+        if (!content) return;
+        const top     = content.getBoundingClientRect().top + window.scrollY;
+        const height  = content.offsetHeight;
+        const scrolled = window.scrollY - top;
+        const pct = Math.min(100, Math.max(0, (scrolled / height) * 100));
+        bar.style.width = `${pct}%`;
     };
 
     window.addEventListener('scroll', window._readingProgressHandler, { passive: true });
@@ -205,13 +203,11 @@ window.initReadingProgress = function () {
 };
 
 // ── Back to top button ────────────────────────────────────────────────────────
-(function () {
-    var btn = null;
-    function getBtn() { return btn || (btn = document.getElementById('back-to-top')); }
-    window.addEventListener('scroll', function () {
-        var b = getBtn();
-        if (!b) return;
-        b.classList.toggle('is-visible', window.scrollY > 400);
+(() => {
+    let btn = null;
+    const getBtn = () => btn || (btn = document.getElementById('back-to-top'));
+    window.addEventListener('scroll', () => {
+        getBtn()?.classList.toggle('is-visible', window.scrollY > 400);
     }, { passive: true });
 })();
 
@@ -220,64 +216,65 @@ window.initReadingProgress = function () {
 // Returns the new theme string so the Blazor component can update its icon state.
 // Using the DOM as source-of-truth avoids race conditions where the C# _theme
 // field hasn't been synced yet when the user clicks the toggle button.
-window.toggleTheme = function () {
-    var current = document.documentElement.getAttribute('data-theme') || 'dark';
-    var next = current === 'light' ? 'dark' : 'light';
+window.toggleTheme = () => {
+    const current = document.documentElement.getAttribute('data-theme') ?? 'dark';
+    const next = current === 'light' ? 'dark' : 'light';
     window.setTheme(next);
-    try { localStorage.setItem('theme', next); } catch (e) {}
+    try { localStorage.setItem('theme', next); } catch { }
     return next;
 };
 
-window.setTheme = function (theme) {
-    var t = theme || 'dark';
+window.setTheme = (theme) => {
+    const t = theme ?? 'dark';
     document.documentElement.setAttribute('data-theme', t);
     // Persist as a cookie so the server can pre-render data-theme on <html>
     // on the next request — eliminates the dark-flash on reload entirely.
-    document.cookie = 'theme=' + t + ';path=/;max-age=31536000;samesite=lax';
-    var meta = document.querySelector('meta[name="color-scheme"]');
-    if (meta) { meta.setAttribute('content', t === 'light' ? 'light' : 'dark'); }
+    document.cookie = `theme=${t};path=/;max-age=31536000;samesite=lax`;
+    const meta = document.querySelector('meta[name="color-scheme"]');
+    meta?.setAttribute('content', t === 'light' ? 'light' : 'dark');
 };
 
 // Returns the stored user preference, or falls back to the OS/system preference.
 // Used by Blazor components on first render to sync the toggle icon without
 // having to pass the same logic down from every page.
-window.getUserTheme = function () {
+window.getUserTheme = () => {
     // Cookie is the authoritative source (also readable server-side).
-    var cookie = document.cookie.split(';').map(function(c){return c.trim();})
-        .find(function(c){return c.startsWith('theme=');});
+    const cookie = document.cookie.split(';')
+        .map(c => c.trim())
+        .find(c => c.startsWith('theme='));
     if (cookie) {
-        var val = cookie.split('=')[1];
+        const val = cookie.split('=')[1];
         if (val === 'light' || val === 'dark') { return val; }
     }
     // Fallback: localStorage (legacy), then OS preference.
-    var stored = localStorage.getItem('theme');
+    const stored = localStorage.getItem('theme');
     if (stored === 'light' || stored === 'dark') { return stored; }
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
 
 // ── Code block copy buttons ───────────────────────────────────────────────────
-window.initCodeCopy = function (copyLabel, copiedLabel) {
-    var content = document.querySelector('.blog-post__content');
+window.initCodeCopy = (copyLabel, copiedLabel) => {
+    const content = document.querySelector('.blog-post__content');
     if (!content) return;
 
-    content.querySelectorAll('pre').forEach(function (pre) {
+    content.querySelectorAll('pre').forEach(pre => {
         if (pre.querySelector('.code-copy-btn')) return; // already added
-        var btn = document.createElement('button');
+        const btn = document.createElement('button');
         btn.className = 'code-copy-btn';
         btn.setAttribute('type', 'button');
-        btn.setAttribute('aria-label', copyLabel || 'Copy');
-        btn.innerHTML = '<i class="bi bi-clipboard"></i> ' + (copyLabel || 'Copy');
+        btn.setAttribute('aria-label', copyLabel ?? 'Copy');
+        btn.innerHTML = `<i class="bi bi-clipboard"></i> ${copyLabel ?? 'Copy'}`;
         pre.style.position = 'relative';
         pre.appendChild(btn);
 
-        btn.addEventListener('click', function () {
-            var code = pre.querySelector('code');
-            var text = code ? code.innerText : pre.innerText;
-            navigator.clipboard.writeText(text).then(function () {
-                btn.innerHTML = '<i class="bi bi-check2"></i> ' + (copiedLabel || 'Copied!');
+        btn.addEventListener('click', () => {
+            const code = pre.querySelector('code');
+            const text = code ? code.innerText : pre.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.innerHTML = `<i class="bi bi-check2"></i> ${copiedLabel ?? 'Copied!'}`;
                 btn.classList.add('is-copied');
-                setTimeout(function () {
-                    btn.innerHTML = '<i class="bi bi-clipboard"></i> ' + (copyLabel || 'Copy');
+                setTimeout(() => {
+                    btn.innerHTML = `<i class="bi bi-clipboard"></i> ${copyLabel ?? 'Copy'}`;
                     btn.classList.remove('is-copied');
                 }, 2000);
             });
@@ -285,20 +282,18 @@ window.initCodeCopy = function (copyLabel, copiedLabel) {
     });
 };
 
-window.destroyCodeCopy = function () {
-    document.querySelectorAll('.code-copy-btn').forEach(function (btn) { btn.remove(); });
+window.destroyCodeCopy = () => {
+    document.querySelectorAll('.code-copy-btn').forEach(btn => btn.remove());
 };
 
 // ── Clipboard copy ─────────────────────────────────────────────────────────────
-window.copyToClipboard = function (text) {
-    return navigator.clipboard.writeText(text);
-};
+window.copyToClipboard = (text) => navigator.clipboard.writeText(text);
 
-window.destroyReadingProgress = function () {
+window.destroyReadingProgress = () => {
     if (window._readingProgressHandler) {
         window.removeEventListener('scroll', window._readingProgressHandler);
         window._readingProgressHandler = null;
     }
-    var bar = document.getElementById('reading-progress-bar');
+    const bar = document.getElementById('reading-progress-bar');
     if (bar) bar.style.width = '0%';
 };
