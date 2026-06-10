@@ -3,9 +3,10 @@
   "rules": {
     "color-no-invalid-hex":          true,
     "declaration-block-no-duplicate-properties": true,
-    "no-duplicate-selectors":        true,
     "property-no-unknown":           true,
     "unit-no-unknown":               true,
+    "scss/at-rule-no-unknown":       true,
+    "scss/no-duplicate-mixins":      true,
 
     "alpha-value-notation":          null,
     "color-function-notation":       null,
@@ -14,18 +15,19 @@
     "declaration-empty-line-before": null,
     "rule-empty-line-before":        null,
     "at-rule-empty-line-before":     null,
-    "scss/at-rule-no-unknown":       true,
-    "scss/no-duplicate-mixins":      true,
-
     "no-descending-specificity":     null,
+    "no-duplicate-selectors":        null,
     "import-notation":               null,
     "selector-class-pattern":        null,
     "keyframes-name-pattern":        null,
     "scss/dollar-variable-pattern":  null,
     "scss/percent-placeholder-pattern": null,
+    "scss/double-slash-comment-empty-line-before": null,
     "value-keyword-case":            null,
     "font-family-no-missing-generic-family-keyword": null,
     "shorthand-property-no-redundant-values": null,
-    "declaration-block-no-redundant-longhand-properties": null
+    "declaration-block-no-redundant-longhand-properties": null,
+    "media-feature-range-notation":  null,
+    "declaration-block-single-line-max-declarations": null
   }
 }
