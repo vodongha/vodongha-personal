@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Caching.Memory;
 using System.Security.Cryptography;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication;
@@ -240,15 +241,31 @@ app.MapGet("/api/cv/download", async (
     IDbContextFactory<AppDbContext> dbFactory,
     SiteSettingService settingsSvc,
     CvPdfService cvPdf,
+    IMemoryCache cache,
     ILogger<Program> logger,
     IWebHostEnvironment env,
     int template = 0) =>
 {
+    string cacheKey = $"cv_pdf_t{template}";
+    if (cache.TryGetValue(cacheKey, out byte[]? cached) && cached is not null)
+    {
+        logger.LogInformation("CV download: serving cached PDF, template={T}", template);
+        return Results.File(cached, "application/pdf", "cv.pdf");
+    }
+
     try
     {
-        Dictionary<string, string> settings = await settingsSvc.GetAllAsync();
+        // Run settings load and all DB queries in parallel
+        Task<Dictionary<string, string>> settingsTask = settingsSvc.GetAllAsync();
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+        Task<List<Skill>> skillsTask = db.Skills.OrderBy(s => s.Order).ToListAsync();
+        Task<List<Experience>> expTask = db.Experiences.OrderBy(e => e.Order).ToListAsync();
+        Task<List<Education>> eduTask = db.Educations.OrderBy(e => e.Order).ToListAsync();
+        Task<List<Project>> projTask = db.Projects.OrderBy(p => p.Order).ToListAsync();
 
+        await Task.WhenAll(settingsTask, skillsTask, expTask, eduTask, projTask);
+
+        Dictionary<string, string> settings = settingsTask.Result;
         CvData data = new(
             Name: settings.GetValueOrDefault("Name", ""),
             Title: settings.GetValueOrDefault("Title", ""),
@@ -259,10 +276,10 @@ app.MapGet("/api/cv/download", async (
             LinkedIn: settings.GetValueOrDefault("LinkedIn", ""),
             Bio: settings.GetValueOrDefault("BioEn", settings.GetValueOrDefault("Bio", "")),
             AvatarUrl: settings.GetValueOrDefault("AvatarUrl", ""),
-            Skills: await db.Skills.OrderBy(s => s.Order).ToListAsync(),
-            Experiences: await db.Experiences.OrderBy(e => e.Order).ToListAsync(),
-            Educations: await db.Educations.OrderBy(e => e.Order).ToListAsync(),
-            Projects: await db.Projects.OrderBy(p => p.Order).ToListAsync()
+            Skills: skillsTask.Result,
+            Experiences: expTask.Result,
+            Educations: eduTask.Result,
+            Projects: projTask.Result
         );
 
         // Pre-load avatar — read from wwwroot filesystem first (fast, reliable),
@@ -274,7 +291,6 @@ app.MapGet("/api/cv/download", async (
             {
                 if (!data.AvatarUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Relative path — read directly from wwwroot
                     string filePath = Path.Combine(env.WebRootPath, data.AvatarUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
                     if (File.Exists(filePath))
                     {
@@ -288,7 +304,6 @@ app.MapGet("/api/cv/download", async (
                 }
                 else
                 {
-                    // Absolute URL — download via HTTP
                     using HttpClient http = new() { Timeout = TimeSpan.FromSeconds(5) };
                     avatarBytes = await http.GetByteArrayAsync(data.AvatarUrl);
                     logger.LogInformation("CV: avatar downloaded from {Url}", data.AvatarUrl);
@@ -303,8 +318,11 @@ app.MapGet("/api/cv/download", async (
         logger.LogInformation("CV download: generating PDF for {Name}, template={T}", data.Name, template);
         byte[] pdf = await Task.Run(() => cvPdf.Generate(data, template, avatarBytes));
         logger.LogInformation("CV download: PDF generated, {Bytes} bytes", pdf.Length);
-        string name = data.Name.ToLower().Replace(" ", "-");
-        return Results.File(pdf, "application/pdf", $"cv-{name}.pdf");
+
+        cache.Set(cacheKey, pdf, TimeSpan.FromMinutes(10));
+
+        string fileName = $"cv-{data.Name.ToLower().Replace(" ", "-")}.pdf";
+        return Results.File(pdf, "application/pdf", fileName);
     }
     catch (Exception ex)
     {
