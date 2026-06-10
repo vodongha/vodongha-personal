@@ -22,7 +22,11 @@ public static class AdminContactsApi
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             ContactMessage? entity = await db.ContactMessages.FindAsync(id);
-            if (entity != null) { entity.IsRead = true; await db.SaveChangesAsync(); }
+            if (entity != null)
+            {
+                entity.IsRead = true;
+                await db.SaveChangesAsync();
+            }
             return Results.Ok();
         }).DisableAntiforgery();
 
