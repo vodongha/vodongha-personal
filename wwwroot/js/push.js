@@ -1,71 +1,50 @@
 window.pushUtils = {
     _vapidPublicKey: null,
 
-    // Convert VAPID public key from base64url to Uint8Array
-    _urlBase64ToUint8Array: function (base64String) {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-        const rawData = atob(base64);
-        return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
-    },
-
-    init: function (vapidPublicKey) {
+    init(vapidPublicKey) {
         this._vapidPublicKey = vapidPublicKey;
     },
 
-    isSupported: function () {
+    isSupported() {
         return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
     },
 
-    getPermission: function () {
+    getPermission() {
         return Notification.permission; // 'default' | 'granted' | 'denied'
     },
 
-    getNotificationHelpUrl: function () {
+    getNotificationHelpUrl() {
         const ua = navigator.userAgent;
-        const isIOS = /iPad|iPhone|iPod/.test(ua);
-        const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
-        const isFirefox = /Firefox\//.test(ua);
-        const isEdge = /Edg\//.test(ua);
+        const isIOS           = /iPad|iPhone|iPod/.test(ua);
+        const isSafari        = /^((?!chrome|android).)*safari/i.test(ua);
+        const isFirefox       = /Firefox\//.test(ua);
+        const isEdge          = /Edg\//.test(ua);
         const isSamsungBrowser = /SamsungBrowser\//.test(ua);
-        const isOpera = /OPR\/|Opera\//.test(ua);
+        const isOpera         = /OPR\/|Opera\//.test(ua);
 
-        if (isIOS || isSafari) {
-            return 'https://support.apple.com/guide/safari/customize-website-notifications-sfri40734/mac';
-        }
-        if (isFirefox) {
-            return 'https://support.mozilla.org/kb/push-notifications-firefox';
-        }
-        if (isEdge) {
-            return 'https://support.microsoft.com/microsoft-edge/manage-website-notifications-in-microsoft-edge';
-        }
-        if (isSamsungBrowser) {
-            return 'https://www.samsung.com/global/galaxy/apps/samsung-internet/';
-        }
-        if (isOpera) {
-            return 'https://help.opera.com/latest/web-preferences/';
-        }
-        // Default: Chrome / Chromium
+        if (isIOS || isSafari)    return 'https://support.apple.com/guide/safari/customize-website-notifications-sfri40734/mac';
+        if (isFirefox)            return 'https://support.mozilla.org/kb/push-notifications-firefox';
+        if (isEdge)               return 'https://support.microsoft.com/microsoft-edge/manage-website-notifications-in-microsoft-edge';
+        if (isSamsungBrowser)     return 'https://www.samsung.com/global/galaxy/apps/samsung-internet/';
+        if (isOpera)              return 'https://help.opera.com/latest/web-preferences/';
         return 'https://support.google.com/chrome/answer/3220216';
     },
 
     /// Register SW + subscribe. Returns serialized subscription JSON or null on failure.
-    subscribe: async function () {
+    async subscribe() {
         if (!this.isSupported() || !this._vapidPublicKey) return null;
 
         try {
-            // Register service worker
             const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
             await navigator.serviceWorker.ready;
 
-            // Request notification permission
             const permission = await Notification.requestPermission();
             if (permission !== 'granted') return null;
 
-            // Subscribe to push
+            // ES2026: Uint8Array.fromBase64 with base64url alphabet replaces manual atob conversion
             const subscription = await reg.pushManager.subscribe({
                 userVisibleOnly: true,
-                applicationServerKey: this._urlBase64ToUint8Array(this._vapidPublicKey)
+                applicationServerKey: Uint8Array.fromBase64(this._vapidPublicKey, { alphabet: 'base64url' })
             });
 
             return JSON.stringify(subscription);
@@ -76,7 +55,7 @@ window.pushUtils = {
     },
 
     /// Unsubscribe and return the endpoint so server can clean up.
-    unsubscribe: async function () {
+    async unsubscribe() {
         if (!this.isSupported()) return null;
         try {
             const reg = await navigator.serviceWorker.getRegistration('/');
