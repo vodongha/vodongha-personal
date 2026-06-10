@@ -25,24 +25,24 @@ public record CvData(
 public class CvPdfService
 {
     // ── Shared colors ────────────────────────────────────────────────────────
-    private static readonly string MainText    = "#1e293b";
-    private static readonly string MainMuted   = "#64748b";
+    private static readonly string MainText = "#1e293b";
+    private static readonly string MainMuted = "#64748b";
     private static readonly string DividerLine = "#e2e8f0";
 
     // ── Template 0 — Dark Sidebar ────────────────────────────────────────────
-    private static readonly string SidebarBg   = "#0f1923";
+    private static readonly string SidebarBg = "#0f1923";
     private static readonly string AccentGreen = "#6ee7b7";
     private static readonly string SidebarText = "#cbd5e1";
 
     // ── Template 1 — Minimal ────────────────────────────────────────────────
     private static readonly string MinimalAccent = "#059669";
-    private static readonly string MinimalMuted  = "#6b7280";
+    private static readonly string MinimalMuted = "#6b7280";
     private static readonly string MinimalSideBg = "#f8fafc";
 
     // ── Template 2 — Professional ───────────────────────────────────────────
-    private static readonly string ProHeader    = "#1e3a5f";
-    private static readonly string ProAccent    = "#3b82f6";
-    private static readonly string ProLight     = "#eff6ff";
+    private static readonly string ProHeader = "#1e3a5f";
+    private static readonly string ProAccent = "#3b82f6";
+    private static readonly string ProLight = "#eff6ff";
 
     // ── Dispatch ─────────────────────────────────────────────────────────────
     public byte[] Generate(CvData cv, int template = 0, byte[]? avatarBytes = null)
@@ -133,11 +133,11 @@ public class CvPdfService
 
                         // Contact
                         SidebarLabel(col, "CONTACT", AccentGreen);
-                        if (!string.IsNullOrEmpty(cv.Email))    { SidebarContactRow(col, "Email", cv.Email, SidebarText, AccentGreen); }
-                        if (!string.IsNullOrEmpty(cv.Phone))    { SidebarContactRow(col, "Tel",   cv.Phone, SidebarText, AccentGreen); }
-                        if (!string.IsNullOrEmpty(cv.Location)) { SidebarContactRow(col, "Loc",   cv.Location, SidebarText, AccentGreen); }
-                        if (!string.IsNullOrEmpty(cv.GitHub))   { SidebarContactRow(col, "Git",   cv.GitHub.Replace("https://github.com/", "github.com/"), SidebarText, AccentGreen); }
-                        if (!string.IsNullOrEmpty(cv.LinkedIn)) { SidebarContactRow(col, "in",    cv.LinkedIn.Replace("https://linkedin.com/in/", "linkedin.com/in/").Replace("https://www.linkedin.com/in/", "linkedin.com/in/"), SidebarText, AccentGreen); }
+                        if (!string.IsNullOrEmpty(cv.Email)) { SidebarContactRow(col, "Email", cv.Email, SidebarText, AccentGreen); }
+                        if (!string.IsNullOrEmpty(cv.Phone)) { SidebarContactRow(col, "Tel", cv.Phone, SidebarText, AccentGreen); }
+                        if (!string.IsNullOrEmpty(cv.Location)) { SidebarContactRow(col, "Loc", cv.Location, SidebarText, AccentGreen); }
+                        if (!string.IsNullOrEmpty(cv.GitHub)) { SidebarContactRow(col, "Git", cv.GitHub.Replace("https://github.com/", "github.com/"), SidebarText, AccentGreen); }
+                        if (!string.IsNullOrEmpty(cv.LinkedIn)) { SidebarContactRow(col, "in", cv.LinkedIn.Replace("https://linkedin.com/in/", "linkedin.com/in/").Replace("https://www.linkedin.com/in/", "linkedin.com/in/"), SidebarText, AccentGreen); }
 
                         // Skills
                         if (cv.Skills.Count > 0)
@@ -224,13 +224,13 @@ public class CvPdfService
                                 }
                                 c.Item().PaddingTop(6).Row(cr =>
                                 {
-                                    if (!string.IsNullOrEmpty(cv.Email))   { InlineContact(cr, cv.Email, MinimalMuted); }
-                                    if (!string.IsNullOrEmpty(cv.Phone))   { InlineContact(cr, cv.Phone, MinimalMuted); }
+                                    if (!string.IsNullOrEmpty(cv.Email)) { InlineContact(cr, cv.Email, MinimalMuted); }
+                                    if (!string.IsNullOrEmpty(cv.Phone)) { InlineContact(cr, cv.Phone, MinimalMuted); }
                                     if (!string.IsNullOrEmpty(cv.Location)) { InlineContact(cr, cv.Location, MinimalMuted); }
                                 });
                                 c.Item().PaddingTop(2).Row(cr =>
                                 {
-                                    if (!string.IsNullOrEmpty(cv.GitHub))   { InlineContact(cr, cv.GitHub.Replace("https://github.com/", "github.com/"), MinimalAccent); }
+                                    if (!string.IsNullOrEmpty(cv.GitHub)) { InlineContact(cr, cv.GitHub.Replace("https://github.com/", "github.com/"), MinimalAccent); }
                                     if (!string.IsNullOrEmpty(cv.LinkedIn)) { InlineContact(cr, cv.LinkedIn.Replace("https://www.linkedin.com/in/", "linkedin.com/in/").Replace("https://linkedin.com/in/", "linkedin.com/in/"), MinimalAccent); }
                                 });
                             });
@@ -325,13 +325,13 @@ public class CvPdfService
                             }
                             c.Item().PaddingTop(8).Row(cr =>
                             {
-                                if (!string.IsNullOrEmpty(cv.Email))    { ProContact(cr, cv.Email); }
-                                if (!string.IsNullOrEmpty(cv.Phone))    { ProContact(cr, cv.Phone); }
+                                if (!string.IsNullOrEmpty(cv.Email)) { ProContact(cr, cv.Email); }
+                                if (!string.IsNullOrEmpty(cv.Phone)) { ProContact(cr, cv.Phone); }
                                 if (!string.IsNullOrEmpty(cv.Location)) { ProContact(cr, cv.Location); }
                             });
                             c.Item().PaddingTop(3).Row(cr =>
                             {
-                                if (!string.IsNullOrEmpty(cv.GitHub))   { ProContact(cr, cv.GitHub.Replace("https://github.com/", "github.com/")); }
+                                if (!string.IsNullOrEmpty(cv.GitHub)) { ProContact(cr, cv.GitHub.Replace("https://github.com/", "github.com/")); }
                                 if (!string.IsNullOrEmpty(cv.LinkedIn)) { ProContact(cr, cv.LinkedIn.Replace("https://www.linkedin.com/in/", "linkedin.com/in/").Replace("https://linkedin.com/in/", "linkedin.com/in/")); }
                             });
                         });
@@ -393,7 +393,11 @@ public class CvPdfService
 
     private static void BuildExperience(ColumnDescriptor col, CvData cv, string accent)
     {
-        if (cv.Experiences.Count == 0) return;
+        if (cv.Experiences.Count == 0)
+        {
+            return;
+        }
+
         MainSectionTitle(col, "EXPERIENCE", accent);
         col.Item().Column(expCol =>
         {
@@ -429,7 +433,11 @@ public class CvPdfService
 
     private static void BuildEducation(ColumnDescriptor col, CvData cv, string accent)
     {
-        if (cv.Educations.Count == 0) return;
+        if (cv.Educations.Count == 0)
+        {
+            return;
+        }
+
         MainSectionTitle(col, "EDUCATION", accent);
         col.Item().Column(eduCol =>
         {
@@ -461,7 +469,11 @@ public class CvPdfService
     private static void BuildProjects(ColumnDescriptor col, CvData cv, string accent)
     {
         List<Project> featured = cv.Projects.Where(p => p.IsFeatured).OrderBy(p => p.Order).Take(4).ToList();
-        if (featured.Count == 0) return;
+        if (featured.Count == 0)
+        {
+            return;
+        }
+
         MainSectionTitle(col, "FEATURED PROJECTS", accent);
         col.Item().Column(projCol =>
         {
@@ -570,9 +582,18 @@ public class CvPdfService
 
     private static string MonthShort(int month) => month switch
     {
-        1 => "Jan", 2 => "Feb", 3 => "Mar", 4 => "Apr",
-        5 => "May", 6 => "Jun", 7 => "Jul", 8 => "Aug",
-        9 => "Sep", 10 => "Oct", 11 => "Nov", 12 => "Dec",
+        1 => "Jan",
+        2 => "Feb",
+        3 => "Mar",
+        4 => "Apr",
+        5 => "May",
+        6 => "Jun",
+        7 => "Jul",
+        8 => "Aug",
+        9 => "Sep",
+        10 => "Oct",
+        11 => "Nov",
+        12 => "Dec",
         _ => ""
     };
 }

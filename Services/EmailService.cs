@@ -19,8 +19,8 @@ public class EmailService(IResend resend, AppSecretsService secrets, ILogger<Ema
 
             EmailMessage email = new()
             {
-                From    = "VodonghaPersonal.id.vn <no-reply@VodonghaPersonal.id.vn>",
-                To      = [notifyTo],
+                From = "VodonghaPersonal.id.vn <no-reply@VodonghaPersonal.id.vn>",
+                To = [notifyTo],
                 Subject = $"[Contact] {subject}",
                 TextBody = $"""
                     Tin nhắn mới từ VodonghaPersonal.id.vn

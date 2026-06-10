@@ -16,14 +16,14 @@ namespace VodonghaPersonal.Migrations
                 name: "PushSubscriptions",
                 columns: table => new
                 {
-                    Id           = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Endpoint     = table.Column<string>(nullable: false),
-                    P256DH       = table.Column<string>(nullable: false),
-                    Auth         = table.Column<string>(nullable: false),
+                    Endpoint = table.Column<string>(nullable: false),
+                    P256DH = table.Column<string>(nullable: false),
+                    Auth = table.Column<string>(nullable: false),
                     ChatSessionId = table.Column<int>(nullable: true),
-                    IsAdmin      = table.Column<bool>(nullable: false),
-                    CreatedAt    = table.Column<DateTime>(nullable: false)
+                    IsAdmin = table.Column<bool>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {

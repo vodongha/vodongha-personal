@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using VodonghaPersonal.Data;
 using VodonghaPersonal.Data.Models;
 using WebPush;
@@ -16,9 +16,9 @@ public class PushNotificationService
     private readonly WebPushClient _client;
 
     // Lazily resolved so DB overrides (set after startup) take effect on next send.
-    private string GetPublicKey()  => _secrets.GetValue("Push:VapidPublicKey")  ?? _config["Push:VapidPublicKey"]  ?? "";
+    private string GetPublicKey() => _secrets.GetValue("Push:VapidPublicKey") ?? _config["Push:VapidPublicKey"] ?? "";
     private string GetPrivateKey() => _secrets.GetValue("Push:VapidPrivateKey") ?? _config["Push:VapidPrivateKey"] ?? "";
-    private string GetSubject()    => _secrets.GetValue("Push:VapidSubject")    ?? _config["Push:VapidSubject"]    ?? "mailto:admin@example.com";
+    private string GetSubject() => _secrets.GetValue("Push:VapidSubject") ?? _config["Push:VapidSubject"] ?? "mailto:admin@example.com";
 
     public string PublicKey => GetPublicKey();
 
@@ -29,10 +29,10 @@ public class PushNotificationService
         IConfiguration config)
     {
         _dbFactory = dbFactory;
-        _logger    = logger;
-        _secrets   = secrets;
-        _config    = config;
-        _client    = new WebPushClient();
+        _logger = logger;
+        _secrets = secrets;
+        _config = config;
+        _client = new WebPushClient();
     }
 
     // ── Subscription management ───────────────────────────────────────────────

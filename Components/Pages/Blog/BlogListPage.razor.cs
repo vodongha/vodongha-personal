@@ -11,8 +11,8 @@ public partial class BlogListPage : ComponentBase, IDisposable
     [Inject] private NavigationManager Nav { get; set; } = default!;
 
     [SupplyParameterFromQuery(Name = "page")] public int PageParam { get; set; } = 1;
-    [SupplyParameterFromQuery(Name = "tag")]  public string? TagParam { get; set; }
-    [SupplyParameterFromQuery(Name = "q")]    public string? QParam { get; set; }
+    [SupplyParameterFromQuery(Name = "tag")] public string? TagParam { get; set; }
+    [SupplyParameterFromQuery(Name = "q")] public string? QParam { get; set; }
 
     private const int PageSize = 6;
 
@@ -107,8 +107,8 @@ public partial class BlogListPage : ComponentBase, IDisposable
         Dictionary<string, object?> query = new()
         {
             ["page"] = page > 1 ? page : null,
-            ["tag"]  = string.IsNullOrEmpty(_selectedTag) ? null : _selectedTag,
-            ["q"]    = string.IsNullOrWhiteSpace(_searchQuery) ? null : _searchQuery.Trim(),
+            ["tag"] = string.IsNullOrEmpty(_selectedTag) ? null : _selectedTag,
+            ["q"] = string.IsNullOrWhiteSpace(_searchQuery) ? null : _searchQuery.Trim(),
         };
 
         string url = Nav.GetUriWithQueryParameters("/blog", query!);

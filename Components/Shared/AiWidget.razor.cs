@@ -12,13 +12,13 @@ public partial class AiWidget : ComponentBase, IDisposable
 
     private readonly record struct AiDisplayMessage(string Text, bool IsUser);
 
-    private readonly List<AiDisplayMessage>    _messages = [];
-    private readonly List<AiService.AiMessage> _history  = [];
+    private readonly List<AiDisplayMessage> _messages = [];
+    private readonly List<AiService.AiMessage> _history = [];
 
-    private string _input        = "";
-    private bool   _open         = false;
-    private bool   _thinking     = false;
-    private int    _questionCount = 0;
+    private string _input = "";
+    private bool _open = false;
+    private bool _thinking = false;
+    private int _questionCount = 0;
     private string _modelDisplay = "Gemini";
 
     protected override void OnInitialized() => Lang.OnChange += OnLangChanged;
@@ -31,17 +31,17 @@ public partial class AiWidget : ComponentBase, IDisposable
 
     private static string FormatModelName(string model) => model switch
     {
-        "gemini-2.5-flash"         => "Gemini 2.5 Flash",
-        "gemini-2.5-pro"           => "Gemini 2.5 Pro",
-        "gemini-2.0-flash"         => "Gemini 2.0 Flash",
-        "gemini-2.0-flash-lite"    => "Gemini 2.0 Flash Lite",
-        "gemini-1.5-flash"         => "Gemini 1.5 Flash",
-        "gemini-1.5-pro"           => "Gemini 1.5 Pro",
-        _                          => model
+        "gemini-2.5-flash" => "Gemini 2.5 Flash",
+        "gemini-2.5-pro" => "Gemini 2.5 Pro",
+        "gemini-2.0-flash" => "Gemini 2.0 Flash",
+        "gemini-2.0-flash-lite" => "Gemini 2.0 Flash Lite",
+        "gemini-1.5-flash" => "Gemini 1.5 Flash",
+        "gemini-1.5-pro" => "Gemini 1.5 Pro",
+        _ => model
     };
 
     private void ToggleOpen() => _open = !_open;
-    private void Close()      => _open = false;
+    private void Close() => _open = false;
 
     private async Task SendAsync()
     {
@@ -107,5 +107,5 @@ public partial class AiWidget : ComponentBase, IDisposable
         ];
 
     private void OnLangChanged() => InvokeAsync(StateHasChanged);
-    public void Dispose()        => Lang.OnChange -= OnLangChanged;
+    public void Dispose() => Lang.OnChange -= OnLangChanged;
 }
