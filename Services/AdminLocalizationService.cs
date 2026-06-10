@@ -255,7 +255,7 @@ public class AdminLocalizationService
         ["System"] = "Hệ thống",
 
         // Analytics
-        ["Analytics"] = "Thống kê",
+        ["Analytics"] = "Phân tích",
         ["days"] = "ngày",
         ["Last @_days days"] = "@_days ngày qua",
         ["page views"] = "lượt xem",
