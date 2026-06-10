@@ -7,41 +7,56 @@
 
     <div class="contact__inner">
         <div class="contact__info">
-            <div class="contact__info-item">
-                <div class="contact__info-icon"><i class="bi bi-geo-alt"></i></div>
-                <div>
-                    <div class="contact__info-label">@(Lang.IsVi ? "Địa chỉ" : "Location")</div>
-                    <div class="contact__info-value">Ho Chi Minh City, Vietnam</div>
+            @if (!string.IsNullOrEmpty(_location))
+            {
+                <div class="contact__info-item">
+                    <div class="contact__info-icon"><i class="bi bi-geo-alt"></i></div>
+                    <div>
+                        <div class="contact__info-label">@(Lang.IsVi ? "Địa chỉ" : "Location")</div>
+                        <div class="contact__info-value">@_location</div>
+                    </div>
                 </div>
-            </div>
-            <a href="mailto:REDACTED_EMAIL" class="contact__info-item contact__info-item--link">
-                <div class="contact__info-icon"><i class="bi bi-envelope"></i></div>
-                <div>
-                    <div class="contact__info-label">Email</div>
-                    <div class="contact__info-value">REDACTED_EMAIL</div>
-                </div>
-            </a>
-            <a href="https://github.com/vodongha" target="_blank" rel="noopener" class="contact__info-item contact__info-item--link">
-                <div class="contact__info-icon"><i class="bi bi-github"></i></div>
-                <div>
-                    <div class="contact__info-label">GitHub</div>
-                    <div class="contact__info-value">github.com/vodongha</div>
-                </div>
-            </a>
-            <a href="https://www.linkedin.com/in/vodongha" target="_blank" rel="noopener" class="contact__info-item contact__info-item--link">
-                <div class="contact__info-icon"><i class="bi bi-linkedin"></i></div>
-                <div>
-                    <div class="contact__info-label">LinkedIn</div>
-                    <div class="contact__info-value">linkedin.com/in/vodongha</div>
-                </div>
-            </a>
-            <a href="https://www.facebook.com/VodonghaPersonal.fb" target="_blank" rel="noopener" class="contact__info-item contact__info-item--link">
-                <div class="contact__info-icon"><i class="bi bi-facebook"></i></div>
-                <div>
-                    <div class="contact__info-label">Facebook</div>
-                    <div class="contact__info-value">facebook.com/VodonghaPersonal.fb</div>
-                </div>
-            </a>
+            }
+            @if (!string.IsNullOrEmpty(_email))
+            {
+                <a href="mailto:@_email" class="contact__info-item contact__info-item--link">
+                    <div class="contact__info-icon"><i class="bi bi-envelope"></i></div>
+                    <div>
+                        <div class="contact__info-label">Email</div>
+                        <div class="contact__info-value">@_email</div>
+                    </div>
+                </a>
+            }
+            @if (!string.IsNullOrEmpty(_github))
+            {
+                <a href="@_github" target="_blank" rel="noopener" class="contact__info-item contact__info-item--link">
+                    <div class="contact__info-icon"><i class="bi bi-github"></i></div>
+                    <div>
+                        <div class="contact__info-label">GitHub</div>
+                        <div class="contact__info-value">@_github.Replace("https://", "").Replace("www.", "")</div>
+                    </div>
+                </a>
+            }
+            @if (!string.IsNullOrEmpty(_linkedin))
+            {
+                <a href="@_linkedin" target="_blank" rel="noopener" class="contact__info-item contact__info-item--link">
+                    <div class="contact__info-icon"><i class="bi bi-linkedin"></i></div>
+                    <div>
+                        <div class="contact__info-label">LinkedIn</div>
+                        <div class="contact__info-value">@_linkedin.Replace("https://", "").Replace("www.", "")</div>
+                    </div>
+                </a>
+            }
+            @if (!string.IsNullOrEmpty(_facebook))
+            {
+                <a href="@_facebook" target="_blank" rel="noopener" class="contact__info-item contact__info-item--link">
+                    <div class="contact__info-icon"><i class="bi bi-facebook"></i></div>
+                    <div>
+                        <div class="contact__info-label">Facebook</div>
+                        <div class="contact__info-value">@_facebook.Replace("https://", "").Replace("www.", "")</div>
+                    </div>
+                </a>
+            }
         </div>
 
         @if (_sent)

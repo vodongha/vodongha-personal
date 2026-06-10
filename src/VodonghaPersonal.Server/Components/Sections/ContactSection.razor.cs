@@ -8,10 +8,17 @@ public partial class ContactSection : ComponentBase, IDisposable
 {
     [Inject] private ContactService ContactSvc { get; set; } = default!;
     [Inject] private LanguageService Lang { get; set; } = default!;
+    [Inject] private SiteSettingService Settings { get; set; } = default!;
 
     private ContactMessage _model = new();
     private bool _sending;
     private bool _sent;
+
+    private string _location = "";
+    private string _email = "";
+    private string _github = "";
+    private string _linkedin = "";
+    private string _facebook = "";
 
     private bool CanSend =>
         !string.IsNullOrWhiteSpace(_model.Name) &&
@@ -19,13 +26,22 @@ public partial class ContactSection : ComponentBase, IDisposable
         !string.IsNullOrWhiteSpace(_model.Message) &&
         IsValidEmail(_model.Email);
 
-    // Per-field error messages (null = no error shown yet)
     private string? NameError;
     private string? EmailError;
     private string? SubjectError;
     private string? MessageError;
 
-    protected override void OnInitialized() => Lang.OnChange += StateHasChanged;
+    protected override async Task OnInitializedAsync()
+    {
+        Lang.OnChange += StateHasChanged;
+        Dictionary<string, string> s = await Settings.GetAllAsync();
+        _location = Settings.Get(s, "Location");
+        _email    = Settings.Get(s, "Email");
+        _github   = Settings.Get(s, "GitHub");
+        _linkedin = Settings.Get(s, "LinkedIn");
+        _facebook = Settings.Get(s, "Facebook");
+    }
+
     public void Dispose() => Lang.OnChange -= StateHasChanged;
 
     private void ValidateName()
