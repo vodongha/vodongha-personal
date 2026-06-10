@@ -1,0 +1,172 @@
+@page "/admin/dependencies"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveAuto
+@using Microsoft.AspNetCore.Authorization
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">
+                <i class="bi bi-box-seam"></i> @Loc.T("Dependencies")
+            </h1>
+            <div class="health-refresh">
+                <span class="health-refresh__label">@Loc.T("Cache"): 1 @Loc.T("hour")</span>
+                <button type="button" class="admin-btn admin-btn--ghost admin-btn--sm"
+                        @onclick="Refresh" disabled="@_loading">
+                    <i class="bi bi-arrow-clockwise @(_loading ? "admin-spin" : "")"></i> @Loc.T("Refresh")
+                </button>
+            </div>
+        </header>
+
+        @if (_loading)
+        {
+            <div class="dep-loading">
+                <i class="bi bi-arrow-clockwise admin-spin"></i>
+                <span>@Loc.T("Checking versions...")</span>
+            </div>
+        }
+        else if (_error is not null)
+        {
+            <div class="admin-alert admin-alert--error">@_error</div>
+        }
+        else
+        {
+            <!-- Summary chips -->
+            <div class="dep-summary">
+                @if (_outdatedCount > 0)
+                {
+                    <div class="dep-summary__chip dep-summary__chip--outdated">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span>@_outdatedCount @Loc.T("outdated")</span>
+                    </div>
+                }
+                <div class="dep-summary__chip dep-summary__chip--ok">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>@_okCount @Loc.T("up-to-date")</span>
+                </div>
+                @if (_unknownCount > 0)
+                {
+                    <div class="dep-summary__chip dep-summary__chip--unknown">
+                        <i class="bi bi-question-circle-fill"></i>
+                        <span>@_unknownCount @Loc.T("unknown")</span>
+                    </div>
+                }
+                <span class="dep-summary__updated">@Loc.T("Updated"): @_checkedAt?.ToString("HH:mm:ss") UTC</span>
+            </div>
+
+            <!-- Toolbar: search + filter -->
+            <div class="dep-toolbar">
+                <div class="dep-search">
+                    <i class="bi bi-search dep-search__icon"></i>
+                    <input @bind="_search" @bind:event="oninput"
+                           placeholder="@Loc.T("Search...")"
+                           class="dep-search__input" />
+                    @if (!string.IsNullOrEmpty(_search))
+                    {
+                        <button type="button" class="dep-search__clear" @onclick='() => _search = ""'>
+                            <i class="bi bi-x"></i>
+                        </button>
+                    }
+                </div>
+                <div class="dep-filters">
+                    <button type="button"
+                            class="dep-filter @(_typeFilter is null && _statusFilter is null && string.IsNullOrEmpty(_search) ? "dep-filter--active" : "")"
+                            @onclick="ClearFilters">
+                        @Loc.T("All")
+                    </button>
+                    @if (_outdatedCount > 0)
+                    {
+                        <button type="button"
+                                class="dep-filter dep-filter--outdated @(_statusFilter == "Outdated" ? "dep-filter--on" : "")"
+                                @onclick='() => SetStatusFilter("Outdated")'>
+                            <i class="bi bi-exclamation-triangle-fill"></i> @Loc.T("Outdated")
+                        </button>
+                    }
+                    <button type="button"
+                            class="dep-filter dep-filter--uptodate @(_statusFilter == "UpToDate" ? "dep-filter--on" : "")"
+                            @onclick='() => SetStatusFilter("UpToDate")'>
+                        <i class="bi bi-check-circle-fill"></i> @Loc.T("UpToDate")
+                    </button>
+                    <button type="button"
+                            class="dep-filter @(_typeFilter == "NuGet" ? "dep-filter--active" : "")"
+                            @onclick='() => SetTypeFilter("NuGet")'>
+                        NuGet
+                    </button>
+                    <button type="button"
+                            class="dep-filter @(_typeFilter == "Npm" ? "dep-filter--active" : "")"
+                            @onclick='() => SetTypeFilter("Npm")'>
+                        npm
+                    </button>
+                    <button type="button"
+                            class="dep-filter @(_typeFilter == "Cdn" ? "dep-filter--active" : "")"
+                            @onclick='() => SetTypeFilter("Cdn")'>
+                        CDN
+                    </button>
+                </div>
+            </div>
+
+            @if (VisibleCount == 0)
+            {
+                <div class="dep-empty">
+                    <i class="bi bi-search"></i>
+                    <span>Không tìm thấy thư viện phù hợp</span>
+                </div>
+            }
+            else
+            {
+                @foreach (var group in VisibleGroups)
+                {
+                    <section class="dep-section">
+                        <h2 class="dep-section__title">
+                            <i class="bi @GroupIcon(group.Key)"></i>
+                            @Loc.T(group.Key.ToString())
+                            <span class="dep-section__count">@group.Value.Count</span>
+                        </h2>
+
+                        <div class="dep-grid">
+                            @foreach (var dep in group.Value)
+                            {
+                                <div class="dep-card dep-card--@dep.Status.ToString().ToLowerInvariant()">
+                                    <div class="dep-card__top">
+                                        <span class="dep-card__name">@dep.Name</span>
+                                        <a href="@dep.RegistryUrl" target="_blank" rel="noopener"
+                                           class="dep-card__link" title="View on registry">
+                                            <i class="bi bi-box-arrow-up-right"></i>
+                                        </a>
+                                    </div>
+
+                                    @if (dep.Notes is not null)
+                                    {
+                                        <span class="dep-card__note">@dep.Notes</span>
+                                    }
+
+                                    <div class="dep-card__versions">
+                                        <div class="dep-card__ver">
+                                            <span class="dep-card__ver-label">@Loc.T("Current")</span>
+                                            <code class="dep-card__ver-val">@dep.CurrentVersion</code>
+                                        </div>
+                                        <i class="bi bi-arrow-right dep-card__arrow"></i>
+                                        <div class="dep-card__ver">
+                                            <span class="dep-card__ver-label">@Loc.T("Latest")</span>
+                                            <code class="dep-card__ver-val dep-card__ver-val--latest">
+                                                @(dep.LatestVersion ?? "—")
+                                            </code>
+                                        </div>
+                                    </div>
+
+                                    <span class="dep-badge dep-badge--@dep.Status.ToString().ToLowerInvariant()">
+                                        <i class="bi @StatusIcon(dep.Status)"></i>
+                                        @Loc.T(dep.Status.ToString())
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </section>
+                }
+            }
+        }
+    </main>
+</div>

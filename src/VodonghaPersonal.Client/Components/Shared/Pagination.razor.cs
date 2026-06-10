@@ -1,0 +1,48 @@
+using Microsoft.AspNetCore.Components;
+using VodonghaPersonal.Client.Services;
+
+namespace VodonghaPersonal.Client.Components.Shared;
+
+public partial class Pagination : ComponentBase
+{
+    [Inject] private LanguageService Lang { get; set; } = default!;
+
+    [Parameter, EditorRequired] public int CurrentPage { get; set; }
+    [Parameter, EditorRequired] public int TotalPages { get; set; }
+    [Parameter, EditorRequired] public EventCallback<int> OnPageChange { get; set; }
+
+    private IEnumerable<int> PageNumbers
+    {
+        get
+        {
+            if (TotalPages <= 7)
+            {
+                return Enumerable.Range(1, TotalPages);
+            }
+
+            List<int> pages = [];
+            const int wing = 1;
+
+            pages.Add(1);
+
+            if (CurrentPage - wing > 2)
+            {
+                pages.Add(-1);
+            }
+
+            for (int i = Math.Max(2, CurrentPage - wing); i <= Math.Min(TotalPages - 1, CurrentPage + wing); i++)
+            {
+                pages.Add(i);
+            }
+
+            if (CurrentPage + wing < TotalPages - 1)
+            {
+                pages.Add(-1);
+            }
+
+            pages.Add(TotalPages);
+
+            return pages;
+        }
+    }
+}

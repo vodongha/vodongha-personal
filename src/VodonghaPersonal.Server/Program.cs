@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Resend;
+using VodonghaPersonal.Api;
 using VodonghaPersonal.Components;
 using VodonghaPersonal.Data;
 using VodonghaPersonal.Shared.Models;
@@ -15,7 +16,8 @@ using VodonghaPersonal.Services;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddSignalR();
 
@@ -434,9 +436,27 @@ app.MapGet("/sitemap.xml", async (BlogService blogSvc, IConfiguration config) =>
     return Results.Content(sb.ToString(), "application/xml");
 });
 
+app.MapAdminSkillsApi();
+app.MapAdminProjectsApi();
+app.MapAdminBlogApi();
+app.MapAdminEducationApi();
+app.MapAdminExperienceApi();
+app.MapAdminContactsApi();
+app.MapAdminSettingsApi();
+app.MapAdminDashboardApi();
+app.MapAdminAnalyticsApi();
+app.MapAdminApiKeysApi();
+app.MapAdminHealthApi();
+app.MapAdminCostsApi();
+app.MapAdminDependenciesApi();
+app.MapAdminChatApi();
+app.MapAdminMenuApi();
+
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(VodonghaPersonal.Client._Imports).Assembly);
 
 app.Run();
 

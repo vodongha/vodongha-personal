@@ -1,0 +1,22 @@
+@inject TimezoneService TzService
+@inject IJSRuntime JS
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || TzService.IsSet)
+        {
+            return;
+        }
+
+        try
+        {
+            string tz = await JS.InvokeAsync<string>("getTimezone");
+            TzService.Set(tz);
+        }
+        catch
+        {
+            // JS not available — will stay UTC
+        }
+    }
+}

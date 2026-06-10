@@ -1,0 +1,37 @@
+@if (TotalPages > 1)
+{
+    <nav class="pagination" aria-label="Blog pagination">
+        <button type="button" class="pagination__btn pagination__btn--prev"
+                disabled="@(CurrentPage <= 1)"
+                @onclick="() => OnPageChange.InvokeAsync(CurrentPage - 1)">
+            <i class="bi bi-chevron-left"></i>
+            <span>@Lang.T("blog.page.prev")</span>
+        </button>
+
+        <div class="pagination__pages">
+            @foreach (int page in PageNumbers)
+            {
+                if (page == -1)
+                {
+                    <span class="pagination__ellipsis">…</span>
+                }
+                else
+                {
+                    int p = page;
+                    <button type="button" class="pagination__page @(p == CurrentPage ? "pagination__page--active" : "")"
+                            @onclick="() => OnPageChange.InvokeAsync(p)"
+                            aria-current="@(p == CurrentPage ? "page" : null)">
+                        @p
+                    </button>
+                }
+            }
+        </div>
+
+        <button type="button" class="pagination__btn pagination__btn--next"
+                disabled="@(CurrentPage >= TotalPages)"
+                @onclick="() => OnPageChange.InvokeAsync(CurrentPage + 1)">
+            <span>@Lang.T("blog.page.next")</span>
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </nav>
+}
