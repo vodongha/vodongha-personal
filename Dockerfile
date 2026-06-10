@@ -1,8 +1,13 @@
 # ── Stage 1: Build ────────────────────────────────────────────
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
+WORKDIR /repo
 
+# Directory.Build.props must be present before restore (provides TargetFramework)
+COPY Directory.Build.props .
+
+# Copy project files for restore layer caching
 COPY src/VodonghaPersonal.Shared/VodonghaPersonal.Shared.csproj src/VodonghaPersonal.Shared/
+COPY src/VodonghaPersonal.Client/VodonghaPersonal.Client.csproj src/VodonghaPersonal.Client/
 COPY src/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj src/VodonghaPersonal.Server/
 RUN dotnet restore src/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj
 
@@ -13,9 +18,7 @@ RUN dotnet publish src/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj -c
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
-# Install fonts required by QuestPDF/SkiaSharp on Linux
-# fonts-noto: full Unicode + Vietnamese support
-# fonts-liberation: Arial-equivalent metrics
+# fonts-noto: full Unicode + Vietnamese support; fonts-liberation: Arial metrics for QuestPDF
 RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-noto \
     fonts-liberation \
