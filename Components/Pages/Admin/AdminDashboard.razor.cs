@@ -111,14 +111,14 @@ public partial class AdminDashboard : ComponentBase, IDisposable
 
         // Recent contacts (last 5)
         _recentContacts = await db.ContactMessages
-            .OrderByDescending(m => m.CreatedAt)
+            .OrderByDescending(m => m.SentAt)
             .Take(5)
             .Select(m => new RecentContact
             {
-                Name      = m.Name,
-                Message   = m.Message.Length > 60 ? m.Message.Substring(0, 58) + "…" : m.Message,
-                CreatedAt = m.CreatedAt,
-                IsRead    = m.IsRead
+                Name   = m.Name,
+                Message = m.Message.Length > 60 ? m.Message.Substring(0, 58) + "…" : m.Message,
+                SentAt = m.SentAt,
+                IsRead = m.IsRead
             })
             .ToListAsync();
 
@@ -154,7 +154,7 @@ public partial class AdminDashboard : ComponentBase, IDisposable
     {
         public string   Name      { get; init; } = "";
         public string   Message   { get; init; } = "";
-        public DateTime CreatedAt { get; init; }
+        public DateTime SentAt { get; init; }
         public bool     IsRead    { get; init; }
     }
 }
