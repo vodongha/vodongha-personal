@@ -12,6 +12,7 @@ public partial class Dashboard : ComponentBase, IAsyncDisposable
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private AppSecretsService Secrets { get; set; } = default!;
+    [Inject] private NavigationManager Nav { get; set; } = default!;
 
     private int _unreadChatCount;
     private int _unreadMessagesCount;
@@ -58,6 +59,14 @@ public partial class Dashboard : ComponentBase, IAsyncDisposable
         if (!firstRender) return;
         try
         {
+            // Desktop users get redirected to the Dashboard page — /admin is mobile-only
+            int width = await JS.InvokeAsync<int>("eval", "window.innerWidth");
+            if (width > 768)
+            {
+                Nav.NavigateTo("/admin/dashboard", replace: true);
+                return;
+            }
+
             _menuOrder = await Secrets.GetValueAsync(MenuPrefKey) ?? "[]";
             await InvokeAsync(StateHasChanged);
             await JS.InvokeVoidAsync("initSortableCards", "admin-dash-cards", _dotNetRef, MenuPrefKey);
