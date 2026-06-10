@@ -1964,46 +1964,97 @@ tr.admin-row--dragover td {
     i { color: $color-primary; flex-shrink: 0; margin-top: 0.1rem; }
 }
 
-.apikey-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+// Section group (one per category: Telegram, Email, etc.)
+.ak-section {
+    margin-bottom: 1.75rem;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+
+        i { color: $color-primary; font-size: 0.95rem; }
+    }
+
+    &__title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $color-text;
+    }
+
+    &__count {
+        margin-left: auto;
+        font-size: 0.72rem;
+        color: var(--color-text-muted);
+        background: var(--admin-elevated);
+        border: 1px solid var(--admin-border);
+        border-radius: 999px;
+        padding: 0.1rem 0.55rem;
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+// List container
+.ak-list {
     border: 1px solid var(--admin-border);
     border-radius: 10px;
     overflow: hidden;
 }
 
-.apikey-row {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.9rem 1.1rem;
-    border-bottom: 1px solid var(--admin-elevated);
+// Individual secret row
+.ak-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    border-bottom: 1px solid var(--admin-border);
     transition: background 150ms;
 
     &:last-child { border-bottom: none; }
-    &:hover      { background: var(--admin-hover); }
-    &--editing   { background: color-mix(in srgb, var(--color-primary) 8%, var(--admin-bg)); border-color: color-mix(in srgb, var(--color-primary) 25%, transparent); }
 
-    &__meta {
+    &:hover:not(&--editing) { background: var(--admin-hover); }
+
+    // Left status stripe
+    &__stripe {
+        width: 3px;
+        align-self: stretch;
+        flex-shrink: 0;
+        border-radius: 0;
+    }
+
+    // Stripe color by status
+    &--db      > &__stripe { background: var(--color-primary); }
+    &--env     > &__stripe { background: #60a5fa; }
+    &--missing > &__stripe { background: var(--admin-border); }
+
+    &--editing {
+        background: color-mix(in srgb, var(--color-primary) 5%, var(--admin-bg));
+    }
+
+    // Main content area
+    &__body {
+        flex: 1;
         min-width: 0;
+        padding: 0.85rem 1rem;
+    }
+
+    &__top {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.2rem;
     }
 
     &__name {
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         font-weight: 600;
         color: $color-text;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        flex-wrap: wrap;
-        margin-bottom: 0.15rem;
     }
 
     &__key {
         font-family: $font-mono;
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         color: var(--color-text-muted);
         margin-bottom: 0.2rem;
     }
@@ -2012,73 +2063,108 @@ tr.admin-row--dragover td {
         font-size: 0.75rem;
         color: var(--color-text-muted);
         line-height: 1.4;
+        margin-bottom: 0.35rem;
     }
 
     &__value {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        min-width: 0;
-        max-width: 340px;
-        overflow: hidden;
+        margin-top: 0.35rem;
     }
 
+    // Icon-only action buttons (Edit / Remove)
     &__actions {
         display: flex;
         align-items: center;
-        gap: 0.4rem;
+        gap: 0.25rem;
+        padding: 0.6rem 0.75rem 0;
         flex-shrink: 0;
     }
 }
 
-.apikey-badge {
-    display: inline-block;
-    padding: 0.1rem 0.45rem;
-    border-radius: 4px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+// Status badge (from DB / from ENV / Not set)
+.ak-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
 
-    &--db      { background: rgba($color-primary, 0.15); color: $color-primary; border: 1px solid rgba($color-primary, 0.3); }
-    &--env     { background: rgba(96, 165, 250, 0.12); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.25); }
-    &--missing { background: rgba(239, 68, 68, 0.1);  color: #f87171;  border: 1px solid rgba(239, 68, 68, 0.2); }
+    &--db      { background: color-mix(in srgb, var(--color-primary) 15%, transparent); color: var(--color-primary); border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent); }
+    &--env     { background: rgba(96,165,250,0.12); color: #60a5fa; border: 1px solid rgba(96,165,250,0.25); }
+    &--missing { background: rgba(239,68,68,0.08); color: #f87171; border: 1px solid rgba(239,68,68,0.18); }
 }
 
-.apikey-masked {
+// Masked value display
+.ak-masked {
     font-family: $font-mono;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--color-text-dim);
-    letter-spacing: 0.05em;
-    word-break: break-all;
-    overflow-wrap: anywhere;
-    line-height: 1.5;
-}
-
-.apikey-source {
-    font-size: 0.7rem;
-    color: var(--color-text-muted);
+    letter-spacing: 0.06em;
+    background: var(--admin-elevated);
+    border: 1px solid var(--admin-border);
+    border-radius: 5px;
+    padding: 0.2rem 0.55rem;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.apikey-empty {
-    color: #374151;
-    font-size: 0.9rem;
+// Edit form
+.ak-edit {
+    margin-top: 0.6rem;
+
+    &__input {
+        font-family: $font-mono;
+        font-size: 0.82rem;
+        width: 100%;
+        max-width: 480px;
+    }
+
+    &__error {
+        font-size: 0.75rem;
+        color: #f87171;
+        margin-top: 0.3rem;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.6rem;
+    }
 }
 
-.apikey-edit-form {
-    width: 100%;
-}
+// Icon-only action button
+.ak-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--admin-border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: background 150ms, color 150ms, border-color 150ms;
+    font-size: 0.8rem;
 
-.apikey-edit-input {
-    font-family: $font-mono;
-    font-size: 0.82rem;
-}
+    &:hover {
+        background: var(--admin-elevated);
+        color: $color-text;
+        border-color: var(--admin-border-hover);
+    }
 
-.apikey-error {
-    font-size: 0.75rem;
-    color: #f87171;
-    margin-top: 0.3rem;
+    &--danger {
+        &:hover {
+            background: rgba(239,68,68,0.1);
+            color: #f87171;
+            border-color: rgba(239,68,68,0.3);
+        }
+    }
 }
 
 // ── CV Preview ────────────────────────────────────────────────────
