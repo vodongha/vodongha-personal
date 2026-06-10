@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using VodonghaPersonal.Data;
+using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Api;
@@ -17,25 +18,27 @@ public static class AdminSkillsApi
             return Results.Ok(skills);
         });
 
-        group.MapPost("/", async (Skill skill, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapPost("/", async (Skill skill, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             skill.Id = 0;
             db.Skills.Add(skill);
             await db.SaveChangesAsync();
+            cvCache.InvalidateAndRegenerate();
             return Results.Ok(skill);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, Skill skill, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapPut("/{id:int}", async (int id, Skill skill, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             skill.Id = id;
             db.Skills.Update(skill);
             await db.SaveChangesAsync();
+            cvCache.InvalidateAndRegenerate();
             return Results.Ok(skill);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             Skill? skill = await db.Skills.FindAsync(id);
@@ -43,6 +46,7 @@ public static class AdminSkillsApi
             {
                 db.Skills.Remove(skill);
                 await db.SaveChangesAsync();
+                cvCache.InvalidateAndRegenerate();
             }
             return Results.Ok();
         }).DisableAntiforgery();
