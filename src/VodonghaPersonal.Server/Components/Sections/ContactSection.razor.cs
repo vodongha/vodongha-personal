@@ -36,8 +36,8 @@ public partial class ContactSection : ComponentBase, IDisposable
         Lang.OnChange += StateHasChanged;
         Dictionary<string, string> s = await Settings.GetAllAsync();
         _location = Settings.Get(s, "Location");
-        _email    = Settings.Get(s, "Email");
-        _github   = Settings.Get(s, "GitHub");
+        _email = Settings.Get(s, "Email");
+        _github = Settings.Get(s, "GitHub");
         _linkedin = Settings.Get(s, "LinkedIn");
         _facebook = Settings.Get(s, "Facebook");
     }
