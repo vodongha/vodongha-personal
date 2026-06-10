@@ -38,13 +38,13 @@
 
     <nav class="admin-nav">
         <!-- Menu — mobile-only pinned item, hidden on desktop -->
-        <a href="/admin" title="@Loc.T("Menu")" class="admin-nav__item admin-nav__item--pinned @(IsActive("/admin", exact: true) ? "admin-nav__item--active" : "")">
+        <a href="/admin/menu-mobile" title="@Loc.T("Menu")" class="admin-nav__item admin-nav__item--pinned @(IsActive("/admin/menu-mobile", exact: true) ? "admin-nav__item--active" : "")">
             <i class="bi bi-list"></i>
             <span class="admin-nav__label">@Loc.T("Menu")</span>
         </a>
 
         <!-- Dashboard — top-level item, always visible on desktop -->
-        <a href="/admin/dashboard" title="Dashboard" class="admin-nav__item admin-nav__item--dashboard @(IsActive("/admin/dashboard") ? "admin-nav__item--active" : "")">
+        <a href="/admin" title="Dashboard" class="admin-nav__item admin-nav__item--dashboard @(IsActive("/admin") ? "admin-nav__item--active" : "")">
             <i class="bi bi-speedometer2"></i>
             <span class="admin-nav__label">Dashboard</span>
         </a>
