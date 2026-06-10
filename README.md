@@ -5,6 +5,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 **Live:** [https://vodongha.id.vn](https://vodongha.id.vn) | **Admin:** [https://vodongha.id.vn/admin/login](https://vodongha.id.vn/admin/login)
 
 [![CI](https://github.com/vodongha/vodongha-personal/actions/workflows/ci.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/ci.yml)
+[![Tests](https://github.com/vodongha/vodongha-personal/actions/workflows/test.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/test.yml)
 [![Deploy](https://github.com/vodongha/vodongha-personal/actions/workflows/deploy.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/deploy.yml)
 [![Lint](https://github.com/vodongha/vodongha-personal/actions/workflows/lint.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/lint.yml)
 
