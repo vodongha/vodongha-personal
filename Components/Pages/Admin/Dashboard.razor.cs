@@ -7,7 +7,7 @@ using VodonghaPersonal.Services;
 
 namespace VodonghaPersonal.Components.Pages.Admin;
 
-public partial class AdminDashboard : ComponentBase, IDisposable
+public partial class Dashboard : ComponentBase, IDisposable
 {
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
     [Inject] private ChatService ChatSvc { get; set; } = default!;
