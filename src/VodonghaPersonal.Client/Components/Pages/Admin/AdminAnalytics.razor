@@ -1,0 +1,153 @@
+@page "/admin/analytics"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveAuto
+@using Microsoft.AspNetCore.Authorization
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">@Loc.T("Analytics")</h1>
+            <div class="analytics-period-tabs">
+                @foreach (int d in new[] { 7, 30, 90 })
+                {
+                    <button type="button"
+                            class="admin-btn admin-btn--sm @(_days == d ? "admin-btn--primary" : "admin-btn--ghost")"
+                            @onclick="() => SetDays(d)">
+                        @d @Loc.T("days")
+                    </button>
+                }
+            </div>
+        </header>
+
+        @if (_loading)
+        {
+            <div class="analytics-skeleton">
+                <div class="analytics-stat-row">
+                    @for (int i = 0; i < 3; i++) { <div class="skeleton-box analytics-stat-card"></div> }
+                </div>
+                <div class="skeleton-box analytics-chart-box"></div>
+            </div>
+        }
+        else
+        {
+            <!-- Stat cards -->
+            <div class="analytics-stat-row">
+                <div class="analytics-stat-card">
+                    <span class="analytics-stat-card__label">@Loc.T("Last @_days days").Replace("@_days", _days.ToString())</span>
+                    <span class="analytics-stat-card__value">@_total.ToString("N0")</span>
+                    <span class="analytics-stat-card__sub">@Loc.T("page views")</span>
+                </div>
+                <div class="analytics-stat-card analytics-stat-card--teal">
+                    <span class="analytics-stat-card__label">@Loc.T("All time")</span>
+                    <span class="analytics-stat-card__value">@_totalAll.ToString("N0")</span>
+                    <span class="analytics-stat-card__sub">@Loc.T("page views")</span>
+                </div>
+                <div class="analytics-stat-card analytics-stat-card--green">
+                    <span class="analytics-stat-card__label">@Loc.T("Daily avg")</span>
+                    <span class="analytics-stat-card__value">@((_total / (double)_days).ToString("F1"))</span>
+                    <span class="analytics-stat-card__sub">@Loc.T("views / day")</span>
+                </div>
+            </div>
+
+            <!-- Daily views line chart -->
+            <div class="analytics-panel">
+                <h2 class="analytics-panel__title">@Loc.T("Daily views") — @_days @Loc.T("days")</h2>
+                <div class="analytics-chart-box">
+                    <canvas id="chart-daily"></canvas>
+                </div>
+            </div>
+
+            <!-- Two-column tables -->
+            <div class="analytics-grid-2">
+                <!-- Top pages -->
+                <div class="analytics-panel">
+                    <h2 class="analytics-panel__title">@Loc.T("Top pages")</h2>
+                    @if (_topPages.Count == 0)
+                    {
+                        <p class="analytics-empty">@Loc.T("No data yet")</p>
+                    }
+                    else
+                    {
+                        <div class="analytics-chart-box analytics-chart-box--sm">
+                            <canvas id="chart-pages"></canvas>
+                        </div>
+                        <div class="analytics-table-wrap">
+                            <table class="analytics-table">
+                                <tbody>
+                                    @foreach ((string path, int count) in _topPages)
+                                    {
+                                        <tr>
+                                            <td class="analytics-table__path" title="@path">@path</td>
+                                            <td class="analytics-table__count">@count</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+
+                <!-- Top countries -->
+                <div class="analytics-panel">
+                    <h2 class="analytics-panel__title">@Loc.T("Top countries")</h2>
+                    @if (_topCountries.Count == 0)
+                    {
+                        <p class="analytics-empty">@Loc.T("No geo data yet — refreshes as visitors arrive")</p>
+                    }
+                    else
+                    {
+                        <div class="analytics-chart-box analytics-chart-box--sm">
+                            <canvas id="chart-countries"></canvas>
+                        </div>
+                        <div class="analytics-table-wrap">
+                            <table class="analytics-table">
+                                <tbody>
+                                    @foreach ((string country, int count) in _topCountries)
+                                    {
+                                        <tr>
+                                            <td class="analytics-table__path" title="@country">@country</td>
+                                            <td class="analytics-table__count">@count</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Referrers -->
+            <div class="analytics-panel">
+                <h2 class="analytics-panel__title">@Loc.T("Top referrers")</h2>
+                @if (_topReferrers.Count == 0)
+                {
+                    <p class="analytics-empty">@Loc.T("No referrer data yet")</p>
+                }
+                else
+                {
+                    <div class="analytics-table-wrap">
+                    <table class="analytics-table">
+                        <tbody>
+                            @foreach ((string referrer, int count) in _topReferrers)
+                            {
+                                <tr>
+                                    <td class="analytics-table__path" title="@referrer">@referrer</td>
+                                    <td class="analytics-table__count">@count</td>
+                                    <td class="analytics-table__bar-cell">
+                                        <div class="analytics-table__bar"
+                                             style="width: @((count * 100 / _topReferrers[0].Count).ToString("F0"))%">
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    </div>
+                }
+            </div>
+        }
+    </main>
+</div>

@@ -1,0 +1,161 @@
+﻿@page "/admin/projects"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using VodonghaPersonal.Shared.Models
+@inject AdminLocalizationService Loc
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">@Loc.T("Projects")</h1>
+            <button type="button" class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> @Loc.T("Add new")</button>
+        </header>
+
+        <div class="admin-toolbar">
+            <div class="admin-select-wrap">
+                <select class="admin-page-size" value="@_pageSize" @onchange="OnPageSizeChange">
+                    <option value="5">5 / @Loc.T("page")</option>
+                    <option value="10" selected>10 / @Loc.T("page")</option>
+                    <option value="20">20 / @Loc.T("page")</option>
+                    <option value="50">50 / @Loc.T("page")</option>
+                </select>
+            </div>
+            <div class="admin-search-wrap">
+                <i class="bi bi-search admin-search-wrap__icon"></i>
+                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" @bind:after="ResetPage" placeholder="@Loc.T("Search projects...")" />
+            </div>
+        </div>
+
+        @if (_loading)
+        {
+            <div class="admin-tbl-skel">
+                <div class="admin-tbl-skel__head">
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                </div>
+                @for (int i = 0; i < 8; i++)
+                {
+                    <div class="admin-tbl-skel__row">
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--btn"></div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+        <table class="quickgrid">
+            <thead>
+                <tr>
+                    <th style="width:2rem"></th>
+                    <th>@Loc.T("Title").ToUpper()</th>
+                    <th>@Loc.T("Technologies").ToUpper()</th>
+                    <th style="width:6rem">@Loc.T("Featured").ToUpper()</th>
+                    <th style="width:6rem">@Loc.T("Actions").ToUpper()</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Paged.Count; i++)
+                {
+                    int idx = i;
+                    Project p = Paged[i];
+                    <tr draggable="true"
+                        @ondragstart="() => DragStart(idx)"
+                        @ondragover:preventDefault="true"
+                        @ondragover="() => DragOver(idx)"
+                        @ondrop="() => Drop(idx)"
+                        @ondragend="DragEnd"
+                        class="@DragClass(idx)">
+                        <td style="cursor:grab;opacity:.4;width:2rem" title="@Loc.T("Drag to reorder")">
+                            <i class="bi bi-grip-vertical"></i>
+                        </td>
+                        <td>@p.Title</td>
+                        <td><small style="opacity:.7">@p.Technologies</small></td>
+                        <td>@(p.IsFeatured ? "✓" : "")</td>
+                        <td>
+                            <div class="admin-table__actions">
+                                <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(p)"><i class="bi bi-pencil"></i></button>
+                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(p.Id)"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+        <div class="paginator">
+            <span class="paginator-summary">@Filtered.Count @Loc.T("items")</span>
+            <nav>
+                <button type="button" @onclick="() => GoPage(0)" disabled="@(_page == 0)">«</button>
+                <button type="button" @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">‹</button>
+                <span>@Loc.T("Page") @(_page + 1) / @TotalPages</span>
+                <button type="button" @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">›</button>
+                <button type="button" @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">»</button>
+            </nav>
+        </div>
+        } @* end else (not loading) *@
+
+        @if (ShowForm)
+        {
+            <div class="admin-modal-overlay" @onclick="CloseForm">
+                <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? Loc.T("Add project") : Loc.T("Edit project"))</h2>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Title") 🇻🇳</label>
+                        <input class="admin-form__input" @bind="Editing.Title" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Description VI")</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Description"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Description EN")</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.DescriptionEn"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Technologies")</label>
+                        <input class="admin-form__input" @bind="Editing.Technologies" placeholder="C#,ASP.NET Core,..." />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Image URL")</label>
+                        <input class="admin-form__input" @bind="Editing.ImageUrl" placeholder="https://..." />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("GitHub URL")</label>
+                        <input class="admin-form__input" @bind="Editing.GitHubUrl" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Live URL")</label>
+                        <input class="admin-form__input" @bind="Editing.LiveUrl" />
+                    </div>
+                    <div class="admin-form__row">
+                        <div class="admin-form__group">
+                            <label class="admin-form__label">@Loc.T("Order")</label>
+                            <input type="number" class="admin-form__input" @bind="Editing.Order" />
+                        </div>
+                        <div class="admin-form__group admin-form__check">
+                            <label><input type="checkbox" @bind="Editing.IsFeatured" /> @Loc.T("Featured")</label>
+                        </div>
+                    </div>
+                    <div class="admin-modal__footer">
+                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">@Loc.T("Cancel")</button>
+                        <button class="admin-btn admin-btn--primary" @onclick="Save">@Loc.T("Save")</button>
+                    </div>
+                </div>
+            </div>
+        }
+        <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
+    </main>
+</div>
+

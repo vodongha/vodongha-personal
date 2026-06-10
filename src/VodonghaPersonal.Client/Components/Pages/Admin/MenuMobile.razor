@@ -1,0 +1,55 @@
+@page "/admin/menu-mobile"
+@layout AdminLayout
+@rendermode InteractiveAuto
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header admin-header--menu">
+            <h1 class="admin-header__title">@Loc.T("Menu")</h1>
+            <div class="menu-search">
+                <i class="bi bi-search menu-search__icon"></i>
+                <input class="menu-search__input"
+                       type="search"
+                       placeholder="Search..."
+                       @bind="_search"
+                       @bind:event="oninput"
+                       autocomplete="off" />
+                @if (!string.IsNullOrEmpty(_search))
+                {
+                    <button class="menu-search__clear" @onclick='() => _search = ""' type="button">
+                        <i class="bi bi-x"></i>
+                    </button>
+                }
+            </div>
+        </header>
+
+        <div id="admin-dash-cards" class="admin-cards" data-saved-order="@_menuOrder">
+            @foreach (MenuItem item in FilteredItems)
+            {
+                <a href="@item.Href" class="admin-card @item.ExtraClass" data-card-id="@item.CardId">
+                    <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
+                    @if (item.BadgeCount > 0)
+                    {
+                        <div class="admin-card__icon-wrap">
+                            <i class="@item.Icon admin-card__icon"></i>
+                            <span class="admin-card__badge">@(item.BadgeCount > 99 ? "99+" : item.BadgeCount.ToString())</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <i class="@item.Icon admin-card__icon"></i>
+                    }
+                    <span class="admin-card__label">@item.Label</span>
+                </a>
+            }
+            @if (FilteredItems.Count == 0)
+            {
+                <p class="menu-search__empty">No results for "@_search"</p>
+            }
+        </div>
+    </main>
+</div>
