@@ -1,4 +1,4 @@
-﻿@use 'variables' as *;
+@use 'variables' as *;
 
 // ── Layout ──────────────────────────────────────────────────────
 .admin-shell { display: flex; height: 100vh; overflow: hidden; background: var(--admin-bg); color: $color-text; font-family: $font-sans; }
@@ -496,7 +496,7 @@
         &:-webkit-autofill,
         &:-webkit-autofill:hover,
         &:-webkit-autofill:focus {
-            -webkit-box-shadow: 0 0 0 1000px var(--admin-bg) inset;
+            box-shadow: 0 0 0 1000px var(--admin-bg) inset;
             -webkit-text-fill-color: var(--color-text);
             caret-color: var(--color-text);
             transition: background-color 5000s ease-in-out 0s;
@@ -891,7 +891,6 @@ tr.admin-row--dragover td {
     cursor: pointer;
     outline: none;
     appearance: none;
-    -webkit-appearance: none;
     transition: border-color 150ms;
     &:hover { border-color: var(--admin-border-hover); }
     &:focus { border-color: $color-primary; }
@@ -1192,7 +1191,6 @@ tr.admin-row--dragover td {
 }
 
 .health-card {
-    position: relative;
     background: var(--admin-surface);
     border: 1px solid var(--admin-border);
     border-radius: 12px;
@@ -1410,7 +1408,7 @@ tr.admin-row--dragover td {
     }
 
     &__cell {
-        @extend .skel;
+        @extend %skel;
         height: 14px;
         flex: 1;
 
@@ -1439,11 +1437,11 @@ tr.admin-row--dragover td {
         border-radius: 10px;
     }
 
-    &__avatar  { @extend .skel; width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
+    &__avatar  { @extend %skel; width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
     &__body    { flex: 1; display: flex; flex-direction: column; gap: .45rem; }
-    &__name    { @extend .skel; height: 14px; width: 120px; }
-    &__meta    { @extend .skel; height: 11px; width: 180px; }
-    &__time    { @extend .skel; height: 11px; width: 50px; flex-shrink: 0; }
+    &__name    { @extend %skel; height: 14px; width: 120px; }
+    &__meta    { @extend %skel; height: 11px; width: 180px; }
+    &__time    { @extend %skel; height: 11px; width: 50px; flex-shrink: 0; }
 }
 
 // ─── Admin apikeys skeleton ───────────────────────────────────────────────────
@@ -1468,8 +1466,8 @@ tr.admin-row--dragover td {
         border-bottom: 1px solid var(--admin-border);
     }
 
-    &__icon  { @extend .skel; width: 20px; height: 20px; border-radius: 4px; }
-    &__title { @extend .skel; height: 14px; width: 100px; }
+    &__icon  { @extend %skel; width: 20px; height: 20px; border-radius: 4px; }
+    &__title { @extend %skel; height: 14px; width: 100px; }
 
     &__rows  { display: flex; flex-direction: column; }
 
@@ -1483,9 +1481,9 @@ tr.admin-row--dragover td {
         &:last-child { border-bottom: none; }
     }
 
-    &__label { @extend .skel; height: 13px; width: 120px; }
-    &__input { @extend .skel; height: 34px; flex: 1; border-radius: 8px; }
-    &__btn   { @extend .skel; height: 34px; width: 70px; border-radius: 8px; flex-shrink: 0; }
+    &__label { @extend %skel; height: 13px; width: 120px; }
+    &__input { @extend %skel; height: 34px; flex: 1; border-radius: 8px; }
+    &__btn   { @extend %skel; height: 34px; width: 70px; border-radius: 8px; flex-shrink: 0; }
 }
 
 // ─── CV page skeleton ─────────────────────────────────────────────────────────
@@ -1500,10 +1498,10 @@ tr.admin-row--dragover td {
         gap: 1rem;
         margin-bottom: .5rem;
     }
-    &__tab { @extend .skel; height: 36px; width: 120px; border-radius: 8px; }
+    &__tab { @extend %skel; height: 36px; width: 120px; border-radius: 8px; }
 
     &__preview {
-        @extend .skel;
+        @extend %skel;
         height: 500px;
         width: 100%;
         border-radius: 12px;
@@ -1513,7 +1511,7 @@ tr.admin-row--dragover td {
         display: flex;
         gap: .75rem;
     }
-    &__btn { @extend .skel; height: 38px; width: 140px; border-radius: 8px; }
+    &__btn { @extend %skel; height: 38px; width: 140px; border-radius: 8px; }
 }
 
 // ─── Costs page ──────────────────────────────────────────────────────────────
@@ -1536,7 +1534,7 @@ tr.admin-row--dragover td {
     100% { background-position:  400px 0; }
 }
 
-.skel {
+%skel {
     background: linear-gradient(90deg,
         var(--skel-admin-base)    25%,
         var(--skel-admin-shimmer) 50%,
@@ -1545,6 +1543,10 @@ tr.admin-row--dragover td {
     background-size: 800px 100%;
     animation: skel-shimmer 1.6s infinite linear;
     border-radius: 6px;
+}
+
+.skel {
+    @extend %skel;
 
     &--label      { height: 11px; width: 110px; margin-bottom: 0.6rem; }
     &--value-lg   { height: 36px; width: 90px;  margin-bottom: 0.4rem; border-radius: 8px; }
@@ -2289,8 +2291,6 @@ tr.admin-row--dragover td {
         flex-direction: column;
         gap: 1.25rem;
     }
-
-    &__block {}
 
     &__block-title {
         font-size: 0.7rem; font-weight: 700; color: $color-primary;
