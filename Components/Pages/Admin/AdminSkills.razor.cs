@@ -68,14 +68,14 @@ public partial class AdminSkills : ComponentBase, IDisposable
         await db.SaveChangesAsync();
         ShowForm = false;
         await LoadAsync();
-        Toast.Show("Đã lưu thành công");
+        Toast.Show(Loc.T("Saved successfully"));
     }
 
     private async Task Delete(int id)
     {
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         Skill? skill = await db.Skills.FindAsync(id);
-        if (skill != null) { db.Skills.Remove(skill); await db.SaveChangesAsync(); Toast.Show("Đã xoá"); }
+        if (skill != null) { db.Skills.Remove(skill); await db.SaveChangesAsync(); Toast.Show(Loc.T("Deleted")); }
         await LoadAsync();
     }
 

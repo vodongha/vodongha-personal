@@ -92,9 +92,9 @@ public partial class AdminBlog : ComponentBase, IDisposable
         return slug.Trim('-');
     }
 
-    private async Task Save() { await BlogSvc.SaveAsync(Editing); ShowForm = false; await LoadAsync(); Toast.Show("Đã lưu bài viết thành công"); }
+    private async Task Save() { await BlogSvc.SaveAsync(Editing); ShowForm = false; await LoadAsync(); Toast.Show(Loc.T("Saved successfully")); }
 
-    private async Task Delete(int id) { await BlogSvc.DeleteAsync(id); await LoadAsync(); Toast.Show("Đã xoá bài viết"); }
+    private async Task Delete(int id) { await BlogSvc.DeleteAsync(id); await LoadAsync(); Toast.Show(Loc.T("Deleted")); }
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
     public void Dispose() { Loc.OnChanged -= OnLangChanged; }

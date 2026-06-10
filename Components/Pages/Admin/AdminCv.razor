@@ -49,11 +49,11 @@
                                 </div>
                                 <div class="cv-preview__name">@_data.Name</div>
                                 <div class="cv-preview__title">@_data.Title</div>
-                                <div class="cv-preview__section-label">Contact</div>
+                                <div class="cv-preview__section-label">@Loc.T("Contact")</div>
                                 @ContactRows(_data)
                                 @if (_data.Skills.Count > 0)
                                 {
-                                    <div class="cv-preview__section-label" style="margin-top:1rem">Skills</div>
+                                    <div class="cv-preview__section-label" style="margin-top:1rem">@Loc.T("Skills")</div>
                                     @SkillTags(_data)
                                 }
                             </div>
@@ -282,14 +282,14 @@
         if (!string.IsNullOrWhiteSpace(d.Bio))
         {
             <div class="cv-preview__block">
-                <div class="@blockTitleCls">Profile</div>
+                <div class="@blockTitleCls">@Loc.T("Profile")</div>
                 <p class="cv-preview__bio">@d.Bio</p>
             </div>
         }
         @if (d.Experiences.Count > 0)
         {
             <div class="cv-preview__block">
-                <div class="@blockTitleCls">Experience</div>
+                <div class="@blockTitleCls">@Loc.T("Experience")</div>
                 @foreach (var exp in d.Experiences.OrderBy(e => e.Order))
                 {
                     <div class="@entryCls">
@@ -309,13 +309,13 @@
         @if (d.Educations.Count > 0)
         {
             <div class="cv-preview__block">
-                <div class="@blockTitleCls">Education</div>
+                <div class="@blockTitleCls">@Loc.T("Education")</div>
                 @foreach (var edu in d.Educations.OrderBy(e => e.Order))
                 {
                     <div class="@entryCls">
                         <div class="cv-preview__entry-header">
                             <span class="@roleCls">@edu.Degree — @edu.Field</span>
-                            <span class="@dateCls">@edu.StartYear – @(edu.EndYear?.ToString() ?? "Present")</span>
+                            <span class="@dateCls">@edu.StartYear – @(edu.EndYear?.ToString() ?? Loc.T("Present"))</span>
                         </div>
                         <div class="@subCls">@edu.School</div>
                     </div>
@@ -326,7 +326,7 @@
         @if (featured.Count > 0)
         {
             <div class="cv-preview__block">
-                <div class="@blockTitleCls">Featured Projects</div>
+                <div class="@blockTitleCls">@Loc.T("Featured Projects")</div>
                 @foreach (var proj in featured)
                 {
                     <div class="@entryCls">
