@@ -1,0 +1,35 @@
+name: Lint & Format
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  dotnet-format:
+    name: dotnet format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+      - run: dotnet restore
+      - run: dotnet format --verify-no-changes --severity warn
+
+  js-scss-lint:
+    name: ESLint + Stylelint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+      - name: ESLint (JS)
+        run: npm run lint:js
+      - name: Stylelint (SCSS)
+        run: npm run lint:scss
