@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Shouldly;
 using VodonghaPersonal.Client.Services;
+using VodonghaPersonal.Shared.Services;
 
 namespace VodonghaPersonal.Client.Tests;
 
