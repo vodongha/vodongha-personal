@@ -19,10 +19,10 @@
         <div class="admin-toolbar">
             <div class="admin-select-wrap">
                 <select class="admin-page-size" @onchange="SetPageSize">
-                    <option value="5">5 / trang</option>
-                    <option value="10" selected>10 / trang</option>
-                    <option value="20">20 / trang</option>
-                    <option value="50">50 / trang</option>
+                    <option value="5">5 / @Loc.T("page")</option>
+                    <option value="10" selected>10 / @Loc.T("page")</option>
+                    <option value="20">20 / @Loc.T("page")</option>
+                    <option value="50">50 / @Loc.T("page")</option>
                 </select>
             </div>
             <div class="admin-search-wrap">
@@ -81,11 +81,11 @@
                 <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
                     <h2 class="admin-modal__title">@(Editing.Id == 0 ? Loc.T("Add post") : Loc.T("Edit post"))</h2>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Tiêu đề 🇻🇳</label>
+                        <label class="admin-form__label">@Loc.T("Title") 🇻🇳</label>
                         <input class="admin-form__input" value="@Editing.Title" @oninput="OnTitleInput" />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Title 🇬🇧</label>
+                        <label class="admin-form__label">@Loc.T("Title EN")</label>
                         <input class="admin-form__input" @bind="Editing.TitleEn" />
                     </div>
                     <div class="admin-form__group">
@@ -117,7 +117,7 @@
                         <input class="admin-form__input" @bind="Editing.CoverImageUrl" placeholder="https://..." />
                     </div>
                     <div class="admin-form__group admin-form__check">
-                        <label><input type="checkbox" @bind="Editing.IsPublished" /> Published</label>
+                        <label><input type="checkbox" @bind="Editing.IsPublished" /> @Loc.T("Published")</label>
                     </div>
                     <div class="admin-modal__footer">
                         <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">@Loc.T("Cancel")</button>

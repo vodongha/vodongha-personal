@@ -84,7 +84,7 @@ public partial class AdminProjects : ComponentBase, IDisposable
             await db.Projects.Where(x => x.Id == p.Id)
                 .ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, p.Order));
         }
-        Toast.Show("Đã lưu thứ tự project");
+        Toast.Show(Loc.T("Order saved"));
     }
 
     private void OpenAdd() { Editing = new Project { CreatedAt = DateTime.UtcNow }; ShowForm = true; }
@@ -110,14 +110,14 @@ public partial class AdminProjects : ComponentBase, IDisposable
         await db.SaveChangesAsync();
         ShowForm = false;
         await LoadAsync();
-        Toast.Show("Đã lưu project thành công");
+        Toast.Show(Loc.T("Saved successfully"));
     }
 
     private async Task Delete(int id)
     {
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         Project? p = await db.Projects.FindAsync(id);
-        if (p != null) { db.Projects.Remove(p); await db.SaveChangesAsync(); Toast.Show("Đã xoá project"); }
+        if (p != null) { db.Projects.Remove(p); await db.SaveChangesAsync(); Toast.Show(Loc.T("Deleted")); }
         await LoadAsync();
     }
 

@@ -58,7 +58,7 @@
 
         <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
             <PropertyColumn Property="s => s.Name" Title="@Loc.T("Skill name")" Sortable="true" />
-            <TemplateColumn Title="Category" Sortable="false">
+            <TemplateColumn Title="@Loc.T("Category")" Sortable="false">
                 <span class="admin-badge">@context.Category</span>
             </TemplateColumn>
             <PropertyColumn Property="s => s.Proficiency" Title="%" Sortable="true" />
@@ -82,7 +82,7 @@
                         <input class="admin-form__input" @bind="Editing.Name" />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Category</label>
+                        <label class="admin-form__label">@Loc.T("Category")</label>
                         <select class="admin-form__input" @bind="Editing.Category">
                             <option>Backend</option>
                             <option>Frontend</option>
@@ -92,7 +92,7 @@
                         </select>
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Icon (devicon class)</label>
+                        <label class="admin-form__label">@Loc.T("Icon (devicon class)")</label>
                         <input class="admin-form__input" @bind="Editing.Icon" placeholder="devicon-csharp-plain" />
                     </div>
                     <div class="admin-form__group">

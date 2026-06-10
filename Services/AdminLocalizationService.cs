@@ -56,6 +56,8 @@ public class AdminLocalizationService
         ["Website URL"] = "Website URL",
 
         // Skills
+        ["Category"] = "Danh mục",
+        ["Icon (devicon class)"] = "Icon (devicon class)",
         ["Skill name"] = "Tên kỹ năng",
         ["Level"] = "Cấp độ",
         ["Add skill"] = "Thêm kỹ năng",
@@ -72,7 +74,10 @@ public class AdminLocalizationService
         ["Project URL"] = "URL dự án",
         ["GitHub URL"] = "GitHub URL",
         ["Image URL"] = "URL ảnh",
+        ["Live URL"] = "Live URL",
         ["Search projects..."] = "Tìm dự án...",
+        ["Drag to reorder"] = "Kéo để sắp xếp",
+        ["Order saved"] = "Đã lưu thứ tự",
 
         // Education
         ["School"] = "Trường",
@@ -118,8 +123,11 @@ public class AdminLocalizationService
         ["Unread"] = "Chưa đọc",
         ["unread"] = "chưa đọc",
         ["Mark all read"] = "Đánh dấu tất cả đã đọc",
+        ["Marked all as read"] = "Đã đánh dấu tất cả đã đọc",
         ["No messages yet."] = "Chưa có tin nhắn.",
         ["View"] = "Xem",
+        ["From:"] = "Từ:",
+        ["Reply"] = "Trả lời",
         ["Search name, email, subject..."] = "Tìm tên, email, tiêu đề...",
 
         // Chats
@@ -133,6 +141,8 @@ public class AdminLocalizationService
         ["No messages yet"] = "Chưa có tin nhắn",
         ["User"] = "User",
         ["Admin"] = "Admin",
+        ["Back"] = "Quay lại",
+        ["Sent"] = "Đã gửi",
 
         // Health Monitor
         ["Server Status"] = "Trạng thái Server",
@@ -252,8 +262,12 @@ public class AdminLocalizationService
         ["No geo data yet — refreshes as visitors arrive"] = "Chưa có dữ liệu — cập nhật khi có visitor",
         ["No referrer data yet"] = "Chưa có dữ liệu",
 
+        // Common toast
+        ["Deleted"] = "Đã xoá",
+
         // Settings
         ["Personal information"] = "Thông tin cá nhân",
+        ["Click to change photo"] = "Bấm để đổi ảnh",
         ["Introduction"] = "Giới thiệu",
         ["Contact"] = "Liên hệ",
         ["Social media"] = "Mạng xã hội",
@@ -266,5 +280,14 @@ public class AdminLocalizationService
         ["Change photo"] = "Đổi ảnh",
         ["LinkedIn URL"] = "LinkedIn URL",
         ["Facebook URL"] = "Facebook URL",
+
+        // CV
+        ["CV / Resume"] = "CV / Resume",
+        ["Download PDF"] = "Tải PDF",
+        ["Templates"] = "Mẫu CV",
+        ["Click a template, then Download PDF"] = "Chọn mẫu rồi tải PDF",
+        ["Preview shows data that will be included in the PDF. Edit content in Settings, Skills, Experience, Education and Projects pages."] = "Xem trước dữ liệu sẽ được đưa vào PDF. Chỉnh sửa trong trang Settings, Skills, Experience, Education và Projects.",
+        ["Profile"] = "Hồ sơ",
+        ["Featured Projects"] = "Dự án nổi bật",
     };
 }

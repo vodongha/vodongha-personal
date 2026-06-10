@@ -18,15 +18,15 @@
         <div class="admin-toolbar">
             <div class="admin-select-wrap">
                 <select class="admin-page-size" value="@_pageSize" @onchange="OnPageSizeChange">
-                    <option value="5">5 / trang</option>
-                    <option value="10" selected>10 / trang</option>
-                    <option value="20">20 / trang</option>
-                    <option value="50">50 / trang</option>
+                    <option value="5">5 / @Loc.T("page")</option>
+                    <option value="10" selected>10 / @Loc.T("page")</option>
+                    <option value="20">20 / @Loc.T("page")</option>
+                    <option value="50">50 / @Loc.T("page")</option>
                 </select>
             </div>
             <div class="admin-search-wrap">
                 <i class="bi bi-search admin-search-wrap__icon"></i>
-                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" @bind:after="ResetPage" placeholder="Tìm kiếm tên, công nghệ..." />
+                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" @bind:after="ResetPage" placeholder="@Loc.T("Search projects...")" />
             </div>
         </div>
 
@@ -76,7 +76,7 @@
                         @ondrop="() => Drop(idx)"
                         @ondragend="DragEnd"
                         class="@DragClass(idx)">
-                        <td style="cursor:grab;opacity:.4;width:2rem" title="Kéo để sắp xếp">
+                        <td style="cursor:grab;opacity:.4;width:2rem" title="@Loc.T("Drag to reorder")">
                             <i class="bi bi-grip-vertical"></i>
                         </td>
                         <td>@p.Title</td>
@@ -95,11 +95,11 @@
         </table>
 
         <div class="paginator">
-            <span class="paginator-summary">@Filtered.Count items</span>
+            <span class="paginator-summary">@Filtered.Count @Loc.T("items")</span>
             <nav>
                 <button type="button" @onclick="() => GoPage(0)" disabled="@(_page == 0)">«</button>
                 <button type="button" @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">‹</button>
-                <span>Page @(_page + 1) of @TotalPages</span>
+                <span>@Loc.T("Page") @(_page + 1) / @TotalPages</span>
                 <button type="button" @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">›</button>
                 <button type="button" @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">»</button>
             </nav>
@@ -136,7 +136,7 @@
                         <input class="admin-form__input" @bind="Editing.GitHubUrl" />
                     </div>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">Live URL</label>
+                        <label class="admin-form__label">@Loc.T("Live URL")</label>
                         <input class="admin-form__input" @bind="Editing.LiveUrl" />
                     </div>
                     <div class="admin-form__row">
