@@ -17,7 +17,11 @@ public partial class BlogCard : ComponentBase, IDisposable
         get
         {
             string? html = Lang.IsVi ? Item.Content : (Item.ContentEn ?? Item.Content);
-            if (string.IsNullOrEmpty(html)) return 1;
+            if (string.IsNullOrEmpty(html))
+            {
+                return 1;
+            }
+
             string text = System.Text.RegularExpressions.Regex.Replace(html, "<[^>]+>", " ");
             int words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
             return Math.Max(1, (int)Math.Ceiling(words / 200.0));

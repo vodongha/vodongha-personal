@@ -60,10 +60,19 @@ public partial class AdminBlog : ComponentBase, IDisposable
     {
         Editing = new BlogPost
         {
-            Id = post.Id, Title = post.Title, TitleEn = post.TitleEn, Slug = post.Slug,
-            Summary = post.Summary, SummaryEn = post.SummaryEn, Content = post.Content,
-            ContentEn = post.ContentEn, Tags = post.Tags, CoverImageUrl = post.CoverImageUrl,
-            IsPublished = post.IsPublished, CreatedAt = post.CreatedAt, UpdatedAt = post.UpdatedAt
+            Id = post.Id,
+            Title = post.Title,
+            TitleEn = post.TitleEn,
+            Slug = post.Slug,
+            Summary = post.Summary,
+            SummaryEn = post.SummaryEn,
+            Content = post.Content,
+            ContentEn = post.ContentEn,
+            Tags = post.Tags,
+            CoverImageUrl = post.CoverImageUrl,
+            IsPublished = post.IsPublished,
+            CreatedAt = post.CreatedAt,
+            UpdatedAt = post.UpdatedAt
         };
         _isNew = false;
         ShowForm = true;

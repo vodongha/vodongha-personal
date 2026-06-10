@@ -76,10 +76,16 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory)
                 .Take(count)
                 .Select(b => new BlogPost
                 {
-                    Id = b.Id, Title = b.Title, TitleEn = b.TitleEn,
-                    Slug = b.Slug, Summary = b.Summary, SummaryEn = b.SummaryEn,
-                    Tags = b.Tags, CoverImageUrl = b.CoverImageUrl,
-                    CreatedAt = b.CreatedAt, IsPublished = b.IsPublished
+                    Id = b.Id,
+                    Title = b.Title,
+                    TitleEn = b.TitleEn,
+                    Slug = b.Slug,
+                    Summary = b.Summary,
+                    SummaryEn = b.SummaryEn,
+                    Tags = b.Tags,
+                    CoverImageUrl = b.CoverImageUrl,
+                    CreatedAt = b.CreatedAt,
+                    IsPublished = b.IsPublished
                 })
                 .ToListAsync();
         }
@@ -89,10 +95,16 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory)
             .Where(b => b.IsPublished && b.Id != postId)
             .Select(b => new BlogPost
             {
-                Id = b.Id, Title = b.Title, TitleEn = b.TitleEn,
-                Slug = b.Slug, Summary = b.Summary, SummaryEn = b.SummaryEn,
-                Tags = b.Tags, CoverImageUrl = b.CoverImageUrl,
-                CreatedAt = b.CreatedAt, IsPublished = b.IsPublished
+                Id = b.Id,
+                Title = b.Title,
+                TitleEn = b.TitleEn,
+                Slug = b.Slug,
+                Summary = b.Summary,
+                SummaryEn = b.SummaryEn,
+                Tags = b.Tags,
+                CoverImageUrl = b.CoverImageUrl,
+                CreatedAt = b.CreatedAt,
+                IsPublished = b.IsPublished
             })
             .ToListAsync();
 

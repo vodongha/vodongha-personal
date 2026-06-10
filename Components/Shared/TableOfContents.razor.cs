@@ -1,6 +1,6 @@
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using System.Text.RegularExpressions;
 using VodonghaPersonal.Services;
 
 namespace VodonghaPersonal.Components.Shared;
@@ -58,7 +58,11 @@ public partial class TableOfContents : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender || !_show) return;
+        if (!firstRender || !_show)
+        {
+            return;
+        }
+
         _dotnetRef = DotNetObjectReference.Create(this);
         try
         {

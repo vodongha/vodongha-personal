@@ -23,10 +23,10 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
 
     private static readonly Dictionary<string, string[]> _groupPaths = new()
     {
-        ["Portfolio"]      = ["/admin/skills", "/admin/projects", "/admin/education", "/admin/experience", "/admin/blog", "/admin/cv"],
-        ["Communication"]  = ["/admin/contacts", "/admin/chats"],
-        ["Insights"]       = ["/admin/analytics", "/admin/health", "/admin/costs"],
-        ["System"]         = ["/admin/api-keys", "/admin/settings"],
+        ["Portfolio"] = ["/admin/skills", "/admin/projects", "/admin/education", "/admin/experience", "/admin/blog", "/admin/cv"],
+        ["Communication"] = ["/admin/contacts", "/admin/chats"],
+        ["Insights"] = ["/admin/analytics", "/admin/health", "/admin/costs"],
+        ["System"] = ["/admin/api-keys", "/admin/settings"],
     };
     private HashSet<string> _openGroups = [];
 
@@ -134,8 +134,8 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
 
             using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(subscriptionJson);
             string endpoint = doc.RootElement.GetProperty("endpoint").GetString() ?? "";
-            string p256dh   = doc.RootElement.GetProperty("keys").GetProperty("p256dh").GetString() ?? "";
-            string auth     = doc.RootElement.GetProperty("keys").GetProperty("auth").GetString() ?? "";
+            string p256dh = doc.RootElement.GetProperty("keys").GetProperty("p256dh").GetString() ?? "";
+            string auth = doc.RootElement.GetProperty("keys").GetProperty("auth").GetString() ?? "";
 
             await PushSvc.SaveSubscriptionAsync(endpoint, p256dh, auth, chatSessionId: null, isAdmin: true);
         }
@@ -172,7 +172,10 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
     {
         string current = "/" + Nav.ToBaseRelativePath(Nav.Uri).TrimStart('/');
         int qIdx = current.IndexOf('?');
-        if (qIdx >= 0) current = current[..qIdx];
+        if (qIdx >= 0)
+        {
+            current = current[..qIdx];
+        }
 
         if (exact)
         {

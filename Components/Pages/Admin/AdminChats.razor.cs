@@ -147,7 +147,10 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
 
             // Skip admin's own replies — already shown via optimistic update in SendReply.
             // Only process incoming user messages here.
-            if (!isFromUser) return;
+            if (!isFromUser)
+            {
+                return;
+            }
 
             _messages.Add(new ChatMessage { Id = id, Content = content, IsFromUser = isFromUser, SentAt = sentAt });
             // Admin is watching this session live — auto-mark as read
@@ -389,7 +392,11 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
     // Called by @bind:after — _replyText already updated, no ChangeEventArgs needed
     private void OnReplyInput()
     {
-        if (_hubConnection == null || !_selectedSessionId.HasValue) return;
+        if (_hubConnection == null || !_selectedSessionId.HasValue)
+        {
+            return;
+        }
+
         _typingCts?.Cancel();
         _typingCts = new CancellationTokenSource();
         _ = SendTypingSignalsAsync(_typingCts.Token);
@@ -397,7 +404,11 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
 
     private async Task SendTypingSignalsAsync(CancellationToken ct)
     {
-        if (_hubConnection == null || !_selectedSessionId.HasValue) return;
+        if (_hubConnection == null || !_selectedSessionId.HasValue)
+        {
+            return;
+        }
+
         try
         {
             _ = _hubConnection.InvokeAsync("StartTyping", _selectedSessionId.Value.ToString(), ct);
