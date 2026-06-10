@@ -43,6 +43,12 @@
             <span class="admin-nav__label">@Loc.T("Menu")</span>
         </a>
 
+        <!-- Dashboard — top-level item, always visible on desktop -->
+        <a href="/admin/dashboard" title="Dashboard" class="admin-nav__item admin-nav__item--dashboard @(IsActive("/admin/dashboard") ? "admin-nav__item--active" : "")">
+            <i class="bi bi-speedometer2"></i>
+            <span class="admin-nav__label">Dashboard</span>
+        </a>
+
         <!-- Portfolio group -->
         <div class="admin-nav-group @(IsGroupOpen("Portfolio") ? "admin-nav-group--open" : "") @(IsGroupActive("Portfolio") ? "admin-nav-group--active" : "")">
             <button type="button" class="admin-nav-group__header" title="@Loc.T("Portfolio")" @onclick='() => OnGroupHeaderClick("Portfolio")'>
@@ -95,7 +101,6 @@
                 <i class="bi bi-chevron-right admin-nav-group__chevron"></i>
             </button>
             <div class="admin-nav-group__items">
-                <a href="/admin/dashboard" title="Dashboard"            class="admin-nav__item @(IsActive("/admin/dashboard") ? "admin-nav__item--active" : "")"><i class="bi bi-speedometer2"></i>   <span class="admin-nav__label">Dashboard</span></a>
                 <a href="/admin/analytics" title="@Loc.T("Analytics")" class="admin-nav__item @(IsActive("/admin/analytics") ? "admin-nav__item--active" : "")"><i class="bi bi-graph-up"></i>       <span class="admin-nav__label">@Loc.T("Analytics")</span></a>
                 <a href="/admin/health"    title="@Loc.T("Health")"    class="admin-nav__item @(IsActive("/admin/health")    ? "admin-nav__item--active" : "")"><i class="bi bi-activity"></i>        <span class="admin-nav__label">@Loc.T("Health")</span></a>
                 <a href="/admin/costs"     title="@Loc.T("Costs")"     class="admin-nav__item @(IsActive("/admin/costs")     ? "admin-nav__item--active" : "")"><i class="bi bi-currency-dollar"></i> <span class="admin-nav__label">@Loc.T("Costs")</span></a>

@@ -183,7 +183,9 @@
         &:hover { background: var(--admin-hover); color: $color-text; }
         &--active { background: rgba($color-primary, 0.1); color: $color-primary; }
         // Menu/pinned item is mobile-only — must come after display:flex above
-        &--pinned { display: none; }
+        &--pinned    { display: none; }
+        // Dashboard — visible on desktop, hidden on mobile (mobile uses bottom bar)
+        &--dashboard { display: flex; @media (max-width: 768px) { display: none; } }
     }
 }
 
