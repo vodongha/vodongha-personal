@@ -79,7 +79,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | Phone validation | Google libphonenumber (`libphonenumber-csharp`) |
 | Geo IP | [ipinfo.io](https://ipinfo.io) (browser-side, free tier) |
 | Deploy | [Fly.io](https://fly.io), region Singapore (`suspend` mode) |
-| CI/CD | GitHub Actions — CI (build + unit tests) on `develop`/PRs, Lint (dotnet format + ESLint + Stylelint + unit tests) on PRs to `master`, deploy (requires all checks) on merge to `master`, sync `develop` ← `master` after each merge |
+| CI/CD | GitHub Actions — CI (build) + Tests (58 unit tests) on `develop`/PRs; Lint (dotnet format + ESLint + Stylelint) on PRs to `master`; deploy (requires all checks to pass) on merge to `master`; sync `develop` ← `master` after each merge |
 
 ---
 
