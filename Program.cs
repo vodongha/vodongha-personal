@@ -215,7 +215,7 @@ app.MapPost("/admin/do-login", async (HttpContext ctx, IConfiguration config) =>
         System.Security.Claims.Claim[] claims = [new(System.Security.Claims.ClaimTypes.Name, username), new(System.Security.Claims.ClaimTypes.Role, "Admin")];
         System.Security.Claims.ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new System.Security.Claims.ClaimsPrincipal(identity));
-        ctx.Response.Redirect("/admin/dashboard");
+        ctx.Response.Redirect("/admin");
     }
     else
     {

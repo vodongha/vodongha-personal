@@ -24,7 +24,7 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
     private const string MenuPrefKey = "_pref.dashboard.menu";
 
     private List<MenuItem> AllItems => [
-        new("dash-dashboard", "/admin/dashboard", "bi bi-speedometer2", "Dashboard"),
+        new("dash-dashboard", "/admin", "bi bi-speedometer2", "Dashboard"),
         new("dash-analytics", "/admin/analytics", "bi bi-graph-up",     "Analytics"),
         new("dash-skills",    "/admin/skills",    "bi bi-bar-chart",    Loc.T("Skills")),
         new("dash-projects",  "/admin/projects",  "bi bi-folder2",      Loc.T("Projects")),
@@ -63,7 +63,7 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
             int width = await JS.InvokeAsync<int>("eval", "window.innerWidth");
             if (width > 768)
             {
-                Nav.NavigateTo("/admin/dashboard", replace: true);
+                Nav.NavigateTo("/admin", replace: true);
                 return;
             }
 
