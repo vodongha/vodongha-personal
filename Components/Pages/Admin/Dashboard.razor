@@ -9,7 +9,7 @@
 
     <main class="admin-main">
         <header class="admin-header">
-            <h1 class="admin-header__title">Dashboard</h1>
+            <h1 class="admin-header__title">@Loc.T("Dashboard")</h1>
         </header>
 
         @if (_loading)
@@ -33,28 +33,28 @@
                     <i class="bi bi-people dash-stat__icon dash-stat__icon--blue"></i>
                     <div class="dash-stat__body">
                         <span class="dash-stat__value">@_totalVisitors.ToString("N0")</span>
-                        <span class="dash-stat__label">Unique visitors</span>
+                        <span class="dash-stat__label">@Loc.T("Unique visitors")</span>
                     </div>
                 </div>
                 <div class="dash-stat">
                     <i class="bi bi-eye dash-stat__icon dash-stat__icon--teal"></i>
                     <div class="dash-stat__body">
                         <span class="dash-stat__value">@_pageViews30d.ToString("N0")</span>
-                        <span class="dash-stat__label">Views (30 days)</span>
+                        <span class="dash-stat__label">@Loc.T("Views (30 days)")</span>
                     </div>
                 </div>
                 <div class="dash-stat">
                     <i class="bi bi-file-text dash-stat__icon dash-stat__icon--amber"></i>
                     <div class="dash-stat__body">
                         <span class="dash-stat__value">@_totalBlogViews.ToString("N0")</span>
-                        <span class="dash-stat__label">Blog reads</span>
+                        <span class="dash-stat__label">@Loc.T("Blog reads")</span>
                     </div>
                 </div>
                 <div class="dash-stat @((_unreadMessages + _unreadChats) > 0 ? "dash-stat--alert" : "")">
                     <i class="bi bi-bell dash-stat__icon dash-stat__icon--red"></i>
                     <div class="dash-stat__body">
                         <span class="dash-stat__value">@(_unreadMessages + _unreadChats)</span>
-                        <span class="dash-stat__label">Unread (@_unreadMessages msg / @_unreadChats chat)</span>
+                        <span class="dash-stat__label">@Loc.T("Unread") (@_unreadMessages @Loc.T("msg") / @_unreadChats chat)</span>
                     </div>
                 </div>
             </div>
@@ -62,13 +62,13 @@
             <!-- Charts row: donut + hbar -->
             <div class="dash-charts-row">
                 <div class="dash-card">
-                    <h2 class="dash-card__title"><i class="bi bi-bar-chart-steps"></i> Skills by category</h2>
+                    <h2 class="dash-card__title"><i class="bi bi-bar-chart-steps"></i> @Loc.T("Skills by category")</h2>
                     <div class="dash-card__chart-wrap dash-card__chart-wrap--donut">
                         <canvas id="chart-skills-cat"></canvas>
                     </div>
                 </div>
                 <div class="dash-card">
-                    <h2 class="dash-card__title"><i class="bi bi-newspaper"></i> Blog posts by views</h2>
+                    <h2 class="dash-card__title"><i class="bi bi-newspaper"></i> @Loc.T("Blog posts by views")</h2>
                     <div class="dash-card__chart-wrap">
                         <canvas id="chart-blog-views"></canvas>
                     </div>
@@ -77,7 +77,7 @@
 
             <!-- 14-day trend -->
             <div class="dash-card">
-                <h2 class="dash-card__title"><i class="bi bi-graph-up"></i> Page views — last 14 days</h2>
+                <h2 class="dash-card__title"><i class="bi bi-graph-up"></i> @Loc.T("Page views — last 14 days")</h2>
                 <div class="dash-card__chart-wrap dash-card__chart-wrap--line">
                     <canvas id="chart-trend"></canvas>
                 </div>
@@ -86,40 +86,40 @@
             <!-- Content overview + recent activity -->
             <div class="dash-charts-row">
                 <div class="dash-card">
-                    <h2 class="dash-card__title"><i class="bi bi-collection"></i> Content overview</h2>
+                    <h2 class="dash-card__title"><i class="bi bi-collection"></i> @Loc.T("Content overview")</h2>
                     <div class="dash-content-grid">
                         <a href="/admin/skills" class="dash-content-item">
                             <span class="dash-content-item__num">@_skillCount</span>
-                            <span class="dash-content-item__label">Skills</span>
+                            <span class="dash-content-item__label">@Loc.T("Skills")</span>
                         </a>
                         <a href="/admin/projects" class="dash-content-item">
                             <span class="dash-content-item__num">@_projectCount</span>
-                            <span class="dash-content-item__label">Projects</span>
+                            <span class="dash-content-item__label">@Loc.T("Projects")</span>
                         </a>
                         <a href="/admin/blog" class="dash-content-item">
                             <span class="dash-content-item__num">@_blogCount</span>
-                            <span class="dash-content-item__label">Blog posts</span>
+                            <span class="dash-content-item__label">@Loc.T("Blog posts")</span>
                         </a>
                         <a href="/admin/experience" class="dash-content-item">
                             <span class="dash-content-item__num">@_expCount</span>
-                            <span class="dash-content-item__label">Experiences</span>
+                            <span class="dash-content-item__label">@Loc.T("Experiences")</span>
                         </a>
                         <a href="/admin/education" class="dash-content-item">
                             <span class="dash-content-item__num">@_eduCount</span>
-                            <span class="dash-content-item__label">Educations</span>
+                            <span class="dash-content-item__label">@Loc.T("Educations")</span>
                         </a>
                         <a href="/admin/contacts" class="dash-content-item @(_unreadMessages > 0 ? "dash-content-item--alert" : "")">
                             <span class="dash-content-item__num">@_unreadMessages</span>
-                            <span class="dash-content-item__label">Unread msgs</span>
+                            <span class="dash-content-item__label">@Loc.T("Unread msgs")</span>
                         </a>
                     </div>
                 </div>
 
                 <div class="dash-card">
-                    <h2 class="dash-card__title"><i class="bi bi-clock-history"></i> Recent contacts</h2>
+                    <h2 class="dash-card__title"><i class="bi bi-clock-history"></i> @Loc.T("Recent contacts")</h2>
                     @if (_recentContacts.Count == 0)
                     {
-                        <p class="dash-empty">No messages yet.</p>
+                        <p class="dash-empty">@Loc.T("No messages yet.")</p>
                     }
                     else
                     {
@@ -133,7 +133,7 @@
                                 </li>
                             }
                         </ul>
-                        <a href="/admin/contacts" class="dash-card__link">View all →</a>
+                        <a href="/admin/contacts" class="dash-card__link">@Loc.T("View all →")</a>
                     }
                 </div>
             </div>
