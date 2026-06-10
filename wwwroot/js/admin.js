@@ -150,7 +150,7 @@ document.addEventListener('blur', (e) => {
 }, true);
 
 // ── Table of Contents ─────────────────────────────────────────────────────────
-window.initToc = (dotnetRef, headingIds) => {
+window.initToc = (dotnetRef, _headingIds) => {
     const content = document.querySelector('.blog-post__content');
     if (!content) return;
 
