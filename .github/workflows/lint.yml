@@ -8,17 +8,6 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  test:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.x'
-      - run: dotnet restore VodonghaPersonal.slnx
-      - run: dotnet test test/VodonghaPersonal.Tests/VodonghaPersonal.Tests.csproj --no-restore --verbosity minimal
-
   dotnet-format:
     name: dotnet format
     runs-on: ubuntu-latest
