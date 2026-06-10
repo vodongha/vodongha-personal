@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using VodonghaPersonal.Shared.DTOs;
 using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Client.Services;
+using VodonghaPersonal.Shared.DTOs;
 
 namespace VodonghaPersonal.Client.Components.Pages.Admin;
 
@@ -105,8 +105,12 @@ public partial class AdminApiKeys : ComponentBase, IDisposable
 
     private static string CategoryIcon(string category) => category switch
     {
-        "Fly.io" => "bi-airplane", "Neon" => "bi-database", "Telegram" => "bi-telegram",
-        "Email" => "bi-envelope", "Web Push" => "bi-bell", "Gemini" => "bi-stars",
+        "Fly.io" => "bi-airplane",
+        "Neon" => "bi-database",
+        "Telegram" => "bi-telegram",
+        "Email" => "bi-envelope",
+        "Web Push" => "bi-bell",
+        "Gemini" => "bi-stars",
         _ => "bi-key",
     };
 
