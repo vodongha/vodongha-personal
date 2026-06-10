@@ -9,93 +9,48 @@
     <AdminNav />
 
     <main class="admin-main">
-        <header class="admin-header">
+        <header class="admin-header admin-header--menu">
             <h1 class="admin-header__title">@Loc.T("Menu")</h1>
+            <div class="menu-search">
+                <i class="bi bi-search menu-search__icon"></i>
+                <input class="menu-search__input"
+                       type="search"
+                       placeholder="Search..."
+                       @bind="_search"
+                       @bind:event="oninput"
+                       autocomplete="off" />
+                @if (!string.IsNullOrEmpty(_search))
+                {
+                    <button class="menu-search__clear" @onclick='() => _search = ""' type="button">
+                        <i class="bi bi-x"></i>
+                    </button>
+                }
+            </div>
         </header>
 
         <div id="admin-dash-cards" class="admin-cards" data-saved-order="@_menuOrder">
-            <a href="/admin/dashboard" class="admin-card" data-card-id="dash-dashboard">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-speedometer2 admin-card__icon"></i>
-                <span class="admin-card__label">Dashboard</span>
-            </a>
-            <a href="/admin/skills" class="admin-card" data-card-id="dash-skills">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-bar-chart admin-card__icon"></i>
-                <span class="admin-card__label">@Loc.T("Skills")</span>
-            </a>
-            <a href="/admin/projects" class="admin-card" data-card-id="dash-projects">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-folder2 admin-card__icon"></i>
-                <span class="admin-card__label">@Loc.T("Projects")</span>
-            </a>
-            <a href="/admin/education" class="admin-card" data-card-id="dash-education">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-mortarboard admin-card__icon"></i>
-                <span class="admin-card__label">@Loc.T("Education")</span>
-            </a>
-            <a href="/admin/experience" class="admin-card" data-card-id="dash-experience">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-briefcase admin-card__icon"></i>
-                <span class="admin-card__label">@Loc.T("Experience")</span>
-            </a>
-            <a href="/admin/analytics" class="admin-card" data-card-id="dash-analytics">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-graph-up admin-card__icon"></i>
-                <span class="admin-card__label">Analytics</span>
-            </a>
-            <a href="/admin/blog" class="admin-card" data-card-id="dash-blog">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-file-text admin-card__icon"></i>
-                <span class="admin-card__label">@Loc.T("Blog")</span>
-            </a>
-            <a href="/admin/contacts" class="admin-card @(_unreadMessagesCount > 0 ? "admin-card--unread" : "")" data-card-id="dash-messages">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <div class="admin-card__icon-wrap">
-                    <i class="bi bi-envelope admin-card__icon"></i>
-                    @if (_unreadMessagesCount > 0)
+            @foreach (MenuItem item in FilteredItems)
+            {
+                <a href="@item.Href" class="admin-card @item.ExtraClass" data-card-id="@item.CardId">
+                    <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
+                    @if (item.BadgeCount > 0)
                     {
-                        <span class="admin-card__badge">@(_unreadMessagesCount > 99 ? "99+" : _unreadMessagesCount.ToString())</span>
+                        <div class="admin-card__icon-wrap">
+                            <i class="@item.Icon admin-card__icon"></i>
+                            <span class="admin-card__badge">@(item.BadgeCount > 99 ? "99+" : item.BadgeCount.ToString())</span>
+                        </div>
                     }
-                </div>
-                <span class="admin-card__label">@Loc.T("Messages")</span>
-            </a>
-            <a href="/admin/chats" class="admin-card @(_unreadChatCount > 0 ? "admin-card--unread" : "")" data-card-id="dash-chats">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <div class="admin-card__icon-wrap">
-                    <i class="bi bi-chat-dots admin-card__icon"></i>
-                    @if (_unreadChatCount > 0)
+                    else
                     {
-                        <span class="admin-card__badge">@(_unreadChatCount > 99 ? "99+" : _unreadChatCount.ToString())</span>
+                        <i class="@item.Icon admin-card__icon"></i>
                     }
-                </div>
-                <span class="admin-card__label">@Loc.T("Chats")</span>
-            </a>
-            <a href="/admin/cv" class="admin-card" data-card-id="dash-cv">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-file-earmark-person admin-card__icon"></i>
-                <span class="admin-card__label">@Loc.T("CV")</span>
-            </a>
-            <a href="/admin/health" class="admin-card" data-card-id="dash-health">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-activity admin-card__icon"></i>
-                <span class="admin-card__label">@Loc.T("Health")</span>
-            </a>
-            <a href="/admin/costs" class="admin-card" data-card-id="dash-costs">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-currency-dollar admin-card__icon"></i>
-                <span class="admin-card__label">@Loc.T("Costs")</span>
-            </a>
-            <a href="/admin/api-keys" class="admin-card" data-card-id="dash-api-keys">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-key admin-card__icon"></i>
-                <span class="admin-card__label">@Loc.T("API Keys")</span>
-            </a>
-            <a href="/admin/settings" class="admin-card" data-card-id="dash-settings">
-                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                <i class="bi bi-gear admin-card__icon"></i>
-                <span class="admin-card__label">@Loc.T("Settings")</span>
-            </a>
+                    <span class="admin-card__label">@item.Label</span>
+                </a>
+            }
+            @if (FilteredItems.Count == 0)
+            {
+                <p class="menu-search__empty">No results for "@_search"</p>
+            }
         </div>
     </main>
 </div>

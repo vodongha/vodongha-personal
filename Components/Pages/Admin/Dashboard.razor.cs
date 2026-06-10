@@ -15,11 +15,34 @@ public partial class Dashboard : ComponentBase, IAsyncDisposable
 
     private int _unreadChatCount;
     private int _unreadMessagesCount;
+    private string _search = "";
 
     private string _menuOrder = "[]";
     private DotNetObjectReference<Dashboard>? _dotNetRef;
 
     private const string MenuPrefKey = "_pref.dashboard.menu";
+
+    private List<MenuItem> AllItems => [
+        new("dash-dashboard", "/admin/dashboard", "bi bi-speedometer2", "Dashboard"),
+        new("dash-analytics", "/admin/analytics", "bi bi-graph-up",     "Analytics"),
+        new("dash-skills",    "/admin/skills",    "bi bi-bar-chart",    Loc.T("Skills")),
+        new("dash-projects",  "/admin/projects",  "bi bi-folder2",      Loc.T("Projects")),
+        new("dash-education", "/admin/education", "bi bi-mortarboard",  Loc.T("Education")),
+        new("dash-experience","/admin/experience","bi bi-briefcase",    Loc.T("Experience")),
+        new("dash-blog",      "/admin/blog",      "bi bi-file-text",    Loc.T("Blog")),
+        new("dash-messages",  "/admin/contacts",  "bi bi-envelope",     Loc.T("Messages"),  _unreadMessagesCount, _unreadMessagesCount > 0 ? "admin-card--unread" : ""),
+        new("dash-chats",     "/admin/chats",     "bi bi-chat-dots",    Loc.T("Chats"),     _unreadChatCount,     _unreadChatCount     > 0 ? "admin-card--unread" : ""),
+        new("dash-cv",        "/admin/cv",        "bi bi-file-earmark-person", Loc.T("CV")),
+        new("dash-health",    "/admin/health",    "bi bi-activity",     Loc.T("Health")),
+        new("dash-costs",     "/admin/costs",     "bi bi-currency-dollar", Loc.T("Costs")),
+        new("dash-api-keys",  "/admin/api-keys",  "bi bi-key",          Loc.T("API Keys")),
+        new("dash-settings",  "/admin/settings",  "bi bi-gear",         Loc.T("Settings")),
+    ];
+
+    private List<MenuItem> FilteredItems =>
+        string.IsNullOrWhiteSpace(_search)
+            ? AllItems
+            : AllItems.Where(x => x.Label.Contains(_search, StringComparison.OrdinalIgnoreCase)).ToList();
 
     protected override async Task OnInitializedAsync()
     {
@@ -36,15 +59,14 @@ public partial class Dashboard : ComponentBase, IAsyncDisposable
         try
         {
             _menuOrder = await Secrets.GetValueAsync(MenuPrefKey) ?? "[]";
-            await InvokeAsync(StateHasChanged);   // update data-saved-order in DOM before JS reads it
+            await InvokeAsync(StateHasChanged);
             await JS.InvokeVoidAsync("initSortableCards", "admin-dash-cards", _dotNetRef, MenuPrefKey);
         }
-        catch (JSDisconnectedException) { /* user navigated away */ }
-        catch (ObjectDisposedException) { /* component disposed */ }
-        catch (OperationCanceledException) { /* cancelled */ }
+        catch (JSDisconnectedException) { }
+        catch (ObjectDisposedException)  { }
+        catch (OperationCanceledException) { }
     }
 
-    /// <summary>Called by JS when user finishes dragging a card.</summary>
     [JSInvokable]
     public async Task SaveCardOrder(string prefKey, string[] ids)
     {
@@ -60,4 +82,12 @@ public partial class Dashboard : ComponentBase, IAsyncDisposable
         _dotNetRef?.Dispose();
         await ValueTask.CompletedTask;
     }
+
+    public sealed record MenuItem(
+        string CardId,
+        string Href,
+        string Icon,
+        string Label,
+        int    BadgeCount = 0,
+        string ExtraClass = "");
 }

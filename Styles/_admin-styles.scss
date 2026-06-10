@@ -255,6 +255,66 @@
     margin-bottom: 2rem;
 
     &__title { font-size: 1.5rem; font-weight: 700; }
+
+    &--menu {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+}
+
+.menu-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    &__icon {
+        position: absolute;
+        left: 0.85rem;
+        color: var(--color-text-dim);
+        font-size: 0.95rem;
+        pointer-events: none;
+    }
+
+    &__input {
+        width: 100%;
+        padding: 0.6rem 2.5rem 0.6rem 2.4rem;
+        background: var(--admin-surface);
+        border: 1px solid var(--admin-border);
+        border-radius: 8px;
+        color: var(--color-text);
+        font-size: 0.9rem;
+        transition: border-color 0.15s;
+        outline: none;
+
+        &::placeholder { color: var(--color-text-muted); }
+        &:focus { border-color: $color-accent; }
+
+        // Hide browser's native clear button — we have our own
+        &::-webkit-search-cancel-button { display: none; }
+    }
+
+    &__clear {
+        position: absolute;
+        right: 0.6rem;
+        background: none;
+        border: none;
+        color: var(--color-text-dim);
+        cursor: pointer;
+        padding: 0.2rem 0.4rem;
+        font-size: 1rem;
+        line-height: 1;
+        border-radius: 4px;
+        &:hover { color: var(--color-text); }
+    }
+
+    &__empty {
+        grid-column: 1 / -1;
+        text-align: center;
+        color: var(--color-text-muted);
+        font-size: 0.875rem;
+        padding: 2rem 0;
+    }
 }
 
 // ── Cards (dashboard) ─────────────────────────────────────────────
