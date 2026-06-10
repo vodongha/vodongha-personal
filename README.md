@@ -6,6 +6,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 
 [![CI](https://github.com/vodongha/vodongha-personal/actions/workflows/ci.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/ci.yml)
 [![Deploy](https://github.com/vodongha/vodongha-personal/actions/workflows/deploy.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/deploy.yml)
+[![Lint](https://github.com/vodongha/vodongha-personal/actions/workflows/lint.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/lint.yml)
 
 ---
 
@@ -75,7 +76,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | Phone validation | Google libphonenumber (`libphonenumber-csharp`) |
 | Geo IP | ipinfo.io (browser-side, free tier) |
 | Deploy | [Fly.io](https://fly.io), region Singapore (`suspend` mode) |
-| CI/CD | GitHub Actions — CI on `develop`/PRs, deploy on merge to `master`, sync `develop` ← `master` after each merge |
+| CI/CD | GitHub Actions — CI (build) on `develop`/PRs, Lint (dotnet format + ESLint + Stylelint) on PRs to `master`, deploy on merge to `master`, sync `develop` ← `master` after each merge |
 
 ---
 
@@ -123,10 +124,11 @@ vodongha-personal/
 │   ├── _admin-mobile.scss      # Admin mobile overrides (bottom nav, page-specific)
 │   ├── _client-mobile.scss     # Cross-component client mobile overrides
 │   └── _*.scss                 # Partials (variables, base, nav, chat, ...)
-├── wwwroot/js/
-│   ├── admin.js                # Event delegation for admin UI
-│   ├── analytics-charts.js     # Chart.js wrappers for analytics page
-│   ├── chat.js                 # chatUtils — scroll, country detection
+├── wwwroot/js/                     # All files written in ES2017+ (const/let, arrow functions, template literals, optional chaining)
+│   ├── admin.js                # Event delegation, theme toggle, TOC, reading progress, loading bar
+│   ├── analytics-charts.js     # Chart.js wrappers for analytics page (renderLine, renderBar)
+│   ├── chat.js                 # chatUtils — scroll, country detection, dial picker
+│   ├── dashboardCharts.js      # Chart.js wrappers for dashboard (donut, hbar, line, onThemeChange)
 │   └── healthChart.js          # Chart.js init/update/destroy wrappers
 ├── Migrations/
 ├── Dockerfile

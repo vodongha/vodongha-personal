@@ -12,22 +12,18 @@ window.dashboardCharts = (() => {
         }
     };
 
-    function isDark() {
-        return (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark';
-    }
-
-    // Theme-aware color helpers
-    function lineColor()    { return isDark() ? '#6ee7b7' : '#059669'; }
-    function barColor()     { return isDark() ? 'rgba(110,231,183,0.75)' : 'rgba(5,150,105,0.75)'; }
-    function barBorder()    { return isDark() ? '#6ee7b7' : '#059669'; }
-    function gridColor()    { return isDark() ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'; }
-    function tickColor()    { return isDark() ? '#9ca3af' : '#4b5563'; }
-    function tooltipBg()    { return isDark() ? '#1f2937' : '#ffffff'; }
-    function tooltipTxt()   { return isDark() ? '#f9fafb' : '#111827'; }
-    function tooltipBorder(){ return isDark() ? '#374151' : '#e5e7eb'; }
+    const isDark      = () => (document.documentElement.getAttribute('data-theme') ?? 'dark') === 'dark';
+    const lineColor   = () => isDark() ? '#6ee7b7' : '#059669';
+    const barColor    = () => isDark() ? 'rgba(110,231,183,0.75)' : 'rgba(5,150,105,0.75)';
+    const barBorder   = () => isDark() ? '#6ee7b7' : '#059669';
+    const gridColor   = () => isDark() ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)';
+    const tickColor   = () => isDark() ? '#9ca3af' : '#4b5563';
+    const tooltipBg   = () => isDark() ? '#1f2937' : '#ffffff';
+    const tooltipTxt  = () => isDark() ? '#f9fafb' : '#111827';
+    const tooltipBorder = () => isDark() ? '#374151' : '#e5e7eb';
 
     // Gradient for line chart — recreated on each render so it respects chart dimensions
-    function makeGradient(canvas) {
+    const makeGradient = (canvas) => {
         const h = canvas.parentElement?.clientHeight || canvas.offsetHeight || 160;
         const grad = canvas.getContext('2d').createLinearGradient(0, 0, 0, h);
         if (isDark()) {
@@ -40,18 +36,18 @@ window.dashboardCharts = (() => {
             grad.addColorStop(1,   'rgba(5,150,105,0)');
         }
         return grad;
-    }
+    };
 
     const CATEGORY_COLORS = [
         '#6ee7b7', '#60a5fa', '#f59e0b', '#f472b6', '#a78bfa',
         '#34d399', '#fb923c', '#38bdf8', '#e879f9', '#facc15'
     ];
 
-    function destroy(id) {
+    const destroy = (id) => {
         if (_charts[id]) { _charts[id].destroy(); delete _charts[id]; }
-    }
+    };
 
-    function renderDonut(id, labels, data) {
+    const renderDonut = (id, labels, data) => {
         destroy(id);
         const canvas = document.getElementById(id);
         if (!canvas) return;
@@ -94,9 +90,9 @@ window.dashboardCharts = (() => {
                 }
             }
         });
-    }
+    };
 
-    function renderHBar(id, labels, data) {
+    const renderHBar = (id, labels, data) => {
         destroy(id);
         const canvas = document.getElementById(id);
         if (!canvas) return;
@@ -139,18 +135,19 @@ window.dashboardCharts = (() => {
                         ticks: {
                             color: tickColor(),
                             font: { size: 11 },
+                            // `this` refers to the Scale instance — must use function(), not arrow
                             callback: function(val) {
                                 const label = this.getLabelForValue(val);
-                                return label.length > 28 ? label.substring(0, 26) + '…' : label;
+                                return label.length > 28 ? `${label.substring(0, 26)}…` : label;
                             }
                         }
                     }
                 }
             }
         });
-    }
+    };
 
-    function renderLine(id, labels, data) {
+    const renderLine = (id, labels, data) => {
         destroy(id);
         const canvas = document.getElementById(id);
         if (!canvas) return;
@@ -162,8 +159,8 @@ window.dashboardCharts = (() => {
                 {
                     id: 'gradientRefresh',
                     beforeUpdate: (chart) => {
-                        chart.data.datasets[0].backgroundColor = makeGradient(chart.canvas);
-                        chart.data.datasets[0].borderColor     = lineColor();
+                        chart.data.datasets[0].backgroundColor     = makeGradient(chart.canvas);
+                        chart.data.datasets[0].borderColor         = lineColor();
                         chart.data.datasets[0].pointBackgroundColor = lineColor();
                     }
                 }
@@ -209,9 +206,9 @@ window.dashboardCharts = (() => {
                 }
             }
         });
-    }
+    };
 
-    function onThemeChange() {
+    const onThemeChange = () => {
         Object.keys(_charts).forEach(id => {
             const chart = _charts[id];
             if (!chart) return;
@@ -234,8 +231,8 @@ window.dashboardCharts = (() => {
                 ['x', 'y'].forEach(axis => {
                     const scale = chart.options.scales[axis];
                     if (!scale) return;
-                    if (scale.grid) scale.grid.color  = gridColor();
-                    if (scale.ticks) scale.ticks.color = tickColor();
+                    if (scale.grid) { scale.grid.color = gridColor(); }
+                    if (scale.ticks) { scale.ticks.color = tickColor(); }
                 });
             }
             if (chart.options.plugins.legend?.labels) {
@@ -243,7 +240,7 @@ window.dashboardCharts = (() => {
             }
             chart.update();
         });
-    }
+    };
 
     return { renderDonut, renderHBar, renderLine, destroy, onThemeChange };
 })();
