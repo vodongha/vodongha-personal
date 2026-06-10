@@ -15,13 +15,14 @@ public static class AdminSettingsApi
             return Results.Ok(settings);
         });
 
-        group.MapPost("/", async (SettingsSaveRequest req, SiteSettingService svc) =>
+        group.MapPost("/", async (SettingsSaveRequest req, SiteSettingService svc, CvCacheService cvCache) =>
         {
             await svc.SaveAllAsync(req.Values);
+            cvCache.InvalidateAndRegenerate();
             return Results.Ok();
         }).DisableAntiforgery();
 
-        group.MapPost("/avatar", async (HttpRequest request, IWebHostEnvironment env) =>
+        group.MapPost("/avatar", async (HttpRequest request, IWebHostEnvironment env, CvCacheService cvCache) =>
         {
             IFormFile? file = request.Form.Files.GetFile("file");
             if (file is null)
@@ -50,6 +51,7 @@ public static class AdminSettingsApi
             await using FileStream fs = new(filePath, FileMode.Create);
             await file.CopyToAsync(fs);
 
+            cvCache.InvalidateAndRegenerate();
             return Results.Ok(new { url = $"/uploads/{fileName}" });
         }).DisableAntiforgery();
     }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using VodonghaPersonal.Data;
+using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Api;
@@ -17,29 +18,36 @@ public static class AdminEducationApi
             return Results.Ok(items);
         });
 
-        group.MapPost("/", async (Education item, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapPost("/", async (Education item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             item.Id = 0;
             db.Educations.Add(item);
             await db.SaveChangesAsync();
+            cvCache.InvalidateAndRegenerate();
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, Education item, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapPut("/{id:int}", async (int id, Education item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             item.Id = id;
             db.Educations.Update(item);
             await db.SaveChangesAsync();
+            cvCache.InvalidateAndRegenerate();
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             Education? e = await db.Educations.FindAsync(id);
-            if (e != null) { db.Educations.Remove(e); await db.SaveChangesAsync(); }
+            if (e != null)
+            {
+                db.Educations.Remove(e);
+                await db.SaveChangesAsync();
+                cvCache.InvalidateAndRegenerate();
+            }
             return Results.Ok();
         }).DisableAntiforgery();
     }

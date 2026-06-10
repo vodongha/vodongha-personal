@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using VodonghaPersonal.Data;
+using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Api;
@@ -17,31 +18,38 @@ public static class AdminExperienceApi
             return Results.Ok(items);
         });
 
-        group.MapPost("/", async (Experience item, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapPost("/", async (Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             item.Id = 0;
             if (item.IsCurrent) { item.EndYear = null; item.EndMonth = null; }
             db.Experiences.Add(item);
             await db.SaveChangesAsync();
+            cvCache.InvalidateAndRegenerate();
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, Experience item, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapPut("/{id:int}", async (int id, Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             item.Id = id;
             if (item.IsCurrent) { item.EndYear = null; item.EndMonth = null; }
             db.Experiences.Update(item);
             await db.SaveChangesAsync();
+            cvCache.InvalidateAndRegenerate();
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             Experience? e = await db.Experiences.FindAsync(id);
-            if (e != null) { db.Experiences.Remove(e); await db.SaveChangesAsync(); }
+            if (e != null)
+            {
+                db.Experiences.Remove(e);
+                await db.SaveChangesAsync();
+                cvCache.InvalidateAndRegenerate();
+            }
             return Results.Ok();
         }).DisableAntiforgery();
     }
