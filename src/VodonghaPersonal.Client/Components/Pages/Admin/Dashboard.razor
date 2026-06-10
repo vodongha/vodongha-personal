@@ -1,6 +1,6 @@
 @page "/admin"
 @layout AdminLayout
-@rendermode InteractiveAuto
+@rendermode @(new InteractiveAutoRenderMode(prerender: false))
 @attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
 
