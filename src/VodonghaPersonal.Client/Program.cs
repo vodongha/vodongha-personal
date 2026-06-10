@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using VodonghaPersonal.Client;
 using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Client.Services;
+using VodonghaPersonal.Shared.Services;
 
 WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
 

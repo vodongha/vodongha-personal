@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using VodonghaPersonal.Services;
+using VodonghaPersonal.Shared.Services;
 
 namespace VodonghaPersonal.Components.Shared;
 
