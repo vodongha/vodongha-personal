@@ -30,9 +30,8 @@
 // ── Typography ─────────────────────────────────────────────
 @mixin gradient-text($from: var(--color-primary), $to: var(--color-secondary)) {
     background: linear-gradient(135deg, $from, $to);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 @mixin section-title {
