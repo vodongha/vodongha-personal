@@ -28,7 +28,24 @@
                 <div class="analytics-stat-row">
                     @for (int i = 0; i < 3; i++) { <div class="skeleton-box analytics-stat-card"></div> }
                 </div>
-                <div class="skeleton-box analytics-chart-box"></div>
+                <div class="analytics-panel">
+                    <div class="skeleton-box analytics-skel__panel-title"></div>
+                    <div class="skeleton-box analytics-chart-box"></div>
+                </div>
+                <div class="analytics-grid-2">
+                    @for (int i = 0; i < 2; i++)
+                    {
+                        <div class="analytics-panel">
+                            <div class="skeleton-box analytics-skel__panel-title"></div>
+                            <div class="skeleton-box analytics-chart-box analytics-chart-box--sm"></div>
+                            @for (int r = 0; r < 5; r++) { <div class="skeleton-box analytics-skel__table-row"></div> }
+                        </div>
+                    }
+                </div>
+                <div class="analytics-panel">
+                    <div class="skeleton-box analytics-skel__panel-title"></div>
+                    @for (int r = 0; r < 5; r++) { <div class="skeleton-box analytics-skel__table-row"></div> }
+                </div>
             </div>
         }
         else
