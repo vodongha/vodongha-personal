@@ -78,6 +78,13 @@
     }
 }
 
+// Hide FAB on mobile when panel is open — close via header X button instead
+@media (max-width: 480px) {
+    .chat-fab--panel-open {
+        display: none;
+    }
+}
+
 @keyframes chat-slide-in {
     from { opacity: 0; transform: translateY(12px) scale(0.97); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
