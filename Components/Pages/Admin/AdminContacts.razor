@@ -55,10 +55,10 @@
             <div class="admin-toolbar">
                 <div class="admin-select-wrap">
                     <select class="admin-page-size" @onchange="SetPageSize">
-                        <option value="5">5 / trang</option>
-                        <option value="10" selected>10 / trang</option>
-                        <option value="20">20 / trang</option>
-                        <option value="50">50 / trang</option>
+                        <option value="5">5 / @Loc.T("page")</option>
+                        <option value="10" selected>10 / @Loc.T("page")</option>
+                        <option value="20">20 / @Loc.T("page")</option>
+                        <option value="50">50 / @Loc.T("page")</option>
                     </select>
                 </div>
                 <div class="admin-search-wrap">
@@ -94,11 +94,11 @@
             <div class="admin-modal-overlay" @onclick="CloseMessage">
                 <div class="admin-modal" @onclick:stopPropagation>
                     <h2 class="admin-modal__title">@Selected.Subject</h2>
-                    <p style="margin-bottom:.25rem"><strong>From:</strong> @Selected.Name &lt;<a href="mailto:@Selected.Email">@Selected.Email</a>&gt;</p>
+                    <p style="margin-bottom:.25rem"><strong>@Loc.T("From:")</strong> @Selected.Name &lt;<a href="mailto:@Selected.Email">@Selected.Email</a>&gt;</p>
                     <p style="margin-bottom:1.25rem;opacity:.5"><small>@Selected.SentAt.ToString("dddd, MMMM d yyyy — HH:mm UTC")</small></p>
                     <div class="admin-message-body">@((MarkupString)System.Web.HttpUtility.HtmlEncode(Selected.Message).Replace("\n", "<br/>"))</div>
                     <div class="admin-modal__footer">
-                        <a class="admin-btn admin-btn--ghost" href="mailto:@Selected.Email?subject=Re: @Uri.EscapeDataString(Selected.Subject)"><i class="bi bi-reply"></i> Reply</a>
+                        <a class="admin-btn admin-btn--ghost" href="mailto:@Selected.Email?subject=Re: @Uri.EscapeDataString(Selected.Subject)"><i class="bi bi-reply"></i> @Loc.T("Reply")</a>
                         <button type="button" class="admin-btn admin-btn--primary" @onclick="CloseMessage">@Loc.T("Cancel")</button>
                     </div>
                 </div>
