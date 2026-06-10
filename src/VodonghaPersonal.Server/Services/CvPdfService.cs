@@ -33,9 +33,9 @@ public class CvPdfService
     {
         QuestPDF.Settings.License = LicenseType.Community;
 
-        // Pre-crop avatar to square (center-horizontal, top-vertical) so
+        // Pre-crop avatar to square (center on both axes) so
         // QuestPDF FitArea() fills the circle cleanly without letterboxing.
-        byte[]? avatar = avatarBytes != null ? CropSquareTop(avatarBytes) : null;
+        byte[]? avatar = avatarBytes != null ? CropSquareCenter(avatarBytes) : null;
 
         return template switch
         {
@@ -45,15 +45,15 @@ public class CvPdfService
         };
     }
 
-    /// <summary>Crops image bytes to a square, centered horizontally and anchored to top vertically.</summary>
-    private static byte[] CropSquareTop(byte[] imageBytes)
+    /// <summary>Crops image bytes to a square, centered on both axes.</summary>
+    private static byte[] CropSquareCenter(byte[] imageBytes)
     {
         try
         {
             using SKBitmap src = SKBitmap.Decode(imageBytes);
             int size = Math.Min(src.Width, src.Height);
             int x = (src.Width - size) / 2;   // center horizontally
-            int y = 0;                          // anchor to top (show face)
+            int y = (src.Height - size) / 2;   // center vertically
 
             using SKBitmap cropped = new(size, size);
             src.ExtractSubset(cropped, new SKRectI(x, y, x + size, y + size));
