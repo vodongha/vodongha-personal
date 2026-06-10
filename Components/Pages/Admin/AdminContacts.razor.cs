@@ -80,7 +80,7 @@ public partial class AdminContacts : ComponentBase, IDisposable
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
         await db.ContactMessages.Where(m => !m.IsRead).ExecuteUpdateAsync(s => s.SetProperty(m => m.IsRead, true));
         foreach (ContactMessage msg in Messages) { msg.IsRead = true; }
-        Toast.Show("Đã đánh dấu tất cả đã đọc");
+        Toast.Show(Loc.T("Marked all as read"));
     }
 
     private async Task Delete(int id)
@@ -89,7 +89,7 @@ public partial class AdminContacts : ComponentBase, IDisposable
         await db.ContactMessages.Where(m => m.Id == id).ExecuteDeleteAsync();
         Messages.RemoveAll(m => m.Id == id);
         if (Selected?.Id == id) { Selected = null; }
-        Toast.Show("Đã xoá tin nhắn");
+        Toast.Show(Loc.T("Deleted"));
     }
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
