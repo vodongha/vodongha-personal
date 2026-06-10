@@ -13,6 +13,7 @@ public class ChatService
     private readonly TelegramService _telegram;
     private readonly IHubContext<ChatHub> _hub;
     private readonly PushNotificationService _push;
+    private readonly SiteSettingService _settings;
     private readonly ILogger<ChatService> _logger;
 
     // Short-lived cache: sessionId → TelegramTopicId, avoids a DB query on every typing event.
@@ -21,12 +22,14 @@ public class ChatService
     private static readonly ConcurrentDictionary<int, long?> s_topicIdCache = new();
 
     public ChatService(IDbContextFactory<AppDbContext> dbFactory, TelegramService telegram,
-        IHubContext<ChatHub> hub, PushNotificationService push, ILogger<ChatService> logger)
+        IHubContext<ChatHub> hub, PushNotificationService push, SiteSettingService settings,
+        ILogger<ChatService> logger)
     {
         _dbFactory = dbFactory;
         _telegram = telegram;
         _hub = hub;
         _push = push;
+        _settings = settings;
         _logger = logger;
     }
 
@@ -58,10 +61,12 @@ public class ChatService
 
         // Automated welcome message — saved to DB so it loads when widget connects
         string firstName = name.Trim().Split(' ').Last(); // extract first name (last word)
+        string template = await _settings.GetAsync("chat.welcome_message")
+            ?? "Xin chào {name}! 👋 Mình là Hà — cứ nhắn bất cứ điều gì bạn cần, mình sẽ trả lời sớm nhất có thể.";
         ChatMessage welcome = new()
         {
             ChatSessionId = session.Id,
-            Content = $"Xin chào {firstName}! 👋 Mình là Hà — cứ nhắn bất cứ điều gì bạn cần, mình sẽ trả lời sớm nhất có thể.",
+            Content = template.Replace("{name}", firstName),
             IsFromUser = false,
             SentAt = DateTime.UtcNow,
         };
@@ -113,12 +118,12 @@ public class ChatService
         await _hub.Clients.Group("admin").SendAsync("SessionUpdated", session.Id);
 
         // Web push to admin devices (fire-and-forget — non-critical)
-        _ = _push.SendToAdminsAsync("💬 Tin nhắn mới", $"{session.Name}: {content}", $"/admin/chats?session={session.Id}");
+        FireAndForget(_push.SendToAdminsAsync("💬 Tin nhắn mới", $"{session.Name}: {content}", $"/admin/chats?session={session.Id}"));
 
         // Forward to Telegram — if topic was deleted, recreate it
         if (session.TelegramTopicId != null)
         {
-            _ = ForwardUserMessageToTelegramAsync(session, message.Content);
+            FireAndForget(ForwardUserMessageToTelegramAsync(session, message.Content));
         }
 
         return message;
@@ -158,7 +163,7 @@ public class ChatService
             });
 
         // Web push to visitor device (fire-and-forget — non-critical)
-        _ = _push.SendToSessionAsync(sessionId, "💬 Bạn có tin nhắn mới", content, "/");
+        FireAndForget(_push.SendToSessionAsync(sessionId, "💬 Bạn có tin nhắn mới", content, "/"));
 
         // Forward to Telegram in the background — failure is non-critical
         if (session.TelegramTopicId != null)
@@ -227,7 +232,7 @@ public class ChatService
             });
 
         // Web push to visitor device (fire-and-forget)
-        _ = _push.SendToSessionAsync(session.Id, "💬 Bạn có tin nhắn mới", "Nhấn để xem tin nhắn", "/");
+        FireAndForget(_push.SendToSessionAsync(session.Id, "💬 Bạn có tin nhắn mới", "Nhấn để xem tin nhắn", "/"));
     }
 
     /// <summary>

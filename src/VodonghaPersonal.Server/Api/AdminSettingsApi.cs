@@ -29,6 +29,18 @@ public static class AdminSettingsApi
                 return Results.BadRequest("No file");
             }
 
+            const long maxBytes = 2 * 1024 * 1024; // 2 MB
+            if (file.Length > maxBytes)
+            {
+                return Results.BadRequest("File too large (max 2 MB)");
+            }
+
+            string[] allowedMime = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+            if (!allowedMime.Contains(file.ContentType, StringComparer.OrdinalIgnoreCase))
+            {
+                return Results.BadRequest("Only JPEG, PNG, WebP, and GIF images are allowed");
+            }
+
             string ext = Path.GetExtension(file.FileName).ToLowerInvariant();
             string fileName = $"avatar{ext}";
             string uploadsDir = Path.Combine(env.WebRootPath, "uploads");
