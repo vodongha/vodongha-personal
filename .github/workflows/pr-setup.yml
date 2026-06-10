@@ -10,10 +10,13 @@ jobs:
     permissions:
       pull-requests: write
       issues: write
+      repository-projects: write
 
     steps:
       - name: Auto-assign, label & milestone
         uses: actions/github-script@v8
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -44,6 +47,26 @@ jobs:
 
             // 3. Milestone
             await github.rest.issues.update({ owner, repo, issue_number, milestone: 2 });
+
+            // 4. Add to GitHub Project (vodongha-personal) — requires GH_PAT with project scope
+            const projectId = 'PVT_kwHOAlwhmc4BZ5kz';
+            const nodeId = context.payload.pull_request.node_id;
+            const pat = process.env.GH_PAT;
+            if (pat) {
+              const res = await fetch('https://api.github.com/graphql', {
+                method: 'POST',
+                headers: { Authorization: `token ${pat}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  query: `mutation($p: ID!, $c: ID!) { addProjectV2ItemById(input:{projectId:$p,contentId:$c}){ item { id } } }`,
+                  variables: { p: projectId, c: nodeId }
+                })
+              });
+              const json = await res.json();
+              if (json.errors) console.log('Project error:', JSON.stringify(json.errors));
+              else console.log('Added to project:', json.data?.addProjectV2ItemById?.item?.id);
+            } else {
+              console.log('GH_PAT not set — skipping project assignment');
+            }
 
       - name: Request reviewers
         uses: actions/github-script@v8
