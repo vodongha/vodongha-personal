@@ -38,6 +38,7 @@ public class AdminLocalizationService
         // Common
         ["page"] = "trang",
         ["Search..."] = "Tìm kiếm...",
+        ["No results"] = "Không tìm thấy kết quả",
         ["Add new"] = "Thêm mới",
         ["Save"] = "Lưu",
         ["Save all"] = "Lưu tất cả",
