@@ -18,7 +18,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Bilingual (VI / EN)** — toggle on every page; all content models have dual-language fields
 - **Expand / collapse** — each section shows 2 items by default with "Show more"
 - **Blog** — full posts with bilingual content, per-page Open Graph + Twitter Card meta tags
-- **Contact form** — all fields required, blur validation, i18n error messages, "Send" disabled until valid; messages saved to DB + email notification via Resend
+- **Contact form** — all fields required, blur validation, i18n error messages, "Send" disabled until valid; messages saved to DB + email notification via Resend; contact info (location, email, GitHub, LinkedIn, Facebook) loaded dynamically from DB (`SiteSettings`)
 - **Visitor counter** — unique visitors tracked by IP, displayed in the footer
 - **Browser timezone** — all timestamps display in the visitor's local timezone (detected via browser JS)
 - **Dark / Light mode** — toggle in navbar; defaults to OS `prefers-color-scheme`; user choice persisted in localStorage

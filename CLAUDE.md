@@ -235,6 +235,18 @@ document.addEventListener('mousedown', function (e) {
 - Admin pages in `VodonghaPersonal.Client` communicate with the Server via HTTP API clients (`XxxApiClient`). Server-side API handlers in `Api/AdminXxxApi.cs` access the DB directly via `IDbContextFactory<AppDbContext>`.
 - All admin pages follow the `.razor` + `.razor.cs` code-behind pattern
 
+### prerender: false on Client shared components
+
+`AdminLayout` (Client assembly) is rendered SSR by the Server as the outer shell — even though admin pages themselves have `InteractiveAuto(prerender: false)`. This means any component inside `AdminLayout` that injects a Client-only service (`VodonghaPersonal.Client.Services.*`) will throw a DI resolution error during SSR.
+
+**Rule:** all Client shared components used in `AdminLayout` must declare `@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))` at the top of their `.razor` file:
+
+- `TimezoneDetector.razor` — injects `Client.Services.TimezoneService`
+- `ToastContainer.razor` — injects `Client.Services.ToastService`
+- `AdminNav.razor` — injects `ChatApiClient`, `ContactApiClient`, `SettingsApiClient`
+
+Without this, Server tries to instantiate the component during SSR and fails to resolve Client-only services. The `prerender: false` directive makes Blazor emit a `<blazor-component>` placeholder instead of rendering the component server-side.
+
 ### Blazor code-behind pattern
 
 Every admin page uses a `.razor.cs` partial class:
