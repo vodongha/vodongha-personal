@@ -6,7 +6,7 @@ using VodonghaPersonal.Services;
 
 namespace VodonghaPersonal.Components.Pages.Admin;
 
-public partial class AdminMenu : ComponentBase, IAsyncDisposable
+public partial class MenuMobile : ComponentBase, IAsyncDisposable
 {
     [Inject] private ChatService ChatSvc { get; set; } = default!;
     [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
@@ -19,7 +19,7 @@ public partial class AdminMenu : ComponentBase, IAsyncDisposable
     private string _search = "";
 
     private string _menuOrder = "[]";
-    private DotNetObjectReference<AdminMenu>? _dotNetRef;
+    private DotNetObjectReference<MenuMobile>? _dotNetRef;
 
     private const string MenuPrefKey = "_pref.dashboard.menu";
 
