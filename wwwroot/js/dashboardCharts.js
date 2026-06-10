@@ -1,7 +1,7 @@
 window.dashboardCharts = (() => {
     const _charts = {};
 
-    // Plugin: transparent canvas background (prevents Chart.js white fill)
+    // Plugin: transparent canvas background (prevents Chart.js default white fill)
     const transparentBg = {
         id: 'transparentBg',
         beforeDraw: (chart) => {
@@ -15,10 +15,32 @@ window.dashboardCharts = (() => {
     function isDark() {
         return (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark';
     }
-    function gridColor()  { return isDark() ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)'; }
-    function tickColor()  { return isDark() ? '#9ca3af' : '#6b7280'; }
-    function tooltipBg()  { return isDark() ? '#1f2937' : '#ffffff'; }
-    function tooltipTxt() { return isDark() ? '#f9fafb' : '#111827'; }
+
+    // Theme-aware color helpers
+    function lineColor()    { return isDark() ? '#6ee7b7' : '#059669'; }
+    function barColor()     { return isDark() ? 'rgba(110,231,183,0.75)' : 'rgba(5,150,105,0.75)'; }
+    function barBorder()    { return isDark() ? '#6ee7b7' : '#059669'; }
+    function gridColor()    { return isDark() ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'; }
+    function tickColor()    { return isDark() ? '#9ca3af' : '#4b5563'; }
+    function tooltipBg()    { return isDark() ? '#1f2937' : '#ffffff'; }
+    function tooltipTxt()   { return isDark() ? '#f9fafb' : '#111827'; }
+    function tooltipBorder(){ return isDark() ? '#374151' : '#e5e7eb'; }
+
+    // Gradient for line chart — recreated on each render so it respects chart dimensions
+    function makeGradient(canvas) {
+        const h = canvas.parentElement?.clientHeight || canvas.offsetHeight || 160;
+        const grad = canvas.getContext('2d').createLinearGradient(0, 0, 0, h);
+        if (isDark()) {
+            grad.addColorStop(0,   'rgba(110,231,183,0.45)');
+            grad.addColorStop(0.6, 'rgba(110,231,183,0.08)');
+            grad.addColorStop(1,   'rgba(110,231,183,0)');
+        } else {
+            grad.addColorStop(0,   'rgba(5,150,105,0.25)');
+            grad.addColorStop(0.6, 'rgba(5,150,105,0.05)');
+            grad.addColorStop(1,   'rgba(5,150,105,0)');
+        }
+        return grad;
+    }
 
     const CATEGORY_COLORS = [
         '#6ee7b7', '#60a5fa', '#f59e0b', '#f472b6', '#a78bfa',
@@ -31,9 +53,9 @@ window.dashboardCharts = (() => {
 
     function renderDonut(id, labels, data) {
         destroy(id);
-        const ctx = document.getElementById(id);
-        if (!ctx) return;
-        _charts[id] = new Chart(ctx, {
+        const canvas = document.getElementById(id);
+        if (!canvas) return;
+        _charts[id] = new Chart(canvas, {
             plugins: [transparentBg],
             type: 'doughnut',
             data: {
@@ -42,7 +64,7 @@ window.dashboardCharts = (() => {
                     data,
                     backgroundColor: CATEGORY_COLORS.slice(0, labels.length),
                     borderWidth: 2,
-                    borderColor: isDark() ? '#111827' : '#ffffff',
+                    borderColor: isDark() ? '#141414' : '#ffffff',
                     hoverOffset: 6
                 }]
             },
@@ -63,9 +85,9 @@ window.dashboardCharts = (() => {
                         backgroundColor: tooltipBg(),
                         titleColor: tooltipTxt(),
                         bodyColor: tooltipTxt(),
-                        callbacks: {
-                            label: ctx => ` ${ctx.parsed} skills`
-                        }
+                        borderColor: tooltipBorder(),
+                        borderWidth: 1,
+                        callbacks: { label: ctx => ` ${ctx.parsed} skills` }
                     }
                 }
             }
@@ -74,17 +96,17 @@ window.dashboardCharts = (() => {
 
     function renderHBar(id, labels, data) {
         destroy(id);
-        const ctx = document.getElementById(id);
-        if (!ctx) return;
-        _charts[id] = new Chart(ctx, {
+        const canvas = document.getElementById(id);
+        if (!canvas) return;
+        _charts[id] = new Chart(canvas, {
             plugins: [transparentBg],
             type: 'bar',
             data: {
                 labels,
                 datasets: [{
                     data,
-                    backgroundColor: '#6ee7b7cc',
-                    borderColor: '#6ee7b7',
+                    backgroundColor: barColor(),
+                    borderColor: barBorder(),
                     borderWidth: 1,
                     borderRadius: 4
                 }]
@@ -97,6 +119,8 @@ window.dashboardCharts = (() => {
                         backgroundColor: tooltipBg(),
                         titleColor: tooltipTxt(),
                         bodyColor: tooltipTxt(),
+                        borderColor: tooltipBorder(),
+                        borderWidth: 1,
                         callbacks: { label: ctx => ` ${ctx.parsed.x} views` }
                     }
                 },
@@ -124,27 +148,33 @@ window.dashboardCharts = (() => {
 
     function renderLine(id, labels, data) {
         destroy(id);
-        const ctx = document.getElementById(id);
-        if (!ctx) return;
-        const h = ctx.parentElement?.offsetHeight || 160;
-        const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, h);
-        gradient.addColorStop(0, isDark() ? 'rgba(110,231,183,0.4)' : 'rgba(16,185,129,0.3)');
-        gradient.addColorStop(0.7, isDark() ? 'rgba(110,231,183,0.05)' : 'rgba(16,185,129,0.03)');
-        gradient.addColorStop(1, 'rgba(0,0,0,0)');
+        const canvas = document.getElementById(id);
+        if (!canvas) return;
 
-        _charts[id] = new Chart(ctx, {
-            plugins: [transparentBg],
+        _charts[id] = new Chart(canvas, {
+            plugins: [
+                transparentBg,
+                // Rebuild gradient after Chart.js resizes the canvas
+                {
+                    id: 'gradientRefresh',
+                    beforeUpdate: (chart) => {
+                        chart.data.datasets[0].backgroundColor = makeGradient(chart.canvas);
+                        chart.data.datasets[0].borderColor     = lineColor();
+                        chart.data.datasets[0].pointBackgroundColor = lineColor();
+                    }
+                }
+            ],
             type: 'line',
             data: {
                 labels,
                 datasets: [{
                     data,
                     fill: true,
-                    backgroundColor: gradient,
-                    borderColor: '#6ee7b7',
+                    backgroundColor: makeGradient(canvas),
+                    borderColor: lineColor(),
                     borderWidth: 2,
                     pointRadius: 3,
-                    pointBackgroundColor: '#6ee7b7',
+                    pointBackgroundColor: lineColor(),
                     tension: 0.4
                 }]
             },
@@ -155,6 +185,8 @@ window.dashboardCharts = (() => {
                         backgroundColor: tooltipBg(),
                         titleColor: tooltipTxt(),
                         bodyColor: tooltipTxt(),
+                        borderColor: tooltipBorder(),
+                        borderWidth: 1,
                         callbacks: { label: ctx => ` ${ctx.parsed.y} views` }
                     }
                 },
@@ -178,18 +210,26 @@ window.dashboardCharts = (() => {
             const chart = _charts[id];
             if (!chart) return;
             const ds = chart.data.datasets[0];
+
             if (chart.config.type === 'doughnut') {
-                ds.borderColor = isDark() ? '#111827' : '#ffffff';
+                ds.borderColor = isDark() ? '#141414' : '#ffffff';
+            } else if (chart.config.type === 'bar') {
+                ds.backgroundColor = barColor();
+                ds.borderColor     = barBorder();
             }
+            // Line gradient is rebuilt automatically by gradientRefresh plugin on next update
+
             chart.options.plugins.tooltip.backgroundColor = tooltipBg();
             chart.options.plugins.tooltip.titleColor      = tooltipTxt();
             chart.options.plugins.tooltip.bodyColor       = tooltipTxt();
+            chart.options.plugins.tooltip.borderColor     = tooltipBorder();
+
             if (chart.options.scales) {
-                ['x','y'].forEach(axis => {
-                    if (chart.options.scales[axis]) {
-                        if (chart.options.scales[axis].grid) chart.options.scales[axis].grid.color = gridColor();
-                        if (chart.options.scales[axis].ticks) chart.options.scales[axis].ticks.color = tickColor();
-                    }
+                ['x', 'y'].forEach(axis => {
+                    const scale = chart.options.scales[axis];
+                    if (!scale) return;
+                    if (scale.grid) scale.grid.color  = gridColor();
+                    if (scale.ticks) scale.ticks.color = tickColor();
                 });
             }
             if (chart.options.plugins.legend?.labels) {
