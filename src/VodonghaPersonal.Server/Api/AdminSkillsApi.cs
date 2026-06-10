@@ -39,7 +39,11 @@ public static class AdminSkillsApi
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             Skill? skill = await db.Skills.FindAsync(id);
-            if (skill != null) { db.Skills.Remove(skill); await db.SaveChangesAsync(); }
+            if (skill != null)
+            {
+                db.Skills.Remove(skill);
+                await db.SaveChangesAsync();
+            }
             return Results.Ok();
         }).DisableAntiforgery();
     }
