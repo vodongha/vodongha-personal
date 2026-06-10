@@ -168,8 +168,17 @@
 
     // Modal — full width on small screens
     .admin-modal {
+        max-width: 100%;
         padding: 1.25rem;
-        &--lg { max-width: 100%; }
+    }
+
+    // API Keys search bar — clamp to viewport, reposition clear button
+    .ak-search-wrap {
+        max-width: 100%;
+
+        &__input { max-width: 100%; }
+
+        &__clear { left: unset; right: 0.5rem; }
     }
 
     // Settings grid already has its own media query — ok
