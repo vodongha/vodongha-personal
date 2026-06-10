@@ -1,15 +1,15 @@
-const _transparentBg = {
-    id: 'transparentBg',
-    beforeDraw: (chart) => {
-        const ctx = chart.canvas.getContext('2d');
-        ctx.save();
-        ctx.clearRect(0, 0, chart.width, chart.height);
-        ctx.restore();
-    }
-};
-
 window.analyticsCharts = (() => {
     const charts = {};
+
+    const _transparentBg = {
+        id: 'transparentBg',
+        beforeDraw: (chart) => {
+            const ctx = chart.canvas.getContext('2d');
+            ctx.save();
+            ctx.clearRect(0, 0, chart.width, chart.height);
+            ctx.restore();
+        }
+    };
 
     function isDark() {
         return document.documentElement.getAttribute('data-theme') !== 'light';
