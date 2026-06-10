@@ -21,9 +21,27 @@ public partial class AdminApiKeys : ComponentBase, IDisposable
     private string? _editingKey  = null;
     private string  _editValue   = "";
     private string? _editError   = null;
+    private string  _search      = "";
 
     private static readonly string[] _categories =
         AppSecretsService.Definitions.Select(d => d.Category).Distinct().ToArray();
+
+    private IEnumerable<AppSecretDefinition> FilteredDefs(string category)
+    {
+        IEnumerable<AppSecretDefinition> defs = AppSecretsService.Definitions.Where(d => d.Category == category);
+        if (string.IsNullOrWhiteSpace(_search))
+        {
+            return defs;
+        }
+
+        string q = _search.Trim();
+        return defs.Where(d =>
+            d.DisplayName.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+            d.Key.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+            d.Description.Contains(q, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private bool CategoryVisible(string category) => FilteredDefs(category).Any();
 
     protected override void OnInitialized() => Loc.OnChanged += OnLangChanged;
 
