@@ -1,5 +1,5 @@
 window.chatUtils = {
-    detectCountry: async function () {
+    detectCountry: async () => {
         // Cache per session — ipinfo.io free tier has a low rate limit and
         // the country code never changes within a single browser session.
         const CACHE_KEY = '__ipinfo_country';
@@ -13,7 +13,7 @@ window.chatUtils = {
             const r = await fetch('https://ipinfo.io/json', { signal: AbortSignal.timeout(4000) });
             if (r.ok) {
                 const d = await r.json();
-                country = d.country || '';
+                country = d.country ?? '';
             }
             // 429 Too Many Requests / other non-ok: stay with '' fallback silently
         } catch { /* network error, CORS block, or timeout — silent fallback */ }
@@ -21,11 +21,12 @@ window.chatUtils = {
         try { sessionStorage.setItem(CACHE_KEY, country); } catch { }
         return country;
     },
+
     // ── Message input helpers (no Blazor bind round-trip) ────────────
     _dotNetRef: null,
     _typingThrottle: null,
 
-    initInput: function (dotNetRef) {
+    initInput(dotNetRef) {
         this._dotNetRef = dotNetRef;
 
         // Open chat when SW sends OPEN_CHAT postMessage (visitor push notification click)
@@ -43,14 +44,14 @@ window.chatUtils = {
         }
     },
 
-    onMsgInput: function (textarea) {
+    onMsgInput(textarea) {
         // Toggle send button based on content
         const btn = document.getElementById('chatSendBtn');
         if (btn) btn.disabled = !textarea.value.trim();
 
         // Auto-resize textarea
         textarea.style.height = 'auto';
-        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
 
         // Throttled typing indicator — fire max once per 1.5s
         if (!this._typingThrottle && this._dotNetRef) {
@@ -61,21 +62,17 @@ window.chatUtils = {
         }
     },
 
-    onMsgKeyDown: function (e) {
+    onMsgKeyDown(e) {
         // Enter without Shift → send (prevent newline)
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            if (this._dotNetRef) {
-                this._dotNetRef.invokeMethodAsync('SendMessageFromJs').catch(() => {});
-            }
+            this._dotNetRef?.invokeMethodAsync('SendMessageFromJs').catch(() => {});
         }
     },
 
-    getMsgInput: function () {
-        return document.getElementById('chatMsgInput')?.value ?? '';
-    },
+    getMsgInput: () => document.getElementById('chatMsgInput')?.value ?? '',
 
-    clearMsgInput: function () {
+    clearMsgInput() {
         const el = document.getElementById('chatMsgInput');
         if (!el) return;
         el.value = '';
@@ -84,7 +81,7 @@ window.chatUtils = {
         if (btn) btn.disabled = true;
     },
 
-    setMsgInput: function (text) {
+    setMsgInput(text) {
         const el = document.getElementById('chatMsgInput');
         if (!el) return;
         el.value = text;
@@ -92,14 +89,15 @@ window.chatUtils = {
         if (btn) btn.disabled = !text?.trim();
     },
 
-    scrollToBottom: function (elementId) {
-        var el = document.getElementById(elementId);
+    scrollToBottom(elementId) {
+        const el = document.getElementById(elementId);
         if (el) el.scrollTop = el.scrollHeight;
     },
-    scrollToUnread: function (elementId) {
-        var container = document.getElementById(elementId);
+
+    scrollToUnread(elementId) {
+        const container = document.getElementById(elementId);
         if (!container) return;
-        var divider = container.querySelector('.chat-unread-divider');
+        const divider = container.querySelector('.chat-unread-divider');
         if (divider) {
             container.scrollTo({ top: divider.offsetTop - 12, behavior: 'smooth' });
         } else {
@@ -108,14 +106,14 @@ window.chatUtils = {
     }
 };
 
-// ── Dial-code picker (pure JS — no Blazor re-render) ──────────────
+// ── Dial-code picker (pure JS — no Blazor re-render) ──────────────────────────
 window.chatDial = {
     _dotNetRef: null,
 
-    init: function (dotNetRef) {
+    init(dotNetRef) {
         this._dotNetRef = dotNetRef;
         // Close dropdown when clicking outside
-        document.addEventListener('click', function (e) {
+        document.addEventListener('click', (e) => {
             const picker = document.getElementById('chatDialPicker');
             if (picker && !picker.contains(e.target)) {
                 chatDial.close();
@@ -123,11 +121,10 @@ window.chatDial = {
         });
     },
 
-    toggle: function () {
+    toggle() {
         const dd = document.getElementById('chatDialDropdown');
         if (!dd) return;
-        const isOpen = dd.style.display !== 'none';
-        if (isOpen) {
+        if (dd.style.display !== 'none') {
             this.close();
         } else {
             dd.style.display = 'block';
@@ -137,13 +134,13 @@ window.chatDial = {
         }
     },
 
-    close: function () {
+    close() {
         const dd = document.getElementById('chatDialDropdown');
         if (dd) dd.style.display = 'none';
         document.getElementById('chatDialPicker')?.classList.remove('chat-dial--open');
     },
 
-    filter: function (q) {
+    filter(q) {
         const list = document.getElementById('chatDialList');
         if (!list) return;
         const lower = q.toLowerCase();
@@ -171,14 +168,13 @@ window.chatDial = {
         }
     },
 
-    select: function (btn) {
-        const region = btn.dataset.region;
-        const dial   = btn.dataset.dial;
-        const flag   = btn.querySelector('.chat-dial__flag')?.textContent ?? '';
+    select(btn) {
+        const { region, dial } = btn.dataset;
+        const flag = btn.querySelector('.chat-dial__flag')?.textContent ?? '';
 
         // Update trigger label
         const label = document.getElementById('chatDialLabel');
-        if (label) label.textContent = flag + ' ' + dial;
+        if (label) label.textContent = `${flag} ${dial}`;
 
         // Update hidden input and fire change event so Blazor picks it up
         const hidden = document.getElementById('chatDialRegion');
@@ -196,17 +192,14 @@ window.chatDial = {
     },
 
     // Clean phone input in JS — no Blazor round-trip while typing
-    cleanPhone: function (input) {
-        const pos = input.selectionStart;
-        let val = input.value;
-
-        // Keep only digits, spaces, hyphens — leading zero is stripped server-side
-        const cleaned = val.replace(/[^\d\s\-]/g, '');
+    cleanPhone(input) {
+        const pos     = input.selectionStart;
+        const cleaned = input.value.replace(/[^\d\s\-]/g, '');
 
         if (cleaned !== input.value) {
+            const diff = input.value.length - cleaned.length;
             input.value = cleaned;
             // Restore cursor position adjusted for removed chars
-            const diff = val.length - cleaned.length;
             input.setSelectionRange(Math.max(0, pos - diff), Math.max(0, pos - diff));
         }
     }
