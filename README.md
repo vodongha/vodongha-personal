@@ -136,8 +136,12 @@ vodongha-personal/
 │       │                             #   ContactMessage, ChatSession, ChatMessage, CvData
 │       └── DTOs/
 │           └── AdminDtos.cs          # API request/response types (DashboardStatsDto, ...)
+├── Directory.Build.props             # Shared build properties (TargetFramework, Nullable, ImplicitUsings)
+├── NuGet.Config                      # NuGet package source (api.nuget.org)
 └── test/
-    └── VodonghaPersonal.Tests/       # NUnit + Shouldly unit tests
+    ├── VodonghaPersonal.Client.Tests/    # NUnit + Shouldly — Client (WASM) unit tests
+    ├── VodonghaPersonal.Server.Tests/    # NUnit + Shouldly — Server unit tests (12 tests)
+    └── VodonghaPersonal.Shared.Tests/    # NUnit + Shouldly — Shared unit tests
 ```
 
 ---

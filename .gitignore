@@ -12,9 +12,9 @@ run.log
 
 ## Secrets — NEVER commit
 .env
-appsettings.Development.json
-appsettings.*.json
-!appsettings.json
+**/appsettings.Development.json
+**/appsettings.*.json
+!**/appsettings.json
 
 ## Build artifacts
 msbuild.binlog
