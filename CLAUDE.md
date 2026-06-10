@@ -21,13 +21,13 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 | Email | Resend API (`Email__ResendApiKey`). Sender: `no-reply@vodongha.id.vn`, recipient: `REDACTED_EMAIL` |
 | Chat | Telegram Bot API + SignalR (`Microsoft.AspNetCore.SignalR.Client`). Secrets: `Telegram__BotToken`, `Telegram__ChatId`, `Telegram__WebhookSecret` |
 | Real-time | ASP.NET Core SignalR (`ChatHub`) — session groups, admin group, typing events |
-| Charts | Chart.js 4.4 via CDN — wrapped in `wwwroot/js/healthChart.js` |
+| Charts | Chart.js 4.5.1 via CDN — wrapped in `wwwroot/js/healthChart.js` |
 | PDF generation | QuestPDF 2026.5.0 Community — `CvPdfService.Generate(cv, template, avatarBytes)` dispatches to 3 template methods; `QuestPDF.Settings.License = LicenseType.Community` set at call site |
-| Image processing | SkiaSharp 3.116.1 — `CropSquareTop(byte[])` crops image to square (center-horizontal, top-vertical) before QuestPDF so `FitArea()` fills the circle without letterboxing |
+| Image processing | SkiaSharp 3.119.4 — `CropSquareTop(byte[])` crops image to square (center-horizontal, top-vertical) before QuestPDF so `FitArea()` fills the circle without letterboxing |
 | Phone validation | `libphonenumber-csharp` — validates per country's numbering plan (`IsValidNumberForRegion`) |
 | Geo IP | ipinfo.io — called from browser JS (`chatUtils.detectCountry`) for country code detection |
 | Deploy | Fly.io, app `vodongha`, region `sin`, `auto_stop_machines = "suspend"`. Merge PR to `master` → auto-deploy (~2 min) |
-| CI | GitHub Actions — `ci.yml`: `dotnet build` on every push to `develop` and on PRs to `master`; `lint.yml`: `dotnet format --verify-no-changes` + ESLint (JS) + Stylelint (SCSS) on PRs to `master` |
+| CI | GitHub Actions — `ci.yml`: `dotnet build` + unit tests on every push to `develop` and on PRs to `master`; `lint.yml`: `dotnet format --verify-no-changes` + ESLint (JS) + Stylelint (SCSS) + unit tests on PRs to `master`; `deploy.yml`: all checks must pass before Fly.io deploy |
 | Migrations | EF Core, applied automatically on startup via `MigrateAsync()` in `Program.cs` |
 
 ## Git workflow
@@ -134,9 +134,10 @@ vodongha-personal/
 │   │   │   ├── AdminContacts.razor + .cs    # unread badge, mark read, reply
 │   │   │   ├── AdminChats.razor + .cs       # live chat sessions, real-time messages, typing, read receipts
 │   │   │   ├── AdminHealth.razor + .cs      # server health: memory + DB ping charts, snapshot table
-│   │   │   ├── AdminSettings.razor + .cs    # avatar upload, social links, bio
+│   │   │   ├── AdminSettings.razor + .cs    # /admin/settings — avatar upload, social links, bio ("Hồ sơ" in VI, shown first in Portfolio group)
 │   │   │   ├── AdminCv.razor + .cs          # CV PDF download — template picker, live preview per template
-│   │   │   └── AdminAnalytics.razor + .cs   # /admin/analytics — page views, daily chart, top pages/countries/referrers
+│   │   │   ├── AdminAnalytics.razor + .cs   # /admin/analytics — page views, daily chart, top pages/countries/referrers
+│   │   │   └── AdminDependencies.razor + .cs # /admin/dependencies — NuGet/npm/CDN version tracker; filter chips + search; hardcoded list (see DependencyCheckService)
 │   │   ├── Error.razor
 │   │   └── NotFound.razor
 │   ├── Sections/                     # One file per landing page section
@@ -630,7 +631,7 @@ else { <real content> }
 
 | Version | Changes |
 |---|---|
-| v2.0.6 | i18n all 8 admin pages; Lint CI (dotnet format + ESLint + Stylelint); CI & Deploy flow; ES2026 JS (Uint8Array.fromBase64, ecmaVersion 2026); Dependencies tracker page (/admin/dependencies — NuGet/npm/CDN version checks); SCSS Stylelint fixes; analytics nav label fix; cost banner light-mode fix; Chart.js version mismatch fix (4.4.4→4.5.1) |
+| v2.0.6 | i18n all 8 admin pages; Lint CI (dotnet format + ESLint + Stylelint); CI & Deploy flow; ES2026 JS (Uint8Array.fromBase64, ecmaVersion 2026); Dependencies tracker page (/admin/dependencies — NuGet/npm/CDN version checks, filter chips, search); unit tests (VodonghaPersonal.Tests, 12 NUnit + Shouldly tests); dep updates (Microsoft 10.0.8→10.0.9, SkiaSharp 3.116.1→3.119.4, eslint 9→10, stylelint 16→17, SortableJS 1.15.3→1.15.7, Devicon latest→2.17.0); menu renamed "Thông tin"→"Hồ sơ" (bi-person-vcard, first in Portfolio group); SCSS Stylelint fixes; analytics nav label fix; cost banner light-mode fix; Chart.js version mismatch fix (4.4.4→4.5.1) |
 | v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix; collapsible sidebar (icon-only collapsed mode, localStorage); icon-only top controls with tooltips; mobile bottom bar 4-item; Dashboard → /admin/analytics |
 | v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping; accessibility; code quality; DI fix; git workflow updated |
 | v2.0.3 | Web Push notifications, searchable dial-code picker, chat light/dark mode, admin chat UX fixes, API Keys admin, blog pagination, skeleton loading, theme system fixes |
