@@ -70,7 +70,7 @@ window.pushUtils = {
 
             return JSON.stringify(subscription);
         } catch (e) {
-            console.warn('[push] subscribe failed:', e);
+            void e; // subscribe failed silently
             return null;
         }
     },
@@ -87,7 +87,7 @@ window.pushUtils = {
             await sub.unsubscribe();
             return endpoint;
         } catch (e) {
-            console.warn('[push] unsubscribe failed:', e);
+            void e; // unsubscribe failed silently
             return null;
         }
     }
