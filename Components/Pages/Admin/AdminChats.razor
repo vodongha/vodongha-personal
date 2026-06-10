@@ -47,7 +47,7 @@
                              @onclick="() => SelectSession(session.Id)">
                             <div class="chat-session-card__info">
                                 <div class="chat-session-card__name">
-                                    @if (session.HasUnread) { <span class="admin-unread-dot" title="Chưa đọc"></span> }
+                                    @if (session.HasUnread) { <span class="admin-unread-dot" title="@Loc.T("Unread")"></span> }
                                     @session.Name
                                 </div>
                                 <div class="chat-session-card__meta">@session.Email · @session.Phone</div>
@@ -69,7 +69,7 @@
                 {
                     <div class="chat-admin-window">
                         <div class="chat-admin-session-header">
-                            <button type="button" class="chat-admin-back" @onclick="CloseChat" title="Quay lại">
+                            <button type="button" class="chat-admin-back" @onclick="CloseChat" title="@Loc.T("Back")">
                                 <i class="bi bi-arrow-left"></i>
                             </button>
                             <div class="chat-header__avatar"><i class="bi bi-person-circle"></i></div>
@@ -105,11 +105,11 @@
                                         {
                                             if (_userReadUpToId > 0 && msg.Id <= _userReadUpToId)
                                             {
-                                                <i class="bi bi-check-all chat-msg__ticks chat-msg__ticks--read" title="Đã đọc"></i>
+                                                <i class="bi bi-check-all chat-msg__ticks chat-msg__ticks--read" title="@Loc.T("Read")"></i>
                                             }
                                             else
                                             {
-                                                <i class="bi bi-check chat-msg__ticks" title="Đã gửi"></i>
+                                                <i class="bi bi-check chat-msg__ticks" title="@Loc.T("Sent")"></i>
                                             }
                                         }
                                     </div>

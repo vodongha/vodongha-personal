@@ -91,11 +91,12 @@ public partial class AdminCv : ComponentBase, IDisposable
             : name.Length > 0 ? name[..Math.Min(2, name.Length)].ToUpper() : "?";
     }
 
-    private static string DateRange(Experience exp)
+    private string DateRange(Experience exp)
     {
+        string present = Loc.T("Present");
         string start = $"{MonthShort(exp.StartMonth)} {exp.StartYear}";
-        string end = exp.IsCurrent ? "Present"
-            : exp.EndYear.HasValue ? $"{MonthShort(exp.EndMonth ?? 1)} {exp.EndYear}" : "Present";
+        string end = exp.IsCurrent ? present
+            : exp.EndYear.HasValue ? $"{MonthShort(exp.EndMonth ?? 1)} {exp.EndYear}" : present;
         return $"{start} – {end}";
     }
 

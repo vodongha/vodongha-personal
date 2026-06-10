@@ -19,7 +19,7 @@
                 <h2 class="admin-settings-section__title">@Loc.T("Introduction")</h2>
                 <div class="admin-form__group">
                     <label class="admin-form__label">Avatar</label>
-                    <div class="admin-avatar-upload" @onclick="TriggerFilePicker" title="Bấm để đổi ảnh">
+                    <div class="admin-avatar-upload" @onclick="TriggerFilePicker" title="@Loc.T("Click to change photo")">
                         @if (!string.IsNullOrEmpty(Val["AvatarUrl"]))
                         {
                             <img src="@Val["AvatarUrl"]" alt="Avatar" class="admin-avatar-upload__img" />
