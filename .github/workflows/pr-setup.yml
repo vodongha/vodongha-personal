@@ -43,7 +43,7 @@ jobs:
             await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [label] });
 
             // 3. Milestone
-            await github.rest.issues.update({ owner, repo, issue_number, milestone: 1 });
+            await github.rest.issues.update({ owner, repo, issue_number, milestone: 2 });
 
       - name: Request reviewers
         uses: actions/github-script@v8
