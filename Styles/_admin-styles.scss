@@ -1948,6 +1948,65 @@ tr.admin-row--dragover td {
 
 // ─── API Keys page ────────────────────────────────────────────────────────────
 
+.ak-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    &__icon {
+        position: absolute;
+        left: 0.8rem;
+        color: var(--color-text-muted);
+        font-size: 0.85rem;
+        pointer-events: none;
+    }
+
+    &__input {
+        width: 100%;
+        max-width: 420px;
+        padding: 0.55rem 2.4rem 0.55rem 2.2rem;
+        background: var(--admin-surface);
+        border: 1px solid var(--admin-border);
+        border-radius: 8px;
+        color: $color-text;
+        font-size: 0.875rem;
+        transition: border-color 150ms;
+
+        &::placeholder { color: var(--color-text-muted); }
+        &:focus { outline: none; border-color: var(--color-primary); }
+        &::-webkit-search-cancel-button { display: none; }
+    }
+
+    &__clear {
+        position: absolute;
+        left: calc(420px - 2rem);
+        background: transparent;
+        border: none;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        padding: 0.2rem;
+        display: flex;
+        align-items: center;
+        font-size: 0.75rem;
+        border-radius: 4px;
+
+        &:hover { color: $color-text; }
+    }
+}
+
+.ak-no-results {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 2rem 1rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-style: italic;
+
+    i { font-size: 1rem; }
+}
+
 .apikey-info {
     display: flex;
     align-items: flex-start;
