@@ -5,7 +5,7 @@ export default [
     {
         files: ["wwwroot/js/**/*.js"],
         languageOptions: {
-            ecmaVersion: 2020,
+            ecmaVersion: 2026,
             sourceType: "script",
             globals: {
                 // Browser built-ins
@@ -27,7 +27,6 @@ export default [
                 Uint8Array:           "readonly",
                 Event:                "readonly",
                 Notification:         "readonly",
-                atob:                 "readonly",
                 IntersectionObserver: "readonly",
                 MutationObserver:     "readonly",
                 // CDN globals
