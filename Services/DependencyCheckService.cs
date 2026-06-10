@@ -31,7 +31,10 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
     private static readonly TimeSpan CacheTtl = TimeSpan.FromHours(1);
     private const string CacheKey = "dep_check_result";
 
-    // Hardcoded — .csproj is not available in published Docker output
+    // Hardcoded — .csproj / package.json are not in Docker published output (/app contains only DLLs).
+    // When adding a new NuGet package: add a row to NuGetPackages below.
+    // When adding a new npm devDependency: add a row to NpmPackages below.
+    // When adding a new CDN library: add a row to CdnLibraries below AND update the CDN URL in App.razor / AdminLayout.razor.
     private static readonly (string Name, string Version)[] NuGetPackages =
     [
         ("AspNetCore.SassCompiler",                                              "1.100.0"),
@@ -61,7 +64,7 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
         ("Chart.js",        "4.5.1",  "chart.js",        null),
         ("Bootstrap Icons", "1.13.1", "bootstrap-icons", null),
         ("SortableJS",      "1.15.7", "sortablejs",      null),
-        ("Devicon",         "latest", "devicon",         "Không ghim version trong CDN URL"),
+        ("Devicon",         "2.17.0", "devicon",         null),
     ];
 
     public async Task<IReadOnlyList<DependencyInfo>> GetAllAsync()
