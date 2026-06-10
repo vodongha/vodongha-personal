@@ -24,7 +24,10 @@ public static class AdminSettingsApi
         group.MapPost("/avatar", async (HttpRequest request, IWebHostEnvironment env) =>
         {
             IFormFile? file = request.Form.Files.GetFile("file");
-            if (file is null) { return Results.BadRequest("No file"); }
+            if (file is null)
+            {
+                return Results.BadRequest("No file");
+            }
 
             string ext = Path.GetExtension(file.FileName).ToLowerInvariant();
             string fileName = $"avatar{ext}";
