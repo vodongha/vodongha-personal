@@ -214,6 +214,23 @@ public class AdminLocalizationService
 
         // API Keys
         ["API Keys"] = "API Keys",
+
+        // Dependencies
+        ["Dependencies"] = "Thư viện",
+        ["Package"] = "Gói",
+        ["Current"] = "Hiện tại",
+        ["Latest"] = "Mới nhất",
+        ["outdated"] = "lỗi thời",
+        ["up-to-date"] = "cập nhật",
+        ["unknown"] = "không xác định",
+        ["Checking versions..."] = "Đang kiểm tra phiên bản...",
+        ["UpToDate"] = "Cập nhật",
+        ["Outdated"] = "Lỗi thời",
+        ["Unknown"] = "Không xác định",
+        ["NuGet"] = "NuGet",
+        ["Npm"] = "npm",
+        ["Cdn"] = "CDN",
+        ["hour"] = "giờ",
         ["Costs"] = "Chi phí",
         ["Changes apply immediately"] = "Thay đổi có hiệu lực ngay",
         ["Values are encrypted in the database. DB overrides take effect immediately without redeployment. Leave blank to fall back to environment variables."] = "Giá trị được mã hóa trong cơ sở dữ liệu. Ghi đè DB có hiệu lực ngay không cần triển khai lại. Để trống để dùng biến môi trường.",
