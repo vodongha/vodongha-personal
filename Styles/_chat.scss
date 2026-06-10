@@ -651,14 +651,14 @@
 // ── Light theme overrides ─────────────────────────────────────────
 [data-theme="light"] {
     .chat-fab {
-        color: #ffffff;
+        color: #fff;
         box-shadow: 0 4px 20px color-mix(in srgb, var(--color-primary) 30%, transparent);
         &:hover { box-shadow: 0 6px 28px color-mix(in srgb, var(--color-primary) 45%, transparent); }
-        &__badge { border-color: #ffffff; }
+        &__badge { border-color: #fff; }
     }
 
     .chat-panel {
-        background: #ffffff;
+        background: #fff;
         border-color: #e2e8f0;
         box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
     }
