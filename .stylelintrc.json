@@ -10,6 +10,8 @@
 
     "alpha-value-notation":          null,
     "color-function-notation":       null,
+    "color-function-alias-notation": null,
+    "declaration-property-value-keyword-no-deprecated": null,
     "comment-empty-line-before":     null,
     "custom-property-empty-line-before": null,
     "declaration-empty-line-before": null,

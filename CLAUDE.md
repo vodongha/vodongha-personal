@@ -242,6 +242,13 @@ dart.exe sass.snapshot --style=expanded --no-source-map Styles\admin.scss wwwroo
 
 Find `dart.exe` in the NuGet package cache under `AspNetCore.SassCompiler` tools.
 
+### Stylelint rules — what to use in SCSS
+
+The project uses `stylelint-config-standard-scss`. Two rules are disabled in `.stylelintrc.json` to stay compatible with SCSS variable usage:
+
+- **`color-function-alias-notation`** — disabled. Using `rgba(...)` is fine (both plain literals and SCSS variable form `rgba($color, 0.1)` are accepted).
+- **`declaration-property-value-keyword-no-deprecated`** — disabled. However, prefer `overflow-wrap: break-word` over `word-break: break-word` in new code — `word-break: break-word` is non-standard and deprecated in most browsers.
+
 ## Blazor — important rules
 
 **Scripts only execute from `App.razor`** — not from `.razor` layout or page components. All `<script>` tags must be placed in `App.razor` (before `</body>`). Currently: `<script src="js/admin.js"></script>`.

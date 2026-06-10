@@ -1,0 +1,22 @@
+name: Tests
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [master]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+      - run: dotnet restore
+      - run: dotnet test VodonghaPersonal.Tests --no-restore --verbosity minimal
