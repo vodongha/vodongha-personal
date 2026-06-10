@@ -6,22 +6,6 @@ using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Services;
 
-public record CvData(
-    string Name,
-    string Title,
-    string Email,
-    string Phone,
-    string Location,
-    string GitHub,
-    string LinkedIn,
-    string Bio,
-    string AvatarUrl,
-    List<Skill> Skills,
-    List<Experience> Experiences,
-    List<Education> Educations,
-    List<Project> Projects
-);
-
 public class CvPdfService
 {
     // ── Shared colors ────────────────────────────────────────────────────────

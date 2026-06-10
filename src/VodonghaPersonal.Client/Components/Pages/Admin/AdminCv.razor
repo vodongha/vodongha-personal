@@ -1,0 +1,347 @@
+@page "/admin/cv"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveAuto
+@using Microsoft.AspNetCore.Authorization
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">
+                <i class="bi bi-file-earmark-person"></i> @Loc.T("CV / Resume")
+            </h1>
+            <button class="admin-btn admin-btn--primary" @onclick="Download" disabled="@_loading">
+                <i class="bi bi-download"></i> @Loc.T("Download PDF")
+            </button>
+        </header>
+
+        @if (_loading)
+        {
+            <div class="cv-skel">
+                <div class="cv-skel__toolbar">
+                    <div class="cv-skel__tab"></div>
+                    <div class="cv-skel__tab"></div>
+                    <div class="cv-skel__tab"></div>
+                </div>
+                <div class="cv-skel__preview"></div>
+                <div class="cv-skel__actions">
+                    <div class="cv-skel__btn"></div>
+                    <div class="cv-skel__btn"></div>
+                </div>
+            </div>
+        }
+        else if (_data != null)
+        {
+            <div class="cv-page-layout">
+
+                <!-- ── Left: preview (changes per template) ──── -->
+                <div>
+                    @if (_selectedTemplate == 0)
+                    {
+                        <!-- Template 0: Dark Sidebar -->
+                        <div class="cv-preview">
+                            <div class="cv-preview__sidebar">
+                                <div class="cv-preview__avatar">
+                                    @if (!string.IsNullOrEmpty(_data.AvatarUrl)) { <img src="@_data.AvatarUrl" alt="Avatar" /> }
+                                    else { <span>@Initials(_data.Name)</span> }
+                                </div>
+                                <div class="cv-preview__name">@_data.Name</div>
+                                <div class="cv-preview__title">@_data.Title</div>
+                                <div class="cv-preview__section-label">@Loc.T("Contact")</div>
+                                @ContactRows(_data)
+                                @if (_data.Skills.Count > 0)
+                                {
+                                    <div class="cv-preview__section-label" style="margin-top:1rem">@Loc.T("Skills")</div>
+                                    @SkillTags(_data)
+                                }
+                            </div>
+                            <div class="cv-preview__main">
+                                @MainContent(_data)
+                            </div>
+                        </div>
+                    }
+                    else if (_selectedTemplate == 1)
+                    {
+                        <!-- Template 1: Minimal — header + two-column body -->
+                        <div class="cv-minimal-preview">
+                            <!-- Header -->
+                            <div class="cv-minimal-preview__header">
+                                <div class="cv-preview__avatar cv-preview__avatar--sm">
+                                    @if (!string.IsNullOrEmpty(_data.AvatarUrl)) { <img src="@_data.AvatarUrl" alt="Avatar" /> }
+                                    else { <span>@Initials(_data.Name)</span> }
+                                </div>
+                                <div class="cv-minimal-preview__header-info">
+                                    <div class="cv-minimal-preview__name">@_data.Name</div>
+                                    <div class="cv-minimal-preview__title">@_data.Title</div>
+                                    <div class="cv-minimal-preview__contacts">
+                                        @ContactInline(_data)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cv-minimal-preview__divider"></div>
+                            <!-- Body: skills left + content right -->
+                            <div class="cv-minimal-preview__body">
+                                <div class="cv-minimal-preview__skills">
+                                    @if (_data.Skills.Count > 0)
+                                    {
+                                        @SkillTags(_data, "min")
+                                    }
+                                </div>
+                                <div class="cv-minimal-preview__content">
+                                    @MainContent(_data, "min")
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (_selectedTemplate == 2)
+                    {
+                        <!-- Template 2: Professional — navy header + two-column body -->
+                        <div class="cv-pro-preview">
+                            <!-- Navy header -->
+                            <div class="cv-pro-preview__header">
+                                <div class="cv-preview__avatar cv-preview__avatar--sm cv-preview__avatar--blue">
+                                    @if (!string.IsNullOrEmpty(_data.AvatarUrl)) { <img src="@_data.AvatarUrl" alt="Avatar" /> }
+                                    else { <span>@Initials(_data.Name)</span> }
+                                </div>
+                                <div class="cv-pro-preview__header-info">
+                                    <div class="cv-pro-preview__name">@_data.Name</div>
+                                    <div class="cv-pro-preview__title">@_data.Title</div>
+                                    <div class="cv-pro-preview__contacts">
+                                        @ContactInline(_data, "pro")
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cv-pro-preview__stripe"></div>
+                            <!-- Body: skills left + content right -->
+                            <div class="cv-pro-preview__body">
+                                <div class="cv-pro-preview__skills">
+                                    @if (_data.Skills.Count > 0)
+                                    {
+                                        @SkillTags(_data, "pro")
+                                    }
+                                </div>
+                                <div class="cv-pro-preview__content">
+                                    @MainContent(_data, "pro")
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <p class="cost-note" style="margin-top:1rem">
+                        <i class="bi bi-info-circle"></i>
+                        @Loc.T("Preview shows data that will be included in the PDF. Edit content in Settings, Skills, Experience, Education and Projects pages.")
+                    </p>
+                </div>
+
+                <!-- ── Right: template picker ─────────────────── -->
+                <div class="cv-template-picker">
+                    <h3 class="cv-template-picker__title">@Loc.T("Templates")</h3>
+                    <p class="cv-template-picker__hint">@Loc.T("Click a template, then Download PDF")</p>
+
+                    <div class="cv-tpl-card @(_selectedTemplate == 0 ? "cv-tpl-card--active" : "")" @onclick="() => SelectTemplate(0)">
+                        <div class="cv-tpl-thumb cv-tpl-thumb--dark">
+                            <div class="cv-tpl-thumb__sidebar">
+                                <div class="cv-tpl-thumb__avatar"></div>
+                                <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w60"></div>
+                                <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w40 cv-tpl-thumb__line--accent"></div>
+                                <div class="cv-tpl-thumb__gap"></div>
+                                <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w80 cv-tpl-thumb__line--muted"></div>
+                                <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w70 cv-tpl-thumb__line--muted"></div>
+                            </div>
+                            <div class="cv-tpl-thumb__main">
+                                <div class="cv-tpl-thumb__section-title cv-tpl-thumb__section-title--green"></div>
+                                <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w90 cv-tpl-thumb__line--dark"></div>
+                                <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w80 cv-tpl-thumb__line--dark"></div>
+                                <div class="cv-tpl-thumb__gap"></div>
+                                <div class="cv-tpl-thumb__section-title cv-tpl-thumb__section-title--green"></div>
+                                <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w70 cv-tpl-thumb__line--dark"></div>
+                                <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w90 cv-tpl-thumb__line--muted-dark"></div>
+                            </div>
+                        </div>
+                        <div class="cv-tpl-card__label">@if (_selectedTemplate == 0) { <i class="bi bi-check-circle-fill"></i> } Dark Sidebar</div>
+                    </div>
+
+                    <div class="cv-tpl-card @(_selectedTemplate == 1 ? "cv-tpl-card--active" : "")" @onclick="() => SelectTemplate(1)">
+                        <div class="cv-tpl-thumb cv-tpl-thumb--minimal">
+                            <div class="cv-tpl-thumb__header-row">
+                                <div class="cv-tpl-thumb__avatar cv-tpl-thumb__avatar--green"></div>
+                                <div style="flex:1;padding-left:5px;">
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w70 cv-tpl-thumb__line--dark cv-tpl-thumb__line--bold"></div>
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w50 cv-tpl-thumb__line--green-accent"></div>
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w90 cv-tpl-thumb__line--muted-dark" style="margin-top:3px;"></div>
+                                </div>
+                            </div>
+                            <div class="cv-tpl-thumb__divider cv-tpl-thumb__divider--green"></div>
+                            <div style="display:flex;flex:1;gap:4px;overflow:hidden;">
+                                <div class="cv-tpl-thumb__skills-col">
+                                    <div class="cv-tpl-thumb__skill-tag"></div>
+                                    <div class="cv-tpl-thumb__skill-tag"></div>
+                                    <div class="cv-tpl-thumb__skill-tag"></div>
+                                </div>
+                                <div style="flex:1;overflow:hidden;">
+                                    <div class="cv-tpl-thumb__section-title cv-tpl-thumb__section-title--green"></div>
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w90 cv-tpl-thumb__line--dark"></div>
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w70 cv-tpl-thumb__line--dark"></div>
+                                    <div class="cv-tpl-thumb__gap"></div>
+                                    <div class="cv-tpl-thumb__section-title cv-tpl-thumb__section-title--green"></div>
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w80 cv-tpl-thumb__line--dark"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cv-tpl-card__label">@if (_selectedTemplate == 1) { <i class="bi bi-check-circle-fill"></i> } Minimal</div>
+                    </div>
+
+                    <div class="cv-tpl-card @(_selectedTemplate == 2 ? "cv-tpl-card--active" : "")" @onclick="() => SelectTemplate(2)">
+                        <div class="cv-tpl-thumb cv-tpl-thumb--pro">
+                            <div class="cv-tpl-thumb__pro-header">
+                                <div class="cv-tpl-thumb__avatar cv-tpl-thumb__avatar--blue"></div>
+                                <div style="flex:1;padding-left:5px;">
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w60 cv-tpl-thumb__line--white"></div>
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w40 cv-tpl-thumb__line--light-blue"></div>
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w90 cv-tpl-thumb__line--light-blue" style="margin-top:3px;"></div>
+                                </div>
+                            </div>
+                            <div class="cv-tpl-thumb__pro-stripe"></div>
+                            <div style="display:flex;flex:1;gap:4px;overflow:hidden;">
+                                <div class="cv-tpl-thumb__skills-col cv-tpl-thumb__skills-col--blue">
+                                    <div class="cv-tpl-thumb__skill-tag cv-tpl-thumb__skill-tag--blue"></div>
+                                    <div class="cv-tpl-thumb__skill-tag cv-tpl-thumb__skill-tag--blue"></div>
+                                </div>
+                                <div style="flex:1;overflow:hidden;padding:6px 4px;">
+                                    <div class="cv-tpl-thumb__section-title cv-tpl-thumb__section-title--blue"></div>
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w90 cv-tpl-thumb__line--dark"></div>
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w70 cv-tpl-thumb__line--dark"></div>
+                                    <div class="cv-tpl-thumb__gap"></div>
+                                    <div class="cv-tpl-thumb__section-title cv-tpl-thumb__section-title--blue"></div>
+                                    <div class="cv-tpl-thumb__line cv-tpl-thumb__line--w80 cv-tpl-thumb__line--dark"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cv-tpl-card__label">@if (_selectedTemplate == 2) { <i class="bi bi-check-circle-fill"></i> } Professional</div>
+                    </div>
+                </div>
+
+            </div>
+        }
+    </main>
+</div>
+
+@* ── Shared render fragments ─────────────────────────────────────────── *@
+@code {
+    private RenderFragment ContactRows(CvData d) => __builder =>
+    {
+        if (!string.IsNullOrEmpty(d.Email))    { <div class="cv-preview__contact-row"><i class="bi bi-envelope"></i> @d.Email</div> }
+        if (!string.IsNullOrEmpty(d.Phone))    { <div class="cv-preview__contact-row"><i class="bi bi-telephone"></i> @d.Phone</div> }
+        if (!string.IsNullOrEmpty(d.Location)) { <div class="cv-preview__contact-row"><i class="bi bi-geo-alt"></i> @d.Location</div> }
+        if (!string.IsNullOrEmpty(d.GitHub))   { <div class="cv-preview__contact-row"><i class="bi bi-github"></i> @d.GitHub.Replace("https://github.com/", "")</div> }
+        if (!string.IsNullOrEmpty(d.LinkedIn)) { <div class="cv-preview__contact-row"><i class="bi bi-linkedin"></i> @d.LinkedIn.Replace("https://linkedin.com/in/","").Replace("https://www.linkedin.com/in/","")</div> }
+    };
+
+    private RenderFragment ContactInline(CvData d, string theme = "") => __builder =>
+    {
+        string cls = theme == "pro" ? "cv-pro-preview__contact-item" : "cv-minimal-preview__contact-item";
+        if (!string.IsNullOrEmpty(d.Email))    { <span class="@cls"><i class="bi bi-envelope"></i> @d.Email</span> }
+        if (!string.IsNullOrEmpty(d.Phone))    { <span class="@cls"><i class="bi bi-telephone"></i> @d.Phone</span> }
+        if (!string.IsNullOrEmpty(d.Location)) { <span class="@cls"><i class="bi bi-geo-alt"></i> @d.Location</span> }
+        if (!string.IsNullOrEmpty(d.GitHub))   { <span class="@cls"><i class="bi bi-github"></i> @d.GitHub.Replace("https://github.com/", "")</span> }
+        if (!string.IsNullOrEmpty(d.LinkedIn)) { <span class="@cls"><i class="bi bi-linkedin"></i> @d.LinkedIn.Replace("https://linkedin.com/in/","").Replace("https://www.linkedin.com/in/","")</span> }
+    };
+
+    private RenderFragment SkillTags(CvData d, string theme = "") => __builder =>
+    {
+        string catCls  = theme == "pro" ? "cv-pro-preview__skill-cat"  : theme == "min" ? "cv-min-preview__skill-cat"  : "cv-preview__skill-cat";
+        string tagsCls = theme == "pro" ? "cv-pro-preview__skill-tags" : theme == "min" ? "cv-min-preview__skill-tags" : "cv-preview__skill-tags";
+        string tagCls  = theme == "pro" ? "cv-pro-preview__skill-tag"  : theme == "min" ? "cv-min-preview__skill-tag"  : "cv-preview__skill-tag";
+        foreach (var group in d.Skills.GroupBy(s => s.Category))
+        {
+            <div class="@catCls">@group.Key</div>
+            <div class="@tagsCls">
+                @foreach (var skill in group)
+                {
+                    <span class="@tagCls">@skill.Name</span>
+                }
+            </div>
+        }
+    };
+
+    private RenderFragment MainContent(CvData d, string theme = "") => __builder =>
+    {
+        string blockTitleCls = theme == "pro" ? "cv-pro-preview__block-title"
+                             : theme == "min" ? "cv-min-preview__block-title"
+                             : "cv-preview__block-title";
+        string entryCls      = "cv-preview__entry";
+        string roleCls       = "cv-preview__entry-role";
+        string dateCls       = "cv-preview__entry-date";
+        string subCls        = theme == "pro" ? "cv-pro-preview__entry-sub"
+                             : theme == "min" ? "cv-min-preview__entry-sub"
+                             : "cv-preview__entry-sub";
+        string descCls       = "cv-preview__entry-desc";
+
+        if (!string.IsNullOrWhiteSpace(d.Bio))
+        {
+            <div class="cv-preview__block">
+                <div class="@blockTitleCls">@Loc.T("Profile")</div>
+                <p class="cv-preview__bio">@d.Bio</p>
+            </div>
+        }
+        @if (d.Experiences.Count > 0)
+        {
+            <div class="cv-preview__block">
+                <div class="@blockTitleCls">@Loc.T("Experience")</div>
+                @foreach (var exp in d.Experiences.OrderBy(e => e.Order))
+                {
+                    <div class="@entryCls">
+                        <div class="cv-preview__entry-header">
+                            <span class="@roleCls">@exp.Role</span>
+                            <span class="@dateCls">@DateRange(exp)</span>
+                        </div>
+                        <div class="@subCls">@exp.Company @(string.IsNullOrEmpty(exp.Location) ? "" : $"· {exp.Location}")</div>
+                        @if (!string.IsNullOrWhiteSpace(exp.DescriptionEn ?? exp.Description))
+                        {
+                            <p class="@descCls">@(exp.DescriptionEn ?? exp.Description)</p>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        @if (d.Educations.Count > 0)
+        {
+            <div class="cv-preview__block">
+                <div class="@blockTitleCls">@Loc.T("Education")</div>
+                @foreach (var edu in d.Educations.OrderBy(e => e.Order))
+                {
+                    <div class="@entryCls">
+                        <div class="cv-preview__entry-header">
+                            <span class="@roleCls">@edu.Degree — @edu.Field</span>
+                            <span class="@dateCls">@edu.StartYear – @(edu.EndYear?.ToString() ?? Loc.T("Present"))</span>
+                        </div>
+                        <div class="@subCls">@edu.School</div>
+                    </div>
+                }
+            </div>
+        }
+        var featured = d.Projects.Where(p => p.IsFeatured).OrderBy(p => p.Order).Take(4).ToList();
+        @if (featured.Count > 0)
+        {
+            <div class="cv-preview__block">
+                <div class="@blockTitleCls">@Loc.T("Featured Projects")</div>
+                @foreach (var proj in featured)
+                {
+                    <div class="@entryCls">
+                        <div class="cv-preview__entry-header">
+                            <span class="@roleCls">@proj.Title</span>
+                            @if (!string.IsNullOrEmpty(proj.LiveUrl)) { <a href="@proj.LiveUrl" target="_blank" class="cv-preview__entry-link">@proj.LiveUrl</a> }
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(proj.DescriptionEn ?? proj.Description))
+                        {
+                            <p class="@descCls">@(proj.DescriptionEn ?? proj.Description)</p>
+                        }
+                        @if (!string.IsNullOrEmpty(proj.Technologies)) { <div class="cv-preview__tech">@proj.Technologies</div> }
+                    </div>
+                }
+            </div>
+        }
+    };
+}
