@@ -69,6 +69,8 @@ window.dashboardCharts = (() => {
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 cutout: '62%',
                 plugins: {
                     legend: {
@@ -112,6 +114,8 @@ window.dashboardCharts = (() => {
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 indexAxis: 'y',
                 plugins: {
                     legend: { display: false },
@@ -179,6 +183,8 @@ window.dashboardCharts = (() => {
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
                     tooltip: {
