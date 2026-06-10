@@ -53,104 +53,109 @@
         {
             @foreach (string category in _categories)
             {
-                <div class="cost-section">
-                    <div class="cost-section__header">
-                        <span class="cost-section__title">
-                            <i class="bi @CategoryIcon(category)"></i> @category
-                        </span>
+                List<AppSecretDefinition> defs = AppSecretsService.Definitions.Where(d => d.Category == category).ToList();
+                int setCount = defs.Count(d => !string.IsNullOrEmpty(_dbValues.GetValueOrDefault(d.Key)) || !string.IsNullOrEmpty(_envValues.GetValueOrDefault(d.Key)));
+
+                <div class="ak-section">
+                    <div class="ak-section__header">
+                        <i class="bi @CategoryIcon(category)"></i>
+                        <span class="ak-section__title">@category</span>
+                        <span class="ak-section__count">@setCount / @defs.Count</span>
                     </div>
 
-                    <div class="apikey-list">
-                        @foreach (AppSecretDefinition def in AppSecretsService.Definitions.Where(d => d.Category == category))
+                    <div class="ak-list">
+                        @foreach (AppSecretDefinition def in defs)
                         {
                             bool isEditing = _editingKey == def.Key;
                             string? dbVal  = _dbValues.GetValueOrDefault(def.Key);
                             string? envVal = _envValues.GetValueOrDefault(def.Key);
                             bool hasDb     = !string.IsNullOrEmpty(dbVal);
                             bool hasEnv    = !string.IsNullOrEmpty(envVal);
+                            string statusMod = hasDb ? "ak-item--db" : hasEnv ? "ak-item--env" : "ak-item--missing";
 
-                            <div class="apikey-row @(isEditing ? "apikey-row--editing" : "")">
-                                <div class="apikey-row__meta">
-                                    <div class="apikey-row__name">
-                                        @def.DisplayName
+                            <div class="ak-item @statusMod @(isEditing ? "ak-item--editing" : "")">
+                                <div class="ak-item__stripe"></div>
+
+                                <div class="ak-item__body">
+                                    <div class="ak-item__top">
+                                        <span class="ak-item__name">@def.DisplayName</span>
                                         @if (hasDb)
                                         {
-                                            <span class="apikey-badge apikey-badge--db" title="@Loc.T("Overridden in database")">DB</span>
+                                            <span class="ak-badge ak-badge--db" title="@Loc.T("Overridden in database")">@Loc.T("from DB")</span>
                                         }
                                         else if (hasEnv)
                                         {
-                                            <span class="apikey-badge apikey-badge--env" title="@Loc.T("Set via environment variable")">ENV</span>
+                                            <span class="ak-badge ak-badge--env" title="@Loc.T("Set via environment variable")">@Loc.T("from ENV")</span>
                                         }
                                         else
                                         {
-                                            <span class="apikey-badge apikey-badge--missing">@Loc.T("Not set")</span>
+                                            <span class="ak-badge ak-badge--missing">@Loc.T("Not set")</span>
                                         }
                                     </div>
-                                    <div class="apikey-row__key">@def.Key</div>
-                                    <div class="apikey-row__desc">@def.Description</div>
-                                </div>
 
-                                <div class="apikey-row__value">
+                                    <div class="ak-item__key">@def.Key</div>
+
+                                    @if (!string.IsNullOrEmpty(def.Description))
+                                    {
+                                        <div class="ak-item__desc">@def.Description</div>
+                                    }
+
                                     @if (!isEditing)
                                     {
                                         @if (hasDb || hasEnv)
                                         {
                                             string display = hasDb ? dbVal! : envVal!;
-                                            <span class="apikey-masked">@MaskValue(display, def.Sensitive)</span>
-                                            <span class="apikey-source">@(hasDb ? Loc.T("from DB") : Loc.T("from ENV"))</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="apikey-empty">—</span>
+                                            <div class="ak-item__value">
+                                                <span class="ak-masked">@MaskValue(display, def.Sensitive)</span>
+                                            </div>
                                         }
                                     }
                                     else
                                     {
-                                        <div class="apikey-edit-form">
-                                            <input class="admin-form__input apikey-edit-input"
+                                        <div class="ak-edit">
+                                            <input class="admin-form__input ak-edit__input"
                                                    type="@(def.Sensitive ? "password" : "text")"
-                                                   placeholder="@(def.Sensitive ? "Enter new value (leave blank to remove DB override)" : "Enter value")"
+                                                   placeholder="@(def.Sensitive ? Loc.T("Enter new value (leave blank to remove DB override)") : Loc.T("Enter value"))"
                                                    @bind="_editValue"
                                                    @bind:event="oninput" />
                                             @if (!string.IsNullOrEmpty(_editError))
                                             {
-                                                <div class="apikey-error">@_editError</div>
+                                                <div class="ak-edit__error">@_editError</div>
                                             }
+                                            <div class="ak-edit__actions">
+                                                <button class="admin-btn admin-btn--primary admin-btn--sm"
+                                                        @onclick="SaveEdit"
+                                                        disabled="@_saving">
+                                                    @if (_saving) { <i class="bi bi-arrow-clockwise admin-spin"></i> }
+                                                    else          { <i class="bi bi-check-lg"></i> }
+                                                    @Loc.T("Save")
+                                                </button>
+                                                <button class="admin-btn admin-btn--ghost admin-btn--sm"
+                                                        @onclick="CancelEdit">
+                                                    @Loc.T("Cancel")
+                                                </button>
+                                            </div>
                                         </div>
                                     }
                                 </div>
 
-                                <div class="apikey-row__actions">
-                                    @if (!isEditing)
-                                    {
-                                        <button class="admin-btn admin-btn--ghost admin-btn--sm"
+                                @if (!isEditing)
+                                {
+                                    <div class="ak-item__actions">
+                                        <button class="ak-icon-btn" title="@Loc.T("Edit")"
                                                 @onclick="() => StartEdit(def.Key, dbVal ?? string.Empty)">
-                                            <i class="bi bi-pencil"></i> @Loc.T("Edit")
+                                            <i class="bi bi-pencil"></i>
                                         </button>
                                         @if (hasDb)
                                         {
-                                            <button class="admin-btn admin-btn--danger admin-btn--sm"
-                                                    @onclick="() => RemoveOverride(def.Key)"
-                                                    title="@Loc.T("Remove DB override, fall back to ENV")">
-                                                <i class="bi bi-x-circle"></i>
+                                            <button class="ak-icon-btn ak-icon-btn--danger"
+                                                    title="@Loc.T("Remove DB override, fall back to ENV")"
+                                                    @onclick="() => RemoveOverride(def.Key)">
+                                                <i class="bi bi-trash3"></i>
                                             </button>
                                         }
-                                    }
-                                    else
-                                    {
-                                        <button class="admin-btn admin-btn--primary admin-btn--sm"
-                                                @onclick="SaveEdit"
-                                                disabled="@_saving">
-                                            @if (_saving) { <i class="bi bi-arrow-clockwise admin-spin"></i> }
-                                            else          { <i class="bi bi-check-lg"></i> }
-                                            @Loc.T("Save")
-                                        </button>
-                                        <button class="admin-btn admin-btn--ghost admin-btn--sm"
-                                                @onclick="CancelEdit">
-                                            @Loc.T("Cancel")
-                                        </button>
-                                    }
-                                </div>
+                                    </div>
+                                }
                             </div>
                         }
                     </div>
