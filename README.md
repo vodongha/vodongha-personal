@@ -124,12 +124,13 @@ vodongha-personal/
 │   ├── _admin-mobile.scss      # Admin mobile overrides (bottom nav, page-specific)
 │   ├── _client-mobile.scss     # Cross-component client mobile overrides
 │   └── _*.scss                 # Partials (variables, base, nav, chat, ...)
-├── wwwroot/js/                     # All files written in ES2017+ (const/let, arrow functions, template literals, optional chaining)
+├── wwwroot/js/                     # All files written in ES2026 (const/let, arrow functions, optional chaining, Uint8Array.fromBase64)
 │   ├── admin.js                # Event delegation, theme toggle, TOC, reading progress, loading bar
 │   ├── analytics-charts.js     # Chart.js wrappers for analytics page (renderLine, renderBar)
 │   ├── chat.js                 # chatUtils — scroll, country detection, dial picker
 │   ├── dashboardCharts.js      # Chart.js wrappers for dashboard (donut, hbar, line, onThemeChange)
-│   └── healthChart.js          # Chart.js init/update/destroy wrappers
+│   ├── healthChart.js          # Chart.js init/update/destroy wrappers
+│   └── push.js                 # Web Push: subscribe/unsubscribe; ES2026 Uint8Array.fromBase64 for VAPID key
 ├── Migrations/
 ├── Dockerfile
 ├── fly.toml
