@@ -36,31 +36,31 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
     [
         ("AspNetCore.SassCompiler",                                              "1.100.0"),
         ("libphonenumber-csharp",                                                "9.0.32"),
-        ("Microsoft.AspNetCore.Components.QuickGrid",                            "10.0.8"),
-        ("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore",              "10.0.8"),
-        ("Microsoft.AspNetCore.SignalR.Client",                                  "10.0.8"),
-        ("Microsoft.EntityFrameworkCore.Design",                                 "10.0.8"),
-        ("Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore",   "10.0.8"),
+        ("Microsoft.AspNetCore.Components.QuickGrid",                            "10.0.9"),
+        ("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore",              "10.0.9"),
+        ("Microsoft.AspNetCore.SignalR.Client",                                  "10.0.9"),
+        ("Microsoft.EntityFrameworkCore.Design",                                 "10.0.9"),
+        ("Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore",   "10.0.9"),
         ("Npgsql.EntityFrameworkCore.PostgreSQL",                                "10.0.2"),
         ("QuestPDF",                                                             "2026.5.0"),
         ("Resend",                                                               "0.5.1"),
-        ("SkiaSharp",                                                            "3.116.1"),
+        ("SkiaSharp",                                                            "3.119.4"),
         ("WebPush",                                                              "1.0.13"),
     ];
 
     private static readonly (string Name, string Version)[] NpmPackages =
     [
-        ("@eslint/js",                    "9.0.0"),
-        ("eslint",                        "9.0.0"),
-        ("stylelint",                     "16.0.0"),
-        ("stylelint-config-standard-scss","14.0.0"),
+        ("@eslint/js",                    "10.0.1"),
+        ("eslint",                        "10.4.1"),
+        ("stylelint",                     "17.13.0"),
+        ("stylelint-config-standard-scss","17.0.0"),
     ];
 
     private static readonly (string Name, string Version, string NpmPackage, string? Notes)[] CdnLibraries =
     [
         ("Chart.js",        "4.5.1",  "chart.js",        null),
         ("Bootstrap Icons", "1.13.1", "bootstrap-icons", null),
-        ("SortableJS",      "1.15.3", "sortablejs",      null),
+        ("SortableJS",      "1.15.7", "sortablejs",      null),
         ("Devicon",         "latest", "devicon",         "Không ghim version trong CDN URL"),
     ];
 
@@ -92,7 +92,7 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
         var results = await Task.WhenAll(tasks);
         var list = results.OfType<DependencyInfo>()
             .OrderBy(d => d.Type)
-            .ThenByDescending(d => d.Status)
+            .ThenBy(d => d.Status == DependencyStatus.Outdated ? 0 : d.Status == DependencyStatus.Unknown ? 1 : 2)
             .ThenBy(d => d.Name)
             .ToList();
 

@@ -24,9 +24,10 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
     private const string MenuPrefKey = "_pref.dashboard.menu";
 
     private List<MenuItem> AllItems => [
-        new("dash-dashboard", "/admin", "bi bi-speedometer2", Loc.T("Dashboard")),
-        new("dash-analytics", "/admin/analytics", "bi bi-graph-up",     Loc.T("Analytics")),
-        new("dash-skills",    "/admin/skills",    "bi bi-bar-chart",    Loc.T("Skills")),
+        new("dash-dashboard",    "/admin",              "bi bi-speedometer2",      Loc.T("Dashboard")),
+        new("dash-analytics",    "/admin/analytics",    "bi bi-graph-up",          Loc.T("Analytics")),
+        new("dash-settings",     "/admin/settings",     "bi bi-person-vcard",      Loc.T("Settings")),
+        new("dash-skills",       "/admin/skills",       "bi bi-bar-chart",         Loc.T("Skills")),
         new("dash-projects",  "/admin/projects",  "bi bi-folder2",      Loc.T("Projects")),
         new("dash-education", "/admin/education", "bi bi-mortarboard",  Loc.T("Education")),
         new("dash-experience","/admin/experience","bi bi-briefcase",    Loc.T("Experience")),
@@ -38,7 +39,6 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
         new("dash-costs",     "/admin/costs",     "bi bi-currency-dollar", Loc.T("Costs")),
         new("dash-api-keys",     "/admin/api-keys",     "bi bi-key",      Loc.T("API Keys")),
         new("dash-dependencies", "/admin/dependencies", "bi bi-box-seam", Loc.T("Dependencies")),
-        new("dash-settings",     "/admin/settings",     "bi bi-gear",     Loc.T("Settings")),
     ];
 
     private List<MenuItem> FilteredItems =>
