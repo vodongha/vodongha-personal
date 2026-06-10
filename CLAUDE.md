@@ -27,7 +27,7 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 | Phone validation | `libphonenumber-csharp` — validates per country's numbering plan (`IsValidNumberForRegion`) |
 | Geo IP | ipinfo.io — called from browser JS (`chatUtils.detectCountry`) for country code detection |
 | Deploy | Fly.io, app `vodongha`, region `sin`, `auto_stop_machines = "suspend"`. Merge PR to `master` → auto-deploy (~2 min) |
-| CI | GitHub Actions `ci.yml` — `dotnet build` on every push to `develop` and on PRs to `master` |
+| CI | GitHub Actions — `ci.yml`: `dotnet build` on every push to `develop` and on PRs to `master`; `lint.yml`: `dotnet format --verify-no-changes` + ESLint (JS) + Stylelint (SCSS) on PRs to `master` |
 | Migrations | EF Core, applied automatically on startup via `MigrateAsync()` in `Program.cs` |
 
 ## Git workflow
@@ -204,10 +204,11 @@ vodongha-personal/
 │   └── ChatHub.cs                    # SignalR: JoinSession, LeaveSession, JoinAdminGroup, StartTyping, StopTyping, MarkRead
 ├── wwwroot/
 │   └── js/
-│       ├── admin.js                  # Event delegation for admin UI (select arrow open/close)
+│       ├── admin.js                  # Event delegation, theme toggle, TOC observer, reading progress, loading bar, back-to-top, PDF download, code copy
 │       ├── analytics-charts.js       # Chart.js wrappers for analytics page (renderLine, renderBar, destroy)
-│       ├── chat.js                   # chatUtils.scrollToBottom(id), chatUtils.scrollToUnread(id)
-│       └── healthChart.js            # healthChart.init/update/destroy — Chart.js wrappers
+│       ├── chat.js                   # chatUtils (scroll, country detection, input helpers); chatDial (dial-code picker, phone cleaner)
+│       ├── dashboardCharts.js        # Chart.js wrappers for dashboard — renderDonut, renderHBar, renderLine, destroy, onThemeChange
+│       └── healthChart.js            # healthChart.init/update/destroy/onThemeChange — Chart.js wrappers
 ├── Migrations/                       # EF Core — never modify existing migrations
 ├── Program.cs                        # DI, middleware (visitor tracking), auth, routes
 ├── Dockerfile
@@ -624,10 +625,11 @@ else { <real content> }
 
 ## Current version
 
-**v2.0.5**
+**v2.0.6**
 
 | Version | Changes |
 |---|---|
+| v2.0.6 | i18n all 8 admin pages (AdminSkills, AdminProjects, AdminBlog, AdminContacts, AdminChats, AdminHealth, AdminSettings, AdminCv); Lint CI (dotnet format + ESLint + Stylelint via lint.yml); ES2017+ conversion for all 5 JS files (const/let, arrow functions, template literals, optional chaining, nullish coalescing, empty catch) |
 | v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix; collapsible sidebar (icon-only collapsed mode, localStorage); icon-only top controls with tooltips; mobile bottom bar 4-item; Dashboard → /admin/analytics |
 | v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping; accessibility; code quality; DI fix; git workflow updated |
 | v2.0.3 | Web Push notifications, searchable dial-code picker, chat light/dark mode, admin chat UX fixes, API Keys admin, blog pagination, skeleton loading, theme system fixes |
