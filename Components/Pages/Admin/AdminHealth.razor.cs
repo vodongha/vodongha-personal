@@ -18,12 +18,12 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     private bool _isRefreshing;
     private int _countdown = 30;
 
-    private string _statOrder  = "[]";
+    private string _statOrder = "[]";
     private string _chartOrder = "[]";
     private DotNetObjectReference<AdminHealth>? _dotNetRef;
 
-    private const string StatPrefKey   = "_pref.health.stats";
-    private const string ChartPrefKey  = "_pref.health.charts";
+    private const string StatPrefKey = "_pref.health.stats";
+    private const string ChartPrefKey = "_pref.health.charts";
 
     // Table sort + pagination
     private string _sortCol = "Time";
@@ -33,11 +33,11 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
 
     private IEnumerable<HealthMetricSnapshot> Sorted => _sortCol switch
     {
-        "Memory"  => _sortAsc ? _snapshots.OrderBy(s => s.MemoryMb)  : _snapshots.OrderByDescending(s => s.MemoryMb),
-        "DB Ping" => _sortAsc ? _snapshots.OrderBy(s => s.DbPingMs)  : _snapshots.OrderByDescending(s => s.DbPingMs),
+        "Memory" => _sortAsc ? _snapshots.OrderBy(s => s.MemoryMb) : _snapshots.OrderByDescending(s => s.MemoryMb),
+        "DB Ping" => _sortAsc ? _snapshots.OrderBy(s => s.DbPingMs) : _snapshots.OrderByDescending(s => s.DbPingMs),
         "Threads" => _sortAsc ? _snapshots.OrderBy(s => s.ThreadCount) : _snapshots.OrderByDescending(s => s.ThreadCount),
-        "Status"  => _sortAsc ? _snapshots.OrderBy(s => s.DbHealthy)  : _snapshots.OrderByDescending(s => s.DbHealthy),
-        _         => _sortAsc ? _snapshots.OrderBy(s => s.Timestamp)  : _snapshots.OrderByDescending(s => s.Timestamp),
+        "Status" => _sortAsc ? _snapshots.OrderBy(s => s.DbHealthy) : _snapshots.OrderByDescending(s => s.DbHealthy),
+        _ => _sortAsc ? _snapshots.OrderBy(s => s.Timestamp) : _snapshots.OrderByDescending(s => s.Timestamp),
     };
 
     private List<HealthMetricSnapshot> Paged => Sorted.Skip(_page * _pageSize).Take(_pageSize).ToList();
@@ -52,7 +52,11 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
 
     private string SortIcon(string col)
     {
-        if (_sortCol != col) return "↕";
+        if (_sortCol != col)
+        {
+            return "↕";
+        }
+
         return _sortAsc ? "↑" : "↓";
     }
 
@@ -79,16 +83,20 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
+        if (!firstRender)
+        {
+            return;
+        }
+
         try
         {
-            _statOrder  = await Secrets.GetValueAsync(StatPrefKey)  ?? "[]";
+            _statOrder = await Secrets.GetValueAsync(StatPrefKey) ?? "[]";
             _chartOrder = await Secrets.GetValueAsync(ChartPrefKey) ?? "[]";
             await InvokeAsync(StateHasChanged);   // update data-saved-order in DOM before JS reads it
 
             await InitCharts();
-            await JS.InvokeVoidAsync("initSortableCards", "health-stat-cards",   _dotNetRef, StatPrefKey);
-            await JS.InvokeVoidAsync("initSortableCards", "health-chart-cards",  _dotNetRef, ChartPrefKey);
+            await JS.InvokeVoidAsync("initSortableCards", "health-stat-cards", _dotNetRef, StatPrefKey);
+            await JS.InvokeVoidAsync("initSortableCards", "health-chart-cards", _dotNetRef, ChartPrefKey);
 
             // Background loop: update every 30 seconds, countdown every second
             _ = RunRefreshLoopAsync(_cts.Token);
@@ -157,7 +165,10 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
                     await Task.Delay(1000, ct).ConfigureAwait(false);
                 }
 
-                if (ct.IsCancellationRequested) break;
+                if (ct.IsCancellationRequested)
+                {
+                    break;
+                }
 
                 LoadData();
                 await InvokeAsync(StateHasChanged);

@@ -62,7 +62,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private static string RegionToFlag(string region)
     {
-        if (region.Length != 2) return "🌐";
+        if (region.Length != 2)
+        {
+            return "🌐";
+        }
+
         return string.Concat(region.Select(c => char.ConvertFromUtf32(c - 'A' + 0x1F1E6)));
     }
 
@@ -90,7 +94,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private bool IsValidPhone(string phone)
     {
-        if (string.IsNullOrWhiteSpace(phone)) return false;
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            return false;
+        }
+
         try
         {
             PhoneNumber parsed = PhoneUtil.Parse(phone, _selectedRegion);
@@ -108,7 +116,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         {
             string digits = new string(_phone.Where(char.IsDigit).ToArray());
             // Strip leading zero before prepending dial code (e.g. 0929... → +84929...)
-            if (digits.StartsWith('0')) digits = digits[1..];
+            if (digits.StartsWith('0'))
+            {
+                digits = digits[1..];
+            }
+
             return $"{SelectedCountry.Dial}{digits}";
         }
     }
@@ -138,7 +150,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private static bool IsValidEmail(string email)
     {
-        if (string.IsNullOrWhiteSpace(email)) return false;
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return false;
+        }
+
         try { return new System.Net.Mail.MailAddress(email).Address == email.Trim(); }
         catch { return false; }
     }
@@ -160,8 +176,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-            // Init JS helpers — pass DotNetRef for typing indicator callback.
-            // Stored as a field so it can be disposed when the component is torn down.
+        // Init JS helpers — pass DotNetRef for typing indicator callback.
+        // Stored as a field so it can be disposed when the component is torn down.
         _dotNetRef = DotNetObjectReference.Create(this);
         await JS.InvokeVoidAsync("chatDial.init", _dotNetRef);
         await JS.InvokeVoidAsync("chatUtils.initInput", _dotNetRef);
@@ -381,8 +397,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
             using System.Text.Json.JsonDocument doc = System.Text.Json.JsonDocument.Parse(subscriptionJson);
             string endpoint = doc.RootElement.GetProperty("endpoint").GetString() ?? "";
-            string p256dh   = doc.RootElement.GetProperty("keys").GetProperty("p256dh").GetString() ?? "";
-            string auth     = doc.RootElement.GetProperty("keys").GetProperty("auth").GetString() ?? "";
+            string p256dh = doc.RootElement.GetProperty("keys").GetProperty("p256dh").GetString() ?? "";
+            string auth = doc.RootElement.GetProperty("keys").GetProperty("auth").GetString() ?? "";
 
             await PushSvc.SaveSubscriptionAsync(endpoint, p256dh, auth, chatSessionId, isAdmin);
         }
@@ -476,7 +492,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     [Microsoft.JSInterop.JSInvokable]
     public void OnTypingInput()
     {
-        if (_hubConnection == null || !_sessionId.HasValue) return;
+        if (_hubConnection == null || !_sessionId.HasValue)
+        {
+            return;
+        }
+
         _typingCts?.Cancel();
         _typingCts = new CancellationTokenSource();
         _ = SendTypingSignalsAsync(_typingCts.Token);
@@ -484,7 +504,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
     private async Task SendTypingSignalsAsync(CancellationToken ct)
     {
-        if (_hubConnection == null || !_sessionId.HasValue) return;
+        if (_hubConnection == null || !_sessionId.HasValue)
+        {
+            return;
+        }
+
         try
         {
             _ = _hubConnection.InvokeAsync("StartTyping", _sessionId.Value.ToString(), ct);
@@ -618,21 +642,29 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     // Map IANA timezone → ISO country code
     private static readonly Dictionary<string, string> TimezoneToCountry = new()
     {
-        ["Asia/Ho_Chi_Minh"] = "VN", ["Asia/Saigon"] = "VN",
+        ["Asia/Ho_Chi_Minh"] = "VN",
+        ["Asia/Saigon"] = "VN",
         ["Asia/Hanoi"] = "VN",
-        ["America/New_York"] = "US", ["America/Chicago"] = "US",
-        ["America/Denver"] = "US", ["America/Los_Angeles"] = "US",
-        ["America/Phoenix"] = "US", ["America/Anchorage"] = "US",
+        ["America/New_York"] = "US",
+        ["America/Chicago"] = "US",
+        ["America/Denver"] = "US",
+        ["America/Los_Angeles"] = "US",
+        ["America/Phoenix"] = "US",
+        ["America/Anchorage"] = "US",
         ["Pacific/Honolulu"] = "US",
         ["Europe/London"] = "GB",
-        ["Australia/Sydney"] = "AU", ["Australia/Melbourne"] = "AU",
-        ["Australia/Brisbane"] = "AU", ["Australia/Perth"] = "AU",
-        ["America/Toronto"] = "CA", ["America/Vancouver"] = "CA",
+        ["Australia/Sydney"] = "AU",
+        ["Australia/Melbourne"] = "AU",
+        ["Australia/Brisbane"] = "AU",
+        ["Australia/Perth"] = "AU",
+        ["America/Toronto"] = "CA",
+        ["America/Vancouver"] = "CA",
         ["Europe/Paris"] = "FR",
         ["Europe/Berlin"] = "DE",
         ["Asia/Tokyo"] = "JP",
         ["Asia/Seoul"] = "KR",
-        ["Asia/Shanghai"] = "CN", ["Asia/Beijing"] = "CN",
+        ["Asia/Shanghai"] = "CN",
+        ["Asia/Beijing"] = "CN",
         ["Asia/Singapore"] = "SG",
         ["Asia/Bangkok"] = "TH",
         ["Asia/Manila"] = "PH",

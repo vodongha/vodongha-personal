@@ -1,16 +1,16 @@
-using Resend;
+using System.Security.Cryptography;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Threading.RateLimiting;
+using Resend;
 using VodonghaPersonal.Components;
 using VodonghaPersonal.Data;
+using VodonghaPersonal.Data.Models;
 using VodonghaPersonal.Hubs;
 using VodonghaPersonal.Services;
-using VodonghaPersonal.Data.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -245,19 +245,19 @@ app.MapGet("/api/cv/download", async (
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
 
         CvData data = new(
-            Name:        settings.GetValueOrDefault("Name", ""),
-            Title:       settings.GetValueOrDefault("Title", ""),
-            Email:       settings.GetValueOrDefault("Email", ""),
-            Phone:       settings.GetValueOrDefault("Phone", ""),
-            Location:    settings.GetValueOrDefault("Location", ""),
-            GitHub:      settings.GetValueOrDefault("GitHub", ""),
-            LinkedIn:    settings.GetValueOrDefault("LinkedIn", ""),
-            Bio:         settings.GetValueOrDefault("BioEn", settings.GetValueOrDefault("Bio", "")),
-            AvatarUrl:   settings.GetValueOrDefault("AvatarUrl", ""),
-            Skills:      await db.Skills.OrderBy(s => s.Order).ToListAsync(),
+            Name: settings.GetValueOrDefault("Name", ""),
+            Title: settings.GetValueOrDefault("Title", ""),
+            Email: settings.GetValueOrDefault("Email", ""),
+            Phone: settings.GetValueOrDefault("Phone", ""),
+            Location: settings.GetValueOrDefault("Location", ""),
+            GitHub: settings.GetValueOrDefault("GitHub", ""),
+            LinkedIn: settings.GetValueOrDefault("LinkedIn", ""),
+            Bio: settings.GetValueOrDefault("BioEn", settings.GetValueOrDefault("Bio", "")),
+            AvatarUrl: settings.GetValueOrDefault("AvatarUrl", ""),
+            Skills: await db.Skills.OrderBy(s => s.Order).ToListAsync(),
             Experiences: await db.Experiences.OrderBy(e => e.Order).ToListAsync(),
-            Educations:  await db.Educations.OrderBy(e => e.Order).ToListAsync(),
-            Projects:    await db.Projects.OrderBy(p => p.Order).ToListAsync()
+            Educations: await db.Educations.OrderBy(e => e.Order).ToListAsync(),
+            Projects: await db.Projects.OrderBy(p => p.Order).ToListAsync()
         );
 
         // Pre-load avatar — read from wwwroot filesystem first (fast, reliable),
