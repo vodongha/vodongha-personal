@@ -26,7 +26,7 @@ public partial class AdminDependencies : ComponentBase
     private async Task LoadAsync()
     {
         _loading = true;
-        _error   = null;
+        _error = null;
         StateHasChanged();
 
         try
@@ -38,9 +38,9 @@ public partial class AdminDependencies : ComponentBase
                 .ToDictionary(g => g.Key, g => g.OrderByDescending(d => d.Status).ThenBy(d => d.Name).ToList());
 
             _outdatedCount = all.Count(d => d.Status == DependencyStatus.Outdated);
-            _okCount       = all.Count(d => d.Status == DependencyStatus.UpToDate);
-            _unknownCount  = all.Count(d => d.Status == DependencyStatus.Unknown);
-            _checkedAt     = DateTime.UtcNow;
+            _okCount = all.Count(d => d.Status == DependencyStatus.UpToDate);
+            _unknownCount = all.Count(d => d.Status == DependencyStatus.Unknown);
+            _checkedAt = DateTime.UtcNow;
         }
         catch (Exception ex)
         {
@@ -61,16 +61,16 @@ public partial class AdminDependencies : ComponentBase
     private static string GroupIcon(DependencyType type) => type switch
     {
         DependencyType.NuGet => "bi-box-seam",
-        DependencyType.Npm   => "bi-npm",
-        DependencyType.Cdn   => "bi-cloud-download",
-        _                    => "bi-box"
+        DependencyType.Npm => "bi-npm",
+        DependencyType.Cdn => "bi-cloud-download",
+        _ => "bi-box"
     };
 
     private static string StatusIcon(DependencyStatus status) => status switch
     {
         DependencyStatus.UpToDate => "bi-check-circle-fill",
         DependencyStatus.Outdated => "bi-exclamation-triangle-fill",
-        _                         => "bi-question-circle-fill"
+        _ => "bi-question-circle-fill"
     };
 
     private async Task OnLangChanged()
