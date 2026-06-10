@@ -20,6 +20,21 @@
             </div>
         </header>
 
+        <div class="ak-search-wrap">
+            <i class="bi bi-search ak-search-wrap__icon"></i>
+            <input class="ak-search-wrap__input"
+                   type="search"
+                   placeholder="@Loc.T("Search...")"
+                   @bind="_search"
+                   @bind:event="oninput" />
+            @if (!string.IsNullOrEmpty(_search))
+            {
+                <button type="button" class="ak-search-wrap__clear" @onclick="() => _search = string.Empty">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            }
+        </div>
+
         <div class="apikey-info">
             <i class="bi bi-shield-lock"></i>
             @Loc.T("Values are encrypted in the database. DB overrides take effect immediately without redeployment. Leave blank to fall back to environment variables.")
@@ -51,16 +66,26 @@
         }
         else
         {
+            bool anyResult = _categories.Any(CategoryVisible);
+            @if (!anyResult)
+            {
+                <div class="ak-no-results">
+                    <i class="bi bi-search"></i>
+                    <span>@Loc.T("No results")</span>
+                </div>
+            }
             @foreach (string category in _categories)
             {
-                List<AppSecretDefinition> defs = AppSecretsService.Definitions.Where(d => d.Category == category).ToList();
-                int setCount = defs.Count(d => !string.IsNullOrEmpty(_dbValues.GetValueOrDefault(d.Key)) || !string.IsNullOrEmpty(_envValues.GetValueOrDefault(d.Key)));
+                if (!CategoryVisible(category)) { continue; }
+                List<AppSecretDefinition> defs = FilteredDefs(category).ToList();
+                List<AppSecretDefinition> allDefs = AppSecretsService.Definitions.Where(d => d.Category == category).ToList();
+                int setCount = allDefs.Count(d => !string.IsNullOrEmpty(_dbValues.GetValueOrDefault(d.Key)) || !string.IsNullOrEmpty(_envValues.GetValueOrDefault(d.Key)));
 
                 <div class="ak-section">
                     <div class="ak-section__header">
                         <i class="bi @CategoryIcon(category)"></i>
                         <span class="ak-section__title">@category</span>
-                        <span class="ak-section__count">@setCount / @defs.Count</span>
+                        <span class="ak-section__count">@setCount / @allDefs.Count</span>
                     </div>
 
                     <div class="ak-list">
