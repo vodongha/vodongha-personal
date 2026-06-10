@@ -64,9 +64,8 @@
 
         &-inner {
             background: linear-gradient(135deg, $color-primary 0%, $color-secondary 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
+            -webkit-text-fill-color: transparent;
             animation: not-found-pulse 3s ease-in-out infinite;
         }
     }
@@ -214,9 +213,8 @@
 
         &-inner {
             background: linear-gradient(135deg, #ff5f40 0%, #ff9a3c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
+            -webkit-text-fill-color: transparent;
             animation: server-error-pulse 3s ease-in-out infinite;
         }
     }
