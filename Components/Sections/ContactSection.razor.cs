@@ -82,7 +82,10 @@ public partial class ContactSection : ComponentBase, IDisposable
 
     private async Task HandleSubmit()
     {
-        if (!ValidateAll() || _sending) return;
+        if (!ValidateAll() || _sending)
+        {
+            return;
+        }
 
         _sending = true;
         try

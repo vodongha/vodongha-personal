@@ -26,7 +26,11 @@ public partial class BlogPostPage : ComponentBase, IDisposable
         get
         {
             string? html = Lang.IsVi ? _post?.Content : (_post?.ContentEn ?? _post?.Content);
-            if (string.IsNullOrEmpty(html)) return 1;
+            if (string.IsNullOrEmpty(html))
+            {
+                return 1;
+            }
+
             string text = System.Text.RegularExpressions.Regex.Replace(html, "<[^>]+>", " ");
             int words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
             return Math.Max(1, (int)Math.Ceiling(words / 200.0));
@@ -50,7 +54,11 @@ public partial class BlogPostPage : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender || _post is null) return;
+        if (!firstRender || _post is null)
+        {
+            return;
+        }
+
         try
         {
             await JS.InvokeVoidAsync("initReadingProgress");

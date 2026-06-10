@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop;
 using VodonghaPersonal.Data;
 using VodonghaPersonal.Data.Models;
 using VodonghaPersonal.Services;
@@ -26,7 +26,11 @@ public partial class AdminCv : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
+        if (!firstRender)
+        {
+            return;
+        }
+
         try
         {
             await LoadAsync();
@@ -50,19 +54,19 @@ public partial class AdminCv : ComponentBase, IDisposable
         List<Project> projects = await db.Projects.OrderBy(p => p.Order).ToListAsync();
 
         _data = new CvData(
-            Name:        settings.GetValueOrDefault("Name", ""),
-            Title:       settings.GetValueOrDefault("Title", ""),
-            Email:       settings.GetValueOrDefault("Email", ""),
-            Phone:       settings.GetValueOrDefault("Phone", ""),
-            Location:    settings.GetValueOrDefault("Location", ""),
-            GitHub:      settings.GetValueOrDefault("GitHub", ""),
-            LinkedIn:    settings.GetValueOrDefault("LinkedIn", ""),
-            Bio:         settings.GetValueOrDefault("BioEn", settings.GetValueOrDefault("Bio", "")),
-            AvatarUrl:   settings.GetValueOrDefault("AvatarUrl", ""),
-            Skills:      skills,
+            Name: settings.GetValueOrDefault("Name", ""),
+            Title: settings.GetValueOrDefault("Title", ""),
+            Email: settings.GetValueOrDefault("Email", ""),
+            Phone: settings.GetValueOrDefault("Phone", ""),
+            Location: settings.GetValueOrDefault("Location", ""),
+            GitHub: settings.GetValueOrDefault("GitHub", ""),
+            LinkedIn: settings.GetValueOrDefault("LinkedIn", ""),
+            Bio: settings.GetValueOrDefault("BioEn", settings.GetValueOrDefault("Bio", "")),
+            AvatarUrl: settings.GetValueOrDefault("AvatarUrl", ""),
+            Skills: skills,
             Experiences: experiences,
-            Educations:  educations,
-            Projects:    projects
+            Educations: educations,
+            Projects: projects
         );
 
         _loading = false;
@@ -102,9 +106,18 @@ public partial class AdminCv : ComponentBase, IDisposable
 
     private static string MonthShort(int month) => month switch
     {
-        1 => "Jan", 2 => "Feb", 3 => "Mar", 4 => "Apr",
-        5 => "May", 6 => "Jun", 7 => "Jul", 8 => "Aug",
-        9 => "Sep", 10 => "Oct", 11 => "Nov", 12 => "Dec",
+        1 => "Jan",
+        2 => "Feb",
+        3 => "Mar",
+        4 => "Apr",
+        5 => "May",
+        6 => "Jun",
+        7 => "Jul",
+        8 => "Aug",
+        9 => "Sep",
+        10 => "Oct",
+        11 => "Nov",
+        12 => "Dec",
         _ => ""
     };
 

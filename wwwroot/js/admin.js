@@ -16,7 +16,7 @@ window.initSortableCards = (gridId, dotnetRef, prefKey) => {
                 const card = el.querySelector(`[data-card-id="${id}"]`);
                 if (card) el.appendChild(card);
             });
-        } catch { }
+        } catch { /* ignore invalid JSON */ }
     }
 
     Sortable.create(el, {
@@ -113,7 +113,7 @@ window.removeDesktopResizeRedirect = () => {
 
     // Hide when Blazor enhanced navigation completes
     document.addEventListener('blazor:navigated', done);
-    if (window.Blazor) { try { window.Blazor.addEventListener('enhancedload', done); } catch { } }
+    if (window.Blazor) { try { window.Blazor.addEventListener('enhancedload', done); } catch { /* API may not exist in all versions */ } }
     window.addEventListener('load', done);
 
     // Expose for manual control
@@ -220,7 +220,7 @@ window.toggleTheme = () => {
     const current = document.documentElement.getAttribute('data-theme') ?? 'dark';
     const next = current === 'light' ? 'dark' : 'light';
     window.setTheme(next);
-    try { localStorage.setItem('theme', next); } catch { }
+    try { localStorage.setItem('theme', next); } catch { /* storage blocked */ }
     return next;
 };
 

@@ -11,12 +11,12 @@ public class TelegramService
 
     public TelegramService(HttpClient http, AppSecretsService secrets)
     {
-        _http    = http;
+        _http = http;
         _secrets = secrets;
     }
 
-    private string Token  => _secrets.GetValue("Telegram:BotToken") ?? "";
-    private long   ChatId => long.TryParse(_secrets.GetValue("Telegram:ChatId"), out long id) ? id : 0;
+    private string Token => _secrets.GetValue("Telegram:BotToken") ?? "";
+    private long ChatId => long.TryParse(_secrets.GetValue("Telegram:ChatId"), out long id) ? id : 0;
     private string BaseUrl => $"https://api.telegram.org/bot{Token}";
 
     public async Task<long?> CreateTopicAsync(string title)
