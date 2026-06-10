@@ -1,0 +1,157 @@
+@rendermode InteractiveAuto
+
+<aside class="admin-sidebar @(_collapsed ? "admin-sidebar--collapsed" : "")">
+    <div class="admin-sidebar__logo">
+        <span class="admin-sidebar__logo-text">vdh<span class="dot">.</span><span class="admin-nav__label">admin</span></span>
+        <button type="button" class="admin-sidebar__collapse-btn" @onclick="ToggleSidebar" title="@(_collapsed ? "Expand sidebar" : "Collapse sidebar")">
+            <i class="bi @(_collapsed ? "bi-chevron-right" : "bi-chevron-left")"></i>
+        </button>
+    </div>
+
+    <div class="admin-sidebar__top-controls">
+        <a href="/" target="_blank" class="admin-ctrl" title="Open website in new tab">
+            <i class="bi bi-box-arrow-up-right"></i>
+            <span class="admin-ctrl__label">Website</span>
+        </a>
+        <button type="button" class="admin-ctrl" @onclick="ToggleTheme" title="@(_theme == "dark" ? "Switch to light mode" : "Switch to dark mode")">
+            @if (_theme == "dark")
+            {
+                <i class="bi bi-sun"></i>
+                <span class="admin-ctrl__label">Light</span>
+            }
+            else
+            {
+                <i class="bi bi-moon-stars"></i>
+                <span class="admin-ctrl__label">Dark</span>
+            }
+        </button>
+        <button type="button" class="admin-ctrl" @onclick="ToggleLang" title="@(Loc.Lang == "VI" ? "Switch to English" : "Chuyển sang tiếng Việt")">
+            <i class="bi bi-translate"></i>
+            <span class="admin-ctrl__label">
+                <span class="@(Loc.Lang == "VI" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">VI</span>
+                <span class="admin-lang-toggle__sep">|</span>
+                <span class="@(Loc.Lang == "EN" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">EN</span>
+            </span>
+        </button>
+    </div>
+
+    <nav class="admin-nav">
+        <!-- Menu — mobile-only pinned item, hidden on desktop -->
+        <a href="/admin/menu-mobile" title="@Loc.T("Menu")" class="admin-nav__item admin-nav__item--pinned @(IsActive("/admin/menu-mobile", exact: true) ? "admin-nav__item--active" : "")">
+            <i class="bi bi-list"></i>
+            <span class="admin-nav__label">@Loc.T("Menu")</span>
+        </a>
+
+        <!-- Dashboard — top-level item, always visible on desktop -->
+        <a href="/admin" title="Dashboard" class="admin-nav__item admin-nav__item--dashboard @(IsActive("/admin") ? "admin-nav__item--active" : "")">
+            <i class="bi bi-speedometer2"></i>
+            <span class="admin-nav__label">Dashboard</span>
+        </a>
+
+        <!-- Portfolio group -->
+        <div class="admin-nav-group @(IsGroupOpen("Portfolio") ? "admin-nav-group--open" : "") @(IsGroupActive("Portfolio") ? "admin-nav-group--active" : "")">
+            <button type="button" class="admin-nav-group__header" title="@Loc.T("Portfolio")" @onclick='() => OnGroupHeaderClick("Portfolio")'>
+                <span class="admin-nav-group__header-inner">
+                    <i class="bi bi-collection"></i>
+                    <span class="admin-nav__label">@Loc.T("Portfolio")</span>
+                </span>
+                <i class="bi bi-chevron-right admin-nav-group__chevron"></i>
+            </button>
+            <div class="admin-nav-group__items">
+                <a href="/admin/settings"   title="@Loc.T("Settings")"   class="admin-nav__item @(IsActive("/admin/settings")   ? "admin-nav__item--active" : "")"><i class="bi bi-person-vcard"></i>       <span class="admin-nav__label">@Loc.T("Settings")</span></a>
+                <a href="/admin/skills"     title="@Loc.T("Skills")"     class="admin-nav__item @(IsActive("/admin/skills")     ? "admin-nav__item--active" : "")"><i class="bi bi-bar-chart"></i>           <span class="admin-nav__label">@Loc.T("Skills")</span></a>
+                <a href="/admin/projects"   title="@Loc.T("Projects")"   class="admin-nav__item @(IsActive("/admin/projects")   ? "admin-nav__item--active" : "")"><i class="bi bi-folder2"></i>             <span class="admin-nav__label">@Loc.T("Projects")</span></a>
+                <a href="/admin/education"  title="@Loc.T("Education")"  class="admin-nav__item @(IsActive("/admin/education")  ? "admin-nav__item--active" : "")"><i class="bi bi-mortarboard"></i>         <span class="admin-nav__label">@Loc.T("Education")</span></a>
+                <a href="/admin/experience" title="@Loc.T("Experience")" class="admin-nav__item @(IsActive("/admin/experience") ? "admin-nav__item--active" : "")"><i class="bi bi-briefcase"></i>           <span class="admin-nav__label">@Loc.T("Experience")</span></a>
+                <a href="/admin/blog"       title="@Loc.T("Blog")"       class="admin-nav__item @(IsActive("/admin/blog")       ? "admin-nav__item--active" : "")"><i class="bi bi-file-text"></i>           <span class="admin-nav__label">@Loc.T("Blog")</span></a>
+                <a href="/admin/cv"         title="@Loc.T("CV")"         class="admin-nav__item @(IsActive("/admin/cv")         ? "admin-nav__item--active" : "")"><i class="bi bi-file-earmark-person"></i> <span class="admin-nav__label">@Loc.T("CV")</span></a>
+            </div>
+        </div>
+
+        <!-- Communication group -->
+        <div class="admin-nav-group @(IsGroupOpen("Communication") ? "admin-nav-group--open" : "") @(IsGroupActive("Communication") ? "admin-nav-group--active" : "")">
+            <button type="button" class="admin-nav-group__header" title="@Loc.T("Communication")" @onclick='() => OnGroupHeaderClick("Communication")'>
+                <span class="admin-nav-group__header-inner">
+                    <i class="bi bi-chat-square-dots"></i>
+                    <span class="admin-nav__label">@Loc.T("Communication")</span>
+                </span>
+                <i class="bi bi-chevron-right admin-nav-group__chevron"></i>
+            </button>
+            <div class="admin-nav-group__items">
+                <a href="/admin/contacts" title="@Loc.T("Messages")" class="admin-nav__item @(IsActive("/admin/contacts") ? "admin-nav__item--active" : "")">
+                    <i class="bi bi-envelope"></i>
+                    <span class="admin-nav__label">@Loc.T("Messages")</span>
+                    @if (_unreadMessagesCount > 0) { <span class="admin-badge-count">@_unreadMessagesCount</span> }
+                </a>
+                <a href="/admin/chats" title="@Loc.T("Chats")" class="admin-nav__item @(IsActive("/admin/chats") ? "admin-nav__item--active" : "")">
+                    <i class="bi bi-chat-dots"></i>
+                    <span class="admin-nav__label">@Loc.T("Chats")</span>
+                    @if (_unreadChatCount > 0) { <span class="admin-badge-count">@_unreadChatCount</span> }
+                </a>
+            </div>
+        </div>
+
+        <!-- Insights group -->
+        <div class="admin-nav-group @(IsGroupOpen("Insights") ? "admin-nav-group--open" : "") @(IsGroupActive("Insights") ? "admin-nav-group--active" : "")">
+            <button type="button" class="admin-nav-group__header" title="@Loc.T("Insights")" @onclick='() => OnGroupHeaderClick("Insights")'>
+                <span class="admin-nav-group__header-inner">
+                    <i class="bi bi-graph-up"></i>
+                    <span class="admin-nav__label">@Loc.T("Insights")</span>
+                </span>
+                <i class="bi bi-chevron-right admin-nav-group__chevron"></i>
+            </button>
+            <div class="admin-nav-group__items">
+                <a href="/admin/analytics" title="@Loc.T("Analytics")" class="admin-nav__item @(IsActive("/admin/analytics") ? "admin-nav__item--active" : "")"><i class="bi bi-graph-up"></i>       <span class="admin-nav__label">@Loc.T("Analytics")</span></a>
+                <a href="/admin/health"    title="@Loc.T("Health")"    class="admin-nav__item @(IsActive("/admin/health")    ? "admin-nav__item--active" : "")"><i class="bi bi-activity"></i>        <span class="admin-nav__label">@Loc.T("Health")</span></a>
+                <a href="/admin/costs"     title="@Loc.T("Costs")"     class="admin-nav__item @(IsActive("/admin/costs")     ? "admin-nav__item--active" : "")"><i class="bi bi-currency-dollar"></i> <span class="admin-nav__label">@Loc.T("Costs")</span></a>
+            </div>
+        </div>
+
+        <!-- System group -->
+        <div class="admin-nav-group @(IsGroupOpen("System") ? "admin-nav-group--open" : "") @(IsGroupActive("System") ? "admin-nav-group--active" : "")">
+            <button type="button" class="admin-nav-group__header" title="@Loc.T("System")" @onclick='() => OnGroupHeaderClick("System")'>
+                <span class="admin-nav-group__header-inner">
+                    <i class="bi bi-gear"></i>
+                    <span class="admin-nav__label">@Loc.T("System")</span>
+                </span>
+                <i class="bi bi-chevron-right admin-nav-group__chevron"></i>
+            </button>
+            <div class="admin-nav-group__items">
+                <a href="/admin/api-keys"      title="@Loc.T("API Keys")"    class="admin-nav__item @(IsActive("/admin/api-keys")      ? "admin-nav__item--active" : "")"><i class="bi bi-key"></i>       <span class="admin-nav__label">@Loc.T("API Keys")</span></a>
+                <a href="/admin/dependencies" title="@Loc.T("Dependencies")" class="admin-nav__item @(IsActive("/admin/dependencies") ? "admin-nav__item--active" : "")"><i class="bi bi-box-seam"></i> <span class="admin-nav__label">@Loc.T("Dependencies")</span></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile bottom bar extras (hidden on desktop via CSS) -->
+    <a href="/" target="_blank" class="admin-view-website admin-view-website--mobile">
+        <i class="bi bi-box-arrow-up-right"></i>
+        <span>Website</span>
+    </a>
+    <button type="button" class="admin-theme-toggle admin-theme-toggle--mobile" @onclick="ToggleTheme" title="Toggle theme">
+        @if (_theme == "dark")
+        {
+            <i class="bi bi-sun admin-theme-toggle__icon"></i>
+            <span class="admin-theme-toggle__label">Light</span>
+        }
+        else
+        {
+            <i class="bi bi-moon-stars admin-theme-toggle__icon"></i>
+            <span class="admin-theme-toggle__label">Dark</span>
+        }
+    </button>
+    <button type="button" class="admin-lang-toggle admin-lang-toggle--mobile" @onclick="ToggleLang" title="Switch language">
+        <i class="bi bi-translate admin-lang-toggle__icon"></i>
+        <span class="admin-lang-toggle__label">
+            <span class="@(Loc.Lang == "VI" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">VI</span>
+            <span class="admin-lang-toggle__sep">|</span>
+            <span class="@(Loc.Lang == "EN" ? "admin-lang-toggle__opt--active" : "admin-lang-toggle__opt")">EN</span>
+        </span>
+    </button>
+    <form method="post" action="/admin/logout" class="admin-sidebar__logout">
+        <button type="submit" title="@Loc.T("Logout")" class="admin-nav__item admin-nav__item--logout">
+            <i class="bi bi-box-arrow-left"></i>
+            <span class="admin-nav__label">@Loc.T("Logout")</span>
+        </button>
+    </form>
+</aside>

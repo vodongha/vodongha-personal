@@ -2,11 +2,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY vodongha-personal.csproj .
-RUN dotnet restore
+COPY src/VodonghaPersonal.Shared/VodonghaPersonal.Shared.csproj src/VodonghaPersonal.Shared/
+COPY src/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj src/VodonghaPersonal.Server/
+RUN dotnet restore src/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj
 
 COPY . .
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish src/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj -c Release -o /app/publish
 
 # ── Stage 2: Runtime ──────────────────────────────────────────
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final

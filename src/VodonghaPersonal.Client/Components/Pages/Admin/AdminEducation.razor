@@ -1,0 +1,127 @@
+@page "/admin/education"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveAuto
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using VodonghaPersonal.Shared.Models
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">@Loc.T("Education")</h1>
+            <button type="button" class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> @Loc.T("Add new")</button>
+        </header>
+
+        <div class="admin-toolbar">
+            <div class="admin-select-wrap">
+                <select class="admin-page-size" @onchange="SetPageSize">
+                    <option value="5">5 / trang</option>
+                    <option value="10" selected>10 / trang</option>
+                    <option value="20">20 / trang</option>
+                    <option value="50">50 / trang</option>
+                </select>
+            </div>
+            <div class="admin-search-wrap">
+                <i class="bi bi-search admin-search-wrap__icon"></i>
+                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="@Loc.T("Search...")" />
+            </div>
+        </div>
+
+        @if (_loading)
+        {
+            <div class="admin-tbl-skel">
+                <div class="admin-tbl-skel__head">
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                    <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                </div>
+                @for (int i = 0; i < 6; i++)
+                {
+                    <div class="admin-tbl-skel__row">
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--md"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--lg"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--sm"></div>
+                        <div class="admin-tbl-skel__cell admin-tbl-skel__cell--btn"></div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+        <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
+            <PropertyColumn Property="e => e.School" Title="@Loc.T("School")" Sortable="true" />
+            <PropertyColumn Property="e => e.Degree" Title="@Loc.T("Degree")" Sortable="true" />
+            <PropertyColumn Property="e => e.Field" Title="@Loc.T("Field")" Sortable="true" />
+            <TemplateColumn Title="@Loc.T("Year")" Sortable="false">
+                @context.StartYear – @(context.EndYear?.ToString() ?? Loc.T("Present"))
+            </TemplateColumn>
+            <TemplateColumn Title="@Loc.T("Actions")">
+                <div class="admin-table__actions">
+                    <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(context)"><i class="bi bi-pencil"></i></button>
+                    <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(context.Id)"><i class="bi bi-trash"></i></button>
+                </div>
+            </TemplateColumn>
+        </QuickGrid>
+        <Paginator State="_pagination" />
+        }
+
+        @if (ShowForm)
+        {
+            <div class="admin-modal-overlay" @onclick="CloseForm">
+                <div class="admin-modal" @onclick:stopPropagation>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? Loc.T("Add education") : Loc.T("Edit education"))</h2>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("School")</label>
+                        <input class="admin-form__input" @bind="Editing.School" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Degree")</label>
+                        <input class="admin-form__input" @bind="Editing.Degree" placeholder="Bachelor's degree" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Field")</label>
+                        <input class="admin-form__input" @bind="Editing.Field" />
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Website URL")</label>
+                        <input class="admin-form__input" @bind="Editing.WebsiteUrl" placeholder="https://..." />
+                    </div>
+                    <div class="admin-form__row">
+                        <div class="admin-form__group">
+                            <label class="admin-form__label">@Loc.T("Start year")</label>
+                            <input type="number" class="admin-form__input" @bind="Editing.StartYear" />
+                        </div>
+                        <div class="admin-form__group">
+                            <label class="admin-form__label">@Loc.T("End year")</label>
+                            <input type="number" class="admin-form__input" @bind="Editing.EndYear" />
+                        </div>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Description VI")</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.Description"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Description EN")</label>
+                        <textarea class="admin-form__input admin-form__textarea" @bind="Editing.DescriptionEn"></textarea>
+                    </div>
+                    <div class="admin-form__group">
+                        <label class="admin-form__label">@Loc.T("Order")</label>
+                        <input type="number" class="admin-form__input" @bind="Editing.Order" />
+                    </div>
+                    <div class="admin-modal__footer">
+                        <button class="admin-btn admin-btn--ghost" @onclick="CloseForm">@Loc.T("Cancel")</button>
+                        <button class="admin-btn admin-btn--primary" @onclick="Save">@Loc.T("Save")</button>
+                    </div>
+                </div>
+            </div>
+        }
+        <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
+    </main>
+</div>
+
