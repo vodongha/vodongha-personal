@@ -75,6 +75,7 @@ builder.Services.AddScoped<CvPdfService>();
 builder.Services.AddHttpClient<AiService>();
 builder.Services.AddScoped<AiService>();
 builder.Services.AddSingleton<CostMonitorService>();
+builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient("deps").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(10));
 builder.Services.AddSingleton<DependencyCheckService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
