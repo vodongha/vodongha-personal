@@ -51,8 +51,9 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **API Keys** — manage secrets (VAPID, Telegram, Resend…) stored encrypted in DB; synced from Fly.io ENV on first startup
 - **Server Health** — live memory + DB response time charts (Chart.js), auto-refresh every 30 s; chart colors adapt to light/dark theme on toggle
 - **Analytics** — self-hosted page view dashboard: daily views chart, top pages, top countries (geo IP via ip-api.com), top referrers; 7/30/90 day period selector; GDPR-safe (no IP stored)
-- **Settings** — bio (VI/EN), social links, avatar upload
+- **Hồ sơ (Settings)** — bio (VI/EN), social links, avatar upload
 - **CV / Resume PDF** — generate a polished PDF CV; 3 templates (Dark Sidebar, Minimal, Professional); template picker colors work in light mode
+- **Dependencies tracker** — `/admin/dependencies` checks all NuGet packages, npm devDependencies, and CDN libraries against their registries; filter chips (All/Outdated/Mới nhất/NuGet/npm/CDN) + search box; 1-hour cache with manual refresh
 - **Shimmer skeleton loading** — all admin pages and all public sections show animated placeholders while data loads
 - **Mobile responsive** — collapsible sidebar on desktop (64 px icon-only ↔ 220 px expanded, state persisted in localStorage); 4-item fixed bottom bar on screens ≤ 768 px (Menu / Dark / VI|EN / Logout); admin chat is full-screen on mobile with back button
 - **Dark / Light mode** — complete coverage across public site, chat widget, admin panel, and Chart.js charts
@@ -68,7 +69,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | ORM | Entity Framework Core |
 | Styling | SCSS — `Styles/app.scss` → public, `Styles/admin.scss` → admin |
 | Real-time | ASP.NET Core SignalR |
-| Charts | Chart.js 4.4 |
+| Charts | Chart.js 4.5.1 |
 | Email | [Resend](https://resend.com) API |
 | Chat backend | Telegram Bot API (forum topics per session) |
 | PDF generation | [QuestPDF](https://www.questpdf.com) (Community) |
@@ -76,7 +77,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | Phone validation | Google libphonenumber (`libphonenumber-csharp`) |
 | Geo IP | [ipinfo.io](https://ipinfo.io) (browser-side, free tier) |
 | Deploy | [Fly.io](https://fly.io), region Singapore (`suspend` mode) |
-| CI/CD | GitHub Actions — CI (build) on `develop`/PRs, Lint (dotnet format + ESLint + Stylelint) on PRs to `master`, deploy on merge to `master`, sync `develop` ← `master` after each merge |
+| CI/CD | GitHub Actions — CI (build + unit tests) on `develop`/PRs, Lint (dotnet format + ESLint + Stylelint + unit tests) on PRs to `master`, deploy (requires all checks) on merge to `master`, sync `develop` ← `master` after each merge |
 
 ---
 
@@ -86,8 +87,9 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 vodongha-personal/
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml              # Build check on develop push and PRs
-│       ├── deploy.yml          # Fly.io deploy on merge to master
+│       ├── ci.yml              # Build + unit tests on develop push and PRs
+│       ├── deploy.yml          # Fly.io deploy on merge to master (needs build+test+lint)
+│       ├── lint.yml            # dotnet format + ESLint + Stylelint + unit tests on PRs
 │       ├── pr-setup.yml        # Auto-assign, label, milestone, reviewer on PR open
 │       └── sync-develop.yml    # Merge master → develop after every merge
 ├── Components/
