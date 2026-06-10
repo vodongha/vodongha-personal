@@ -523,13 +523,29 @@ Admin tables (both `<table class="quickgrid">` and `<QuickGrid class="quickgrid"
 
 ## i18n
 
-`LanguageService` handles VI/EN toggle. Default language: **English**.
+`LanguageService` handles VI/EN toggle for the **public site**. `AdminLocalizationService` handles VI/EN for the **admin panel**. Default language: **English** in both.
 
+### Public site
 - UI strings: `Lang.T("key")`
 - Content with dual fields: `Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description)`
 - Components that react to language changes need `@rendermode InteractiveServer` + `Lang.OnChange += StateHasChanged`
 
 Bilingual content models: `Project`, `Experience`, `Education` (Description/DescriptionEn), `BlogPost` (Title/TitleEn, Summary/SummaryEn, Content/ContentEn), `SiteSetting` (Bio + BioEn as separate keys).
+
+### Admin panel
+- UI strings: `Loc.T("key")` (inject `AdminLocalizationService Loc`)
+- Vietnamese translations live in the `_vi` dictionary in `AdminLocalizationService.cs`
+- Components subscribe: `Loc.OnChanged += OnLangChanged` in `OnInitializedAsync` and unsubscribe in `Dispose`/`DisposeAsync`
+
+### Checklist for every new admin page or component
+
+When adding a new admin page or component, go through **all three** before committing:
+
+1. **i18n** — every user-visible string (titles, labels, placeholders, empty-state messages, button text) must use `Loc.T("key")`. Add the Vietnamese translation in `AdminLocalizationService._vi`. Never leave hardcoded English strings in admin razor files.
+
+2. **Dark mode** — verify all colors work on the default dark theme. Prefer CSS custom properties (`var(--admin-surface)`, `var(--admin-border)`, `var(--color-text)`, `var(--color-text-dim)`, `var(--color-text-muted)`, `var(--admin-bg)`) which adapt automatically. Avoid hardcoded hex colors in new SCSS — use `$color-accent`, `$color-primary`, etc. (SCSS aliases that resolve to CSS vars).
+
+3. **Light mode** — switch to light theme and visually verify: text is readable, surfaces are not invisible, borders are visible, no white-on-white or black-on-black. If a component needs explicit light-mode overrides add them as `[data-theme="light"] .my-class { ... }` in `_admin-styles.scss`. The skeleton shimmer uses `var(--skel-admin-base)` / `var(--skel-admin-shimmer)` which are defined for both themes — always use these instead of hardcoded grey values.
 
 ## SiteSettings keys
 

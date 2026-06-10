@@ -208,6 +208,22 @@ public class AdminLocalizationService
         ["Saved successfully"] = "Lưu thành công",
         ["DB override removed"] = "Đã xoá ghi đè DB",
 
+        // Dashboard
+        ["Unique visitors"]            = "Lượt khách duy nhất",
+        ["Views (30 days)"]            = "Lượt xem (30 ngày)",
+        ["Blog reads"]                 = "Lượt đọc blog",
+        ["msg"]                        = "tin",
+        ["Skills by category"]         = "Kỹ năng theo danh mục",
+        ["Blog posts by views"]        = "Bài viết theo lượt xem",
+        ["Page views — last 14 days"]  = "Lượt xem trang — 14 ngày qua",
+        ["Content overview"]           = "Tổng quan nội dung",
+        ["Blog posts"]                 = "Bài viết",
+        ["Experiences"]                = "Kinh nghiệm",
+        ["Educations"]                 = "Học vấn",
+        ["Unread msgs"]                = "Tin chưa đọc",
+        ["Recent contacts"]            = "Liên hệ gần đây",
+        ["View all →"]                 = "Xem tất cả →",
+
         // Nav
         ["Menu"] = "Menu",
 
