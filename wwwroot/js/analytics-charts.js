@@ -1,3 +1,13 @@
+const _transparentBg = {
+    id: 'transparentBg',
+    beforeDraw: (chart) => {
+        const ctx = chart.canvas.getContext('2d');
+        ctx.save();
+        ctx.clearRect(0, 0, chart.width, chart.height);
+        ctx.restore();
+    }
+};
+
 window.analyticsCharts = (() => {
     const charts = {};
 
@@ -32,6 +42,7 @@ window.analyticsCharts = (() => {
         gradient.addColorStop(1,   'rgba(124,106,247,0.00)');
 
         charts[id] = new Chart(canvas, {
+            plugins: [_transparentBg],
             type: 'line',
             data: {
                 labels,
@@ -90,6 +101,7 @@ window.analyticsCharts = (() => {
         const color = accent || '#7c6af7';
 
         charts[id] = new Chart(canvas, {
+            plugins: [_transparentBg],
             type: 'bar',
             data: {
                 labels,

@@ -1,3 +1,14 @@
+// Plugin: transparent canvas background (prevents Chart.js white fill)
+const transparentBg = {
+    id: 'transparentBg',
+    beforeDraw: (chart) => {
+        const ctx = chart.canvas.getContext('2d');
+        ctx.save();
+        ctx.clearRect(0, 0, chart.width, chart.height);
+        ctx.restore();
+    }
+};
+
 window.dashboardCharts = (() => {
     const _charts = {};
 
@@ -23,6 +34,7 @@ window.dashboardCharts = (() => {
         const ctx = document.getElementById(id);
         if (!ctx) return;
         _charts[id] = new Chart(ctx, {
+            plugins: [transparentBg],
             type: 'doughnut',
             data: {
                 labels,
@@ -65,6 +77,7 @@ window.dashboardCharts = (() => {
         const ctx = document.getElementById(id);
         if (!ctx) return;
         _charts[id] = new Chart(ctx, {
+            plugins: [transparentBg],
             type: 'bar',
             data: {
                 labels,
@@ -113,11 +126,14 @@ window.dashboardCharts = (() => {
         destroy(id);
         const ctx = document.getElementById(id);
         if (!ctx) return;
-        const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 140);
-        gradient.addColorStop(0, isDark() ? 'rgba(110,231,183,0.35)' : 'rgba(16,185,129,0.25)');
+        const h = ctx.parentElement?.offsetHeight || 160;
+        const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, h);
+        gradient.addColorStop(0, isDark() ? 'rgba(110,231,183,0.4)' : 'rgba(16,185,129,0.3)');
+        gradient.addColorStop(0.7, isDark() ? 'rgba(110,231,183,0.05)' : 'rgba(16,185,129,0.03)');
         gradient.addColorStop(1, 'rgba(0,0,0,0)');
 
         _charts[id] = new Chart(ctx, {
+            plugins: [transparentBg],
             type: 'line',
             data: {
                 labels,
