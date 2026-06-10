@@ -1,0 +1,91 @@
+@page "/blog"
+@rendermode InteractiveServer
+@using VodonghaPersonal.Components.Shared
+@using VodonghaPersonal.Shared.Models
+
+<PageTitle>Blog — Võ Đông Hà</PageTitle>
+
+<div class="blog-list-page">
+    <div class="blog-list-page__header">
+        <span class="section__label">@Lang.T("blog.label")</span>
+        <h1 class="section__title">@Lang.T("blog.title")</h1>
+        <p class="section__subtitle">@Lang.T("blog.subtitle")</p>
+    </div>
+
+    @if (_posts is null)
+    {
+        <div class="blog-skel">
+            @for (int i = 0; i < PageSize; i++)
+            {
+                <div class="blog-skel__card">
+                    <div class="blog-skel__img"></div>
+                    <div class="blog-skel__body">
+                        <div class="blog-skel__tags">
+                            <div class="blog-skel__tag"></div>
+                            <div class="blog-skel__tag"></div>
+                        </div>
+                        <div class="blog-skel__title"></div>
+                        <div class="blog-skel__title2"></div>
+                        <div class="blog-skel__desc"></div>
+                        <div class="blog-skel__desc2"></div>
+                        <div class="blog-skel__meta"></div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="blog-filter">
+            <div class="blog-filter__search-wrap">
+                <i class="bi bi-search blog-filter__search-icon"></i>
+                <input class="blog-filter__input" type="search"
+                       placeholder="@Lang.T("blog.search")"
+                       value="@_searchQuery"
+                       @oninput="OnSearchInput" />
+            </div>
+            <div class="blog-filter__tags">
+                <button type="button"
+                        class="blog-filter__tag @(_selectedTag is null ? "blog-filter__tag--active" : "")"
+                        @onclick="() => SelectTag(null)">
+                    @Lang.T("blog.filter.all")
+                </button>
+                @foreach (string tag in AllTags)
+                {
+                    string t = tag;
+                    <button type="button"
+                            class="blog-filter__tag @(_selectedTag == t ? "blog-filter__tag--active" : "")"
+                            @onclick="() => SelectTag(t)">
+                        @t
+                    </button>
+                }
+            </div>
+        </div>
+
+        @if (!FilteredPosts.Any())
+        {
+            <p class="blog-filter__empty">@Lang.T("blog.results.empty")</p>
+        }
+        else
+        {
+            <p class="blog-list-page__count">
+                @FilteredPosts.Count() @Lang.T("blog.page.count")
+                @if (TotalPages > 1)
+                {
+                    <span> — @Lang.T("blog.label") @CurrentPage @Lang.T("blog.page.of") @TotalPages</span>
+                }
+            </p>
+
+            <div class="blog__grid">
+                @foreach (BlogPost post in PagedPosts)
+                {
+                    <BlogCard Item="post" />
+                }
+            </div>
+
+            <Pagination CurrentPage="CurrentPage"
+                        TotalPages="TotalPages"
+                        OnPageChange="GoToPage" />
+        }
+    }
+</div>

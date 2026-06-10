@@ -10,7 +10,8 @@
 appsettings.Development.json
 run.log
 README.md
-wwwroot/app.css
-wwwroot/app.css.map
-wwwroot/admin.css
-wwwroot/admin.css.map
+test/
+src/VodonghaPersonal/wwwroot/app.css
+src/VodonghaPersonal/wwwroot/app.css.map
+src/VodonghaPersonal/wwwroot/admin.css
+src/VodonghaPersonal/wwwroot/admin.css.map

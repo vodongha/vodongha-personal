@@ -1,0 +1,167 @@
+@page "/admin/chats"
+@layout AdminLayout
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using VodonghaPersonal.Shared.Models
+@inject AdminLocalizationService Loc
+
+<div class="admin-shell">
+    <AdminNav />
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1 class="admin-header__title">@Loc.T("Live Chats")</h1>
+        </header>
+
+        @if (_loading)
+        {
+            <div class="admin-chat-skel">
+                @for (int i = 0; i < 6; i++)
+                {
+                    <div class="admin-chat-skel__item">
+                        <div class="admin-chat-skel__avatar"></div>
+                        <div class="admin-chat-skel__body">
+                            <div class="admin-chat-skel__name"></div>
+                            <div class="admin-chat-skel__meta"></div>
+                        </div>
+                        <div class="admin-chat-skel__time"></div>
+                    </div>
+                }
+            </div>
+        }
+        else if (_sessions.Count == 0)
+        {
+            <div class="admin-empty">
+                <i class="bi bi-chat-dots" style="font-size:3rem;opacity:.3"></i>
+                <p style="margin-top:.75rem;opacity:.5">@Loc.T("No chat sessions yet.")</p>
+            </div>
+        }
+        else
+        {
+            <div class="admin-chat-layout @(_selectedSessionId.HasValue ? "admin-chat-layout--chat-open" : "")">
+                <div class="chat-sessions">
+                    @foreach (ChatSession session in _sessions)
+                    {
+                        <div class="chat-session-card @(_selectedSessionId == session.Id ? "chat-session-card--active" : "") @(session.HasUnread ? "chat-session-card--unread" : "")"
+                             @onclick="() => SelectSession(session.Id)">
+                            <div class="chat-session-card__info">
+                                <div class="chat-session-card__name">
+                                    @if (session.HasUnread) { <span class="admin-unread-dot" title="@Loc.T("Unread")"></span> }
+                                    @session.Name
+                                </div>
+                                <div class="chat-session-card__meta">@session.Email · @session.Phone</div>
+                            </div>
+                            <div class="chat-session-card__right">
+                                <div class="chat-session-card__time">@Tz.ToUserTime(session.LastMessageAt).ToString("MM/dd HH:mm")</div>
+                                <button class="chat-session-card__delete admin-btn admin-btn--sm admin-btn--danger"
+                                        @onclick:stopPropagation
+                                        @onclick="() => ConfirmDeleteSession(session.Id)"
+                                        title="@Loc.T("Delete conversation")">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (_selectedSessionId.HasValue)
+                {
+                    <div class="chat-admin-window">
+                        <div class="chat-admin-session-header">
+                            <button type="button" class="chat-admin-back" @onclick="CloseChat" title="@Loc.T("Back")">
+                                <i class="bi bi-arrow-left"></i>
+                            </button>
+                            <div class="chat-header__avatar"><i class="bi bi-person-circle"></i></div>
+                            <div>
+                                <div class="chat-header__name">@_selectedSession?.Name</div>
+                                <div style="font-size:.7rem;color:#6b7280">@_selectedSession?.Email · @_selectedSession?.Phone</div>
+                            </div>
+                        </div>
+
+                        <div class="chat-admin-messages" id="adminChatMessages">
+                            @{
+                                // Show divider at first user message with Id > _sessionLastReadId
+                                // When _sessionLastReadId = 0, all user messages are "new"
+                                int firstUnreadIdx = _messages.FindIndex(m => m.IsFromUser && m.Id > _sessionLastReadId);
+                            }
+                            @for (int i = 0; i < _messages.Count; i++)
+                            {
+                                ChatMessage msg = _messages[i];
+                                bool isUnread = msg.IsFromUser && firstUnreadIdx >= 0 && i >= firstUnreadIdx;
+
+                                @if (i == firstUnreadIdx)
+                                {
+                                    <div class="chat-unread-divider chat-unread-divider--admin">
+                                        <span>@Loc.T("New messages")</span>
+                                    </div>
+                                }
+
+                                <div class="chat-msg @(msg.IsFromUser ? "chat-msg--admin" : "chat-msg--user") @(isUnread ? "chat-msg--unread" : "") @(msg.Id == 0 ? "chat-msg--pending" : "")">
+                                    <div class="chat-msg__bubble">@msg.Content</div>
+                                    <div class="chat-msg__time">
+                                        @(msg.IsFromUser ? Loc.T("User") : Loc.T("Admin")) · @Tz.ToUserTime(msg.SentAt).ToString("HH:mm")
+                                        @if (!msg.IsFromUser)
+                                        {
+                                            if (_userReadUpToId > 0 && msg.Id <= _userReadUpToId)
+                                            {
+                                                <i class="bi bi-check-all chat-msg__ticks chat-msg__ticks--read" title="@Loc.T("Read")"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-check chat-msg__ticks" title="@Loc.T("Sent")"></i>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            @if (_messages.Count == 0)
+                            {
+                                <div style="text-align:center;color:#6b7280;font-size:.8rem;margin-top:1rem">@Loc.T("No messages yet")</div>
+                            }
+
+                            @if (_otherIsTyping)
+                            {
+                                <div class="chat-msg chat-msg--user">
+                                    <div class="chat-typing">
+                                        <span></span><span></span><span></span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="chat-admin-input">
+                            <textarea rows="2" placeholder="@Loc.T("Type a reply...")"
+                                      @bind="_replyText"
+                                      @bind:event="oninput"
+                                      @bind:after="OnReplyInput"
+                                      @onkeydown="OnReplyKeyDown"></textarea>
+                            <button class="admin-btn admin-btn--primary"
+                                    @onclick="SendReply"
+                                    disabled="@(string.IsNullOrWhiteSpace(_replyText) || _sending)">
+                                @if (_sending)
+                                {
+                                    <i class="bi bi-arrow-clockwise admin-spin"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-send"></i>
+                                }
+                                <span>@Loc.T("Send")</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="admin-chat-placeholder">
+                        @Loc.T("Select a conversation to view")
+                    </div>
+                }
+            </div>
+        }
+    </main>
+</div>
+
+<ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDeleteSession" OnCancel="() => _confirmShow = false" />
