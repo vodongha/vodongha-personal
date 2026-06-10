@@ -19,4 +19,4 @@ jobs:
         with:
           dotnet-version: '10.x'
       - run: dotnet restore VodonghaPersonal.slnx
-      - run: dotnet test test/VodonghaPersonal.Tests/VodonghaPersonal.Tests.csproj --no-restore --verbosity minimal
+      - run: dotnet test VodonghaPersonal.slnx --no-restore --verbosity minimal
