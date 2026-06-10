@@ -59,6 +59,7 @@
                 <i class="bi bi-chevron-right admin-nav-group__chevron"></i>
             </button>
             <div class="admin-nav-group__items">
+                <a href="/admin/settings"   title="@Loc.T("Settings")"   class="admin-nav__item @(IsActive("/admin/settings")   ? "admin-nav__item--active" : "")"><i class="bi bi-person-vcard"></i>       <span class="admin-nav__label">@Loc.T("Settings")</span></a>
                 <a href="/admin/skills"     title="@Loc.T("Skills")"     class="admin-nav__item @(IsActive("/admin/skills")     ? "admin-nav__item--active" : "")"><i class="bi bi-bar-chart"></i>           <span class="admin-nav__label">@Loc.T("Skills")</span></a>
                 <a href="/admin/projects"   title="@Loc.T("Projects")"   class="admin-nav__item @(IsActive("/admin/projects")   ? "admin-nav__item--active" : "")"><i class="bi bi-folder2"></i>             <span class="admin-nav__label">@Loc.T("Projects")</span></a>
                 <a href="/admin/education"  title="@Loc.T("Education")"  class="admin-nav__item @(IsActive("/admin/education")  ? "admin-nav__item--active" : "")"><i class="bi bi-mortarboard"></i>         <span class="admin-nav__label">@Loc.T("Education")</span></a>
@@ -119,7 +120,6 @@
             <div class="admin-nav-group__items">
                 <a href="/admin/api-keys"      title="@Loc.T("API Keys")"    class="admin-nav__item @(IsActive("/admin/api-keys")      ? "admin-nav__item--active" : "")"><i class="bi bi-key"></i>       <span class="admin-nav__label">@Loc.T("API Keys")</span></a>
                 <a href="/admin/dependencies" title="@Loc.T("Dependencies")" class="admin-nav__item @(IsActive("/admin/dependencies") ? "admin-nav__item--active" : "")"><i class="bi bi-box-seam"></i> <span class="admin-nav__label">@Loc.T("Dependencies")</span></a>
-                <a href="/admin/settings"     title="@Loc.T("Settings")"     class="admin-nav__item @(IsActive("/admin/settings")     ? "admin-nav__item--active" : "")"><i class="bi bi-gear"></i>      <span class="admin-nav__label">@Loc.T("Settings")</span></a>
             </div>
         </div>
     </nav>
