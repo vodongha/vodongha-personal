@@ -70,10 +70,17 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
             _menuOrder = await Secrets.GetValueAsync(MenuPrefKey) ?? "[]";
             await InvokeAsync(StateHasChanged);
             await JS.InvokeVoidAsync("initSortableCards", "admin-dash-cards", _dotNetRef, MenuPrefKey);
+            await JS.InvokeVoidAsync("addDesktopResizeRedirect", _dotNetRef, 768);
         }
         catch (JSDisconnectedException) { }
         catch (ObjectDisposedException)  { }
         catch (OperationCanceledException) { }
+    }
+
+    [JSInvokable]
+    public void OnResizedToDesktop()
+    {
+        Nav.NavigateTo("/admin", replace: true);
     }
 
     [JSInvokable]
@@ -88,8 +95,8 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         Loc.OnChanged -= OnLangChanged;
+        try { await JS.InvokeVoidAsync("removeDesktopResizeRedirect"); } catch { }
         _dotNetRef?.Dispose();
-        await ValueTask.CompletedTask;
     }
 
     public sealed record MenuItem(

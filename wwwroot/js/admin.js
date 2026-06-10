@@ -35,6 +35,24 @@ window.initSortableCards = function (gridId, dotnetRef, prefKey) {
     });
 };
 
+// ── Mobile menu — resize-to-desktop redirect ──────────────────────────────────
+window.addDesktopResizeRedirect = function (dotnetRef, breakpoint) {
+    function onResize() {
+        if (window.innerWidth > breakpoint) {
+            dotnetRef.invokeMethodAsync('OnResizedToDesktop');
+        }
+    }
+    window._desktopResizeHandler = onResize;
+    window.addEventListener('resize', onResize);
+};
+
+window.removeDesktopResizeRedirect = function () {
+    if (window._desktopResizeHandler) {
+        window.removeEventListener('resize', window._desktopResizeHandler);
+        window._desktopResizeHandler = null;
+    }
+};
+
 // ── Global navigation loading bar ────────────────────────────────────────────
 (function () {
     var bar   = null;
