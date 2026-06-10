@@ -56,7 +56,11 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
+        if (!firstRender)
+        {
+            return;
+        }
+
         try
         {
             // Desktop users get redirected to the Dashboard page — /admin is mobile-only
@@ -73,7 +77,7 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
             await JS.InvokeVoidAsync("addDesktopResizeRedirect", _dotNetRef, 768);
         }
         catch (JSDisconnectedException) { }
-        catch (ObjectDisposedException)  { }
+        catch (ObjectDisposedException) { }
         catch (OperationCanceledException) { }
     }
 
@@ -104,6 +108,6 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
         string Href,
         string Icon,
         string Label,
-        int    BadgeCount = 0,
+        int BadgeCount = 0,
         string ExtraClass = "");
 }

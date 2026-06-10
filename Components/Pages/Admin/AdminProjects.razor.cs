@@ -93,9 +93,17 @@ public partial class AdminProjects : ComponentBase, IDisposable
     {
         Editing = new Project
         {
-            Id = p.Id, Title = p.Title, Description = p.Description, DescriptionEn = p.DescriptionEn,
-            Technologies = p.Technologies, ImageUrl = p.ImageUrl, GitHubUrl = p.GitHubUrl,
-            LiveUrl = p.LiveUrl, IsFeatured = p.IsFeatured, Order = p.Order, CreatedAt = p.CreatedAt
+            Id = p.Id,
+            Title = p.Title,
+            Description = p.Description,
+            DescriptionEn = p.DescriptionEn,
+            Technologies = p.Technologies,
+            ImageUrl = p.ImageUrl,
+            GitHubUrl = p.GitHubUrl,
+            LiveUrl = p.LiveUrl,
+            IsFeatured = p.IsFeatured,
+            Order = p.Order,
+            CreatedAt = p.CreatedAt
         };
         ShowForm = true;
     }

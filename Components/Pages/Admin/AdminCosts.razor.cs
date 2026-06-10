@@ -15,12 +15,12 @@ public partial class AdminCosts : ComponentBase, IDisposable
     private bool _loading = true;
 
     // Saved card orders (JSON arrays) — passed as data-saved-order to the grid
-    private string _flyOrder  = "[]";
+    private string _flyOrder = "[]";
     private string _neonOrder = "[]";
 
     private DotNetObjectReference<AdminCosts>? _dotNetRef;
 
-    private const string FlyPrefKey  = "_pref.costs.fly";
+    private const string FlyPrefKey = "_pref.costs.fly";
     private const string NeonPrefKey = "_pref.costs.neon";
 
     private double TotalEstimated =>
@@ -35,11 +35,15 @@ public partial class AdminCosts : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
+        if (!firstRender)
+        {
+            return;
+        }
+
         try
         {
             // Load saved orders before loading data so grids render with correct order
-            _flyOrder  = await Secrets.GetValueAsync(FlyPrefKey)  ?? "[]";
+            _flyOrder = await Secrets.GetValueAsync(FlyPrefKey) ?? "[]";
             _neonOrder = await Secrets.GetValueAsync(NeonPrefKey) ?? "[]";
 
             await LoadAsync();
@@ -60,7 +64,7 @@ public partial class AdminCosts : ComponentBase, IDisposable
         // Init SortableJS after cards are rendered
         try
         {
-            await JS.InvokeVoidAsync("initSortableCards", "fly-cards-grid",  _dotNetRef, FlyPrefKey);
+            await JS.InvokeVoidAsync("initSortableCards", "fly-cards-grid", _dotNetRef, FlyPrefKey);
             await JS.InvokeVoidAsync("initSortableCards", "neon-cards-grid", _dotNetRef, NeonPrefKey);
         }
         catch (JSDisconnectedException) { }
@@ -89,24 +93,24 @@ public partial class AdminCosts : ComponentBase, IDisposable
 
     private static string MachineCardClass(string state) => state switch
     {
-        "started"   => "health-card--ok",
+        "started" => "health-card--ok",
         "suspended" => "",
-        _           => "health-card--error"
+        _ => "health-card--error"
     };
 
     private static string MachineIcon(string state) => state switch
     {
-        "started"   => "bi-play-circle-fill",
+        "started" => "bi-play-circle-fill",
         "suspended" => "bi-pause-circle",
-        _           => "bi-stop-circle"
+        _ => "bi-stop-circle"
     };
 
     private string MachinStateLabel(string state) => state switch
     {
-        "started"   => Loc.T("Running"),
+        "started" => Loc.T("Running"),
         "suspended" => Loc.T("Suspended"),
-        "stopped"   => Loc.T("Stopped"),
-        _           => state
+        "stopped" => Loc.T("Stopped"),
+        _ => state
     };
 
     public void Dispose()

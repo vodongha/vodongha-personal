@@ -11,17 +11,17 @@ public partial class AdminApiKeys : ComponentBase, IDisposable
     [Inject] private IConfiguration Config { get; set; } = default!;
 
     private bool _loading = true;
-    private bool _saving  = false;
+    private bool _saving = false;
 
     // key → decrypted DB value (or empty if no DB override)
-    private Dictionary<string, string> _dbValues  = [];
+    private Dictionary<string, string> _dbValues = [];
     // key → env/config value
     private Dictionary<string, string> _envValues = [];
 
-    private string? _editingKey  = null;
-    private string  _editValue   = "";
-    private string? _editError   = null;
-    private string  _search      = "";
+    private string? _editingKey = null;
+    private string _editValue = "";
+    private string? _editError = null;
+    private string _search = "";
 
     private static readonly string[] _categories =
         AppSecretsService.Definitions.Select(d => d.Category).Distinct().ToArray();
@@ -80,15 +80,15 @@ public partial class AdminApiKeys : ComponentBase, IDisposable
     private void StartEdit(string key, string currentDbValue)
     {
         _editingKey = key;
-        _editValue  = currentDbValue; // pre-fill with DB value if exists
-        _editError  = null;
+        _editValue = currentDbValue; // pre-fill with DB value if exists
+        _editError = null;
     }
 
     private void CancelEdit()
     {
         _editingKey = null;
-        _editValue  = "";
-        _editError  = null;
+        _editValue = "";
+        _editError = null;
     }
 
     private async Task SaveEdit()
@@ -98,7 +98,7 @@ public partial class AdminApiKeys : ComponentBase, IDisposable
             return;
         }
 
-        _saving    = true;
+        _saving = true;
         _editError = null;
         await InvokeAsync(StateHasChanged);
 
@@ -110,7 +110,7 @@ public partial class AdminApiKeys : ComponentBase, IDisposable
         {
             Toast.Show(Loc.T("Saved successfully"), success: true);
             _editingKey = null;
-            _editValue  = "";
+            _editValue = "";
             await LoadAsync();
         }
         else
@@ -150,13 +150,13 @@ public partial class AdminApiKeys : ComponentBase, IDisposable
 
     private static string CategoryIcon(string category) => category switch
     {
-        "Fly.io"    => "bi-airplane",
-        "Neon"      => "bi-database",
-        "Telegram"  => "bi-telegram",
-        "Email"     => "bi-envelope",
-        "Web Push"  => "bi-bell",
-        "Gemini"    => "bi-stars",
-        _           => "bi-key",
+        "Fly.io" => "bi-airplane",
+        "Neon" => "bi-database",
+        "Telegram" => "bi-telegram",
+        "Email" => "bi-envelope",
+        "Web Push" => "bi-bell",
+        "Gemini" => "bi-stars",
+        _ => "bi-key",
     };
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);

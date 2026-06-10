@@ -18,8 +18,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Education> Educations => Set<Education>();
     public DbSet<Experience> Experiences => Set<Experience>();
     public DbSet<SiteSetting> SiteSettings => Set<SiteSetting>();
-    public DbSet<AppSecret>   AppSecrets   => Set<AppSecret>();
-    public DbSet<PageView>    PageViews    => Set<PageView>();
+    public DbSet<AppSecret> AppSecrets => Set<AppSecret>();
+    public DbSet<PageView> PageViews => Set<PageView>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

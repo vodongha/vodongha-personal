@@ -1,6 +1,6 @@
+using System.Collections.Concurrent;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Concurrent;
 using VodonghaPersonal.Data;
 using VodonghaPersonal.Data.Models;
 using VodonghaPersonal.Hubs;
@@ -236,20 +236,32 @@ public class ChatService
     /// </summary>
     private async Task ForwardUserMessageToTelegramAsync(ChatSession session, string content)
     {
-        if (session.TelegramTopicId == null) return;
+        if (session.TelegramTopicId == null)
+        {
+            return;
+        }
 
         (long? _, bool topicDeleted) = await _telegram.SendMessageAsync($"💬 {content}", session.TelegramTopicId.Value);
 
-        if (!topicDeleted) return;
+        if (!topicDeleted)
+        {
+            return;
+        }
 
         // Topic was deleted on Telegram — recreate it and update DB
         string topicTitle = $"{session.Name} | {session.Email}";
         long? newTopicId = await _telegram.CreateTopicAsync(topicTitle);
-        if (newTopicId == null) return;
+        if (newTopicId == null)
+        {
+            return;
+        }
 
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
         ChatSession? dbSession = await db.ChatSessions.FindAsync(session.Id);
-        if (dbSession == null) return;
+        if (dbSession == null)
+        {
+            return;
+        }
 
         dbSession.TelegramTopicId = newTopicId;
         await db.SaveChangesAsync();
