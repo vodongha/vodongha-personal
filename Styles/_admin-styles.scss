@@ -2151,8 +2151,8 @@ tr.admin-row--dragover td {
     white-space: nowrap;
 
     &--db      { background: color-mix(in srgb, var(--color-primary) 15%, transparent); color: var(--color-primary); border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent); }
-    &--env     { background: rgba(96,165,250,0.12); color: #60a5fa; border: 1px solid rgba(96,165,250,0.25); }
-    &--missing { background: rgba(239,68,68,0.08); color: #f87171; border: 1px solid rgba(239,68,68,0.18); }
+    &--env     { background: color-mix(in srgb, var(--color-info) 12%, transparent); color: var(--color-info); border: 1px solid color-mix(in srgb, var(--color-info) 25%, transparent); }
+    &--missing { background: color-mix(in srgb, var(--color-danger) 8%, transparent); color: var(--color-danger); border: 1px solid color-mix(in srgb, var(--color-danger) 20%, transparent); }
 }
 
 // Masked value display
@@ -2185,7 +2185,7 @@ tr.admin-row--dragover td {
 
     &__error {
         font-size: 0.75rem;
-        color: #f87171;
+        color: var(--color-danger);
         margin-top: 0.3rem;
     }
 
@@ -2219,9 +2219,9 @@ tr.admin-row--dragover td {
 
     &--danger {
         &:hover {
-            background: rgba(239,68,68,0.1);
-            color: #f87171;
-            border-color: rgba(239,68,68,0.3);
+            background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+            color: var(--color-danger);
+            border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
         }
     }
 }
@@ -2928,15 +2928,15 @@ tr.admin-row--dragover td {
     align-items: center;
     gap: 1rem;
 
-    &--alert { border-color: #ef444466; }
+    &--alert { border-color: color-mix(in srgb, var(--color-danger) 40%, transparent); }
 
     &__icon {
         font-size: 1.6rem;
         flex-shrink: 0;
-        &--blue  { color: #60a5fa; }
-        &--teal  { color: #22c9b7; }
-        &--amber { color: #f59e0b; }
-        &--red   { color: #f87171; }
+        &--blue  { color: var(--color-info); }
+        &--teal  { color: var(--color-teal); }
+        &--amber { color: var(--color-warning); }
+        &--red   { color: var(--color-danger); }
     }
 
     &__body { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }

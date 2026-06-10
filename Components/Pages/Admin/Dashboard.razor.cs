@@ -85,7 +85,7 @@ public partial class Dashboard : ComponentBase, IDisposable
             .Take(6)
             .Select(b => new CategoryCount
             {
-                Label = b.TitleEn != null ? b.TitleEn : b.Title,
+                Label = b.TitleEn ?? b.Title,
                 Count = b.ViewCount
             })
             .ToListAsync();
@@ -128,7 +128,10 @@ public partial class Dashboard : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!_pendingChartRender) return;
+        if (!_pendingChartRender)
+        {
+            return;
+        }
         _pendingChartRender = false;
         try
         {
