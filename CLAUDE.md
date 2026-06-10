@@ -1,4 +1,4 @@
-﻿# vodongha.id.vn — CLAUDE.md
+# vodongha.id.vn — CLAUDE.md
 
 ## Project overview
 
@@ -14,7 +14,7 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 | Layer | Technology |
 |---|---|
 | Runtime | .NET 10 |
-| Frontend | Blazor Web App — `@rendermode InteractiveServer` on pages/components with state |
+| Frontend | Blazor Web App — public site uses `@rendermode InteractiveServer`; admin panel uses `@rendermode InteractiveAuto` (WASM via `VodonghaPersonal.Client`) |
 | Database | PostgreSQL via Neon (Singapore). Fly.io secret: `ConnectionStrings__DefaultConnection` |
 | ORM | Entity Framework Core — no raw SQL in application code |
 | SCSS | Two entry points compiled by `AspNetCore.SassCompiler` on `dotnet build`: `Styles/app.scss` → `wwwroot/app.css` (public), `Styles/admin.scss` → `wwwroot/admin.css` (admin). Compiled CSS is **gitignored** — never commit `wwwroot/app.css` or `wwwroot/admin.css`. |
@@ -112,112 +112,67 @@ gh release create v2.x.x --title "v2.x.x — description" --notes "changelog"
 
 ```
 vodongha-personal/
-├── Components/
-│   ├── App.razor                     # Root — <head> SEO meta tags (OG, Twitter Card, canonical) + <script> tags
-│   ├── Layout/
-│   │   ├── MainLayout.razor          # Public layout — loads app.css
-│   │   ├── AdminLayout.razor         # Admin layout — loads admin.css
-│   │   ├── NavBar.razor              # Top navigation (InteractiveServer — language toggle)
-│   │   ├── FooterSection.razor       # Footer with visitor count badge (InteractiveServer)
-│   │   └── ReconnectModal.razor      # Blazor reconnect overlay — bilingual VI/EN; circuit retries configured in App.razor Blazor.start()
-│   ├── Pages/
-│   │   ├── Home.razor                # Landing page (InteractiveServer)
-│   │   ├── Blog/BlogPostPage.razor   # Individual blog post with per-page OG meta tags
-│   │   ├── Admin/
-│   │   │   ├── Login.razor + .cs         # /admin/login
-│   │   │   ├── Dashboard.razor + .cs     # /admin
-│   │   │   ├── AdminSkills.razor + .cs   # /admin/skills — QuickGrid + PaginationState
-│   │   │   ├── AdminProjects.razor + .cs # /admin/projects — manual pagination + drag-to-reorder
-│   │   │   ├── AdminBlog.razor + .cs     # /admin/blog — auto-slug from Vietnamese title
-│   │   │   ├── AdminEducation.razor + .cs
-│   │   │   ├── AdminExperience.razor + .cs
-│   │   │   ├── AdminContacts.razor + .cs    # unread badge, mark read, reply
-│   │   │   ├── AdminChats.razor + .cs       # live chat sessions, real-time messages, typing, read receipts
-│   │   │   ├── AdminHealth.razor + .cs      # server health: memory + DB ping charts, snapshot table
-│   │   │   ├── AdminSettings.razor + .cs    # /admin/settings — avatar upload, social links, bio ("Hồ sơ" in VI, shown first in Portfolio group)
-│   │   │   ├── AdminCv.razor + .cs          # CV PDF download — template picker, live preview per template
-│   │   │   ├── AdminAnalytics.razor + .cs   # /admin/analytics — page views, daily chart, top pages/countries/referrers
-│   │   │   └── AdminDependencies.razor + .cs # /admin/dependencies — NuGet/npm/CDN version tracker; filter chips + search; hardcoded list (see DependencyCheckService)
-│   │   ├── Error.razor
-│   │   └── NotFound.razor
-│   ├── Sections/                     # One file per landing page section
-│   │   ├── HeroSection.razor         # Name, role, bio, social links (from SiteSettings)
-│   │   ├── SkillsSection.razor       # Skills grid grouped by category — expand/collapse
-│   │   ├── ProjectsSection.razor     # Featured projects grid — expand/collapse
-│   │   ├── ExperienceSection.razor   # Work experience timeline — expand/collapse
-│   │   ├── EducationSection.razor    # Education timeline — expand/collapse
-│   │   ├── BlogSection.razor         # Latest blog posts — expand/collapse
-│   │   └── ContactSection.razor      # Contact form
-│   └── Shared/
-│       ├── ProjectCard.razor         # Reusable project card
-│       ├── BlogCard.razor            # Reusable blog post card
-│       ├── ConfirmDialog.razor       # Delete confirmation modal (type "Delete" to enable button)
-│       ├── ChatWidget.razor + .cs    # Floating chat button on all public pages (InteractiveServer)
-│       ├── AdminNav.razor + .cs      # Shared admin sidebar — collapsible groups (Portfolio/Communication/Insights/System), auto-opens active group; collapsible sidebar (64px icon-only ↔ 220px expanded, chevron toggle in logo area, state in localStorage key `admin-sidebar-collapsed`); compact icon-only top controls (Website/Dark/Lang, labels hidden on desktop, `title` tooltip on hover); all group headers and nav items have `title` tooltips; group header style: no uppercase, 0.82rem, color-text-dim; clicking a group header when collapsed expands sidebar first; desktop only — mobile bottom bar (4 items: Menu / Dark icon-only / VI|EN active-only / Logout icon-only; Website removed)
-│       └── TimezoneDetector.razor    # Invisible InteractiveServer component — reads browser IANA timezone via JS on first render, stores in TimezoneService
-├── Data/
-│   ├── AppDbContext.cs               # EF context — DbSets + index/constraint definitions only. No HasData() seed — all data managed at runtime via Admin UI.
-│   └── Models/
-│       ├── Skill.cs
-│       ├── Project.cs
-│       ├── BlogPost.cs
-│       ├── Experience.cs
-│       ├── Education.cs
-│       ├── ContactMessage.cs
-│       ├── SiteSetting.cs            # Key-value store for site metadata
-│       ├── VisitorLog.cs             # Unique visitors by IP — IpAddress, FirstSeenAt, UserAgent
-│       └── PageView.cs               # Analytics — Path, Referrer, Country (no IP stored — GDPR), CreatedAt
-├── Services/
-│   ├── BlogService.cs
-│   ├── ProjectService.cs
-│   ├── SkillService.cs
-│   ├── ExperienceService.cs
-│   ├── EducationService.cs
-│   ├── ContactService.cs             # Save message to DB + send email notification via Resend
-│   ├── EmailService.cs
-│   ├── LanguageService.cs            # VI/EN toggle; T("key") for UI strings; OnChange event
-│   ├── SiteSettingService.cs
-│   ├── VisitorService.cs             # LogAsync(ip) — deduplicated by IP; GetCountAsync()
-│   ├── ChatService.cs                # Sessions, messages, Telegram webhook handler, SignalR push
-│   ├── TelegramService.cs            # Bot API: CreateTopicAsync, SendMessageAsync (returns TopicDeleted flag), DeleteTopicAsync, SendTypingAsync
-│   ├── HealthMonitorService.cs       # Singleton + IHostedService — collects metrics every 30s, 24-snapshot circular buffer
-│   ├── TimezoneService.cs            # Scoped — stores browser IANA timezone; ToUserTime(DateTime utc); fires OnTimezoneSet event for component re-render
-│   ├── CvPdfService.cs               # QuestPDF: Generate(CvData, template, avatarBytes?) → byte[]; 3 templates (0=DarkSidebar 1=Minimal 2=Professional); CropSquareTop() via SkiaSharp
-│   └── AnalyticsService.cs           # Page view tracking — TrackAsync (fire-and-forget from middleware), geo lookup via ip-api.com (24h cache), daily/top queries
-├── Styles/
-│   ├── app.scss                      # Public site entry point — imports all _*.scss partials
-│   ├── admin.scss                    # Admin entry point — imports _admin-styles.scss
-│   ├── _admin-styles.scss            # All admin panel styles (BEM: .admin-*) — desktop only
-│   ├── _admin-mobile.scss            # Admin mobile overrides — bottom nav layout, page-specific mobile queries
-│   ├── _client-mobile.scss           # Cross-component client mobile overrides (stub)
-│   ├── _variables.scss               # Design tokens (colors, spacing, fonts)
-│   ├── _base.scss                    # Global styles + .section layout
-│   ├── _nav.scss
-│   ├── _hero.scss
-│   ├── _skills.scss
-│   ├── _projects.scss
-│   ├── _timeline.scss                # Shared by Experience + Education sections
-│   ├── _blog.scss
-│   ├── _contact.scss
-│   ├── _footer.scss
-│   └── _reconnect.scss
-├── Hubs/
-│   └── ChatHub.cs                    # SignalR: JoinSession, LeaveSession, JoinAdminGroup, StartTyping, StopTyping, MarkRead
-├── wwwroot/
-│   └── js/
-│       ├── admin.js                  # Event delegation, theme toggle, TOC observer, reading progress, loading bar, back-to-top, PDF download, code copy — ES2026
-│       ├── analytics-charts.js       # Chart.js wrappers for analytics page (renderLine, renderBar, destroy) — ES2026
-│       ├── chat.js                   # chatUtils (scroll, country detection, input helpers); chatDial (dial-code picker, phone cleaner) — ES2026
-│       ├── dashboardCharts.js        # Chart.js wrappers for dashboard — renderDonut, renderHBar, renderLine, destroy, onThemeChange — ES2026
-│       ├── healthChart.js            # healthChart.init/update/destroy/onThemeChange — Chart.js wrappers — ES2026
-│       └── push.js                   # Web Push: subscribe/unsubscribe via ServiceWorker; uses ES2026 Uint8Array.fromBase64 for VAPID key decode
-├── Migrations/                       # EF Core — never modify existing migrations
-├── Program.cs                        # DI, middleware (visitor tracking), auth, routes
-├── Dockerfile
-├── .dockerignore                     # Excludes wwwroot/app.css + admin.css → Docker forces Dart Sass recompile
-├── .gitignore                        # Excludes wwwroot/app.css, admin.css, *.css.map
-├── fly.toml
-└── vodongha-personal.csproj
+├── src/
+│   ├── VodonghaPersonal.Server/              # ASP.NET Core host — public site + REST API
+│   │   ├── Api/                              # 15 minimal API groups (all .RequireAuthorization())
+│   │   │   ├── AdminSkillsApi.cs             # GET list, POST, PUT /{id}, DELETE /{id}
+│   │   │   ├── AdminProjectsApi.cs           # + PUT /order
+│   │   │   ├── AdminBlogApi.cs
+│   │   │   ├── AdminEducationApi.cs
+│   │   │   ├── AdminExperienceApi.cs
+│   │   │   ├── AdminContactsApi.cs           # + PUT /{id}/read, PUT /read-all
+│   │   │   ├── AdminSettingsApi.cs           # + POST /avatar (IFormFile)
+│   │   │   ├── AdminDashboardApi.cs
+│   │   │   ├── AdminAnalyticsApi.cs
+│   │   │   ├── AdminApiKeysApi.cs
+│   │   │   ├── AdminHealthApi.cs
+│   │   │   ├── AdminCostsApi.cs
+│   │   │   ├── AdminDependenciesApi.cs
+│   │   │   ├── AdminChatApi.cs
+│   │   │   └── AdminMenuApi.cs
+│   │   ├── Components/                       # Public site only
+│   │   │   ├── App.razor
+│   │   │   ├── Layout/                       # MainLayout, NavBar, FooterSection
+│   │   │   ├── Pages/                        # Home, Blog, Login, Error, NotFound
+│   │   │   └── Shared/                       # ChatWidget, TimezoneDetector, BlogCard, ...
+│   │   ├── Data/                             # AppDbContext, AppDbContextFactory
+│   │   ├── Hubs/                             # ChatHub (SignalR)
+│   │   ├── Migrations/
+│   │   ├── Services/                         # HealthMonitorService, CostMonitorService,
+│   │   │                                     #   AppSecretsService, AnalyticsService, etc.
+│   │   ├── Styles/                           # app.scss, admin.scss, partials
+│   │   └── wwwroot/js/
+│   ├── VodonghaPersonal.Client/              # Blazor WASM — admin panel
+│   │   ├── ApiClients/                       # 14 HttpClient-based clients (all .GetFromJsonAsync / .PostAsJsonAsync)
+│   │   │   ├── SkillApiClient.cs
+│   │   │   ├── ProjectApiClient.cs
+│   │   │   ├── BlogApiClient.cs
+│   │   │   ├── EducationApiClient.cs
+│   │   │   ├── ExperienceApiClient.cs
+│   │   │   ├── ContactApiClient.cs
+│   │   │   ├── SettingsApiClient.cs
+│   │   │   ├── DashboardApiClient.cs
+│   │   │   ├── AnalyticsApiClient.cs
+│   │   │   ├── ApiKeyApiClient.cs
+│   │   │   ├── HealthApiClient.cs
+│   │   │   ├── CostApiClient.cs
+│   │   │   ├── DependencyApiClient.cs
+│   │   │   └── ChatApiClient.cs
+│   │   ├── Components/
+│   │   │   ├── Layout/AdminLayout.razor      # Loads /admin.css (no @Assets fingerprinting in WASM)
+│   │   │   ├── Pages/Admin/                  # All 16 admin pages — @rendermode InteractiveAuto
+│   │   │   └── Shared/                       # AdminNav, TimezoneDetector, ToastContainer,
+│   │   │                                     #   ConfirmDialog, Pagination, ChatHubParser
+│   │   ├── Services/                         # Client copies of: ToastService, AdminLocalizationService,
+│   │   │                                     #   LanguageService, TimezoneService
+│   │   ├── _Imports.razor
+│   │   └── Program.cs                        # WASM entry — registers HttpClient, all API clients, services
+│   └── VodonghaPersonal.Shared/              # Shared between Server and Client
+│       ├── Models/                           # All entity models + CvData record
+│       └── DTOs/
+│           └── AdminDtos.cs                  # All API request/response records
+└── test/
+    └── VodonghaPersonal.Tests/
 ```
 
 ## SCSS pipeline
@@ -242,6 +197,13 @@ dart.exe sass.snapshot --style=expanded --no-source-map Styles\admin.scss wwwroo
 
 Find `dart.exe` in the NuGet package cache under `AspNetCore.SassCompiler` tools.
 
+### Stylelint rules — what to use in SCSS
+
+The project uses `stylelint-config-standard-scss`. Two rules are disabled in `.stylelintrc.json` to stay compatible with SCSS variable usage:
+
+- **`color-function-alias-notation`** — disabled. Using `rgba(...)` is fine (both plain literals and SCSS variable form `rgba($color, 0.1)` are accepted).
+- **`declaration-property-value-keyword-no-deprecated`** — disabled. However, prefer `overflow-wrap: break-word` over `word-break: break-word` in new code — `word-break: break-word` is non-standard and deprecated in most browsers.
+
 ## Blazor — important rules
 
 **Scripts only execute from `App.razor`** — not from `.razor` layout or page components. All `<script>` tags must be placed in `App.razor` (before `</body>`). Currently: `<script src="js/admin.js"></script>`.
@@ -260,11 +222,13 @@ document.addEventListener('mousedown', function (e) {
 
 **Static asset fingerprinting** — .NET 10 fingerprints CSS/JS URLs at build time. `@Assets["admin.css"]` resolves to `/admin.j51ad4dks9.css`. When CSS changes, the hash changes and browsers are forced to reload the file.
 
+**WASM exception:** `@Assets["admin.css"]` is a Razor feature that only works in Server-rendered components. `AdminLayout.razor` in `VodonghaPersonal.Client` must use a plain `/admin.css` path — never `@Assets[...]`.
+
 ## Admin panel
 
 - Login: `/admin/login` → POST `/admin/do-login` → cookie auth (7-day sliding expiration)
 - Each admin page uses `@layout AdminLayout` and `@attribute [Authorize]`
-- Direct DB access via `IDbContextFactory<AppDbContext>` — no separate API layer
+- Admin pages in `VodonghaPersonal.Client` communicate with the Server via HTTP API clients (`XxxApiClient`). Server-side API handlers in `Api/AdminXxxApi.cs` access the DB directly via `IDbContextFactory<AppDbContext>`.
 - All admin pages follow the `.razor` + `.razor.cs` code-behind pattern
 
 ### Blazor code-behind pattern
@@ -274,7 +238,7 @@ Every admin page uses a `.razor.cs` partial class:
 ```csharp
 public partial class AdminSkills : ComponentBase
 {
-    [Inject] private IDbContextFactory<AppDbContext> DbFactory { get; set; } = default!;
+    [Inject] private SkillApiClient ApiClient { get; set; } = default!;
     [Inject] private ToastService Toast { get; set; } = default!;
 }
 ```
@@ -627,10 +591,11 @@ else { <real content> }
 
 ## Current version
 
-**v2.0.6**
+**v3.0.0**
 
 | Version | Changes |
 |---|---|
+| v3.0.0 | InteractiveAuto admin panel: new VodonghaPersonal.Client WASM project; 15 REST API endpoint groups under /api/admin/*; all 16 admin pages migrated to @rendermode InteractiveAuto; 14 HttpClient API clients; CvData moved to Shared; solution restructured into src/test layout |
 | v2.0.6 | i18n all 8 admin pages; Lint CI (dotnet format + ESLint + Stylelint); CI & Deploy flow; ES2026 JS (Uint8Array.fromBase64, ecmaVersion 2026); Dependencies tracker page (/admin/dependencies — NuGet/npm/CDN version checks, filter chips, search); unit tests (VodonghaPersonal.Tests, 12 NUnit + Shouldly tests); dep updates (Microsoft 10.0.8→10.0.9, SkiaSharp 3.116.1→3.119.4, eslint 9→10, stylelint 16→17, SortableJS 1.15.3→1.15.7, Devicon latest→2.17.0); menu renamed "Thông tin"→"Hồ sơ" (bi-person-vcard, first in Portfolio group); SCSS Stylelint fixes; analytics nav label fix; cost banner light-mode fix; Chart.js version mismatch fix (4.4.4→4.5.1) |
 | v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix; collapsible sidebar (icon-only collapsed mode, localStorage); icon-only top controls with tooltips; mobile bottom bar 4-item; Dashboard → /admin/analytics |
 | v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping; accessibility; code quality; DI fix; git workflow updated |

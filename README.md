@@ -1,10 +1,11 @@
-﻿# vodongha.id.vn
+# vodongha.id.vn
 
 Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 
 **Live:** [https://vodongha.id.vn](https://vodongha.id.vn) | **Admin:** [https://vodongha.id.vn/admin/login](https://vodongha.id.vn/admin/login)
 
 [![CI](https://github.com/vodongha/vodongha-personal/actions/workflows/ci.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/ci.yml)
+[![Tests](https://github.com/vodongha/vodongha-personal/actions/workflows/test.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/test.yml)
 [![Deploy](https://github.com/vodongha/vodongha-personal/actions/workflows/deploy.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/deploy.yml)
 [![Lint](https://github.com/vodongha/vodongha-personal/actions/workflows/lint.yml/badge.svg)](https://github.com/vodongha/vodongha-personal/actions/workflows/lint.yml)
 
@@ -64,7 +65,8 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 
 | Layer | Technology |
 |---|---|
-| Framework | Blazor Web App (.NET 10, Interactive Server) |
+| Framework | Blazor Web App (.NET 10) — public site `InteractiveServer`, admin `InteractiveAuto` (WASM) |
+| API layer | ASP.NET Core Minimal APIs — 15 endpoint groups under `/api/admin/*` |
 | Database | PostgreSQL via [Neon](https://neon.tech) (Singapore) |
 | ORM | Entity Framework Core |
 | Styling | SCSS — `Styles/app.scss` → public, `Styles/admin.scss` → admin |
@@ -86,57 +88,56 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 ```
 vodongha-personal/
 ├── .github/
-│   └── workflows/
-│       ├── ci.yml              # Build + unit tests on develop push and PRs
-│       ├── deploy.yml          # Fly.io deploy on merge to master (needs build+test+lint)
-│       ├── lint.yml            # dotnet format + ESLint + Stylelint + unit tests on PRs
-│       ├── pr-setup.yml        # Auto-assign, label, milestone, reviewer on PR open
-│       └── sync-develop.yml    # Merge master → develop after every merge
-├── Components/
-│   ├── App.razor               # HTML root — SEO meta tags, client IP embedding, scripts
-│   ├── Layout/                 # NavBar, MainLayout, FooterSection, AdminLayout
-│   ├── Pages/
-│   │   ├── Home.razor          # Landing page (InteractiveServer)
-│   │   ├── Blog/               # BlogPostPage (dynamic SEO per post)
-│   │   └── Admin/              # Login, Dashboard, Skills, Projects, Blog,
-│   │                           #   Education, Experience, Contacts, Chats, Analytics,
-│   │                           #   Health, Costs, Settings, CV, ApiKeys (each: .razor + .razor.cs)
-│   ├── Sections/               # HeroSection, SkillsSection, ProjectsSection,
-│   │                           #   ExperienceSection, EducationSection,
-│   │                           #   BlogSection, ContactSection
-│   └── Shared/                 # ChatWidget, TimezoneDetector, BlogCard,
-│                               #   ProjectCard, AdminNav, ConfirmDialog
-├── Data/
-│   ├── AppDbContext.cs
-│   └── Models/                 # Skill, Project, BlogPost, Experience, Education,
-│                               #   ContactMessage, SiteSetting, VisitorLog,
-│                               #   ChatSession, ChatMessage
-├── Hubs/
-│   └── ChatHub.cs              # SignalR hub — session groups, typing events
-├── Services/
-│   ├── AnalyticsService.cs     # Page view tracking — geo IP, daily/top queries
-│   ├── ChatService.cs          # Chat sessions, messages, Telegram webhook handler
-│   ├── TelegramService.cs      # Telegram Bot API — topics, messages, typing
-│   ├── HealthMonitorService.cs # Singleton — collects server metrics every 30s
-│   ├── TimezoneService.cs      # Scoped — browser timezone for datetime conversion
-│   └── ...                     # Blog, Project, Skill, Email, Language, etc.
-├── Styles/
-│   ├── app.scss                # Public site → wwwroot/app.css
-│   ├── admin.scss              # Admin → wwwroot/admin.css
-│   ├── _admin-mobile.scss      # Admin mobile overrides (bottom nav, page-specific)
-│   ├── _client-mobile.scss     # Cross-component client mobile overrides
-│   └── _*.scss                 # Partials (variables, base, nav, chat, ...)
-├── wwwroot/js/                     # All files written in ES2026 (const/let, arrow functions, optional chaining, Uint8Array.fromBase64)
-│   ├── admin.js                # Event delegation, theme toggle, TOC, reading progress, loading bar
-│   ├── analytics-charts.js     # Chart.js wrappers for analytics page (renderLine, renderBar)
-│   ├── chat.js                 # chatUtils — scroll, country detection, dial picker
-│   ├── dashboardCharts.js      # Chart.js wrappers for dashboard (donut, hbar, line, onThemeChange)
-│   ├── healthChart.js          # Chart.js init/update/destroy wrappers
-│   └── push.js                 # Web Push: subscribe/unsubscribe; ES2026 Uint8Array.fromBase64 for VAPID key
-├── Migrations/
-├── Dockerfile
-├── fly.toml
-└── vodongha-personal.csproj
+│   └── workflows/             # ci.yml, deploy.yml, lint.yml, pr-setup.yml, sync-develop.yml
+├── src/
+│   ├── VodonghaPersonal.Server/      # ASP.NET Core host — public site + API
+│   │   ├── Components/               # Public pages, layouts, sections, shared widgets
+│   │   │   ├── App.razor             # HTML root, SEO meta, scripts
+│   │   │   ├── Layout/               # MainLayout, NavBar, FooterSection
+│   │   │   ├── Pages/                # Home, Blog, Login, Error, NotFound
+│   │   │   └── Shared/               # ChatWidget, TimezoneDetector, BlogCard, ...
+│   │   ├── Api/                      # 15 minimal API groups under /api/admin/*
+│   │   │   ├── AdminSkillsApi.cs     # GET/POST/PUT/{id}/DELETE/{id}
+│   │   │   ├── AdminProjectsApi.cs   # + PUT /order
+│   │   │   ├── AdminBlogApi.cs
+│   │   │   ├── AdminEducationApi.cs
+│   │   │   ├── AdminExperienceApi.cs
+│   │   │   ├── AdminContactsApi.cs   # + PUT /{id}/read, PUT /read-all
+│   │   │   ├── AdminSettingsApi.cs   # + POST /avatar
+│   │   │   ├── AdminDashboardApi.cs
+│   │   │   ├── AdminAnalyticsApi.cs
+│   │   │   ├── AdminApiKeysApi.cs
+│   │   │   ├── AdminHealthApi.cs
+│   │   │   ├── AdminCostsApi.cs
+│   │   │   ├── AdminDependenciesApi.cs
+│   │   │   ├── AdminChatApi.cs
+│   │   │   └── AdminMenuApi.cs
+│   │   ├── Data/                     # AppDbContext, AppDbContextFactory
+│   │   ├── Hubs/                     # ChatHub (SignalR)
+│   │   ├── Migrations/               # EF Core migrations
+│   │   ├── Services/                 # HealthMonitorService, CostMonitorService, ...
+│   │   ├── Styles/                   # app.scss, admin.scss, partials
+│   │   └── wwwroot/js/               # admin.js, chat.js, charts, push.js
+│   ├── VodonghaPersonal.Client/      # Blazor WASM — admin panel
+│   │   ├── ApiClients/               # 14 HttpClient-based API clients
+│   │   │   ├── SkillApiClient.cs
+│   │   │   ├── ProjectApiClient.cs
+│   │   │   ├── BlogApiClient.cs
+│   │   │   └── ... (14 total)
+│   │   ├── Components/
+│   │   │   ├── Layout/AdminLayout.razor
+│   │   │   ├── Pages/Admin/          # All 16 admin pages (InteractiveAuto)
+│   │   │   └── Shared/               # AdminNav, TimezoneDetector, ToastContainer, ...
+│   │   ├── Services/                 # ToastService, AdminLocalizationService,
+│   │   │                             #   LanguageService, TimezoneService (client copies)
+│   │   └── Program.cs                # WASM entry point — registers HttpClient + services
+│   └── VodonghaPersonal.Shared/      # Shared across Server + Client
+│       ├── Models/                   # Skill, Project, BlogPost, Experience, Education,
+│       │                             #   ContactMessage, ChatSession, ChatMessage, CvData
+│       └── DTOs/
+│           └── AdminDtos.cs          # API request/response types (DashboardStatsDto, ...)
+└── test/
+    └── VodonghaPersonal.Tests/       # NUnit + Shouldly unit tests
 ```
 
 ---
@@ -149,9 +150,10 @@ vodongha-personal/
 git clone https://github.com/vodongha/vodongha-personal.git
 cd vodongha-personal
 git checkout develop
+dotnet build   # builds Server + Client + Shared
 ```
 
-Create `appsettings.Development.json`:
+Create `src/VodonghaPersonal.Server/appsettings.Development.json`:
 
 ```json
 {
@@ -165,7 +167,7 @@ Create `appsettings.Development.json`:
 ```
 
 ```bash
-dotnet run
+dotnet run --project src/VodonghaPersonal.Server
 ```
 
 EF Core migrations apply automatically on startup.
