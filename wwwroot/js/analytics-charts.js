@@ -11,26 +11,18 @@ window.analyticsCharts = (() => {
         }
     };
 
-    function isDark() {
-        return document.documentElement.getAttribute('data-theme') !== 'light';
-    }
+    const isDark    = () => document.documentElement.getAttribute('data-theme') !== 'light';
+    const gridColor = () => isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)';
+    const tickColor = () => isDark() ? '#6b7280' : '#94a3b8';
 
-    function gridColor() {
-        return isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)';
-    }
-
-    function tickColor() {
-        return isDark() ? '#6b7280' : '#94a3b8';
-    }
-
-    function destroy(id) {
+    const destroy = (id) => {
         if (charts[id]) {
             charts[id].destroy();
             delete charts[id];
         }
-    }
+    };
 
-    function renderLine(id, labels, data) {
+    const renderLine = (id, labels, data) => {
         destroy(id);
         const canvas = document.getElementById(id);
         if (!canvas) return;
@@ -91,14 +83,14 @@ window.analyticsCharts = (() => {
                 }
             }
         });
-    }
+    };
 
     // accent: hex color, e.g. '#22c9b7'
-    function renderBar(id, labels, data, accent) {
+    const renderBar = (id, labels, data, accent) => {
         destroy(id);
         const canvas = document.getElementById(id);
         if (!canvas) return;
-        const color = accent || '#7c6af7';
+        const color = accent ?? '#7c6af7';
 
         charts[id] = new Chart(canvas, {
             plugins: [_transparentBg],
@@ -143,7 +135,7 @@ window.analyticsCharts = (() => {
                 }
             }
         });
-    }
+    };
 
     return { renderLine, renderBar, destroy };
 })();
