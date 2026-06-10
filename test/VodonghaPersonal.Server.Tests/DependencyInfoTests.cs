@@ -2,7 +2,7 @@ using NUnit.Framework;
 using Shouldly;
 using VodonghaPersonal.Services;
 
-namespace VodonghaPersonal.Tests;
+namespace VodonghaPersonal.Server.Tests;
 
 [TestFixture]
 public class DependencyInfoTests

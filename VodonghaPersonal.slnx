@@ -5,6 +5,8 @@
     <Project Path="src/VodonghaPersonal.Shared/VodonghaPersonal.Shared.csproj" />
   </Folder>
   <Folder Name="/test/">
-    <Project Path="test/VodonghaPersonal.Tests/VodonghaPersonal.Tests.csproj" />
+    <Project Path="test/VodonghaPersonal.Client.Tests/VodonghaPersonal.Client.Tests.csproj" />
+    <Project Path="test/VodonghaPersonal.Server.Tests/VodonghaPersonal.Server.Tests.csproj" />
+    <Project Path="test/VodonghaPersonal.Shared.Tests/VodonghaPersonal.Shared.Tests.csproj" />
   </Folder>
 </Solution>
