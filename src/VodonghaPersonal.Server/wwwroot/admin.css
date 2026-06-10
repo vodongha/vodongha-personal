@@ -2705,8 +2705,7 @@ tr.admin-row--dragover td {
 .cv-preview__avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center center;
+  object-fit: contain;
 }
 .cv-preview__name {
   text-align: center;
