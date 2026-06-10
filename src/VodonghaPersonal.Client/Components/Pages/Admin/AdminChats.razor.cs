@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
-using VodonghaPersonal.Client.Components.Shared;
-using VodonghaPersonal.Shared.Models;
 using VodonghaPersonal.Client.ApiClients;
+using VodonghaPersonal.Client.Components.Shared;
 using VodonghaPersonal.Client.Services;
+using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Client.Components.Pages.Admin;
 
@@ -360,10 +360,10 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
 
         try
         {
-            ChatMessage msg = await ChatClient.SendReplyAsync(_selectedSessionId.Value, content);
+            ChatMessage? msg = await ChatClient.SendReplyAsync(_selectedSessionId.Value, content);
             // Replace optimistic placeholder with real message
             int idx = _messages.FindIndex(m => m.Id == 0 && m.Content == content && !m.IsFromUser);
-            if (idx >= 0)
+            if (idx >= 0 && msg is not null)
             {
                 _messages[idx] = msg;
             }
