@@ -18,19 +18,14 @@ public partial class BlogListPage : ComponentBase, IDisposable
     private const int PageSize = 6;
 
     private List<BlogPost>? _posts;
+    private List<string> _allTags = [];
     private string _searchQuery = string.Empty;
     private string? _selectedTag;
     private int _currentPage = 1;
 
     private int CurrentPage => _currentPage;
 
-    private IEnumerable<string> AllTags => _posts?
-        .SelectMany(p => (p.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries))
-        .Select(t => t.Trim())
-        .Where(t => !string.IsNullOrEmpty(t))
-        .Distinct()
-        .OrderBy(t => t)
-        ?? Enumerable.Empty<string>();
+    private IEnumerable<string> AllTags => _allTags;
 
     private IEnumerable<BlogPost> FilteredPosts
     {
@@ -71,6 +66,13 @@ public partial class BlogListPage : ComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         _posts = await BlogSvc.GetPublishedAsync();
+        _allTags = _posts
+            .SelectMany(p => (p.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries))
+            .Select(t => t.Trim())
+            .Where(t => !string.IsNullOrEmpty(t))
+            .Distinct()
+            .OrderBy(t => t)
+            .ToList();
         Lang.OnChange += StateHasChanged;
     }
 
