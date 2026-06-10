@@ -68,32 +68,32 @@ public partial class AdminAnalytics : ComponentBase, IDisposable
         _loading = false;
     }
 
-    private async Task LoadTotalAsync()          { _total         = await Analytics.GetTotalAsync(_days); }
-    private async Task LoadTotalAllAsync()       { _totalAll      = await Analytics.GetTotalAsync(0); }
-    private async Task LoadTopPagesAsync()       { _topPages      = await Analytics.GetTopPagesAsync(_days); }
-    private async Task LoadTopCountriesAsync()   { _topCountries  = await Analytics.GetTopCountriesAsync(_days); }
-    private async Task LoadTopReferrersAsync()   { _topReferrers  = await Analytics.GetTopReferrersAsync(_days); }
-    private async Task LoadDailyAsync()          { _daily         = await Analytics.GetDailyViewsAsync(_days); }
+    private async Task LoadTotalAsync() { _total = await Analytics.GetTotalAsync(_days); }
+    private async Task LoadTotalAllAsync() { _totalAll = await Analytics.GetTotalAsync(0); }
+    private async Task LoadTopPagesAsync() { _topPages = await Analytics.GetTopPagesAsync(_days); }
+    private async Task LoadTopCountriesAsync() { _topCountries = await Analytics.GetTopCountriesAsync(_days); }
+    private async Task LoadTopReferrersAsync() { _topReferrers = await Analytics.GetTopReferrersAsync(_days); }
+    private async Task LoadDailyAsync() { _daily = await Analytics.GetDailyViewsAsync(_days); }
 
     private async Task RenderChartsAsync()
     {
         try
         {
-            string[] dateLabels  = _daily.Select(d => d.Date.ToString("MM/dd")).ToArray();
-            int[]    dailyCounts = _daily.Select(d => d.Count).ToArray();
+            string[] dateLabels = _daily.Select(d => d.Date.ToString("MM/dd")).ToArray();
+            int[] dailyCounts = _daily.Select(d => d.Count).ToArray();
             await JS.InvokeVoidAsync("analyticsCharts.renderLine", "chart-daily", dateLabels, dailyCounts);
 
             if (_topPages.Count > 0)
             {
                 string[] pageLabels = _topPages.Select(p => p.Path).ToArray();
-                int[]    pageCounts = _topPages.Select(p => p.Count).ToArray();
+                int[] pageCounts = _topPages.Select(p => p.Count).ToArray();
                 await JS.InvokeVoidAsync("analyticsCharts.renderBar", "chart-pages", pageLabels, pageCounts, "#22c9b7");
             }
 
             if (_topCountries.Count > 0)
             {
                 string[] countryLabels = _topCountries.Select(c => c.Country).ToArray();
-                int[]    countryCounts = _topCountries.Select(c => c.Count).ToArray();
+                int[] countryCounts = _topCountries.Select(c => c.Count).ToArray();
                 await JS.InvokeVoidAsync("analyticsCharts.renderBar", "chart-countries", countryLabels, countryCounts, "#f59e0b");
             }
         }

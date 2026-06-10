@@ -29,9 +29,9 @@ public class AiService
         ILogger<AiService> logger)
     {
         _dbFactory = dbFactory;
-        _secrets   = secrets;
-        _http      = http;
-        _logger    = logger;
+        _secrets = secrets;
+        _http = http;
+        _logger = logger;
     }
 
     public record AiMessage(string Role, string Text);
@@ -60,7 +60,7 @@ public class AiService
         }
 
         string preferred = (await _secrets.GetValueAsync("Gemini:Model")) ?? "gemini-2.5-flash-lite";
-        string context   = await GetContextAsync();
+        string context = await GetContextAsync();
 
         // Build the candidate list: preferred first, then fallbacks (deduped)
         List<string> candidates = [preferred, .. FallbackModels.Where(m => m != preferred)];
@@ -68,7 +68,7 @@ public class AiService
         List<object> contents = history
             .Select(m => (object)new
             {
-                role  = m.Role,
+                role = m.Role,
                 parts = new[] { new { text = m.Text } }
             })
             .ToList();
@@ -99,13 +99,13 @@ public class AiService
         {
             system_instruction = new { parts = new[] { new { text = context } } },
             contents,
-            tools            = new object[] { new { google_search = new { } } },
+            tools = new object[] { new { google_search = new { } } },
             generationConfig = new
             {
                 maxOutputTokens = 600,
-                temperature     = 0.75,
-                topK            = 40,
-                topP            = 0.95
+                temperature = 0.75,
+                topK = 40,
+                topP = 0.95
             }
         };
 
@@ -170,8 +170,8 @@ public class AiService
                 return _cachedContext;
             }
 
-            _cachedContext   = await BuildContextAsync();
-            _contextBuiltAt  = DateTime.UtcNow;
+            _cachedContext = await BuildContextAsync();
+            _contextBuiltAt = DateTime.UtcNow;
             return _cachedContext;
         }
         finally
@@ -223,8 +223,8 @@ public class AiService
         Setting(sb, settings, "GitHub");
         Setting(sb, settings, "LinkedIn");
         Setting(sb, settings, "Facebook");
-        if (settings.TryGetValue("Bio",   out string? bioVi))  { sb.AppendLine($"Bio (Vietnamese): {bioVi}"); }
-        if (settings.TryGetValue("BioEn", out string? bioEn))  { sb.AppendLine($"Bio (English): {bioEn}"); }
+        if (settings.TryGetValue("Bio", out string? bioVi)) { sb.AppendLine($"Bio (Vietnamese): {bioVi}"); }
+        if (settings.TryGetValue("BioEn", out string? bioEn)) { sb.AppendLine($"Bio (English): {bioEn}"); }
         sb.AppendLine();
 
         if (skills.Count > 0)
@@ -243,7 +243,7 @@ public class AiService
             foreach (Experience exp in experiences)
             {
                 string start = $"{exp.StartMonth:D2}/{exp.StartYear}";
-                string end   = exp.IsCurrent ? "Present" : (exp.EndMonth.HasValue && exp.EndYear.HasValue
+                string end = exp.IsCurrent ? "Present" : (exp.EndMonth.HasValue && exp.EndYear.HasValue
                     ? $"{exp.EndMonth:D2}/{exp.EndYear}"
                     : exp.EndYear?.ToString() ?? "Present");
                 sb.AppendLine($"{exp.Company} | {exp.Role} | {start} – {end}");

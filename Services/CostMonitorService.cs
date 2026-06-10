@@ -54,20 +54,20 @@ public class CostMonitorService
     private static readonly TimeSpan CacheTtl = TimeSpan.FromMinutes(5);
 
     // Fly.io pricing — shared-cpu-1x
-    private const double FlySharedCpuPerSec   = 0.0000008;    // per vCPU-second
-    private const double FlyRamPerMbPerSec     = 0.0000000128; // per MB-second
-    private const double FlyIpv4PerMonth       = 2.00;
-    private const double FlyFreeAllowance      = 5.00;         // monthly org credit
+    private const double FlySharedCpuPerSec = 0.0000008;    // per vCPU-second
+    private const double FlyRamPerMbPerSec = 0.0000000128; // per MB-second
+    private const double FlyIpv4PerMonth = 2.00;
+    private const double FlyFreeAllowance = 5.00;         // monthly org credit
 
     // Neon pricing — Scale tier
     private const double NeonStoragePerGbMonth = 1.75;
-    private const long   NeonFreeStorageBytes  = 512L * 1024 * 1024; // 512 MB
+    private const long NeonFreeStorageBytes = 512L * 1024 * 1024; // 512 MB
 
     public CostMonitorService(IHttpClientFactory httpFactory, AppSecretsService secrets, ILogger<CostMonitorService> logger)
     {
         _httpFactory = httpFactory;
-        _secrets     = secrets;
-        _logger      = logger;
+        _secrets = secrets;
+        _logger = logger;
     }
 
     public async Task<CostSummary> GetSummaryAsync()
@@ -77,7 +77,7 @@ public class CostMonitorService
             return _cache;
         }
 
-        FlyAppData? fly  = await FetchFlyAsync();
+        FlyAppData? fly = await FetchFlyAsync();
         NeonProjectData? neon = await FetchNeonAsync();
 
         _cache = new CostSummary(fly, neon, DateTime.UtcNow);
@@ -90,8 +90,8 @@ public class CostMonitorService
 
     private async Task<FlyAppData?> FetchFlyAsync()
     {
-        string? token   = await _secrets.GetValueAsync("Fly:ApiToken");
-        string  appName = await _secrets.GetValueAsync("Fly:AppName") ?? "vodongha";
+        string? token = await _secrets.GetValueAsync("Fly:ApiToken");
+        string appName = await _secrets.GetValueAsync("Fly:AppName") ?? "vodongha";
 
         if (string.IsNullOrEmpty(token))
         {
@@ -120,20 +120,31 @@ public class CostMonitorService
 
             foreach (JsonElement el in doc.RootElement.EnumerateArray())
             {
-                string id     = el.TryGetProperty("id",     out JsonElement eid)    ? eid.GetString()    ?? "" : "";
-                string state  = el.TryGetProperty("state",  out JsonElement est)    ? est.GetString()    ?? "" : "";
-                string region = el.TryGetProperty("region", out JsonElement ereg)   ? ereg.GetString()   ?? "" : "";
+                string id = el.TryGetProperty("id", out JsonElement eid) ? eid.GetString() ?? "" : "";
+                string state = el.TryGetProperty("state", out JsonElement est) ? est.GetString() ?? "" : "";
+                string region = el.TryGetProperty("region", out JsonElement ereg) ? ereg.GetString() ?? "" : "";
 
-                int    cpus      = 1;
-                int    memoryMb  = 256;
-                string cpuKind   = "shared";
+                int cpus = 1;
+                int memoryMb = 256;
+                string cpuKind = "shared";
 
                 if (el.TryGetProperty("config", out JsonElement cfg) &&
                     cfg.TryGetProperty("guest", out JsonElement guest))
                 {
-                    if (guest.TryGetProperty("cpus",      out JsonElement ec))  cpus     = ec.GetInt32();
-                    if (guest.TryGetProperty("memory_mb", out JsonElement em))  memoryMb = em.GetInt32();
-                    if (guest.TryGetProperty("cpu_kind",  out JsonElement ek))  cpuKind  = ek.GetString() ?? "shared";
+                    if (guest.TryGetProperty("cpus", out JsonElement ec))
+                    {
+                        cpus = ec.GetInt32();
+                    }
+
+                    if (guest.TryGetProperty("memory_mb", out JsonElement em))
+                    {
+                        memoryMb = em.GetInt32();
+                    }
+
+                    if (guest.TryGetProperty("cpu_kind", out JsonElement ek))
+                    {
+                        cpuKind = ek.GetString() ?? "shared";
+                    }
                 }
 
                 string size = $"{cpuKind}-cpu-{cpus}x";
@@ -143,18 +154,18 @@ public class CostMonitorService
             // Theoretical cost if all machines run 24/7 for 30 days
             double computePerHour = machines.Sum(m =>
                 m.CpuCount * FlySharedCpuPerSec * 3600 +
-                m.MemoryMb * FlyRamPerMbPerSec  * 3600);
+                m.MemoryMb * FlyRamPerMbPerSec * 3600);
 
             double computePerMonth = computePerHour * 24 * 30;
-            double totalWithIpv4   = computePerMonth + FlyIpv4PerMonth;
-            double billable        = Math.Max(0, totalWithIpv4 - FlyFreeAllowance);
+            double totalWithIpv4 = computePerMonth + FlyIpv4PerMonth;
+            double billable = Math.Max(0, totalWithIpv4 - FlyFreeAllowance);
 
             // Estimate MTD based on days elapsed in current month (no billing API needed)
             DateTime now = DateTime.UtcNow;
-            double daysElapsed  = now.Day - 1 + now.Hour / 24.0; // days so far this month
+            double daysElapsed = now.Day - 1 + now.Hour / 24.0; // days so far this month
             double dailyCompute = computePerMonth / 30.0;
-            double dailyIpv4    = FlyIpv4PerMonth / 30.0;
-            double rawMtd       = (dailyCompute + dailyIpv4) * daysElapsed;
+            double dailyIpv4 = FlyIpv4PerMonth / 30.0;
+            double rawMtd = (dailyCompute + dailyIpv4) * daysElapsed;
             double estimatedMtd = Math.Max(0, rawMtd - FlyFreeAllowance);
 
             return new FlyAppData(appName, machines, computePerHour, computePerMonth,
@@ -212,7 +223,7 @@ public class CostMonitorService
 
     private async Task<NeonProjectData?> FetchNeonAsync()
     {
-        string? apiKey    = await _secrets.GetValueAsync("Neon:ApiKey");
+        string? apiKey = await _secrets.GetValueAsync("Neon:ApiKey");
         string? projectId = await _secrets.GetValueAsync("Neon:ProjectId");
 
         if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(projectId))
@@ -239,17 +250,17 @@ public class CostMonitorService
             using JsonDocument doc = JsonDocument.Parse(json);
             JsonElement p = doc.RootElement.GetProperty("project");
 
-            string name      = p.TryGetProperty("name",       out JsonElement en)  ? en.GetString()  ?? "" : "";
-            string plan      = p.TryGetProperty("plan",       out JsonElement epl) ? epl.GetString() ?? "free" : "free";
-            string region    = p.TryGetProperty("region_id",  out JsonElement er)  ? er.GetString()  ?? "" : "";
-            int    pgVersion = p.TryGetProperty("pg_version", out JsonElement epg) ? epg.GetInt32()  : 16;
+            string name = p.TryGetProperty("name", out JsonElement en) ? en.GetString() ?? "" : "";
+            string plan = p.TryGetProperty("plan", out JsonElement epl) ? epl.GetString() ?? "free" : "free";
+            string region = p.TryGetProperty("region_id", out JsonElement er) ? er.GetString() ?? "" : "";
+            int pgVersion = p.TryGetProperty("pg_version", out JsonElement epg) ? epg.GetInt32() : 16;
 
             // Fetch real storage from branches — project.store_bytes is always 0
             // Each branch has logical_size in bytes; sum all branches for total storage
             long storeBytes = await FetchNeonStorageBytesAsync(client, projectId);
 
             double storageMb = storeBytes / 1024.0 / 1024.0;
-            double storageGb = storageMb  / 1024.0;
+            double storageGb = storageMb / 1024.0;
 
             double cost = plan == "free" ? 0 :
                 Math.Max(0, (storeBytes - NeonFreeStorageBytes) / 1024.0 / 1024.0 / 1024.0 * NeonStoragePerGbMonth);

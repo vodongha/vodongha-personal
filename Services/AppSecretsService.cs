@@ -54,10 +54,10 @@ public class AppSecretsService
         IConfiguration config,
         ILogger<AppSecretsService> logger)
     {
-        _dbFactory  = dbFactory;
-        _protector  = dataProtection.CreateProtector(ProtectorPurpose);
-        _config     = config;
-        _logger     = logger;
+        _dbFactory = dbFactory;
+        _protector = dataProtection.CreateProtector(ProtectorPurpose);
+        _config = config;
+        _logger = logger;
     }
 
     // ─── Public API ───────────────────────────────────────────────────────────
@@ -136,18 +136,18 @@ public class AppSecretsService
             {
                 db.AppSecrets.Add(new AppSecret
                 {
-                    Key         = key,
-                    Value       = encrypted,
+                    Key = key,
+                    Value = encrypted,
                     DisplayName = def?.DisplayName ?? key,
                     Description = def?.Description ?? "",
-                    Category    = def?.Category    ?? "Other",
-                    IsSensitive = def?.Sensitive    ?? true,
-                    UpdatedAt   = DateTime.UtcNow,
+                    Category = def?.Category ?? "Other",
+                    IsSensitive = def?.Sensitive ?? true,
+                    UpdatedAt = DateTime.UtcNow,
                 });
             }
             else
             {
-                existing.Value     = encrypted;
+                existing.Value = encrypted;
                 existing.UpdatedAt = DateTime.UtcNow;
             }
 

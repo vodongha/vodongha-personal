@@ -18,7 +18,7 @@ window.chatUtils = {
             // 429 Too Many Requests / other non-ok: stay with '' fallback silently
         } catch { /* network error, CORS block, or timeout — silent fallback */ }
 
-        try { sessionStorage.setItem(CACHE_KEY, country); } catch { }
+        try { sessionStorage.setItem(CACHE_KEY, country); } catch { /* storage blocked */ }
         return country;
     },
 
@@ -194,7 +194,7 @@ window.chatDial = {
     // Clean phone input in JS — no Blazor round-trip while typing
     cleanPhone(input) {
         const pos     = input.selectionStart;
-        const cleaned = input.value.replace(/[^\d\s\-]/g, '');
+        const cleaned = input.value.replace(/[^\d\s-]/g, '');
 
         if (cleaned !== input.value) {
             const diff = input.value.length - cleaned.length;

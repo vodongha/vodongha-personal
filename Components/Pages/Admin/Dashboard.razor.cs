@@ -33,11 +33,11 @@ public partial class Dashboard : ComponentBase, IDisposable
 
     // Chart data
     private List<string> _skillCatLabels = [];
-    private List<int>    _skillCatData   = [];
-    private List<string> _blogLabels     = [];
-    private List<int>    _blogData       = [];
-    private List<string> _trendLabels    = [];
-    private List<int>    _trendData      = [];
+    private List<int> _skillCatData = [];
+    private List<string> _blogLabels = [];
+    private List<int> _blogData = [];
+    private List<string> _trendLabels = [];
+    private List<int> _trendData = [];
 
     // Recent contacts
     private List<RecentContact> _recentContacts = [];
@@ -50,25 +50,25 @@ public partial class Dashboard : ComponentBase, IDisposable
 
     private async Task LoadAsync()
     {
-        DateTime now      = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
         DateTime cutoff30 = now.AddDays(-30);
         DateTime cutoff14 = now.AddDays(-14);
 
         await using AppDbContext db = await DbFactory.CreateDbContextAsync();
 
         // Stat cards
-        _totalVisitors   = await db.VisitorLogs.CountAsync();
-        _pageViews30d    = await db.PageViews.CountAsync(p => p.CreatedAt >= cutoff30);
-        _totalBlogViews  = await db.BlogPosts.SumAsync(b => (int?)b.ViewCount) ?? 0;
-        _unreadMessages  = await db.ContactMessages.CountAsync(m => !m.IsRead);
-        _unreadChats     = await ChatSvc.GetUnreadCountAsync();
+        _totalVisitors = await db.VisitorLogs.CountAsync();
+        _pageViews30d = await db.PageViews.CountAsync(p => p.CreatedAt >= cutoff30);
+        _totalBlogViews = await db.BlogPosts.SumAsync(b => (int?)b.ViewCount) ?? 0;
+        _unreadMessages = await db.ContactMessages.CountAsync(m => !m.IsRead);
+        _unreadChats = await ChatSvc.GetUnreadCountAsync();
 
         // Content counts
-        _skillCount   = await db.Skills.CountAsync();
+        _skillCount = await db.Skills.CountAsync();
         _projectCount = await db.Projects.CountAsync();
-        _blogCount    = await db.BlogPosts.CountAsync();
-        _expCount     = await db.Experiences.CountAsync();
-        _eduCount     = await db.Educations.CountAsync();
+        _blogCount = await db.BlogPosts.CountAsync();
+        _expCount = await db.Experiences.CountAsync();
+        _eduCount = await db.Educations.CountAsync();
 
         // Skills by category (donut)
         List<CategoryCount> skillsByCategory = await db.Skills
@@ -77,7 +77,7 @@ public partial class Dashboard : ComponentBase, IDisposable
             .OrderByDescending(x => x.Count)
             .ToListAsync();
         _skillCatLabels = skillsByCategory.Select(x => x.Label).ToList();
-        _skillCatData   = skillsByCategory.Select(x => x.Count).ToList();
+        _skillCatData = skillsByCategory.Select(x => x.Count).ToList();
 
         // Blog posts by view count (horizontal bar, top 6)
         List<CategoryCount> blogViews = await db.BlogPosts
@@ -90,7 +90,7 @@ public partial class Dashboard : ComponentBase, IDisposable
             })
             .ToListAsync();
         _blogLabels = blogViews.Select(x => x.Label).ToList();
-        _blogData   = blogViews.Select(x => x.Count).ToList();
+        _blogData = blogViews.Select(x => x.Count).ToList();
 
         // 14-day page view trend
         List<DateCount> trend = await db.PageViews
@@ -115,7 +115,7 @@ public partial class Dashboard : ComponentBase, IDisposable
             .Take(5)
             .Select(m => new RecentContact
             {
-                Name   = m.Name,
+                Name = m.Name,
                 Message = m.Message.Length > 60 ? m.Message.Substring(0, 58) + "…" : m.Message,
                 SentAt = m.SentAt,
                 IsRead = m.IsRead
@@ -143,7 +143,7 @@ public partial class Dashboard : ComponentBase, IDisposable
                 _trendLabels, _trendData);
         }
         catch (JSDisconnectedException) { }
-        catch (ObjectDisposedException)  { }
+        catch (ObjectDisposedException) { }
     }
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
@@ -152,12 +152,12 @@ public partial class Dashboard : ComponentBase, IDisposable
 
     // Local DTOs
     private sealed record CategoryCount { public string Label { get; init; } = ""; public int Count { get; init; } }
-    private sealed record DateCount     { public DateTime Date { get; init; }  public int Count { get; init; } }
-    public  sealed record RecentContact
+    private sealed record DateCount { public DateTime Date { get; init; } public int Count { get; init; } }
+    public sealed record RecentContact
     {
-        public string   Name      { get; init; } = "";
-        public string   Message   { get; init; } = "";
+        public string Name { get; init; } = "";
+        public string Message { get; init; } = "";
         public DateTime SentAt { get; init; }
-        public bool     IsRead    { get; init; }
+        public bool IsRead { get; init; }
     }
 }

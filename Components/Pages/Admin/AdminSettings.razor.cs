@@ -54,9 +54,18 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
     private Dictionary<string, string> Val = new()
     {
-        ["Name"] = "", ["Title"] = "", ["Tagline"] = "", ["Bio"] = "", ["BioEn"] = "",
-        ["Email"] = "", ["Phone"] = "", ["Location"] = "",
-        ["GitHub"] = "", ["LinkedIn"] = "", ["Facebook"] = "", ["AvatarUrl"] = ""
+        ["Name"] = "",
+        ["Title"] = "",
+        ["Tagline"] = "",
+        ["Bio"] = "",
+        ["BioEn"] = "",
+        ["Email"] = "",
+        ["Phone"] = "",
+        ["Location"] = "",
+        ["GitHub"] = "",
+        ["LinkedIn"] = "",
+        ["Facebook"] = "",
+        ["AvatarUrl"] = ""
     };
 
     protected override async Task OnInitializedAsync()
