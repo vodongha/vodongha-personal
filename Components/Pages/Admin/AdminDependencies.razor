@@ -35,6 +35,7 @@
         }
         else
         {
+            <!-- Summary chips -->
             <div class="dep-summary">
                 @if (_outdatedCount > 0)
                 {
@@ -57,54 +58,115 @@
                 <span class="dep-summary__updated">@Loc.T("Updated"): @_checkedAt?.ToString("HH:mm:ss") UTC</span>
             </div>
 
-            @foreach (var group in _groups)
+            <!-- Toolbar: search + filter -->
+            <div class="dep-toolbar">
+                <div class="dep-search">
+                    <i class="bi bi-search dep-search__icon"></i>
+                    <input @bind="_search" @bind:event="oninput"
+                           placeholder="@Loc.T("Search...")"
+                           class="dep-search__input" />
+                    @if (!string.IsNullOrEmpty(_search))
+                    {
+                        <button type="button" class="dep-search__clear" @onclick='() => _search = ""'>
+                            <i class="bi bi-x"></i>
+                        </button>
+                    }
+                </div>
+                <div class="dep-filters">
+                    <button type="button"
+                            class="dep-filter @(_typeFilter is null && _statusFilter is null && string.IsNullOrEmpty(_search) ? "dep-filter--active" : "")"
+                            @onclick="ClearFilters">
+                        @Loc.T("All")
+                    </button>
+                    @if (_outdatedCount > 0)
+                    {
+                        <button type="button"
+                                class="dep-filter dep-filter--outdated @(_statusFilter == DependencyStatus.Outdated ? "dep-filter--on" : "")"
+                                @onclick='() => SetStatusFilter(DependencyStatus.Outdated)'>
+                            <i class="bi bi-exclamation-triangle-fill"></i> @Loc.T("Outdated")
+                        </button>
+                    }
+                    <button type="button"
+                            class="dep-filter dep-filter--uptodate @(_statusFilter == DependencyStatus.UpToDate ? "dep-filter--on" : "")"
+                            @onclick='() => SetStatusFilter(DependencyStatus.UpToDate)'>
+                        <i class="bi bi-check-circle-fill"></i> @Loc.T("UpToDate")
+                    </button>
+                    <button type="button"
+                            class="dep-filter @(_typeFilter == DependencyType.NuGet ? "dep-filter--active" : "")"
+                            @onclick='() => SetTypeFilter(DependencyType.NuGet)'>
+                        NuGet
+                    </button>
+                    <button type="button"
+                            class="dep-filter @(_typeFilter == DependencyType.Npm ? "dep-filter--active" : "")"
+                            @onclick='() => SetTypeFilter(DependencyType.Npm)'>
+                        npm
+                    </button>
+                    <button type="button"
+                            class="dep-filter @(_typeFilter == DependencyType.Cdn ? "dep-filter--active" : "")"
+                            @onclick='() => SetTypeFilter(DependencyType.Cdn)'>
+                        CDN
+                    </button>
+                </div>
+            </div>
+
+            @if (VisibleCount == 0)
             {
-                <section class="dep-section">
-                    <h2 class="dep-section__title">
-                        <i class="bi @GroupIcon(group.Key)"></i>
-                        @Loc.T(group.Key.ToString())
-                        <span class="dep-section__count">@group.Value.Count</span>
-                    </h2>
+                <div class="dep-empty">
+                    <i class="bi bi-search"></i>
+                    <span>Không tìm thấy thư viện phù hợp</span>
+                </div>
+            }
+            else
+            {
+                @foreach (var group in VisibleGroups)
+                {
+                    <section class="dep-section">
+                        <h2 class="dep-section__title">
+                            <i class="bi @GroupIcon(group.Key)"></i>
+                            @Loc.T(group.Key.ToString())
+                            <span class="dep-section__count">@group.Value.Count</span>
+                        </h2>
 
-                    <div class="dep-grid">
-                        @foreach (var dep in group.Value)
-                        {
-                            <div class="dep-card dep-card--@dep.Status.ToString().ToLowerInvariant()">
-                                <div class="dep-card__top">
-                                    <span class="dep-card__name">@dep.Name</span>
-                                    <a href="@dep.RegistryUrl" target="_blank" rel="noopener"
-                                       class="dep-card__link" title="View on registry">
-                                        <i class="bi bi-box-arrow-up-right"></i>
-                                    </a>
-                                </div>
-
-                                @if (dep.Notes is not null)
-                                {
-                                    <span class="dep-card__note">@dep.Notes</span>
-                                }
-
-                                <div class="dep-card__versions">
-                                    <div class="dep-card__ver">
-                                        <span class="dep-card__ver-label">@Loc.T("Current")</span>
-                                        <code class="dep-card__ver-val">@dep.CurrentVersion</code>
+                        <div class="dep-grid">
+                            @foreach (var dep in group.Value)
+                            {
+                                <div class="dep-card dep-card--@dep.Status.ToString().ToLowerInvariant()">
+                                    <div class="dep-card__top">
+                                        <span class="dep-card__name">@dep.Name</span>
+                                        <a href="@dep.RegistryUrl" target="_blank" rel="noopener"
+                                           class="dep-card__link" title="View on registry">
+                                            <i class="bi bi-box-arrow-up-right"></i>
+                                        </a>
                                     </div>
-                                    <i class="bi bi-arrow-right dep-card__arrow"></i>
-                                    <div class="dep-card__ver">
-                                        <span class="dep-card__ver-label">@Loc.T("Latest")</span>
-                                        <code class="dep-card__ver-val dep-card__ver-val--latest">
-                                            @(dep.LatestVersion ?? "—")
-                                        </code>
-                                    </div>
-                                </div>
 
-                                <span class="dep-badge dep-badge--@dep.Status.ToString().ToLowerInvariant()">
-                                    <i class="bi @StatusIcon(dep.Status)"></i>
-                                    @Loc.T(dep.Status.ToString())
-                                </span>
-                            </div>
-                        }
-                    </div>
-                </section>
+                                    @if (dep.Notes is not null)
+                                    {
+                                        <span class="dep-card__note">@dep.Notes</span>
+                                    }
+
+                                    <div class="dep-card__versions">
+                                        <div class="dep-card__ver">
+                                            <span class="dep-card__ver-label">@Loc.T("Current")</span>
+                                            <code class="dep-card__ver-val">@dep.CurrentVersion</code>
+                                        </div>
+                                        <i class="bi bi-arrow-right dep-card__arrow"></i>
+                                        <div class="dep-card__ver">
+                                            <span class="dep-card__ver-label">@Loc.T("Latest")</span>
+                                            <code class="dep-card__ver-val dep-card__ver-val--latest">
+                                                @(dep.LatestVersion ?? "—")
+                                            </code>
+                                        </div>
+                                    </div>
+
+                                    <span class="dep-badge dep-badge--@dep.Status.ToString().ToLowerInvariant()">
+                                        <i class="bi @StatusIcon(dep.Status)"></i>
+                                        @Loc.T(dep.Status.ToString())
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </section>
+                }
             }
         }
     </main>
