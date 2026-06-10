@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace VodonghaPersonal.Services;
@@ -23,23 +22,46 @@ public record DependencyInfo(
             ? DependencyStatus.UpToDate
             : DependencyStatus.Outdated;
 
-    // Strip leading ^ ~ v for comparison
     private static string NormalizeVersion(string v) =>
-        v.TrimStart('^', '~', 'v').Split('-')[0]; // ignore pre-release suffix
+        v.TrimStart('^', '~', 'v').Split('-')[0];
 }
 
-public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpFactory, IWebHostEnvironment env)
+public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpFactory)
 {
     private static readonly TimeSpan CacheTtl = TimeSpan.FromHours(1);
     private const string CacheKey = "dep_check_result";
 
-    // CDN libraries hardcoded from App.razor / AdminLayout.razor
-    private static readonly (string Name, string CurrentVersion, string NpmPackage, string? Notes)[] CdnLibraries =
+    // Hardcoded — .csproj is not available in published Docker output
+    private static readonly (string Name, string Version)[] NuGetPackages =
     [
-        ("Chart.js",         "4.5.1",  "chart.js",           null),
-        ("Bootstrap Icons",  "1.13.1", "bootstrap-icons",    null),
-        ("SortableJS",             "1.15.3", "sortablejs",                   null),
-        ("Devicon",                "latest", "devicon",                      "No version pinned in CDN URL"),
+        ("AspNetCore.SassCompiler",                                              "1.100.0"),
+        ("libphonenumber-csharp",                                                "9.0.32"),
+        ("Microsoft.AspNetCore.Components.QuickGrid",                            "10.0.8"),
+        ("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore",              "10.0.8"),
+        ("Microsoft.AspNetCore.SignalR.Client",                                  "10.0.8"),
+        ("Microsoft.EntityFrameworkCore.Design",                                 "10.0.8"),
+        ("Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore",   "10.0.8"),
+        ("Npgsql.EntityFrameworkCore.PostgreSQL",                                "10.0.2"),
+        ("QuestPDF",                                                             "2026.5.0"),
+        ("Resend",                                                               "0.5.1"),
+        ("SkiaSharp",                                                            "3.116.1"),
+        ("WebPush",                                                              "1.0.13"),
+    ];
+
+    private static readonly (string Name, string Version)[] NpmPackages =
+    [
+        ("@eslint/js",                    "9.0.0"),
+        ("eslint",                        "9.0.0"),
+        ("stylelint",                     "16.0.0"),
+        ("stylelint-config-standard-scss","14.0.0"),
+    ];
+
+    private static readonly (string Name, string Version, string NpmPackage, string? Notes)[] CdnLibraries =
+    [
+        ("Chart.js",        "4.5.1",  "chart.js",        null),
+        ("Bootstrap Icons", "1.13.1", "bootstrap-icons", null),
+        ("SortableJS",      "1.15.3", "sortablejs",      null),
+        ("Devicon",         "latest", "devicon",         "Không ghim version trong CDN URL"),
     ];
 
     public async Task<IReadOnlyList<DependencyInfo>> GetAllAsync()
@@ -52,79 +74,33 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
         using var http = httpFactory.CreateClient("deps");
         var tasks = new List<Task<DependencyInfo?>>();
 
-        // NuGet
-        foreach (var (name, version) in ReadNuGetPackages())
+        foreach (var (name, version) in NuGetPackages)
         {
             tasks.Add(CheckNuGetAsync(http, name, version));
         }
 
-        // npm
-        foreach (var (name, version) in ReadNpmPackages())
+        foreach (var (name, version) in NpmPackages)
         {
             tasks.Add(CheckNpmAsync(http, name, version));
         }
 
-        // CDN
         foreach (var (name, current, npmPackage, notes) in CdnLibraries)
         {
             tasks.Add(CheckCdnAsync(http, name, current, npmPackage, notes));
         }
 
         var results = await Task.WhenAll(tasks);
-        var list = results.OfType<DependencyInfo>().OrderBy(d => d.Type).ThenBy(d => d.Name).ToList();
+        var list = results.OfType<DependencyInfo>()
+            .OrderBy(d => d.Type)
+            .ThenByDescending(d => d.Status)
+            .ThenBy(d => d.Name)
+            .ToList();
 
         cache.Set(CacheKey, (IReadOnlyList<DependencyInfo>)list, CacheTtl);
         return list;
     }
 
     public void InvalidateCache() => cache.Remove(CacheKey);
-
-    // ── Parsers ──────────────────────────────────────────────────────────────
-
-    private IEnumerable<(string Name, string Version)> ReadNuGetPackages()
-    {
-        var csproj = Directory.GetFiles(env.ContentRootPath, "*.csproj").FirstOrDefault();
-        if (csproj is null)
-        {
-            yield break;
-        }
-
-        var doc = XDocument.Load(csproj);
-        foreach (var el in doc.Descendants("PackageReference"))
-        {
-            var name = el.Attribute("Include")?.Value;
-            var version = el.Attribute("Version")?.Value;
-            if (name is not null && version is not null)
-            {
-                yield return (name, version);
-            }
-        }
-    }
-
-    private IEnumerable<(string Name, string Version)> ReadNpmPackages()
-    {
-        var packageJson = Path.Combine(env.ContentRootPath, "package.json");
-        if (!File.Exists(packageJson))
-        {
-            yield break;
-        }
-
-        using var doc = JsonDocument.Parse(File.ReadAllText(packageJson));
-        var root = doc.RootElement;
-
-        foreach (var section in new[] { "dependencies", "devDependencies" })
-        {
-            if (!root.TryGetProperty(section, out var deps))
-            {
-                continue;
-            }
-
-            foreach (var prop in deps.EnumerateObject())
-            {
-                yield return (prop.Name, prop.Value.GetString() ?? "");
-            }
-        }
-    }
 
     // ── API calls ────────────────────────────────────────────────────────────
 
@@ -135,13 +111,11 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
             var url = $"https://api.nuget.org/v3-flatcontainer/{name.ToLowerInvariant()}/index.json";
             var response = await http.GetStringAsync(url);
             using var doc = JsonDocument.Parse(response);
-            var versions = doc.RootElement.GetProperty("versions")
+            var latest = doc.RootElement.GetProperty("versions")
                 .EnumerateArray()
                 .Select(v => v.GetString() ?? "")
-                // exclude pre-release (anything with a hyphen after digits)
                 .Where(v => !Regex.IsMatch(v, @"-"))
-                .ToList();
-            var latest = versions.LastOrDefault();
+                .LastOrDefault();
             return new DependencyInfo(name, version, latest, DependencyType.NuGet,
                 $"https://www.nuget.org/packages/{name}");
         }
@@ -156,18 +130,17 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
     {
         try
         {
-            // URL-encode scoped packages (@eslint/js → %40eslint%2Fjs)
             var encoded = Uri.EscapeDataString(name);
             var url = $"https://registry.npmjs.org/{encoded}/latest";
             var response = await http.GetStringAsync(url);
             using var doc = JsonDocument.Parse(response);
             var latest = doc.RootElement.GetProperty("version").GetString();
-            return new DependencyInfo(name, version.TrimStart('^', '~'), latest, DependencyType.Npm,
+            return new DependencyInfo(name, version, latest, DependencyType.Npm,
                 $"https://www.npmjs.com/package/{name}");
         }
         catch
         {
-            return new DependencyInfo(name, version.TrimStart('^', '~'), null, DependencyType.Npm,
+            return new DependencyInfo(name, version, null, DependencyType.Npm,
                 $"https://www.npmjs.com/package/{name}");
         }
     }
