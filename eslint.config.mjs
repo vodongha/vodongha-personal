@@ -3,7 +3,7 @@ import js from "@eslint/js";
 export default [
     js.configs.recommended,
     {
-        files: ["wwwroot/js/**/*.js"],
+        files: ["src/VodonghaPersonal/wwwroot/js/**/*.js"],
         languageOptions: {
             ecmaVersion: 2026,
             sourceType: "script",

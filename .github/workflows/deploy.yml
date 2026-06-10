@@ -16,8 +16,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
-      - run: dotnet restore
-      - run: dotnet build --no-restore --configuration Release
+      - run: dotnet restore VodonghaPersonal.slnx
+      - run: dotnet build VodonghaPersonal.slnx --no-restore --configuration Release
 
   dotnet-format:
     name: dotnet format
@@ -27,8 +27,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
-      - run: dotnet restore
-      - run: dotnet format --verify-no-changes --severity warn
+      - run: dotnet restore VodonghaPersonal.slnx
+      - run: dotnet format VodonghaPersonal.slnx --verify-no-changes --severity warn
 
   test:
     name: Unit Tests
@@ -38,8 +38,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
-      - run: dotnet restore
-      - run: dotnet test VodonghaPersonal.Tests --no-restore --verbosity minimal
+      - run: dotnet restore VodonghaPersonal.slnx
+      - run: dotnet test test/VodonghaPersonal.Tests/VodonghaPersonal.Tests.csproj --no-restore --verbosity minimal
 
   js-scss-lint:
     name: ESLint + Stylelint

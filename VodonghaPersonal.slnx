@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj" />
+    <Project Path="src/VodonghaPersonal.Shared/VodonghaPersonal.Shared.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/VodonghaPersonal.Tests/VodonghaPersonal.Tests.csproj" />
+  </Folder>
+</Solution>
