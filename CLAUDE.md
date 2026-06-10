@@ -171,8 +171,12 @@ vodongha-personal/
 │       ├── Models/                           # All entity models + CvData record
 │       └── DTOs/
 │           └── AdminDtos.cs                  # All API request/response records
+├── Directory.Build.props                 # Shared: TargetFramework net10.0, Nullable enable, ImplicitUsings enable
+├── NuGet.Config                          # Package source: api.nuget.org
 └── test/
-    └── VodonghaPersonal.Tests/
+    ├── VodonghaPersonal.Client.Tests/    # NUnit + Shouldly — Client (WASM)
+    ├── VodonghaPersonal.Server.Tests/    # NUnit + Shouldly — Server (12 tests: DependencyInfo)
+    └── VodonghaPersonal.Shared.Tests/    # NUnit + Shouldly — Shared
 ```
 
 ## SCSS pipeline
@@ -595,7 +599,7 @@ else { <real content> }
 
 | Version | Changes |
 |---|---|
-| v3.0.0 | InteractiveAuto admin panel: new VodonghaPersonal.Client WASM project; 15 REST API endpoint groups under /api/admin/*; all 16 admin pages migrated to @rendermode InteractiveAuto; 14 HttpClient API clients; CvData moved to Shared; solution restructured into src/test layout |
+| v3.0.0 | InteractiveAuto admin panel: new VodonghaPersonal.Client WASM project; 15 REST API endpoint groups under /api/admin/*; all 16 admin pages migrated to @rendermode InteractiveAuto; 14 HttpClient API clients; CvData moved to Shared; solution restructured into src/test layout; test split into Server/Client/Shared test projects; Directory.Build.props and NuGet.Config moved to root |
 | v2.0.6 | i18n all 8 admin pages; Lint CI (dotnet format + ESLint + Stylelint); CI & Deploy flow; ES2026 JS (Uint8Array.fromBase64, ecmaVersion 2026); Dependencies tracker page (/admin/dependencies — NuGet/npm/CDN version checks, filter chips, search); unit tests (VodonghaPersonal.Tests, 12 NUnit + Shouldly tests); dep updates (Microsoft 10.0.8→10.0.9, SkiaSharp 3.116.1→3.119.4, eslint 9→10, stylelint 16→17, SortableJS 1.15.3→1.15.7, Devicon latest→2.17.0); menu renamed "Thông tin"→"Hồ sơ" (bi-person-vcard, first in Portfolio group); SCSS Stylelint fixes; analytics nav label fix; cost banner light-mode fix; Chart.js version mismatch fix (4.4.4→4.5.1) |
 | v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix; collapsible sidebar (icon-only collapsed mode, localStorage); icon-only top controls with tooltips; mobile bottom bar 4-item; Dashboard → /admin/analytics |
 | v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping; accessibility; code quality; DI fix; git workflow updated |
