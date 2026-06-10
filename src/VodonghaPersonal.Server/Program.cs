@@ -12,6 +12,7 @@ using VodonghaPersonal.Data;
 using VodonghaPersonal.Hubs;
 using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Models;
+using VodonghaPersonal.Shared.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -69,7 +70,6 @@ builder.Services.AddSingleton<PushNotificationService>();
 builder.Services.AddHttpClient<TelegramService>()
     .AddTypedClient((http, sp) => new TelegramService(http, sp.GetRequiredService<AppSecretsService>()));
 builder.Services.AddScoped<ChatService>();
-builder.Services.AddScoped<AdminLocalizationService>();
 builder.Services.AddScoped<TimezoneService>();
 builder.Services.AddSingleton<AppSecretsService>();
 builder.Services.AddSingleton<HealthMonitorService>();

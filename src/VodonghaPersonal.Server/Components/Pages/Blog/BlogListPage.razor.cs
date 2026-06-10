@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using VodonghaPersonal.Services;
+using VodonghaPersonal.Shared.Services;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Components.Pages.Blog;

@@ -47,18 +47,17 @@ public class AnalyticsService(IDbContextFactory<AppDbContext> dbFactory, IHttpCl
         DateTime since = DateTime.UtcNow.Date.AddDays(-days + 1);
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
 
-        var raw = await db.PageViews
+        Dictionary<DateTime, int> raw = await db.PageViews
             .Where(p => p.CreatedAt >= since)
             .GroupBy(p => p.CreatedAt.Date)
             .Select(g => new { Date = g.Key, Count = g.Count() })
-            .ToListAsync();
+            .ToDictionaryAsync(g => g.Date, g => g.Count);
 
         List<(DateTime, int)> result = [];
         for (int i = 0; i < days; i++)
         {
             DateTime date = since.AddDays(i);
-            int count = raw.FirstOrDefault(r => r.Date == date)?.Count ?? 0;
-            result.Add((date, count));
+            result.Add((date, raw.GetValueOrDefault(date)));
         }
         return result;
     }

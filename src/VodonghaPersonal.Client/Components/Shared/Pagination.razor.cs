@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using VodonghaPersonal.Client.Services;
+using VodonghaPersonal.Shared.Services;
 
 namespace VodonghaPersonal.Client.Components.Shared;
 

@@ -1,4 +1,4 @@
-namespace VodonghaPersonal.Client.Services;
+namespace VodonghaPersonal.Shared.Services;
 
 public class LanguageService
 {
