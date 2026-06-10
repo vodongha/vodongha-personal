@@ -1265,7 +1265,7 @@ tr.admin-row--dragover td {
             white-space: normal;
             overflow: visible;
             text-overflow: unset;
-            word-break: break-word;
+            overflow-wrap: break-word;
         }
     }
 
@@ -1923,7 +1923,7 @@ tr.admin-row--dragover td {
 
 .cost-machine-label {
     white-space: normal !important;
-    word-break: break-word;
+    overflow-wrap: break-word;
     line-height: 1.4;
 }
 
