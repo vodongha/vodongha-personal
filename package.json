@@ -2,8 +2,8 @@
   "name": "vodongha-personal-lint",
   "private": true,
   "scripts": {
-    "lint:js":   "eslint \"src/VodonghaPersonal/wwwroot/js/**/*.js\"",
-    "lint:scss":  "stylelint \"src/VodonghaPersonal/Styles/**/*.scss\"",
+    "lint:js":   "eslint \"src/VodonghaPersonal.Server/wwwroot/js/**/*.js\"",
+    "lint:scss":  "stylelint \"src/VodonghaPersonal.Server/Styles/**/*.scss\"",
     "lint":       "npm run lint:js && npm run lint:scss"
   },
   "devDependencies": {
