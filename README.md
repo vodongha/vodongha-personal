@@ -74,7 +74,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | PDF generation | [QuestPDF](https://www.questpdf.com) (Community) |
 | Image processing | SkiaSharp — avatar square-crop before PDF rendering |
 | Phone validation | Google libphonenumber (`libphonenumber-csharp`) |
-| Geo IP | ipinfo.io (browser-side, free tier) |
+| Geo IP | [ipinfo.io](https://ipinfo.io) (browser-side, free tier) |
 | Deploy | [Fly.io](https://fly.io), region Singapore (`suspend` mode) |
 | CI/CD | GitHub Actions — CI (build) on `develop`/PRs, Lint (dotnet format + ESLint + Stylelint) on PRs to `master`, deploy on merge to `master`, sync `develop` ← `master` after each merge |
 
