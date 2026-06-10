@@ -3,7 +3,6 @@
 @rendermode InteractiveServer
 @attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
-@inject AdminLocalizationService Loc
 
 <div class="admin-shell">
     <AdminNav />
@@ -130,7 +129,7 @@
                                 <li class="dash-recent__item @(!c.IsRead ? "dash-recent__item--unread" : "")">
                                     <span class="dash-recent__name">@c.Name</span>
                                     <span class="dash-recent__msg">@c.Message</span>
-                                    <span class="dash-recent__time">@c.CreatedAt.ToString("dd/MM HH:mm")</span>
+                                    <span class="dash-recent__time">@c.SentAt.ToString("dd/MM HH:mm")</span>
                                 </li>
                             }
                         </ul>
