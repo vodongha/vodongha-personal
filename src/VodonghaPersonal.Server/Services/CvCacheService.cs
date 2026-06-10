@@ -92,16 +92,16 @@ public class CvCacheService(
         SiteSettingService settingsSvc = svc.GetRequiredService<SiteSettingService>();
         CvPdfService cvPdf = svc.GetRequiredService<CvPdfService>();
 
+        // EF Core does not allow concurrent operations on the same DbContext instance.
+        // Run each query sequentially; settings uses its own internal context so it's fine in parallel.
         Task<Dictionary<string, string>> settingsTask = settingsSvc.GetAllAsync();
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-        Task<List<Skill>> skillsTask = db.Skills.OrderBy(s => s.Order).ToListAsync();
-        Task<List<Experience>> expTask = db.Experiences.OrderBy(e => e.Order).ToListAsync();
-        Task<List<Education>> eduTask = db.Educations.OrderBy(e => e.Order).ToListAsync();
-        Task<List<Project>> projTask = db.Projects.OrderBy(p => p.Order).ToListAsync();
+        List<Skill> skills = await db.Skills.OrderBy(s => s.Order).ToListAsync();
+        List<Experience> experiences = await db.Experiences.OrderBy(e => e.Order).ToListAsync();
+        List<Education> educations = await db.Educations.OrderBy(e => e.Order).ToListAsync();
+        List<Project> projects = await db.Projects.OrderBy(p => p.Order).ToListAsync();
 
-        await Task.WhenAll(settingsTask, skillsTask, expTask, eduTask, projTask);
-
-        Dictionary<string, string> settings = settingsTask.Result;
+        Dictionary<string, string> settings = await settingsTask;
         CvData data = new(
             Name: settings.GetValueOrDefault("Name", ""),
             Title: settings.GetValueOrDefault("Title", ""),
@@ -112,10 +112,10 @@ public class CvCacheService(
             LinkedIn: settings.GetValueOrDefault("LinkedIn", ""),
             Bio: settings.GetValueOrDefault("BioEn", settings.GetValueOrDefault("Bio", "")),
             AvatarUrl: settings.GetValueOrDefault("AvatarUrl", ""),
-            Skills: skillsTask.Result,
-            Experiences: expTask.Result,
-            Educations: eduTask.Result,
-            Projects: projTask.Result
+            Skills: skills,
+            Experiences: experiences,
+            Educations: educations,
+            Projects: projects
         );
 
         byte[]? avatarBytes = null;
