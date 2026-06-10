@@ -84,12 +84,15 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
     private IEnumerable<(string Name, string Version)> ReadNuGetPackages()
     {
         var csproj = Directory.GetFiles(env.ContentRootPath, "*.csproj").FirstOrDefault();
-        if (csproj is null) yield break;
+        if (csproj is null)
+        {
+            yield break;
+        }
 
         var doc = XDocument.Load(csproj);
         foreach (var el in doc.Descendants("PackageReference"))
         {
-            var name    = el.Attribute("Include")?.Value;
+            var name = el.Attribute("Include")?.Value;
             var version = el.Attribute("Version")?.Value;
             if (name is not null && version is not null)
             {
@@ -101,14 +104,21 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
     private IEnumerable<(string Name, string Version)> ReadNpmPackages()
     {
         var packageJson = Path.Combine(env.ContentRootPath, "package.json");
-        if (!File.Exists(packageJson)) yield break;
+        if (!File.Exists(packageJson))
+        {
+            yield break;
+        }
 
         using var doc = JsonDocument.Parse(File.ReadAllText(packageJson));
         var root = doc.RootElement;
 
         foreach (var section in new[] { "dependencies", "devDependencies" })
         {
-            if (!root.TryGetProperty(section, out var deps)) continue;
+            if (!root.TryGetProperty(section, out var deps))
+            {
+                continue;
+            }
+
             foreach (var prop in deps.EnumerateObject())
             {
                 yield return (prop.Name, prop.Value.GetString() ?? "");
@@ -122,9 +132,9 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
     {
         try
         {
-            var url      = $"https://api.nuget.org/v3-flatcontainer/{name.ToLowerInvariant()}/index.json";
+            var url = $"https://api.nuget.org/v3-flatcontainer/{name.ToLowerInvariant()}/index.json";
             var response = await http.GetStringAsync(url);
-            using var doc    = JsonDocument.Parse(response);
+            using var doc = JsonDocument.Parse(response);
             var versions = doc.RootElement.GetProperty("versions")
                 .EnumerateArray()
                 .Select(v => v.GetString() ?? "")
@@ -147,11 +157,11 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
         try
         {
             // URL-encode scoped packages (@eslint/js → %40eslint%2Fjs)
-            var encoded  = Uri.EscapeDataString(name);
-            var url      = $"https://registry.npmjs.org/{encoded}/latest";
+            var encoded = Uri.EscapeDataString(name);
+            var url = $"https://registry.npmjs.org/{encoded}/latest";
             var response = await http.GetStringAsync(url);
-            using var doc    = JsonDocument.Parse(response);
-            var latest   = doc.RootElement.GetProperty("version").GetString();
+            using var doc = JsonDocument.Parse(response);
+            var latest = doc.RootElement.GetProperty("version").GetString();
             return new DependencyInfo(name, version.TrimStart('^', '~'), latest, DependencyType.Npm,
                 $"https://www.npmjs.com/package/{name}");
         }
@@ -173,11 +183,11 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
 
         try
         {
-            var encoded  = Uri.EscapeDataString(npmPackage);
-            var url      = $"https://data.jsdelivr.com/v1/package/npm/{encoded}";
+            var encoded = Uri.EscapeDataString(npmPackage);
+            var url = $"https://data.jsdelivr.com/v1/package/npm/{encoded}";
             var response = await http.GetStringAsync(url);
-            using var doc    = JsonDocument.Parse(response);
-            var latest   = doc.RootElement.GetProperty("tags").GetProperty("latest").GetString();
+            using var doc = JsonDocument.Parse(response);
+            var latest = doc.RootElement.GetProperty("tags").GetProperty("latest").GetString();
             return new DependencyInfo(displayName, currentVersion, latest, DependencyType.Cdn,
                 $"https://www.npmjs.com/package/{npmPackage}", notes);
         }
