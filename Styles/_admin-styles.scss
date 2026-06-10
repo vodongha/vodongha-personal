@@ -2844,7 +2844,9 @@ tr.admin-row--dragover td {
         height: 200px;
         &--donut { height: 240px; }
         &--line  { height: 160px; }
-        canvas { width: 100% !important; height: 100% !important; }
+        // Do NOT constrain canvas via CSS — Chart.js manages canvas dimensions
+        // itself using devicePixelRatio for crisp rendering on retina screens.
+        // Overriding width/height here breaks pixel density and causes blurry charts.
     }
 
     &__link {
