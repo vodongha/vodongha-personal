@@ -2,11 +2,7 @@ name: Lint & Format
 
 on:
   pull_request:
-    branches:
-      - master
-  push:
-    branches:
-      - master
+    branches: [master]
 
 jobs:
   dotnet-format:
@@ -29,7 +25,5 @@ jobs:
         with:
           node-version: '22'
       - run: npm install
-      - name: ESLint (JS)
-        run: npm run lint:js
-      - name: Stylelint (SCSS)
-        run: npm run lint:scss
+      - run: npm run lint:js
+      - run: npm run lint:scss
