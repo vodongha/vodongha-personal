@@ -36,8 +36,9 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
         new("dash-cv",        "/admin/cv",        "bi bi-file-earmark-person", Loc.T("CV")),
         new("dash-health",    "/admin/health",    "bi bi-activity",     Loc.T("Health")),
         new("dash-costs",     "/admin/costs",     "bi bi-currency-dollar", Loc.T("Costs")),
-        new("dash-api-keys",  "/admin/api-keys",  "bi bi-key",          Loc.T("API Keys")),
-        new("dash-settings",  "/admin/settings",  "bi bi-gear",         Loc.T("Settings")),
+        new("dash-api-keys",     "/admin/api-keys",     "bi bi-key",      Loc.T("API Keys")),
+        new("dash-dependencies", "/admin/dependencies", "bi bi-box-seam", Loc.T("Dependencies")),
+        new("dash-settings",     "/admin/settings",     "bi bi-gear",     Loc.T("Settings")),
     ];
 
     private List<MenuItem> FilteredItems =>
