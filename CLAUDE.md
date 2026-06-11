@@ -371,6 +371,23 @@ builder.Services.AddSingleton<HealthMonitorService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 ```
 
+**Overlapping prevention:** `CollectMetrics` is `async void` (required by `TimerCallback`). An `Interlocked` flag (`_running`) prevents the timer from firing a second collection while one is still running — important because the DB ping has a 5-second timeout and the timer fires every 30 seconds.
+
+## IMemoryCache — public services
+
+All 6 public-facing services cache their data in `IMemoryCache` (1-hour TTL) to avoid hitting the DB on every page render. `InvalidateCache()` is called by the corresponding admin API endpoint after every mutation.
+
+| Service | Cache key(s) | Invalidated by |
+|---|---|---|
+| `SiteSettingService` | `sitesettings_all` | `AdminSettingsApi` POST/PUT |
+| `SkillService` | `skills_all` | `AdminSkillsApi` POST/PUT/DELETE |
+| `ProjectService` | `projects_all`, `projects_featured` | `AdminProjectsApi` POST/PUT/DELETE/PUT-order |
+| `ExperienceService` | `experiences_all` | `AdminExperienceApi` POST/PUT/DELETE |
+| `EducationService` | `educations_all` | `AdminEducationApi` POST/PUT/DELETE |
+| `BlogService` | `blog_published`, `blog_slugs` | `AdminBlogApi` POST/PUT/DELETE |
+
+**DependencyCheckService** uses `IMemoryCache` (1-hour TTL) plus a `SemaphoreSlim(1,1)` to prevent thundering herd — when multiple requests miss the cache simultaneously, only one fires the NuGet/npm HTTP calls while others wait and get the populated cache result.
+
 ## Analytics
 
 `AnalyticsService` tracks page views for the admin analytics dashboard. Registered as `AddScoped<AnalyticsService>()`.
@@ -455,7 +472,22 @@ After `Set()`, the service fires `OnTimezoneSet` — all components that display
 - `var` only when the type is obvious from the right-hand side
 - All DB-touching code async end-to-end: `await`, `ToListAsync()`, `FirstOrDefaultAsync()`
 - `await using var db = await DbFactory.CreateDbContextAsync()` — factory pattern, never scoped DbContext
-- No `.Result` or `.Wait()` on Tasks
+- No `.Result` or `.Wait()` on Tasks — always `await`
+- No `Task.Run(async () => await SomeIoAsync())` — wrapping I/O in `Task.Run` is redundant; call directly and `await`
+- No `Task.WhenAll` for sequential logic — use sequential `await` for clarity; `Task.WhenAll` only when genuinely needed (it is NOT needed for I/O-bound work on separate DbContext instances)
+- **`Task.Run` is only acceptable for CPU-bound work** (e.g. `await Task.Run(() => cpuPdf.Generate(...))`) — not for I/O
+- **Event handler async pattern** — event handlers that call `InvokeAsync(StateHasChanged)` must be `async void` and use `await`:
+  ```csharp
+  // Correct
+  private async void OnLangChanged() => await InvokeAsync(StateHasChanged);
+  // Wrong — unawaited
+  private void OnLangChanged() => InvokeAsync(StateHasChanged);
+  ```
+- **JSInvokable async** — `[JSInvokable]` methods that call `InvokeAsync` must return `Task` and use `await`:
+  ```csharp
+  [JSInvokable]
+  public async Task SetActiveHeading(string id) { await InvokeAsync(StateHasChanged); }
+  ```
 - No comments unless the WHY is non-obvious
 
 ## Security & code hygiene
@@ -611,7 +643,7 @@ else { <real content> }
 
 | Version | Changes |
 |---|---|
-| v3.0.1 | InteractiveAuto admin panel: new VodonghaPersonal.Client WASM project; 15 REST API endpoint groups under /api/admin/*; all 16 admin pages migrated to @rendermode InteractiveAuto; 14 HttpClient API clients; CvData moved to Shared; solution restructured into Source/Test layout; test split into Server/Client/Shared test projects (58 tests total: 12 Server + 34 Client + 12 Shared); Directory.Build.props and NuGet.Config moved to root; lint.yml workflow cleaned up (test job removed, owned by test.yml) |
+| v3.0.1 | InteractiveAuto admin panel: new VodonghaPersonal.Client WASM project; 15 REST API endpoint groups under /api/admin/*; all 16 admin pages migrated to @rendermode InteractiveAuto; 14 HttpClient API clients; CvData moved to Shared; solution restructured into Source/Test layout; test split into Server/Client/Shared test projects (58 tests total: 12 Server + 34 Client + 12 Shared); Directory.Build.props and NuGet.Config moved to root; lint.yml workflow cleaned up. **Perf patch:** IMemoryCache (1h TTL) in all 6 public services; DependencyCheckService SemaphoreSlim thundering-herd fix; HealthMonitorService Interlocked overlap prevention; AnalyticsService geo-cache eviction; CvCacheService sequential await; all async event handlers converted to async void + await; PageViews indexes (Path, Country, Referrer); auto app version from git tag in footer + health page |
 | v2.0.6 | i18n all 8 admin pages; Lint CI (dotnet format + ESLint + Stylelint); CI & Deploy flow; ES2026 JS (Uint8Array.fromBase64, ecmaVersion 2026); Dependencies tracker page (/admin/dependencies — NuGet/npm/CDN version checks, filter chips, search); unit tests (VodonghaPersonal.Tests, 12 NUnit + Shouldly tests); dep updates (Microsoft 10.0.8→10.0.9, SkiaSharp 3.116.1→3.119.4, eslint 9→10, stylelint 16→17, SortableJS 1.15.3→1.15.7, Devicon latest→2.17.0); menu renamed "Thông tin"→"Hồ sơ" (bi-person-vcard, first in Portfolio group); SCSS Stylelint fixes; analytics nav label fix; cost banner light-mode fix; Chart.js version mismatch fix (4.4.4→4.5.1) |
 | v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix; collapsible sidebar (icon-only collapsed mode, localStorage); icon-only top controls with tooltips; mobile bottom bar 4-item; Dashboard → /admin/analytics |
 | v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping; accessibility; code quality; DI fix; git workflow updated |

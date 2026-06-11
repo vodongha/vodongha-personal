@@ -54,7 +54,8 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Analytics** — self-hosted page view dashboard: daily views chart, top pages, top countries (geo IP via ip-api.com), top referrers; 7/30/90 day period selector; GDPR-safe (no IP stored)
 - **Hồ sơ (Settings)** — bio (VI/EN), social links, avatar upload
 - **CV / Resume PDF** — generate a polished PDF CV; 3 templates (Dark Sidebar, Minimal, Professional); template picker colors work in light mode
-- **Dependencies tracker** — `/admin/dependencies` checks all NuGet packages, npm devDependencies, and CDN libraries against their registries; filter chips (All/Outdated/Mới nhất/NuGet/npm/CDN) + search box; 1-hour cache with manual refresh
+- **Dependencies tracker** — `/admin/dependencies` checks all NuGet packages, npm devDependencies, and CDN libraries against their registries; filter chips (All/Outdated/Mới nhất/NuGet/npm/CDN) + search box; 1-hour cache with manual refresh; `SemaphoreSlim` prevents thundering herd on cache miss
+- **App version** — current release version displayed in footer and health page; injected automatically from git tag at build time
 - **Shimmer skeleton loading** — all admin pages and all public sections show animated placeholders while data loads
 - **Mobile responsive** — collapsible sidebar on desktop (64 px icon-only ↔ 220 px expanded, state persisted in localStorage); 4-item fixed bottom bar on screens ≤ 768 px (Menu / Dark / VI|EN / Logout); admin chat is full-screen on mobile with back button
 - **Dark / Light mode** — complete coverage across public site, chat widget, admin panel, and Chart.js charts
