@@ -87,18 +87,21 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AnalyticsService>();
 
 // Public API clients — registered in Server DI for SSR prerendering.
-// HttpClient calls back to the server itself using the current request's base URL.
-builder.Services.AddScoped(sp =>
+// Each client gets its own HttpClient instance via factory to avoid "already started" error.
+builder.Services.AddHttpClient("prerender").ConfigureHttpClient((sp, client) =>
 {
     IHttpContextAccessor ctx = sp.GetRequiredService<IHttpContextAccessor>();
     HttpRequest req = ctx.HttpContext!.Request;
-    string baseAddress = $"{req.Scheme}://{req.Host}";
-    return new HttpClient { BaseAddress = new Uri(baseAddress) };
+    client.BaseAddress = new Uri($"{req.Scheme}://{req.Host}");
 });
-builder.Services.AddScoped<PublicBlogApiClient>();
-builder.Services.AddScoped<PublicChatApiClient>();
-builder.Services.AddScoped<PublicAiApiClient>();
-builder.Services.AddScoped<PublicSiteApiClient>();
+builder.Services.AddScoped<PublicBlogApiClient>(sp =>
+    new PublicBlogApiClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("prerender")));
+builder.Services.AddScoped<PublicChatApiClient>(sp =>
+    new PublicChatApiClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("prerender")));
+builder.Services.AddScoped<PublicAiApiClient>(sp =>
+    new PublicAiApiClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("prerender")));
+builder.Services.AddScoped<PublicSiteApiClient>(sp =>
+    new PublicSiteApiClient(sp.GetRequiredService<IHttpClientFactory>().CreateClient("prerender")));
 
 // Rate limiter — 10 login attempts per 5 minutes per IP to prevent brute-force
 builder.Services.AddRateLimiter(options =>
