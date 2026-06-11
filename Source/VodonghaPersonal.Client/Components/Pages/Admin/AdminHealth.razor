@@ -9,8 +9,8 @@
 
     <main class="admin-main">
         <header class="admin-header">
-            <AdminBreadcrumb />
             <h1 class="admin-header__title">@Loc.T("Server Status")</h1>
+            <AdminBreadcrumb />
             <div class="health-refresh">
                 <span class="health-refresh__label">@Loc.T("Auto-refresh"): @_countdown s</span>
                 <button type="button" class="admin-btn admin-btn--ghost admin-btn--sm" @onclick="Refresh">

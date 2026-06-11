@@ -9,10 +9,10 @@
 
     <main class="admin-main">
         <header class="admin-header">
-            <AdminBreadcrumb />
             <h1 class="admin-header__title">
                 <i class="bi bi-key"></i> @Loc.T("API Keys")
             </h1>
+            <AdminBreadcrumb />
             <div class="health-refresh">
                 <span class="health-refresh__label">@Loc.T("Changes apply immediately")</span>
                 <button type="button" class="admin-btn admin-btn--ghost admin-btn--sm" @onclick="LoadAsync" disabled="@_loading">
