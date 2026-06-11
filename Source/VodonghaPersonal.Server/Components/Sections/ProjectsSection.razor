@@ -32,7 +32,7 @@
             @{ int idx = 0; }
             @foreach (Project project in _projects)
             {
-                <div class="@(idx >= InitialCount ? "section__overflow" : "")" hidden="@(idx >= InitialCount)">
+                <div class="@(idx >= InitialCount ? "section__overflow" : "")">
                     <ProjectCard Item="project" />
                 </div>
                 idx++;

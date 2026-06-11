@@ -24,9 +24,10 @@
     else
     {
         <div class="timeline">
-            @foreach (Education item in VisibleItems)
+            @{ int idx = 0; }
+            @foreach (Education item in _items)
             {
-                <div class="timeline__item">
+                <div class="timeline__item @(idx >= InitialCount ? "section__overflow" : "")">
                     <div class="timeline__dot"></div>
                     <div class="timeline__content">
                         <div class="timeline__header">
@@ -54,21 +55,17 @@
                         }
                     </div>
                 </div>
+                idx++;
             }
         </div>
 
         @if (_items.Count > InitialCount)
         {
             <div class="section__expand">
-                <button type="button" class="section__expand-btn" @onclick="Toggle">
-                    @if (_expanded)
-                    {
-                        <i class="bi bi-chevron-up"></i> @Lang.T("common.showless")
-                    }
-                    else
-                    {
-                        <i class="bi bi-chevron-down"></i> @Lang.T("common.showmore")
-                    }
+                <button type="button" class="section__expand-btn" aria-expanded="false" onclick="sectionToggle(this)">
+                    <i class="bi bi-chevron-down"></i>
+                    <span data-show>@Lang.T("common.showmore")</span>
+                    <span data-hide hidden>@Lang.T("common.showless")</span>
                 </button>
             </div>
         }

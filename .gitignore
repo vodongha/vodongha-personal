@@ -18,11 +18,11 @@ run.log
 
 ## Build artifacts
 msbuild.binlog
-Styles/*.css
-Styles/*.css.map
-wwwroot/app.css
-wwwroot/admin.css
-wwwroot/*.css.map
+**/Styles/*.css
+**/Styles/*.css.map
+**/wwwroot/app.css
+**/wwwroot/admin.css
+**/wwwroot/*.css.map
 
 ## OS
 .DS_Store

@@ -99,7 +99,7 @@
             var section = btn.closest('section');
             var overflow = section.querySelectorAll('.section__overflow');
             var expanded = btn.getAttribute('aria-expanded') === 'true';
-            overflow.forEach(function(el) { el.hidden = expanded; });
+            overflow.forEach(function(el) { el.style.display = expanded ? '' : 'block'; });
             btn.setAttribute('aria-expanded', String(!expanded));
             var icon = btn.querySelector('i');
             if (icon) { icon.className = expanded ? 'bi bi-chevron-down' : 'bi bi-chevron-up'; }

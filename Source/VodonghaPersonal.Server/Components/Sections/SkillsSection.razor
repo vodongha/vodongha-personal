@@ -32,7 +32,7 @@
             @{ int idx = 0; }
             @foreach (KeyValuePair<string, List<Skill>> category in _grouped)
             {
-                <div class="skills__category @(idx >= InitialCount ? "section__overflow" : "")" hidden="@(idx >= InitialCount)">
+                <div class="skills__category @(idx >= InitialCount ? "section__overflow" : "")">
                     <h3 class="skills__category-title">@category.Key</h3>
                     <ul class="skills__list">
                         @foreach (Skill skill in category.Value)
