@@ -426,6 +426,7 @@ app.MapPublicBlogApi();
 app.MapPublicChatApi();
 app.MapPublicAiApi();
 app.MapPublicSiteApi();
+app.MapPublicAuthApi();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

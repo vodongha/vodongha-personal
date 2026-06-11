@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using VodonghaPersonal.Client;
 using VodonghaPersonal.Client.ApiClients;
@@ -28,6 +29,11 @@ builder.Services.AddScoped<PublicBlogApiClient>();
 builder.Services.AddScoped<PublicChatApiClient>();
 builder.Services.AddScoped<PublicAiApiClient>();
 builder.Services.AddScoped<PublicSiteApiClient>();
+
+// Authorization
+builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthStateProvider>();
 
 // Client-only services (no DB, no server resources)
 builder.Services.AddScoped<ToastService>();

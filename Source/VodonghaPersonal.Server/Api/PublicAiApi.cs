@@ -8,9 +8,9 @@ public static class PublicAiApi
     {
         RouteGroupBuilder group = app.MapGroup("/api/ai");
 
-        group.MapPost("/ask", async (List<AiMessageDto> history, AiService svc, CancellationToken ct) =>
+        group.MapPost("/ask", async (AiAskRequest req, AiService svc, CancellationToken ct) =>
         {
-            List<AiService.AiMessage> messages = history
+            List<AiService.AiMessage> messages = req.History
                 .Select(m => new AiService.AiMessage(m.Role, m.Content))
                 .ToList();
 
@@ -20,4 +20,5 @@ public static class PublicAiApi
     }
 
     private record AiMessageDto(string Role, string Content);
+    private record AiAskRequest(List<AiMessageDto> History);
 }
