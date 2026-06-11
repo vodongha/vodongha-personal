@@ -113,7 +113,7 @@ public class CvCacheService(
             await Task.WhenAll(settingsTask, skillsTask, expTask, eduTask, projTask);
         }
 
-        Dictionary<string, string> settings = settingsTask.Result;
+        Dictionary<string, string> settings = await settingsTask;
         CvData data = new(
             Name: settings.GetValueOrDefault("Name", ""),
             Title: settings.GetValueOrDefault("Title", ""),
@@ -124,10 +124,10 @@ public class CvCacheService(
             LinkedIn: settings.GetValueOrDefault("LinkedIn", ""),
             Bio: settings.GetValueOrDefault("BioEn", settings.GetValueOrDefault("Bio", "")),
             AvatarUrl: settings.GetValueOrDefault("AvatarUrl", ""),
-            Skills: skillsTask.Result,
-            Experiences: expTask.Result,
-            Educations: eduTask.Result,
-            Projects: projTask.Result
+            Skills: await skillsTask,
+            Experiences: await expTask,
+            Educations: await eduTask,
+            Projects: await projTask
         );
 
         byte[]? avatarBytes = null;
