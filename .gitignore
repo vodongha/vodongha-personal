@@ -27,3 +27,4 @@ wwwroot/*.css.map
 ## OS
 .DS_Store
 Thumbs.db
+wallet/
