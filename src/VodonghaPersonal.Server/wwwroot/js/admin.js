@@ -93,11 +93,15 @@ window.removeDesktopResizeRedirect = () => {
         catch { return true; }
     };
 
-    // Start only when Blazor actually begins a navigation request
-    document.addEventListener('blazor:navigating', start);
-    document.addEventListener('enhancednavigationstart', start);
+    // click only fires on left-click — right-click and middle-click never reach here
+    document.addEventListener('click', (e) => {
+        const a = e.target.closest('a[href]');
+        if (a && isInternal(a.getAttribute('href')) && !a.getAttribute('download') && !a.getAttribute('target')) {
+            start();
+        }
+    });
 
-    // Stop when navigation completes or page loads
+    // Stop when Blazor navigation completes or page loads
     document.addEventListener('blazor:navigated', done);
     document.addEventListener('enhancedload', done);
     window.addEventListener('load', done);
