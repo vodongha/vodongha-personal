@@ -91,6 +91,7 @@ public class LanguageService
         // Footer
         ["footer.rights"] = "Tất cả quyền được bảo lưu.",
         ["footer.built"] = "Xây dựng với Claude",
+        ["footer.version"] = "Phiên bản",
         // Chat widget
         ["chat.title"] = "Võ Đông Hà",
         ["chat.status"] = "● Online",
@@ -202,6 +203,7 @@ public class LanguageService
         // Footer
         ["footer.rights"] = "All rights reserved.",
         ["footer.built"] = "Built with Claude",
+        ["footer.version"] = "Version",
         // Chat widget
         ["chat.title"] = "Võ Đông Hà",
         ["chat.status"] = "● Online",
