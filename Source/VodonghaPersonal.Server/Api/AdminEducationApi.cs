@@ -18,27 +18,29 @@ public static class AdminEducationApi
             return Results.Ok(items);
         });
 
-        group.MapPost("/", async (Education item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
+        group.MapPost("/", async (Education item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, EducationService eduSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             item.Id = 0;
             db.Educations.Add(item);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
+            eduSvc.InvalidateCache();
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, Education item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
+        group.MapPut("/{id:int}", async (int id, Education item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, EducationService eduSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             item.Id = id;
             db.Educations.Update(item);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
+            eduSvc.InvalidateCache();
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
+        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, EducationService eduSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             Education? e = await db.Educations.FindAsync(id);
@@ -47,6 +49,7 @@ public static class AdminEducationApi
                 db.Educations.Remove(e);
                 await db.SaveChangesAsync();
                 cvCache.InvalidateAndRegenerate();
+                eduSvc.InvalidateCache();
             }
             return Results.Ok();
         }).DisableAntiforgery();

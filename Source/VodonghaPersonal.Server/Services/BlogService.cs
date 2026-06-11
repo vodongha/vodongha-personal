@@ -1,18 +1,29 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using VodonghaPersonal.Data;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Services;
 
-public class BlogService(IDbContextFactory<AppDbContext> dbFactory)
+public class BlogService(IDbContextFactory<AppDbContext> dbFactory, IMemoryCache cache)
 {
+    private const string PublishedCacheKey = "blog_published";
+    private const string SlugsCacheKey = "blog_slugs";
+    private static readonly TimeSpan CacheTtl = TimeSpan.FromHours(1);
+
     public async Task<List<BlogPost>> GetPublishedAsync()
     {
+        if (cache.TryGetValue(PublishedCacheKey, out List<BlogPost>? cached) && cached is not null)
+        {
+            return cached;
+        }
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-        return await db.BlogPosts
+        List<BlogPost> result = await db.BlogPosts
             .Where(b => b.IsPublished)
             .OrderByDescending(b => b.CreatedAt)
             .ToListAsync();
+        cache.Set(PublishedCacheKey, result, CacheTtl);
+        return result;
     }
 
     public async Task<BlogPost?> GetBySlugAsync(string slug)
@@ -41,6 +52,7 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory)
         }
 
         await db.SaveChangesAsync();
+        InvalidateCache();
     }
 
     public async Task DeleteAsync(int id)
@@ -51,6 +63,7 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory)
         {
             db.BlogPosts.Remove(post);
             await db.SaveChangesAsync();
+            InvalidateCache();
         }
     }
 
@@ -126,11 +139,23 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory)
 
     public async Task<List<BlogPost>> GetAllSlugsForSitemapAsync()
     {
+        if (cache.TryGetValue(SlugsCacheKey, out List<BlogPost>? cached) && cached is not null)
+        {
+            return cached;
+        }
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-        return await db.BlogPosts
+        List<BlogPost> result = await db.BlogPosts
             .Where(b => b.IsPublished)
             .Select(b => new BlogPost { Slug = b.Slug, UpdatedAt = b.UpdatedAt, CreatedAt = b.CreatedAt })
             .OrderByDescending(b => b.CreatedAt)
             .ToListAsync();
+        cache.Set(SlugsCacheKey, result, CacheTtl);
+        return result;
+    }
+
+    public void InvalidateCache()
+    {
+        cache.Remove(PublishedCacheKey);
+        cache.Remove(SlugsCacheKey);
     }
 }
