@@ -49,7 +49,7 @@ public partial class BlogPostPage : ComponentBase, IDisposable
         // Increment view count — fire and forget, don't block render
         if (_post is not null)
         {
-            _ = Task.Run(() => BlogSvc.IncrementViewCountAsync(_post.Id));
+            _ = BlogSvc.IncrementViewCountAsync(_post.Id);
         }
     }
 
@@ -79,7 +79,7 @@ public partial class BlogPostPage : ComponentBase, IDisposable
         Tz.OnTimezoneSet += OnTimezoneUpdated;
     }
 
-    private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
+    private async void OnTimezoneUpdated() => await InvokeAsync(StateHasChanged);
 
     public void Dispose()
     {

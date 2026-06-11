@@ -47,7 +47,7 @@ public partial class BlogShareButtons : ComponentBase, IDisposable
         Lang.OnChange += OnLangChange;
     }
 
-    private void OnLangChange() => InvokeAsync(StateHasChanged);
+    private async void OnLangChange() => await InvokeAsync(StateHasChanged);
 
     public void Dispose() => Lang.OnChange -= OnLangChange;
 }

@@ -67,21 +67,7 @@ public class CvCacheService(
 
         for (int t = 0; t < TemplateCount; t++)
         {
-            int template = t;
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    logger.LogInformation("CV cache: background regen started for template {T}", template);
-                    byte[] pdf = await BuildPdfAsync(template);
-                    await WriteAsync(template, pdf);
-                    logger.LogInformation("CV cache: background regen done for template {T}", template);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogWarning(ex, "CV cache: background regen failed for template {T}", template);
-                }
-            });
+            _ = RegenTemplateAsync(t);
         }
     }
 
@@ -92,28 +78,16 @@ public class CvCacheService(
         SiteSettingService settingsSvc = svc.GetRequiredService<SiteSettingService>();
         CvPdfService cvPdf = svc.GetRequiredService<CvPdfService>();
 
-        // Run settings + all 4 entity queries in parallel using separate DbContext instances
-        Task<Dictionary<string, string>> settingsTask = settingsSvc.GetAllAsync();
         IDbContextFactory<AppDbContext> dbFactory = svc.GetRequiredService<IDbContextFactory<AppDbContext>>();
 
-        Task<List<Skill>> skillsTask;
-        Task<List<Experience>> expTask;
-        Task<List<Education>> eduTask;
-        Task<List<Project>> projTask;
+        Dictionary<string, string> settings = await settingsSvc.GetAllAsync();
 
-        await using (AppDbContext db1 = await dbFactory.CreateDbContextAsync())
-        await using (AppDbContext db2 = await dbFactory.CreateDbContextAsync())
-        await using (AppDbContext db3 = await dbFactory.CreateDbContextAsync())
-        await using (AppDbContext db4 = await dbFactory.CreateDbContextAsync())
-        {
-            skillsTask = db1.Skills.OrderBy(s => s.Order).ToListAsync();
-            expTask = db2.Experiences.OrderBy(e => e.Order).ToListAsync();
-            eduTask = db3.Educations.OrderBy(e => e.Order).ToListAsync();
-            projTask = db4.Projects.OrderBy(p => p.Order).ToListAsync();
-            await Task.WhenAll(settingsTask, skillsTask, expTask, eduTask, projTask);
-        }
+        await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+        List<Skill> skills = await db.Skills.OrderBy(s => s.Order).ToListAsync();
+        List<Experience> experiences = await db.Experiences.OrderBy(e => e.Order).ToListAsync();
+        List<Education> educations = await db.Educations.OrderBy(e => e.Order).ToListAsync();
+        List<Project> projects = await db.Projects.OrderBy(p => p.Order).ToListAsync();
 
-        Dictionary<string, string> settings = settingsTask.Result;
         CvData data = new(
             Name: settings.GetValueOrDefault("Name", ""),
             Title: settings.GetValueOrDefault("Title", ""),
@@ -124,10 +98,10 @@ public class CvCacheService(
             LinkedIn: settings.GetValueOrDefault("LinkedIn", ""),
             Bio: settings.GetValueOrDefault("BioEn", settings.GetValueOrDefault("Bio", "")),
             AvatarUrl: settings.GetValueOrDefault("AvatarUrl", ""),
-            Skills: skillsTask.Result,
-            Experiences: expTask.Result,
-            Educations: eduTask.Result,
-            Projects: projTask.Result
+            Skills: skills,
+            Experiences: experiences,
+            Educations: educations,
+            Projects: projects
         );
 
         byte[]? avatarBytes = null;
@@ -160,5 +134,20 @@ public class CvCacheService(
         byte[] pdf = await Task.Run(() => cvPdf.Generate(data, template, avatarBytes));
         logger.LogInformation("CV: generated {Bytes} bytes for template {T}", pdf.Length, template);
         return pdf;
+    }
+
+    private async Task RegenTemplateAsync(int template)
+    {
+        try
+        {
+            logger.LogInformation("CV cache: background regen started for template {T}", template);
+            byte[] pdf = await BuildPdfAsync(template);
+            await WriteAsync(template, pdf);
+            logger.LogInformation("CV cache: background regen done for template {T}", template);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "CV cache: background regen failed for template {T}", template);
+        }
     }
 }

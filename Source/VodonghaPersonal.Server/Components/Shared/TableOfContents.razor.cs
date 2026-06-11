@@ -46,12 +46,12 @@ public partial class TableOfContents : ComponentBase, IDisposable
     }
 
     [JSInvokable]
-    public void SetActiveHeading(string id)
+    public async Task SetActiveHeading(string id)
     {
         if (_activeId != id)
         {
             _activeId = id;
-            InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -79,7 +79,7 @@ public partial class TableOfContents : ComponentBase, IDisposable
         Lang.OnChange += OnLangChange;
     }
 
-    private void OnLangChange() => InvokeAsync(StateHasChanged);
+    private async void OnLangChange() => await InvokeAsync(StateHasChanged);
 
     public void Dispose()
     {

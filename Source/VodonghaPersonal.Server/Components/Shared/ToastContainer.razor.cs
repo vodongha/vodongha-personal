@@ -9,7 +9,7 @@ public partial class ToastContainer : ComponentBase, IDisposable
 
     protected override void OnInitialized() => ToastSvc.OnChange += Refresh;
 
-    private void Refresh() => InvokeAsync(StateHasChanged);
+    private async void Refresh() => await InvokeAsync(StateHasChanged);
 
     public void Dispose() => ToastSvc.OnChange -= Refresh;
 }
