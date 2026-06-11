@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -22,6 +23,11 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddSignalR();
+
+// EF Core navigation properties create circular references (e.g. ChatSession ↔ ChatMessage).
+// IgnoreCycles prevents System.Text.Json from throwing when serializing minimal API responses.
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 // Persist Data Protection keys to DB so they survive redeploys
 builder.Services.AddDataProtection()
@@ -187,12 +193,19 @@ app.Use(async (context, next) =>
     await next();
 });
 
-// Apply language preference from cookie so SSR sections render in the correct language
+// Apply language preference from cookie so SSR sections render in the correct language.
+// Only applies to page requests (GET, not /_framework, not API) to avoid touching
+// unrelated scoped services on every API call.
 app.Use(async (context, next) =>
 {
-    if (context.Request.Cookies.TryGetValue("lang", out string? lang) && (lang == "vi" || lang == "en"))
+    bool isPageGet = context.Request.Method == "GET"
+        && !context.Request.Path.StartsWithSegments("/_framework")
+        && !context.Request.Path.StartsWithSegments("/api")
+        && !context.Request.Path.StartsWithSegments("/health");
+    if (isPageGet && context.Request.Cookies.TryGetValue("lang", out string? lang) && (lang == "vi" || lang == "en"))
     {
-        context.RequestServices.GetRequiredService<LanguageService>().Set(lang);
+        try { context.RequestServices.GetRequiredService<LanguageService>().Set(lang); }
+        catch { /* non-critical — never break the pipeline */ }
     }
     await next(context);
 });
