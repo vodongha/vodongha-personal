@@ -26,7 +26,7 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
     private List<MenuItem> AllItems => [
         new("dash-dashboard",    "/admin",              "bi bi-speedometer2",      Loc.T("Dashboard")),
         new("dash-analytics",    "/admin/analytics",    "bi bi-graph-up",          Loc.T("Analytics")),
-        new("dash-settings",     "/admin/settings",     "bi bi-person-vcard",      Loc.T("Settings")),
+        new("dash-settings",     "/admin/profile",     "bi bi-person-vcard",      Loc.T("Settings")),
         new("dash-skills",       "/admin/skills",       "bi bi-bar-chart",         Loc.T("Skills")),
         new("dash-projects",     "/admin/projects",     "bi bi-folder2",           Loc.T("Projects")),
         new("dash-education",    "/admin/education",    "bi bi-mortarboard",       Loc.T("Education")),
