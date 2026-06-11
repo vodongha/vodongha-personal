@@ -66,8 +66,8 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 
 | Layer | Technology |
 |---|---|
-| Framework | Blazor Web App (.NET 10) — public site `InteractiveServer`, admin `InteractiveAuto` (WASM) |
-| API layer | ASP.NET Core Minimal APIs — 15 endpoint groups under `/api/admin/*` |
+| Framework | Blazor Web App (.NET 10) — Home page: static SSR; Blog pages, NavBar, Footer, ChatWidget: `InteractiveWebAssembly` (WASM); Admin: `InteractiveWebAssembly` |
+| API layer | ASP.NET Core Minimal APIs — 15 admin endpoint groups under `/api/admin/*` + 4 public groups (`/api/site`, `/api/blog`, `/api/ai`, `/api/auth`) |
 | Database | PostgreSQL via [Neon](https://neon.tech) (Singapore) |
 | ORM | Entity Framework Core |
 | Styling | SCSS — `Styles/app.scss` → public, `Styles/admin.scss` → admin |
@@ -91,47 +91,51 @@ vodongha-personal/
 ├── .github/
 │   └── workflows/             # ci.yml, deploy.yml, lint.yml, pr-setup.yml, sync-develop.yml
 ├── Source/
-│   ├── VodonghaPersonal.Server/      # ASP.NET Core host — public site + API
-│   │   ├── Components/               # Public pages, layouts, sections, shared widgets
-│   │   │   ├── App.razor             # HTML root, SEO meta, scripts
-│   │   │   ├── Layout/               # MainLayout, NavBar, FooterSection
-│   │   │   ├── Pages/                # Home, Blog, Login, Error, NotFound
-│   │   │   └── Shared/               # ChatWidget, TimezoneDetector, BlogCard, ...
-│   │   ├── Api/                      # 15 minimal API groups under /api/admin/*
-│   │   │   ├── AdminSkillsApi.cs     # GET/POST/PUT/{id}/DELETE/{id}
-│   │   │   ├── AdminProjectsApi.cs   # + PUT /order
-│   │   │   ├── AdminBlogApi.cs
-│   │   │   ├── AdminEducationApi.cs
-│   │   │   ├── AdminExperienceApi.cs
-│   │   │   ├── AdminContactsApi.cs   # + PUT /{id}/read, PUT /read-all
-│   │   │   ├── AdminSettingsApi.cs   # + POST /avatar
-│   │   │   ├── AdminDashboardApi.cs
-│   │   │   ├── AdminAnalyticsApi.cs
-│   │   │   ├── AdminApiKeysApi.cs
-│   │   │   ├── AdminHealthApi.cs
-│   │   │   ├── AdminCostsApi.cs
-│   │   │   ├── AdminDependenciesApi.cs
-│   │   │   ├── AdminChatApi.cs
-│   │   │   └── AdminMenuApi.cs
+│   ├── VodonghaPersonal.Server/      # ASP.NET Core host — static SSR shell + REST API
+│   │   ├── Components/
+│   │   │   ├── App.razor             # HTML root, SEO meta, sectionToggle JS, scripts
+│   │   │   ├── Layout/               # MainLayout (static SSR shell)
+│   │   │   ├── Pages/                # Home (static SSR), Login, Error, NotFound
+│   │   │   │                         # Blog pages live in Client (InteractiveWebAssembly)
+│   │   │   └── Sections/             # HeroSection, SkillsSection, ProjectsSection,
+│   │   │                             #   ExperienceSection, EducationSection, BlogSection,
+│   │   │                             #   ContactSection (all static SSR, sectionToggle via JS)
+│   │   ├── Api/
+│   │   │   ├── Admin*/               # 15 admin API groups under /api/admin/* (.RequireAuthorization())
+│   │   │   ├── PublicBlogApi.cs      # GET /api/blog, GET /api/blog/{slug},
+│   │   │   │                         #   GET /api/blog/{id}/related, POST /api/blog/{id}/view
+│   │   │   ├── PublicAiApi.cs        # POST /api/ai/ask (Gemini, conversation history)
+│   │   │   ├── PublicAuthApi.cs      # GET /api/auth/state (cookie auth state for WASM)
+│   │   │   ├── PublicChatApi.cs      # Chat session + message REST endpoints
+│   │   │   └── PublicSiteApi.cs      # GET /api/site/settings (incl. APP_VERSION from assembly),
+│   │   │                             #   GET /api/site/visitor-count
 │   │   ├── Data/                     # AppDbContext, AppDbContextFactory
 │   │   ├── Hubs/                     # ChatHub (SignalR)
 │   │   ├── Migrations/               # EF Core migrations
 │   │   ├── Services/                 # HealthMonitorService, CostMonitorService, ...
 │   │   ├── Styles/                   # app.scss, admin.scss, partials
 │   │   └── wwwroot/js/               # admin.js, chat.js, charts, push.js
-│   ├── VodonghaPersonal.Client/      # Blazor WASM — admin panel
-│   │   ├── ApiClients/               # 14 HttpClient-based API clients
-│   │   │   ├── SkillApiClient.cs
-│   │   │   ├── ProjectApiClient.cs
-│   │   │   ├── BlogApiClient.cs
-│   │   │   └── ... (14 total)
+│   ├── VodonghaPersonal.Client/      # Blazor WASM — public interactive + admin
+│   │   ├── ApiClients/
+│   │   │   ├── Public/               # PublicBlogApiClient, PublicSiteApiClient,
+│   │   │   │                         #   PublicChatApiClient, PublicAiApiClient
+│   │   │   └── Admin/                # 14 admin HttpClient-based API clients
+│   │   │       ├── SkillApiClient.cs
+│   │   │       ├── ProjectApiClient.cs
+│   │   │       ├── BlogApiClient.cs
+│   │   │       └── ... (14 total)
 │   │   ├── Components/
-│   │   │   ├── Layout/AdminLayout.razor
-│   │   │   ├── Pages/Admin/          # All 16 admin pages (InteractiveAuto)
-│   │   │   └── Shared/               # AdminNav, TimezoneDetector, ToastContainer, ...
-│   │   ├── Services/                 # ToastService, AdminLocalizationService,
-│   │   │                             #   LanguageService, TimezoneService (client copies)
-│   │   └── Program.cs                # WASM entry point — registers HttpClient + services
+│   │   │   ├── Layout/               # NavBar, FooterSection, AdminLayout
+│   │   │   ├── Pages/
+│   │   │   │   ├── Public/           # BlogListPage, BlogPostPage (InteractiveWebAssembly)
+│   │   │   │   └── Admin/            # All 16 admin pages (InteractiveWebAssembly)
+│   │   │   └── Shared/               # BlogCard, BlogShareButtons, TableOfContents,
+│   │   │                             #   RelatedPosts, ChatWidget, AiWidget,
+│   │   │                             #   TimezoneDetector, ToastContainer, AdminNav,
+│   │   │                             #   AdminBreadcrumb, ConfirmDialog, Pagination
+│   │   ├── Services/                 # CookieAuthStateProvider, ToastService,
+│   │   │                             #   AdminLocalizationService, LanguageService, TimezoneService
+│   │   └── Program.cs                # WASM entry — registers HttpClient, auth, all API clients
 │   └── VodonghaPersonal.Shared/      # Shared across Server + Client
 │       ├── Models/                   # Skill, Project, BlogPost, Experience, Education,
 │       │                             #   ContactMessage, ChatSession, ChatMessage, CvData
@@ -141,7 +145,7 @@ vodongha-personal/
 ├── NuGet.Config                      # NuGet package source (api.nuget.org)
 └── Test/
     ├── VodonghaPersonal.Client.Tests/    # NUnit + Shouldly — Client (WASM) unit tests
-    ├── VodonghaPersonal.Server.Tests/    # NUnit + Shouldly — Server unit tests (12 tests)
+    ├── VodonghaPersonal.Server.Tests/    # NUnit + Shouldly — Server unit tests
     └── VodonghaPersonal.Shared.Tests/    # NUnit + Shouldly — Shared unit tests
 ```
 

@@ -14,7 +14,7 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 | Layer | Technology |
 |---|---|
 | Runtime | .NET 10 |
-| Frontend | Blazor Web App — public site uses `@rendermode InteractiveServer`; admin panel uses `@rendermode InteractiveAuto` (WASM via `VodonghaPersonal.Client`) |
+| Frontend | Blazor Web App — **Home page: static SSR** (no render mode, no circuit, zero flicker); **Blog pages, NavBar, FooterSection, ChatWidget, AiWidget**: `@rendermode InteractiveWebAssembly` (in `VodonghaPersonal.Client`); **Admin panel**: `@rendermode InteractiveWebAssembly` (in `VodonghaPersonal.Client`) |
 | Database | PostgreSQL via Neon (Singapore). Fly.io secret: `ConnectionStrings__DefaultConnection` |
 | ORM | Entity Framework Core — no raw SQL in application code |
 | SCSS | Two entry points compiled by `AspNetCore.SassCompiler` on `dotnet build`: `Styles/app.scss` → `wwwroot/app.css` (public), `Styles/admin.scss` → `wwwroot/admin.css` (admin). Compiled CSS is **gitignored** — never commit `wwwroot/app.css` or `wwwroot/admin.css`. |
@@ -113,28 +113,37 @@ gh release create v2.x.x --title "v2.x.x — description" --notes "changelog"
 ```
 vodongha-personal/
 ├── Source/
-│   ├── VodonghaPersonal.Server/              # ASP.NET Core host — public site + REST API
-│   │   ├── Api/                              # 15 minimal API groups (all .RequireAuthorization())
-│   │   │   ├── AdminSkillsApi.cs             # GET list, POST, PUT /{id}, DELETE /{id}
-│   │   │   ├── AdminProjectsApi.cs           # + PUT /order
-│   │   │   ├── AdminBlogApi.cs
-│   │   │   ├── AdminEducationApi.cs
-│   │   │   ├── AdminExperienceApi.cs
-│   │   │   ├── AdminContactsApi.cs           # + PUT /{id}/read, PUT /read-all
-│   │   │   ├── AdminSettingsApi.cs           # + POST /avatar (IFormFile)
-│   │   │   ├── AdminDashboardApi.cs
-│   │   │   ├── AdminAnalyticsApi.cs
-│   │   │   ├── AdminApiKeysApi.cs
-│   │   │   ├── AdminHealthApi.cs
-│   │   │   ├── AdminCostsApi.cs
-│   │   │   ├── AdminDependenciesApi.cs
-│   │   │   ├── AdminChatApi.cs
-│   │   │   └── AdminMenuApi.cs
-│   │   ├── Components/                       # Public site only
-│   │   │   ├── App.razor
-│   │   │   ├── Layout/                       # MainLayout, NavBar, FooterSection
-│   │   │   ├── Pages/                        # Home, Blog, Login, Error, NotFound
-│   │   │   └── Shared/                       # ChatWidget, TimezoneDetector, BlogCard, ...
+│   ├── VodonghaPersonal.Server/              # ASP.NET Core host — static SSR shell + REST API
+│   │   ├── Api/
+│   │   │   ├── Admin*/                       # 15 admin API groups (.RequireAuthorization())
+│   │   │   │   ├── AdminSkillsApi.cs         # GET list, POST, PUT /{id}, DELETE /{id}
+│   │   │   │   ├── AdminProjectsApi.cs       # + PUT /order
+│   │   │   │   ├── AdminBlogApi.cs
+│   │   │   │   ├── AdminEducationApi.cs
+│   │   │   │   ├── AdminExperienceApi.cs
+│   │   │   │   ├── AdminContactsApi.cs       # + PUT /{id}/read, PUT /read-all
+│   │   │   │   ├── AdminSettingsApi.cs       # + POST /avatar (IFormFile)
+│   │   │   │   ├── AdminDashboardApi.cs
+│   │   │   │   ├── AdminAnalyticsApi.cs
+│   │   │   │   ├── AdminApiKeysApi.cs
+│   │   │   │   ├── AdminHealthApi.cs
+│   │   │   │   ├── AdminCostsApi.cs
+│   │   │   │   ├── AdminDependenciesApi.cs
+│   │   │   │   ├── AdminChatApi.cs
+│   │   │   │   └── AdminMenuApi.cs
+│   │   │   ├── PublicBlogApi.cs              # GET /api/blog, /{slug}, /{id}/related, POST /{id}/view
+│   │   │   ├── PublicAiApi.cs                # POST /api/ai/ask (Gemini, AiAskRequest{History})
+│   │   │   ├── PublicAuthApi.cs              # GET /api/auth/state → {isAuthenticated} for WASM
+│   │   │   ├── PublicChatApi.cs              # Chat session + message REST endpoints
+│   │   │   └── PublicSiteApi.cs              # GET /api/site/settings (injects APP_VERSION from assembly),
+│   │   │                                     #   GET /api/site/visitor-count
+│   │   ├── Components/
+│   │   │   ├── App.razor                     # HTML root, SEO meta, sectionToggle JS, scripts
+│   │   │   ├── Layout/MainLayout.razor       # Static SSR shell — renders NavBar/Footer placeholders
+│   │   │   ├── Pages/                        # Home (static SSR), Login, Error, NotFound
+│   │   │   └── Sections/                     # HeroSection, SkillsSection, ProjectsSection,
+│   │   │                                     #   ExperienceSection, EducationSection, BlogSection,
+│   │   │                                     #   ContactSection (static SSR, expand/collapse via JS)
 │   │   ├── Data/                             # AppDbContext, AppDbContextFactory
 │   │   ├── Hubs/                             # ChatHub (SignalR)
 │   │   ├── Migrations/
@@ -142,31 +151,40 @@ vodongha-personal/
 │   │   │                                     #   AppSecretsService, AnalyticsService, etc.
 │   │   ├── Styles/                           # app.scss, admin.scss, partials
 │   │   └── wwwroot/js/
-│   ├── VodonghaPersonal.Client/              # Blazor WASM — admin panel
-│   │   ├── ApiClients/                       # 14 HttpClient-based clients (all .GetFromJsonAsync / .PostAsJsonAsync)
-│   │   │   ├── SkillApiClient.cs
-│   │   │   ├── ProjectApiClient.cs
-│   │   │   ├── BlogApiClient.cs
-│   │   │   ├── EducationApiClient.cs
-│   │   │   ├── ExperienceApiClient.cs
-│   │   │   ├── ContactApiClient.cs
-│   │   │   ├── SettingsApiClient.cs
-│   │   │   ├── DashboardApiClient.cs
-│   │   │   ├── AnalyticsApiClient.cs
-│   │   │   ├── ApiKeyApiClient.cs
-│   │   │   ├── HealthApiClient.cs
-│   │   │   ├── CostApiClient.cs
-│   │   │   ├── DependencyApiClient.cs
-│   │   │   └── ChatApiClient.cs
+│   ├── VodonghaPersonal.Client/              # Blazor WASM — public interactive + admin
+│   │   ├── ApiClients/
+│   │   │   ├── Public/                       # PublicBlogApiClient, PublicSiteApiClient,
+│   │   │   │                                 #   PublicChatApiClient, PublicAiApiClient
+│   │   │   └── Admin/                        # 14 HttpClient-based admin API clients
+│   │   │       ├── SkillApiClient.cs
+│   │   │       ├── ProjectApiClient.cs
+│   │   │       ├── BlogApiClient.cs
+│   │   │       ├── EducationApiClient.cs
+│   │   │       ├── ExperienceApiClient.cs
+│   │   │       ├── ContactApiClient.cs
+│   │   │       ├── SettingsApiClient.cs
+│   │   │       ├── DashboardApiClient.cs
+│   │   │       ├── AnalyticsApiClient.cs
+│   │   │       ├── ApiKeyApiClient.cs
+│   │   │       ├── HealthApiClient.cs
+│   │   │       ├── CostApiClient.cs
+│   │   │       ├── DependencyApiClient.cs
+│   │   │       └── ChatApiClient.cs
 │   │   ├── Components/
-│   │   │   ├── Layout/AdminLayout.razor      # Loads /admin.css (no @Assets fingerprinting in WASM)
-│   │   │   ├── Pages/Admin/                  # All 16 admin pages — @rendermode InteractiveAuto
-│   │   │   └── Shared/                       # AdminNav, TimezoneDetector, ToastContainer,
-│   │   │                                     #   ConfirmDialog, Pagination, ChatHubParser
-│   │   ├── Services/                         # Client copies of: ToastService, AdminLocalizationService,
-│   │   │                                     #   LanguageService, TimezoneService
+│   │   │   ├── Layout/                       # NavBar, FooterSection, AdminLayout
+│   │   │   │                                 #   (AdminLayout loads /admin.css — no @Assets in WASM)
+│   │   │   ├── Pages/
+│   │   │   │   ├── Public/                   # BlogListPage, BlogPostPage (InteractiveWebAssembly)
+│   │   │   │   └── Admin/                    # All 16 admin pages (InteractiveWebAssembly)
+│   │   │   └── Shared/                       # BlogCard, BlogShareButtons, TableOfContents,
+│   │   │                                     #   RelatedPosts, ChatWidget, AiWidget,
+│   │   │                                     #   TimezoneDetector, ToastContainer, AdminNav,
+│   │   │                                     #   AdminBreadcrumb, ConfirmDialog, Pagination, ChatHubParser
+│   │   ├── Services/                         # CookieAuthStateProvider, ToastService,
+│   │   │                                     #   AdminLocalizationService, LanguageService, TimezoneService
 │   │   ├── _Imports.razor
-│   │   └── Program.cs                        # WASM entry — registers HttpClient, all API clients, services
+│   │   └── Program.cs                        # WASM entry — registers HttpClient, auth services,
+│   │                                         #   CookieAuthStateProvider, all API clients
 │   └── VodonghaPersonal.Shared/              # Shared between Server and Client
 │       ├── Models/                           # All entity models + CvData record
 │       └── DTOs/
@@ -214,7 +232,9 @@ The project uses `stylelint-config-standard-scss`. Two rules are disabled in `.s
 
 **Blazor circuit reconnect config** — `App.razor` uses `autostart="false"` on `blazor.web.js` and calls `Blazor.start({ circuit: { reconnectionOptions: { maxRetries: 10, retryIntervalMilliseconds: (n) => n < 3 ? 1000 : n < 6 ? 3000 : 6000 } } })`. This handles Fly.io `suspend` mode wakeup (~3-5s cold start) without showing a reconnect error to the user.
 
-**Use event delegation** for admin JS — Blazor InteractiveServer renders elements after the WebSocket connects, so `document.querySelectorAll()` called immediately returns nothing. Attach listeners to `document` instead:
+**Static SSR expand/collapse** — Home page sections (Skills, Projects, Experience, Education, Blog) use `window.sectionToggle(btn)` defined in `App.razor`. Overflow items get `class="section__overflow"` + `hidden` attribute. The JS function toggles `hidden`, `aria-expanded`, the chevron icon class, and the show/hide span visibility. No Blazor `@onclick` — static SSR has no Blazor runtime on the page.
+
+**Use event delegation** for admin JS — admin panel uses InteractiveWebAssembly which hydrates asynchronously, so `document.querySelectorAll()` called immediately may return nothing. Attach listeners to `document` instead:
 
 ```js
 document.addEventListener('mousedown', function (e) {
@@ -235,9 +255,13 @@ document.addEventListener('mousedown', function (e) {
 - Admin pages in `VodonghaPersonal.Client` communicate with the Server via HTTP API clients (`XxxApiClient`). Server-side API handlers in `Api/AdminXxxApi.cs` access the DB directly via `IDbContextFactory<AppDbContext>`.
 - All admin pages follow the `.razor` + `.razor.cs` code-behind pattern
 
+### Auth state in WASM
+
+WASM cannot read HttpOnly cookies. `CookieAuthStateProvider` (registered in `Client/Program.cs`) calls `GET /api/auth/state` on the server to check if the current session cookie is valid, then returns an `AuthenticationState` for `<AuthorizeView>` in NavBar. The `/api/auth/state` endpoint calls `ctx.AuthenticateAsync()` server-side and returns `{ isAuthenticated: bool }`.
+
 ### prerender: false on Client shared components
 
-`AdminLayout` (Client assembly) is rendered SSR by the Server as the outer shell — even though admin pages themselves have `InteractiveAuto(prerender: false)`. This means any component inside `AdminLayout` that injects a Client-only service (`VodonghaPersonal.Client.Services.*`) will throw a DI resolution error during SSR.
+`AdminLayout` (Client assembly) is rendered SSR by the Server as the outer shell — even though admin pages themselves have `InteractiveWebAssembly(prerender: false)`. This means any component inside `AdminLayout` that injects a Client-only service (`VodonghaPersonal.Client.Services.*`) will throw a DI resolution error during SSR.
 
 **Rule:** all Client shared components used in `AdminLayout` must declare `@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))` at the top of their `.razor` file:
 
@@ -543,7 +567,7 @@ Admin tables (both `<table class="quickgrid">` and `<QuickGrid class="quickgrid"
 ### Public site
 - UI strings: `Lang.T("key")`
 - Content with dual fields: `Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description)`
-- Components that react to language changes need `@rendermode InteractiveServer` + `Lang.OnChange += StateHasChanged`
+- Components that react to language changes must be `InteractiveWebAssembly` (in Client assembly) and subscribe `Lang.OnChange += StateHasChanged` in `OnInitializedAsync`; static SSR sections (HeroSection etc.) do not react to language toggle
 
 Bilingual content models: `Project`, `Experience`, `Education` (Description/DescriptionEn), `BlogPost` (Title/TitleEn, Summary/SummaryEn, Content/ContentEn), `SiteSetting` (Bio + BioEn as separate keys).
 
@@ -639,11 +663,12 @@ else { <real content> }
 
 ## Current version
 
-**v3.0.1**
+**v3.0.3**
 
 | Version | Changes |
 |---|---|
-| v3.0.1 | InteractiveAuto admin panel: new VodonghaPersonal.Client WASM project; 15 REST API endpoint groups under /api/admin/*; all 16 admin pages migrated to @rendermode InteractiveAuto; 14 HttpClient API clients; CvData moved to Shared; solution restructured into Source/Test layout; test split into Server/Client/Shared test projects (58 tests total: 12 Server + 34 Client + 12 Shared); Directory.Build.props and NuGet.Config moved to root; lint.yml workflow cleaned up. **Perf patch:** IMemoryCache (1h TTL) in all 6 public services; DependencyCheckService SemaphoreSlim thundering-herd fix; HealthMonitorService Interlocked overlap prevention; AnalyticsService geo-cache eviction; CvCacheService sequential await; all async event handlers converted to async void + await; PageViews indexes (Path, Country, Referrer); auto app version from git tag in footer + health page |
+| v3.0.3 | **Islands architecture** — Home page converted to static SSR (no Blazor circuit, zero flickering); NavBar, FooterSection, ChatWidget, AiWidget, BlogListPage, BlogPostPage, BlogCard, BlogShareButtons, TableOfContents, RelatedPosts moved to VodonghaPersonal.Client (InteractiveWebAssembly); public API expanded: GET /api/blog/{id}/related, GET /api/auth/state; CookieAuthStateProvider added (WASM reads auth state via API); APP_VERSION injected from Server assembly into /api/site/settings (not env var); section expand/collapse via window.sectionToggle() JS (static SSR has no Blazor runtime); CI: actions/checkout@v5, FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true, git describe fallback to v0.0.0 |
+| v3.0.1 | InteractiveWebAssembly admin panel: new VodonghaPersonal.Client WASM project; 15 REST API endpoint groups under /api/admin/*; all 16 admin pages migrated to @rendermode InteractiveWebAssembly; 14 HttpClient API clients; CvData moved to Shared; solution restructured into Source/Test layout; test split into Server/Client/Shared test projects (58 tests total: 12 Server + 34 Client + 12 Shared); Directory.Build.props and NuGet.Config moved to root; lint.yml workflow cleaned up. **Perf patch:** IMemoryCache (1h TTL) in all 6 public services; DependencyCheckService SemaphoreSlim thundering-herd fix; HealthMonitorService Interlocked overlap prevention; AnalyticsService geo-cache eviction; CvCacheService sequential await; all async event handlers converted to async void + await; PageViews indexes (Path, Country, Referrer); auto app version from git tag in footer + health page |
 | v2.0.6 | i18n all 8 admin pages; Lint CI (dotnet format + ESLint + Stylelint); CI & Deploy flow; ES2026 JS (Uint8Array.fromBase64, ecmaVersion 2026); Dependencies tracker page (/admin/dependencies — NuGet/npm/CDN version checks, filter chips, search); unit tests (VodonghaPersonal.Tests, 12 NUnit + Shouldly tests); dep updates (Microsoft 10.0.8→10.0.9, SkiaSharp 3.116.1→3.119.4, eslint 9→10, stylelint 16→17, SortableJS 1.15.3→1.15.7, Devicon latest→2.17.0); menu renamed "Thông tin"→"Hồ sơ" (bi-person-vcard, first in Portfolio group); SCSS Stylelint fixes; analytics nav label fix; cost banner light-mode fix; Chart.js version mismatch fix (4.4.4→4.5.1) |
 | v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix; collapsible sidebar (icon-only collapsed mode, localStorage); icon-only top controls with tooltips; mobile bottom bar 4-item; Dashboard → /admin/analytics |
 | v2.0.4 | Security hardening (SignalR admin auth, rate limiting, constant-time login, server-side push IsAdmin); WCAG AA contrast fixes; loading bar scoping; accessibility; code quality; DI fix; git workflow updated |
