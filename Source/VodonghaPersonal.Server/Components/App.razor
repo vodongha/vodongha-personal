@@ -94,6 +94,21 @@
             }
         });
     </script>
+    <script>
+        window.sectionToggle = function(btn) {
+            var section = btn.closest('section');
+            var overflow = section.querySelectorAll('.section__overflow');
+            var expanded = btn.getAttribute('aria-expanded') === 'true';
+            overflow.forEach(function(el) { el.hidden = expanded; });
+            btn.setAttribute('aria-expanded', String(!expanded));
+            var icon = btn.querySelector('i');
+            if (icon) { icon.className = expanded ? 'bi bi-chevron-down' : 'bi bi-chevron-up'; }
+            var showSpan = btn.querySelector('[data-show]');
+            var hideSpan = btn.querySelector('[data-hide]');
+            if (showSpan) { showSpan.hidden = !expanded; }
+            if (hideSpan) { hideSpan.hidden = expanded; }
+        };
+    </script>
     <script src="js/push.js"></script>
     <script>pushUtils.init('@PushSvc.PublicKey');</script>
     <script src="js/admin.js"></script>
