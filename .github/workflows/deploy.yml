@@ -70,7 +70,8 @@ jobs:
             echo "version=${TAG#v}" >> $GITHUB_OUTPUT
             echo "has_tag=true" >> $GITHUB_OUTPUT
           else
-            echo "version=0.0.0" >> $GITHUB_OUTPUT
+            LATEST=$(git describe --tags --match 'v[0-9]*' --abbrev=0 2>/dev/null || echo "")
+            echo "version=${LATEST#v}" >> $GITHUB_OUTPUT
             echo "has_tag=false" >> $GITHUB_OUTPUT
           fi
       - run: flyctl deploy --remote-only --app vodongha --build-arg APP_VERSION=${{ steps.version.outputs.version }}
