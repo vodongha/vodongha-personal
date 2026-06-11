@@ -71,12 +71,7 @@
     {
         if (firstRender)
         {
-            string savedLang = await JS.InvokeAsync<string>("localStorage.getItem", "lang") ?? "en";
-            if (savedLang != Lang.Current)
-            {
-                Lang.Set(savedLang);
-            }
-
+            // Language is already set from cookie by server middleware — no client-side sync needed.
             string resolvedTheme = await JS.InvokeAsync<string>("getUserTheme");
 
             if (!_themeSet)
@@ -107,8 +102,7 @@
     private async Task ToggleLang()
     {
         string next = Lang.IsVi ? "en" : "vi";
-        Lang.Set(next);
-        await JS.InvokeVoidAsync("localStorage.setItem", "lang", next);
+        await JS.InvokeVoidAsync("setLangCookie", next);
     }
 
     private void ToggleDropdown() => _showDropdown = !_showDropdown;

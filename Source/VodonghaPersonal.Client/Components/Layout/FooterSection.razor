@@ -7,7 +7,7 @@
             &copy; @DateTime.Now.Year <span>@S("Name")</span>. @Lang.T("footer.built")
             @if (!string.IsNullOrEmpty(S("APP_VERSION")))
             {
-                <span class="footer__version"> - @Lang.T("footer.version"): v@S("APP_VERSION")</span>
+                <span class="footer__version"> - @Lang.T("footer.version"): v@(S("APP_VERSION"))</span>
             }
         </p>
         <div class="footer__right">

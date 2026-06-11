@@ -95,6 +95,10 @@
         });
     </script>
     <script>
+        window.setLangCookie = function(lang) {
+            document.cookie = 'lang=' + lang + ';path=/;max-age=31536000;samesite=lax';
+            location.reload();
+        };
         window.sectionToggle = function(btn) {
             var section = btn.closest('section');
             var overflow = section.querySelectorAll('.section__overflow');

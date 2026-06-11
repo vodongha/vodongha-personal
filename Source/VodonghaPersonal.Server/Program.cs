@@ -187,6 +187,16 @@ app.Use(async (context, next) =>
     await next();
 });
 
+// Apply language preference from cookie so SSR sections render in the correct language
+app.Use(async (context, next) =>
+{
+    if (context.Request.Cookies.TryGetValue("lang", out string? lang) && (lang == "vi" || lang == "en"))
+    {
+        context.RequestServices.GetRequiredService<LanguageService>().Set(lang);
+    }
+    await next(context);
+});
+
 // Track unique visitors by IP on page requests
 app.Use(async (context, next) =>
 {
