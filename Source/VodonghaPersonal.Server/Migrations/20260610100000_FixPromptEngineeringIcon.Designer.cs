@@ -9,7 +9,6 @@ using VodonghaPersonal.Data;
 namespace VodonghaPersonal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260610100000_FixPromptEngineeringIcon")]
     partial class FixPromptEngineeringIcon
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder) { }

@@ -9,7 +9,6 @@ using VodonghaPersonal.Data;
 namespace VodonghaPersonal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260609120000_AddPageViews")]
     partial class AddPageViews
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder) { }

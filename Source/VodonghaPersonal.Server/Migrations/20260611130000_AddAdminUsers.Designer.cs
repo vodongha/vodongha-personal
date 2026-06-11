@@ -9,7 +9,6 @@ using VodonghaPersonal.Data;
 namespace VodonghaPersonal.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260611130000_AddAdminUsers")]
     partial class AddAdminUsers
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder) { }
