@@ -20,6 +20,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<SiteSetting> SiteSettings => Set<SiteSetting>();
     public DbSet<AppSecret> AppSecrets => Set<AppSecret>();
     public DbSet<PageView> PageViews => Set<PageView>();
+    public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,5 +39,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<BlogPost>()
             .HasIndex(b => b.Slug)
             .IsUnique();
+
+        modelBuilder.Entity<AdminUser>()
+            .HasIndex(a => a.Username).IsUnique();
     }
 }

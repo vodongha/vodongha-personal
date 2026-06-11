@@ -91,6 +91,7 @@ builder.Services.AddSingleton<DependencyCheckService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AnalyticsService>();
+builder.Services.AddScoped<AdminAuthService>();
 
 // Public API clients — registered in Server DI for SSR prerendering.
 // Each client gets its own HttpClient instance via factory to avoid "already started" error.
@@ -145,6 +146,13 @@ using (IServiceScope scope = app.Services.CreateScope())
         VALUES ('20260609120000_AddPageViews', '10.0.8')
         ON CONFLICT DO NOTHING;
     ");
+
+    // Seed initial admin user from config if AdminUsers table is empty.
+    // After first deploy, credentials live in DB — env vars are no longer used for login.
+    string seedUser = app.Configuration["Admin:Username"] ?? "admin";
+    string seedPass = app.Configuration["Admin:Password"] ?? "changeme";
+    AdminAuthService adminAuth = scope.ServiceProvider.GetRequiredService<AdminAuthService>();
+    await adminAuth.SeedFromConfigAsync(seedUser, seedPass);
 }
 
 // One-time: sync secrets from ENV → DB on startup.
@@ -245,24 +253,18 @@ app.UseAuthorization();
 app.UseAntiforgery();
 app.MapHealthChecks("/health");
 
-app.MapPost("/admin/do-login", async (HttpContext ctx, IConfiguration config) =>
+app.MapPost("/admin/do-login", async (HttpContext ctx, AdminAuthService adminAuth) =>
 {
     string username = ctx.Request.Form["username"].ToString();
     string password = ctx.Request.Form["password"].ToString();
-    string adminUser = config["Admin:Username"] ?? "admin";
-    string adminPass = config["Admin:Password"] ?? "changeme";
 
-    // Constant-time comparison to prevent timing attacks
-    bool usernameMatch = CryptographicOperations.FixedTimeEquals(
-        System.Text.Encoding.UTF8.GetBytes(username.PadRight(adminUser.Length)),
-        System.Text.Encoding.UTF8.GetBytes(adminUser.PadRight(username.Length)));
-    bool passwordMatch = CryptographicOperations.FixedTimeEquals(
-        System.Text.Encoding.UTF8.GetBytes(password.PadRight(adminPass.Length)),
-        System.Text.Encoding.UTF8.GetBytes(adminPass.PadRight(password.Length)));
-
-    if (usernameMatch && passwordMatch && username.Length == adminUser.Length && password.Length == adminPass.Length)
+    if (await adminAuth.ValidateAsync(username, password))
     {
-        System.Security.Claims.Claim[] claims = [new(System.Security.Claims.ClaimTypes.Name, username), new(System.Security.Claims.ClaimTypes.Role, "Admin")];
+        System.Security.Claims.Claim[] claims =
+        [
+            new(System.Security.Claims.ClaimTypes.Name, username),
+            new(System.Security.Claims.ClaimTypes.Role, "Admin")
+        ];
         System.Security.Claims.ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new System.Security.Claims.ClaimsPrincipal(identity));
         ctx.Response.Redirect("/admin");
@@ -270,7 +272,6 @@ app.MapPost("/admin/do-login", async (HttpContext ctx, IConfiguration config) =>
     else
     {
         ctx.Response.Redirect("/admin/login?error=1");
-
     }
 }).DisableAntiforgery().RequireRateLimiting("login");
 
@@ -279,6 +280,22 @@ app.MapPost("/admin/logout", async (HttpContext ctx) =>
     await ctx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     ctx.Response.Redirect("/");
 }).RequireAuthorization();
+
+app.MapPost("/admin/change-password", async (HttpContext ctx, AdminAuthService adminAuth) =>
+{
+    string username = ctx.User.Identity?.Name ?? "";
+    string current = ctx.Request.Form["currentPassword"].ToString();
+    string newPass = ctx.Request.Form["newPassword"].ToString();
+
+    if (string.IsNullOrWhiteSpace(newPass) || newPass.Length < 8)
+    {
+        return Results.BadRequest("Mật khẩu mới phải có ít nhất 8 ký tự.");
+    }
+
+    bool ok = await adminAuth.ChangePasswordAsync(username, current, newPass);
+    return ok ? Results.Ok() : Results.BadRequest("Mật khẩu hiện tại không đúng.");
+}).DisableAntiforgery().RequireAuthorization();
+
 app.MapHub<ChatHub>("/chathub");
 
 app.MapGet("/api/cv/download", async (
