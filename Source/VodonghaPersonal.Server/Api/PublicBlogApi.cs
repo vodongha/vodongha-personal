@@ -25,6 +25,12 @@ public static class PublicBlogApi
             return Results.Ok(post);
         });
 
+        group.MapGet("/{id:int}/related", async (int id, string? tags, BlogService svc) =>
+        {
+            List<BlogPost> related = await svc.GetRelatedAsync(id, tags ?? string.Empty);
+            return Results.Ok(related);
+        });
+
         group.MapPost("/{id:int}/view", async (int id, BlogService svc) =>
         {
             _ = svc.IncrementViewCountAsync(id);

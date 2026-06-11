@@ -1,4 +1,4 @@
-@rendermode InteractiveServer
+@rendermode InteractiveWebAssembly
 @inject LanguageService Lang
 @inject IJSRuntime JS
 @implements IDisposable
@@ -65,8 +65,6 @@
 @code {
     private bool _showDropdown;
     private string _theme = "dark";
-    // Guard: once the user has toggled (or OnAfterRenderAsync has completed),
-    // set to true so neither path can overwrite the other's result.
     private bool _themeSet = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -79,11 +77,8 @@
                 Lang.Set(savedLang);
             }
 
-            // Fetch stored preference — this is async and can complete AFTER
-            // the user has already clicked the toggle (race condition).
             string resolvedTheme = await JS.InvokeAsync<string>("getUserTheme");
 
-            // Only apply if the user hasn't already made an explicit choice.
             if (!_themeSet)
             {
                 _theme = resolvedTheme;
@@ -96,18 +91,13 @@
 
     private async Task ToggleTheme()
     {
-        // Mark as set immediately — prevents OnAfterRenderAsync from overriding
-        // the result of this toggle if it resumes after we await below.
         _themeSet = true;
         try
         {
-            // toggleTheme() reads data-theme from the DOM and flips it.
-            // Defined inline in App.razor — immune to stale cached admin.js.
             _theme = await JS.InvokeAsync<string>("toggleTheme");
         }
         catch
         {
-            // Hard fallback: flip _theme directly.
             _theme = _theme == "dark" ? "light" : "dark";
             try { await JS.InvokeVoidAsync("setTheme", _theme); } catch { }
             try { await JS.InvokeVoidAsync("localStorage.setItem", "theme", _theme); } catch { }

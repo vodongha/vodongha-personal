@@ -4,7 +4,7 @@ using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Shared.Models;
 using VodonghaPersonal.Shared.Services;
 
-namespace VodonghaPersonal.Components.Pages.Blog;
+namespace VodonghaPersonal.Client.Components.Pages.Public;
 
 public partial class BlogPostPage : ComponentBase, IDisposable
 {

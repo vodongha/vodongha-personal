@@ -1,6 +1,5 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using PhoneNumbers;
@@ -8,14 +7,13 @@ using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Shared.Models;
 using VodonghaPersonal.Shared.Services;
 
-namespace VodonghaPersonal.Components.Shared;
+namespace VodonghaPersonal.Client.Components.Shared;
 
 public partial class ChatWidget : ComponentBase, IAsyncDisposable
 {
     [Inject] private PublicChatApiClient ChatClient { get; set; } = default!;
     [Inject] private HttpClient Http { get; set; } = default!;
     [Inject] private LanguageService Lang { get; set; } = default!;
-    [Inject] private ProtectedLocalStorage LocalStorage { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
@@ -189,10 +187,10 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
         try
         {
-            ProtectedBrowserStorageResult<int> sessionResult = await LocalStorage.GetAsync<int>("chatSessionId");
-            if (sessionResult.Success && sessionResult.Value > 0)
+            string? sessionIdStr = await JS.InvokeAsync<string?>("localStorage.getItem", "chatSessionId");
+            if (int.TryParse(sessionIdStr, out int savedSessionId) && savedSessionId > 0)
             {
-                _sessionId = sessionResult.Value;
+                _sessionId = savedSessionId;
                 ChatSession? session = await ChatClient.GetSessionAsync(_sessionId.Value);
                 if (session != null)
                 {
@@ -201,10 +199,10 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                         .ToList();
 
                     // Restore last-read pointer and compute initial unread count
-                    ProtectedBrowserStorageResult<int> lastReadResult = await LocalStorage.GetAsync<int>("chatLastReadId");
-                    if (lastReadResult.Success && lastReadResult.Value > 0)
+                    string? lastReadStr = await JS.InvokeAsync<string?>("localStorage.getItem", "chatLastReadId");
+                    if (int.TryParse(lastReadStr, out int savedLastRead) && savedLastRead > 0)
                     {
-                        _lastReadMessageId = lastReadResult.Value;
+                        _lastReadMessageId = savedLastRead;
                         _unreadCount = _messages.Count(m => !m.IsFromUser && m.Id > _lastReadMessageId);
 
                         // Always stay closed on page load — user opens manually or via notification
@@ -220,10 +218,10 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                     }
 
                     // Restore admin-read pointer (for ✓✓ on user's outgoing messages)
-                    ProtectedBrowserStorageResult<int> adminReadResult = await LocalStorage.GetAsync<int>("chatAdminReadId");
-                    if (adminReadResult.Success && adminReadResult.Value > 0)
+                    string? adminReadStr = await JS.InvokeAsync<string?>("localStorage.getItem", "chatAdminReadId");
+                    if (int.TryParse(adminReadStr, out int savedAdminRead) && savedAdminRead > 0)
                     {
-                        _adminReadUpToId = adminReadResult.Value;
+                        _adminReadUpToId = savedAdminRead;
                     }
 
                     await ConnectHubAsync();
@@ -246,7 +244,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
         catch
         {
-            // localStorage not available (SSR), ignore
+            // localStorage not available, ignore
         }
     }
 
@@ -319,7 +317,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     {
         try
         {
-            await LocalStorage.SetAsync("chatLastReadId", _lastReadMessageId);
+            await JS.InvokeVoidAsync("localStorage.setItem", "chatLastReadId", _lastReadMessageId.ToString());
         }
         catch
         {
@@ -331,9 +329,9 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     {
         try
         {
-            await LocalStorage.DeleteAsync("chatSessionId");
-            await LocalStorage.DeleteAsync("chatLastReadId");
-            await LocalStorage.DeleteAsync("chatAdminReadId");
+            await JS.InvokeVoidAsync("localStorage.removeItem", "chatSessionId");
+            await JS.InvokeVoidAsync("localStorage.removeItem", "chatLastReadId");
+            await JS.InvokeVoidAsync("localStorage.removeItem", "chatAdminReadId");
         }
         catch
         {
@@ -353,7 +351,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         {
             ChatSession session = (await ChatClient.CreateSessionAsync(_name.Trim(), FullPhone.Trim(), _email.Trim()))!;
             _sessionId = session.Id;
-            await LocalStorage.SetAsync("chatSessionId", session.Id);
+            await JS.InvokeVoidAsync("localStorage.setItem", "chatSessionId", session.Id.ToString());
             _state = ChatState.Chat;
             _unreadCount = 0;
             await ConnectHubAsync();
@@ -598,7 +596,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         _hubConnection.On<int>("AdminRead", async lastReadId =>
         {
             _adminReadUpToId = Math.Max(_adminReadUpToId, lastReadId);
-            try { await LocalStorage.SetAsync("chatAdminReadId", _adminReadUpToId); } catch { }
+            try { await JS.InvokeVoidAsync("localStorage.setItem", "chatAdminReadId", _adminReadUpToId.ToString()); } catch { }
             await InvokeAsync(StateHasChanged);
         });
 

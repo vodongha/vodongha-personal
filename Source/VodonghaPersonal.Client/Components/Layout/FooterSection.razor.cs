@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Shared.Services;
 
-namespace VodonghaPersonal.Components.Layout;
+namespace VodonghaPersonal.Client.Components.Layout;
 
 public partial class FooterSection : ComponentBase, IDisposable
 {

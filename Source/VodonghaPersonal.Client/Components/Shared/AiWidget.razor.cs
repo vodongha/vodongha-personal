@@ -4,7 +4,7 @@ using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Shared.DTOs;
 using VodonghaPersonal.Shared.Services;
 
-namespace VodonghaPersonal.Components.Shared;
+namespace VodonghaPersonal.Client.Components.Shared;
 
 public partial class AiWidget : ComponentBase, IDisposable
 {

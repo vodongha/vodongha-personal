@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Components;
-using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Models;
 using VodonghaPersonal.Shared.Services;
 
-namespace VodonghaPersonal.Components.Shared;
+namespace VodonghaPersonal.Client.Components.Shared;
 
 public partial class BlogCard : ComponentBase, IDisposable
 {
