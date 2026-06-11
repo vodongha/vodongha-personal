@@ -343,7 +343,7 @@
                                 <div class="cost-progress-wrap">
                                     <div class="cost-progress">
                                         <div class="cost-progress__bar"
-                                             style="width:@($"{Math.Min(100, _summary.Neon.StorageMb / 512.0 * 100):F1}")%"></div>
+                                             style="width:@(Math.Min(100, _summary.Neon.StorageMb / 512.0 * 100).ToString("F1", System.Globalization.CultureInfo.InvariantCulture))%"></div>
                                     </div>
                                     <span class="cost-progress__pct">@($"{_summary.Neon.StorageMb / 512.0 * 100:F1}")%</span>
                                 </div>
