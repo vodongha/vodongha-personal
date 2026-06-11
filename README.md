@@ -69,7 +69,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | Framework | Blazor Web App (.NET 10) — Home page: static SSR; Blog pages, NavBar, Footer, ChatWidget: `InteractiveWebAssembly` (WASM); Admin: `InteractiveWebAssembly` |
 | API layer | ASP.NET Core Minimal APIs — 15 admin endpoint groups under `/api/admin/*` + 4 public groups (`/api/site`, `/api/blog`, `/api/ai`, `/api/auth`) |
 | Database | PostgreSQL via [Neon](https://neon.tech) (Singapore) |
-| ORM | Entity Framework Core — hybrid `int Id` (internal PK) + `Guid Rid` (external API identifier) on all entities |
+| ORM | Entity Framework Core — hybrid `int Id` (internal PK) + `Guid Rid` (external API identifier) on all 14 entities |
 | Styling | SCSS — `Styles/app.scss` → public, `Styles/admin.scss` → admin |
 | Real-time | ASP.NET Core SignalR |
 | Charts | Chart.js 4.5.1 |
