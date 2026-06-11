@@ -4,6 +4,8 @@ namespace VodonghaPersonal.Client.Components.Shared;
 
 public partial class AdminBreadcrumb : ComponentBase
 {
+    [Inject] private NavigationManager Nav { get; set; } = default!;
+
     private static readonly Dictionary<string, (string? Group, string Page)> _map = new()
     {
         ["/admin"] = (null, "Dashboard"),
@@ -26,14 +28,18 @@ public partial class AdminBreadcrumb : ComponentBase
     private string? _group;
     private string? _page;
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Uri uri = new(Nav.Uri);
-        string path = uri.AbsolutePath.TrimEnd('/').ToLowerInvariant();
-        if (_map.TryGetValue(path, out (string? Group, string Page) entry))
+        if (firstRender)
         {
-            _group = entry.Group;
-            _page = entry.Page;
+            Uri uri = new(Nav.Uri);
+            string path = uri.AbsolutePath.TrimEnd('/').ToLowerInvariant();
+            if (_map.TryGetValue(path, out (string? Group, string Page) entry))
+            {
+                _group = entry.Group;
+                _page = entry.Page;
+                await InvokeAsync(StateHasChanged);
+            }
         }
     }
 }
