@@ -61,7 +61,7 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
         _dotNetRef = DotNetObjectReference.Create(this);
     }
 
-    private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
+    private async void OnTimezoneUpdated() => await InvokeAsync(StateHasChanged);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

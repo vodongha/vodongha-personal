@@ -107,6 +107,6 @@ public partial class AiWidget : ComponentBase, IDisposable
             "How can I contact you?"
         ];
 
-    private void OnLangChanged() => InvokeAsync(StateHasChanged);
+    private async void OnLangChanged() => await InvokeAsync(StateHasChanged);
     public void Dispose() => Lang.OnChange -= OnLangChanged;
 }

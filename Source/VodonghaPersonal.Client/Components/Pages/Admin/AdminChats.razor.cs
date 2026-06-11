@@ -56,7 +56,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         }
     }
 
-    private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
+    private async void OnTimezoneUpdated() => await InvokeAsync(StateHasChanged);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
