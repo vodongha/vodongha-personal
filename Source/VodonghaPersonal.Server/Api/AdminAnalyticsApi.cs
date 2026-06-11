@@ -11,29 +11,22 @@ public static class AdminAnalyticsApi
         {
             int[] dayValues = days == 0 ? [0] : [];
 
-            List<Task> tasks = [];
-            int total = 0, totalAll = 0;
-            List<(string Path, int Count)> topPages = [];
-            List<(string Country, int Count)> topCountries = [];
-            List<(string Referrer, int Count)> topReferrers = [];
-            List<(DateTime Date, int Count)> daily = [];
+            Task<int> totalTask = svc.GetTotalAsync(days);
+            Task<int> totalAllTask = svc.GetTotalAsync(0);
+            Task<List<(string Path, int Count)>> topPagesTask = svc.GetTopPagesAsync(days);
+            Task<List<(string Country, int Count)>> topCountriesTask = svc.GetTopCountriesAsync(days);
+            Task<List<(string Referrer, int Count)>> topReferrersTask = svc.GetTopReferrersAsync(days);
+            Task<List<(DateTime Date, int Count)>> dailyTask = svc.GetDailyViewsAsync(days);
 
-            await Task.WhenAll(
-                Task.Run(async () => { total = await svc.GetTotalAsync(days); }),
-                Task.Run(async () => { totalAll = await svc.GetTotalAsync(0); }),
-                Task.Run(async () => { topPages = await svc.GetTopPagesAsync(days); }),
-                Task.Run(async () => { topCountries = await svc.GetTopCountriesAsync(days); }),
-                Task.Run(async () => { topReferrers = await svc.GetTopReferrersAsync(days); }),
-                Task.Run(async () => { daily = await svc.GetDailyViewsAsync(days); })
-            );
+            await Task.WhenAll(totalTask, totalAllTask, topPagesTask, topCountriesTask, topReferrersTask, dailyTask);
 
             AnalyticsDto dto = new(
-                Total: total,
-                TotalAll: totalAll,
-                TopPages: topPages.Select(x => new TopItemDto(x.Path, x.Count)).ToList(),
-                TopCountries: topCountries.Select(x => new TopItemDto(x.Country, x.Count)).ToList(),
-                TopReferrers: topReferrers.Select(x => new TopItemDto(x.Referrer, x.Count)).ToList(),
-                Daily: daily.Select(x => new DailyViewDto(x.Date, x.Count)).ToList()
+                Total: await totalTask,
+                TotalAll: await totalAllTask,
+                TopPages: (await topPagesTask).Select(x => new TopItemDto(x.Path, x.Count)).ToList(),
+                TopCountries: (await topCountriesTask).Select(x => new TopItemDto(x.Country, x.Count)).ToList(),
+                TopReferrers: (await topReferrersTask).Select(x => new TopItemDto(x.Referrer, x.Count)).ToList(),
+                Daily: (await dailyTask).Select(x => new DailyViewDto(x.Date, x.Count)).ToList()
             );
 
             return Results.Ok(dto);

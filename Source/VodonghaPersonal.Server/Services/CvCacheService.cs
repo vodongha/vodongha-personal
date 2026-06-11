@@ -67,21 +67,7 @@ public class CvCacheService(
 
         for (int t = 0; t < TemplateCount; t++)
         {
-            int template = t;
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    logger.LogInformation("CV cache: background regen started for template {T}", template);
-                    byte[] pdf = await BuildPdfAsync(template);
-                    await WriteAsync(template, pdf);
-                    logger.LogInformation("CV cache: background regen done for template {T}", template);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogWarning(ex, "CV cache: background regen failed for template {T}", template);
-                }
-            });
+            _ = RegenTemplateAsync(t);
         }
     }
 
@@ -160,5 +146,20 @@ public class CvCacheService(
         byte[] pdf = await Task.Run(() => cvPdf.Generate(data, template, avatarBytes));
         logger.LogInformation("CV: generated {Bytes} bytes for template {T}", pdf.Length, template);
         return pdf;
+    }
+
+    private async Task RegenTemplateAsync(int template)
+    {
+        try
+        {
+            logger.LogInformation("CV cache: background regen started for template {T}", template);
+            byte[] pdf = await BuildPdfAsync(template);
+            await WriteAsync(template, pdf);
+            logger.LogInformation("CV cache: background regen done for template {T}", template);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "CV cache: background regen failed for template {T}", template);
+        }
     }
 }
