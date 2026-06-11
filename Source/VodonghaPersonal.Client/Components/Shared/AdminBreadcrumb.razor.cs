@@ -6,21 +6,21 @@ public partial class AdminBreadcrumb : ComponentBase
 {
     private static readonly Dictionary<string, (string? Group, string Page)> _map = new()
     {
-        ["/admin"] =                 (null,            "Dashboard"),
-        ["/admin/skills"] =          ("Portfolio",     "Skills"),
-        ["/admin/projects"] =        ("Portfolio",     "Projects"),
-        ["/admin/education"] =       ("Portfolio",     "Education"),
-        ["/admin/experience"] =      ("Portfolio",     "Experience"),
-        ["/admin/blog"] =            ("Portfolio",     "Blog"),
-        ["/admin/cv"] =              ("Portfolio",     "CV"),
-        ["/admin/contacts"] =        ("Communication", "Messages"),
-        ["/admin/chats"] =           ("Communication", "Chats"),
-        ["/admin/analytics"] =       ("Insights",      "Analytics"),
-        ["/admin/health"] =          ("Insights",      "Health"),
-        ["/admin/costs"] =           ("Insights",      "Costs"),
-        ["/admin/api-keys"] =        ("System",        "API Keys"),
-        ["/admin/profile"] =         ("System",        "Profile"),
-        ["/admin/dependencies"] =    ("System",        "Dependencies"),
+        ["/admin"] = (null, "Dashboard"),
+        ["/admin/skills"] = ("Portfolio", "Skills"),
+        ["/admin/projects"] = ("Portfolio", "Projects"),
+        ["/admin/education"] = ("Portfolio", "Education"),
+        ["/admin/experience"] = ("Portfolio", "Experience"),
+        ["/admin/blog"] = ("Portfolio", "Blog"),
+        ["/admin/cv"] = ("Portfolio", "CV"),
+        ["/admin/contacts"] = ("Communication", "Messages"),
+        ["/admin/chats"] = ("Communication", "Chats"),
+        ["/admin/analytics"] = ("Insights", "Analytics"),
+        ["/admin/health"] = ("Insights", "Health"),
+        ["/admin/costs"] = ("Insights", "Costs"),
+        ["/admin/api-keys"] = ("System", "API Keys"),
+        ["/admin/profile"] = ("System", "Profile"),
+        ["/admin/dependencies"] = ("System", "Dependencies"),
     };
 
     private string? _group;
