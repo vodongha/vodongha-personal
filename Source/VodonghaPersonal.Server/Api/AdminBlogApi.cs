@@ -21,14 +21,14 @@ public static class AdminBlogApi
             return Results.Ok(post);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, BlogPost post, BlogService svc) =>
+        group.MapPut("/{id:guid}", async (Guid id, BlogPost post, BlogService svc) =>
         {
             post.Id = id;
             await svc.SaveAsync(post);
             return Results.Ok(post);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, BlogService svc) =>
+        group.MapDelete("/{id:guid}", async (Guid id, BlogService svc) =>
         {
             await svc.DeleteAsync(id);
             return Results.Ok();

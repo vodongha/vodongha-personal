@@ -8,7 +8,7 @@ public class ContactApiClient(HttpClient http)
     public async Task<List<ContactMessage>> GetAllAsync()
         => await http.GetFromJsonAsync<List<ContactMessage>>("/api/admin/contacts") ?? [];
 
-    public async Task MarkReadAsync(int id)
+    public async Task MarkReadAsync(Guid id)
     {
         HttpResponseMessage resp = await http.PutAsJsonAsync($"/api/admin/contacts/{id}/read", new { });
         resp.EnsureSuccessStatusCode();
@@ -20,7 +20,7 @@ public class ContactApiClient(HttpClient http)
         resp.EnsureSuccessStatusCode();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         HttpResponseMessage resp = await http.DeleteAsync($"/api/admin/contacts/{id}");
         resp.EnsureSuccessStatusCode();

@@ -2,8 +2,8 @@ namespace VodonghaPersonal.Shared.Models;
 
 public class ChatMessage
 {
-    public int Id { get; set; }
-    public int ChatSessionId { get; set; }
+    public Guid Id { get; set; }
+    public Guid ChatSessionId { get; set; }
     public string Content { get; set; } = "";
     public bool IsFromUser { get; set; }
     public DateTime SentAt { get; set; } = DateTime.UtcNow;

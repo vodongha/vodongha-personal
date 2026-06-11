@@ -129,13 +129,13 @@
                         </div>
                     }
 
-                    <div class="chat-msg @(msg.IsFromUser ? "chat-msg--user" : "chat-msg--admin") @(isUnread ? "chat-msg--unread" : "") @(msg.Id == 0 ? "chat-msg--pending" : "")">
+                    <div class="chat-msg @(msg.IsFromUser ? "chat-msg--user" : "chat-msg--admin") @(isUnread ? "chat-msg--unread" : "") @(msg.Id == Guid.Empty ? "chat-msg--pending" : "")">
                         <div class="chat-msg__bubble">@msg.Content</div>
                         <div class="chat-msg__time">
                             @Tz.ToUserTime(msg.SentAt).ToString("HH:mm")
                             @if (msg.IsFromUser)
                             {
-                                if (_adminReadUpToId > 0 && msg.Id <= _adminReadUpToId)
+                                if (_adminReadUpToAt != default && msg.SentAt <= _adminReadUpToAt)
                                 {
                                     <i class="bi bi-check-all chat-msg__ticks chat-msg__ticks--read" title="@Lang.T("chat.read")"></i>
                                 }

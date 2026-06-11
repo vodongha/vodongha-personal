@@ -11,10 +11,10 @@ public class PublicBlogApiClient(HttpClient http)
     public async Task<BlogPost?> GetBySlugAsync(string slug)
         => await http.GetFromJsonAsync<BlogPost>($"/api/blog/{slug}");
 
-    public async Task<List<BlogPost>> GetRelatedAsync(int postId, string tags)
+    public async Task<List<BlogPost>> GetRelatedAsync(Guid postId, string tags)
         => await http.GetFromJsonAsync<List<BlogPost>>($"/api/blog/{postId}/related?tags={Uri.EscapeDataString(tags)}") ?? [];
 
-    public async Task IncrementViewAsync(int id)
+    public async Task IncrementViewAsync(Guid id)
     {
         try
         {

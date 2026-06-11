@@ -21,7 +21,7 @@ public static class AdminExperienceApi
         group.MapPost("/", async (Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            item.Id = 0;
+            item.Id = Guid.NewGuid();
             if (item.IsCurrent) { item.EndYear = null; item.EndMonth = null; }
             db.Experiences.Add(item);
             await db.SaveChangesAsync();
@@ -30,7 +30,7 @@ public static class AdminExperienceApi
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
+        group.MapPut("/{id:guid}", async (Guid id, Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             item.Id = id;
@@ -42,7 +42,7 @@ public static class AdminExperienceApi
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
+        group.MapDelete("/{id:guid}", async (Guid id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             Experience? e = await db.Experiences.FindAsync(id);

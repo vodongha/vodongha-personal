@@ -13,13 +13,13 @@ public class PublicChatApiClient(HttpClient http)
         return await resp.Content.ReadFromJsonAsync<ChatSession>();
     }
 
-    public async Task<ChatSession?> GetSessionAsync(int id)
+    public async Task<ChatSession?> GetSessionAsync(Guid id)
         => await http.GetFromJsonAsync<ChatSession>($"/api/chat/sessions/{id}");
 
-    public async Task<List<ChatMessage>> GetMessagesAsync(int id)
+    public async Task<List<ChatMessage>> GetMessagesAsync(Guid id)
         => await http.GetFromJsonAsync<List<ChatMessage>>($"/api/chat/sessions/{id}/messages") ?? [];
 
-    public async Task<ChatMessage?> SendMessageAsync(int sessionId, string content)
+    public async Task<ChatMessage?> SendMessageAsync(Guid sessionId, string content)
     {
         HttpResponseMessage resp = await http.PostAsJsonAsync($"/api/chat/sessions/{sessionId}/message", new ChatMessageRequest(content));
         resp.EnsureSuccessStatusCode();

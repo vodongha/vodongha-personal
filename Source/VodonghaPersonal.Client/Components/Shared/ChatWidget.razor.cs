@@ -132,15 +132,15 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private bool _loading;
     private bool _sending;
     private bool _otherIsTyping;
-    private int? _sessionId;
+    private Guid? _sessionId;
     private List<ChatMessageDto> _messages = [];
     private HubConnection? _hubConnection;
     private CancellationTokenSource? _typingCts;
 
     // Unread tracking
     private int _unreadCount;
-    private int _lastReadMessageId;    // last admin message ID the user has seen
-    private int _adminReadUpToId;      // last user message ID the admin has read (for ✓✓ on user's outgoing)
+    private DateTime _lastReadAt;      // SentAt of last admin message the user has seen
+    private DateTime _adminReadUpToAt; // SentAt of last user message the admin has read (for ✓✓)
     private int _unreadDividerIndex = -1;  // index in _messages where the "new messages" divider is shown
 
     private bool _pendingScrollToUnread;
@@ -188,7 +188,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         try
         {
             string? sessionIdStr = await JS.InvokeAsync<string?>("localStorage.getItem", "chatSessionId");
-            if (int.TryParse(sessionIdStr, out int savedSessionId) && savedSessionId > 0)
+            if (Guid.TryParse(sessionIdStr, out Guid savedSessionId) && savedSessionId != Guid.Empty)
             {
                 _sessionId = savedSessionId;
                 ChatSession? session = await ChatClient.GetSessionAsync(_sessionId.Value);
@@ -199,11 +199,11 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                         .ToList();
 
                     // Restore last-read pointer and compute initial unread count
-                    string? lastReadStr = await JS.InvokeAsync<string?>("localStorage.getItem", "chatLastReadId");
-                    if (int.TryParse(lastReadStr, out int savedLastRead) && savedLastRead > 0)
+                    string? lastReadStr = await JS.InvokeAsync<string?>("localStorage.getItem", "chatLastReadAt");
+                    if (DateTime.TryParse(lastReadStr, out DateTime savedLastRead) && savedLastRead != DateTime.MinValue)
                     {
-                        _lastReadMessageId = savedLastRead;
-                        _unreadCount = _messages.Count(m => !m.IsFromUser && m.Id > _lastReadMessageId);
+                        _lastReadAt = savedLastRead;
+                        _unreadCount = _messages.Count(m => !m.IsFromUser && m.SentAt > _lastReadAt);
 
                         // Always stay closed on page load — user opens manually or via notification
                         _state = ChatState.Closed;
@@ -211,17 +211,17 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                     else
                     {
                         // No saved read pointer — mark all as read, stay closed
-                        _lastReadMessageId = _messages.Count > 0 ? _messages.Max(m => m.Id) : 0;
+                        _lastReadAt = _messages.Count > 0 ? _messages.Max(m => m.SentAt) : DateTime.MinValue;
                         _unreadCount = 0;
                         _ = InvokeAsync(SaveLastReadAsync);
                         _state = ChatState.Closed;
                     }
 
                     // Restore admin-read pointer (for ✓✓ on user's outgoing messages)
-                    string? adminReadStr = await JS.InvokeAsync<string?>("localStorage.getItem", "chatAdminReadId");
-                    if (int.TryParse(adminReadStr, out int savedAdminRead) && savedAdminRead > 0)
+                    string? adminReadStr = await JS.InvokeAsync<string?>("localStorage.getItem", "chatAdminReadAt");
+                    if (DateTime.TryParse(adminReadStr, out DateTime savedAdminRead) && savedAdminRead != DateTime.MinValue)
                     {
-                        _adminReadUpToId = savedAdminRead;
+                        _adminReadUpToAt = savedAdminRead;
                     }
 
                     await ConnectHubAsync();
@@ -248,7 +248,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
-    private async Task ResubscribeIfGrantedAsync(int sessionId)
+    private async Task ResubscribeIfGrantedAsync(Guid sessionId)
     {
         try
         {
@@ -288,7 +288,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     // Compute and freeze the divider position BEFORE resetting the unread count
     private void SetUnreadDivider()
     {
-        _unreadDividerIndex = _messages.FindIndex(m => !m.IsFromUser && m.Id > _lastReadMessageId);
+        _unreadDividerIndex = _messages.FindIndex(m => !m.IsFromUser && m.SentAt > _lastReadAt);
     }
 
     private async Task MarkAllReadAsync()
@@ -298,17 +298,19 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             return;
         }
 
-        _lastReadMessageId = _messages.Max(m => m.Id);
+        _lastReadAt = _messages.Max(m => m.SentAt);
         _unreadCount = 0;
         await SaveLastReadAsync();
 
         // Notify the other party (admin) that user has read their messages
         if (_hubConnection != null && _sessionId.HasValue)
         {
-            int lastAdminMsgId = _messages.Where(m => !m.IsFromUser).Select(m => (int?)m.Id).Max() ?? 0;
-            if (lastAdminMsgId > 0)
+            ChatMessageDto? lastAdminMsg = _messages.Where(m => !m.IsFromUser)
+                .OrderByDescending(m => m.SentAt)
+                .FirstOrDefault();
+            if (lastAdminMsg != null && lastAdminMsg.Id != Guid.Empty)
             {
-                await _hubConnection.InvokeAsync("MarkRead", _sessionId.Value.ToString(), lastAdminMsgId);
+                await _hubConnection.InvokeAsync("MarkRead", _sessionId.Value.ToString(), lastAdminMsg.Id);
             }
         }
     }
@@ -317,7 +319,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     {
         try
         {
-            await JS.InvokeVoidAsync("localStorage.setItem", "chatLastReadId", _lastReadMessageId.ToString());
+            await JS.InvokeVoidAsync("localStorage.setItem", "chatLastReadAt", _lastReadAt.ToString("O"));
         }
         catch
         {
@@ -330,8 +332,8 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         try
         {
             await JS.InvokeVoidAsync("localStorage.removeItem", "chatSessionId");
-            await JS.InvokeVoidAsync("localStorage.removeItem", "chatLastReadId");
-            await JS.InvokeVoidAsync("localStorage.removeItem", "chatAdminReadId");
+            await JS.InvokeVoidAsync("localStorage.removeItem", "chatLastReadAt");
+            await JS.InvokeVoidAsync("localStorage.removeItem", "chatAdminReadAt");
         }
         catch
         {
@@ -385,7 +387,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         catch { /* non-critical */ }
     }
 
-    private async Task SubscribePushAsync(int? chatSessionId, bool isAdmin)
+    private async Task SubscribePushAsync(Guid? chatSessionId, bool isAdmin)
     {
         try
         {
@@ -438,7 +440,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         _ = StopTypingAsync();
 
         // Optimistic: show message instantly before the API responds
-        ChatMessageDto optimistic = new(0, content, true, DateTime.UtcNow);
+        ChatMessageDto optimistic = new(Guid.Empty, content, true, DateTime.UtcNow);
         _messages.Add(optimistic);
         StateHasChanged();
         await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "chatMessages");
@@ -447,7 +449,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         {
             ChatMessage msg = (await ChatClient.SendMessageAsync(_sessionId.Value, content))!;
             // Replace optimistic placeholder with real message (gets its DB Id for read receipts)
-            int idx = _messages.FindIndex(m => m.Id == 0 && m.Content == content && m.IsFromUser);
+            int idx = _messages.FindIndex(m => m.Id == Guid.Empty && m.Content == content && m.IsFromUser);
             if (idx >= 0)
             {
                 _messages[idx] = new ChatMessageDto(msg.Id, msg.Content, msg.IsFromUser, msg.SentAt);
@@ -557,7 +559,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             _otherIsTyping = false;
 
             ChatHubParser.HubMessage parsed = ChatHubParser.Parse(msg);
-            int id = parsed.Id;
+            Guid id = parsed.Id;
             string content = parsed.Content;
             bool isFromUser = parsed.IsFromUser;
             DateTime sentAt = parsed.SentAt;
@@ -575,10 +577,10 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                 {
                     // Chat is open — user sees it immediately; clear any lingering divider
                     _unreadDividerIndex = -1;
-                    _lastReadMessageId = id;
+                    _lastReadAt = sentAt;
                     _ = SaveLastReadAsync();
                     // Notify admin that user has read this message
-                    if (_hubConnection != null && _sessionId.HasValue)
+                    if (_hubConnection != null && _sessionId.HasValue && id != Guid.Empty)
                     {
                         _ = _hubConnection.InvokeAsync("MarkRead", _sessionId.Value.ToString(), id);
                     }
@@ -593,10 +595,14 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         });
 
         // Admin read receipt — update ✓ → ✓✓ on user's outgoing messages
-        _hubConnection.On<int>("AdminRead", async lastReadId =>
+        _hubConnection.On<Guid>("AdminRead", async lastReadMsgId =>
         {
-            _adminReadUpToId = Math.Max(_adminReadUpToId, lastReadId);
-            try { await JS.InvokeVoidAsync("localStorage.setItem", "chatAdminReadId", _adminReadUpToId.ToString()); } catch { }
+            ChatMessageDto? msg = _messages.FirstOrDefault(m => m.Id == lastReadMsgId);
+            if (msg != null && msg.SentAt > _adminReadUpToAt)
+            {
+                _adminReadUpToAt = msg.SentAt;
+                try { await JS.InvokeVoidAsync("localStorage.setItem", "chatAdminReadAt", _adminReadUpToAt.ToString("O")); } catch { }
+            }
             await InvokeAsync(StateHasChanged);
         });
 
@@ -739,5 +745,5 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         }
     }
 
-    private record ChatMessageDto(int Id, string Content, bool IsFromUser, DateTime SentAt);
+    private record ChatMessageDto(Guid Id, string Content, bool IsFromUser, DateTime SentAt);
 }

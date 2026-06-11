@@ -2,7 +2,7 @@ namespace VodonghaPersonal.Shared.Models;
 
 public class Education
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string School { get; set; } = string.Empty;
     public string Degree { get; set; } = string.Empty;
     public string Field { get; set; } = string.Empty;

@@ -41,8 +41,9 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory, IMemoryCache
     public async Task SaveAsync(BlogPost post)
     {
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-        if (post.Id == 0)
+        if (post.Id == Guid.Empty)
         {
+            post.Id = Guid.NewGuid();
             db.BlogPosts.Add(post);
         }
         else
@@ -55,7 +56,7 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory, IMemoryCache
         InvalidateCache();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid id)
     {
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
         BlogPost? post = await db.BlogPosts.FindAsync(id);
@@ -67,7 +68,7 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory, IMemoryCache
         }
     }
 
-    public async Task IncrementViewCountAsync(int id)
+    public async Task IncrementViewCountAsync(Guid id)
     {
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
         await db.BlogPosts
@@ -75,7 +76,7 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory, IMemoryCache
             .ExecuteUpdateAsync(s => s.SetProperty(b => b.ViewCount, b => b.ViewCount + 1));
     }
 
-    public async Task<List<BlogPost>> GetRelatedAsync(int postId, string tags, int count = 3)
+    public async Task<List<BlogPost>> GetRelatedAsync(Guid postId, string tags, int count = 3)
     {
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
         string[] tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries)

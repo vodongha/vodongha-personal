@@ -22,7 +22,7 @@ public static class AdminProjectsApi
         group.MapPost("/", async (Project item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            item.Id = 0;
+            item.Id = Guid.NewGuid();
             db.Projects.Add(item);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
@@ -30,7 +30,7 @@ public static class AdminProjectsApi
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, Project item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
+        group.MapPut("/{id:guid}", async (Guid id, Project item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             item.Id = id;
@@ -41,7 +41,7 @@ public static class AdminProjectsApi
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
+        group.MapDelete("/{id:guid}", async (Guid id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             Project? p = await db.Projects.FindAsync(id);
@@ -60,7 +60,7 @@ public static class AdminProjectsApi
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             for (int i = 0; i < req.Ids.Count; i++)
             {
-                int id = req.Ids[i];
+                Guid id = req.Ids[i];
                 await db.Projects.Where(x => x.Id == id).ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, i + 1));
             }
             cvCache.InvalidateAndRegenerate();

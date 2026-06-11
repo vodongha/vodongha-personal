@@ -2,7 +2,7 @@ namespace VodonghaPersonal.Shared.Models;
 
 public class Experience
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Company { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
     public string? Location { get; set; }

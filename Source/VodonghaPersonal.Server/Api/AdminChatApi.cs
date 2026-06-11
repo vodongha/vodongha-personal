@@ -16,31 +16,31 @@ public static class AdminChatApi
             return Results.Ok(sessions);
         });
 
-        group.MapGet("/sessions/{id:int}", async (int id, ChatService svc) =>
+        group.MapGet("/sessions/{id:guid}", async (Guid id, ChatService svc) =>
         {
             ChatSession? session = await svc.GetSessionAsync(id);
             return session is null ? Results.NotFound() : Results.Ok(session);
         });
 
-        group.MapGet("/sessions/{id:int}/messages", async (int id, ChatService svc) =>
+        group.MapGet("/sessions/{id:guid}/messages", async (Guid id, ChatService svc) =>
         {
             List<ChatMessage> messages = await svc.GetMessagesAsync(id);
             return Results.Ok(messages);
         });
 
-        group.MapPost("/sessions/{id:int}/reply", async (int id, ChatReplyRequest req, ChatService svc) =>
+        group.MapPost("/sessions/{id:guid}/reply", async (Guid id, ChatReplyRequest req, ChatService svc) =>
         {
             ChatMessage msg = await svc.SendAdminReplyAsync(id, req.Content);
             return Results.Ok(msg);
         }).DisableAntiforgery();
 
-        group.MapPut("/sessions/{id:int}/read", async (int id, ChatService svc) =>
+        group.MapPut("/sessions/{id:guid}/read", async (Guid id, ChatService svc) =>
         {
             await svc.MarkSessionReadAsync(id);
             return Results.Ok();
         }).DisableAntiforgery();
 
-        group.MapDelete("/sessions/{id:int}", async (int id, ChatService svc) =>
+        group.MapDelete("/sessions/{id:guid}", async (Guid id, ChatService svc) =>
         {
             await svc.DeleteSessionAsync(id);
             return Results.Ok();

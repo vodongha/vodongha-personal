@@ -11,7 +11,7 @@ public partial class RelatedPosts : ComponentBase, IDisposable
     [Inject] private LanguageService Lang { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
 
-    [Parameter, EditorRequired] public int PostId { get; set; }
+    [Parameter, EditorRequired] public Guid PostId { get; set; }
     [Parameter, EditorRequired] public string Tags { get; set; } = string.Empty;
 
     private List<BlogPost> _related = [];
