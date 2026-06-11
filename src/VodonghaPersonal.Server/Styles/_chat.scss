@@ -55,7 +55,8 @@
 // ── Chat panel (form + chat window) ───────────────────────────────
 .chat-panel {
     position: fixed;
-    bottom: 7rem;
+    // above chat FAB (56px) + AI FAB (48px) + gaps
+    bottom: calc(2rem + 56px + 0.75rem + 48px + 0.75rem);
     right: 2rem;
     width: 340px;
     max-height: 520px;
@@ -73,14 +74,15 @@
         right: 1rem;
         left: 1rem;
         width: auto;
-        bottom: calc(2rem + 56px + 1rem); // above FAB: FAB bottom(2rem) + FAB height(56px) + gap(1rem)
-        max-height: calc(100dvh - 2rem - 56px - 1rem - 4rem); // prevent overflow top
+        max-height: calc(100dvh - 2rem - 56px - 0.75rem - 48px - 0.75rem - 4rem);
     }
 }
 
-// Hide FAB when panel is open — close via header X button instead
-.chat-fab--panel-open {
-    display: none;
+// Hide FAB on mobile when panel is open — close via header X button instead
+@media (max-width: 480px) {
+    .chat-fab--panel-open {
+        display: none;
+    }
 }
 
 @keyframes chat-slide-in {
