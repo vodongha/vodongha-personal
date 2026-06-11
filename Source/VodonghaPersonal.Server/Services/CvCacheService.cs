@@ -78,28 +78,16 @@ public class CvCacheService(
         SiteSettingService settingsSvc = svc.GetRequiredService<SiteSettingService>();
         CvPdfService cvPdf = svc.GetRequiredService<CvPdfService>();
 
-        // Run settings + all 4 entity queries in parallel using separate DbContext instances
-        Task<Dictionary<string, string>> settingsTask = settingsSvc.GetAllAsync();
         IDbContextFactory<AppDbContext> dbFactory = svc.GetRequiredService<IDbContextFactory<AppDbContext>>();
 
-        Task<List<Skill>> skillsTask;
-        Task<List<Experience>> expTask;
-        Task<List<Education>> eduTask;
-        Task<List<Project>> projTask;
+        Dictionary<string, string> settings = await settingsSvc.GetAllAsync();
 
-        await using (AppDbContext db1 = await dbFactory.CreateDbContextAsync())
-        await using (AppDbContext db2 = await dbFactory.CreateDbContextAsync())
-        await using (AppDbContext db3 = await dbFactory.CreateDbContextAsync())
-        await using (AppDbContext db4 = await dbFactory.CreateDbContextAsync())
-        {
-            skillsTask = db1.Skills.OrderBy(s => s.Order).ToListAsync();
-            expTask = db2.Experiences.OrderBy(e => e.Order).ToListAsync();
-            eduTask = db3.Educations.OrderBy(e => e.Order).ToListAsync();
-            projTask = db4.Projects.OrderBy(p => p.Order).ToListAsync();
-            await Task.WhenAll(settingsTask, skillsTask, expTask, eduTask, projTask);
-        }
+        await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+        List<Skill> skills = await db.Skills.OrderBy(s => s.Order).ToListAsync();
+        List<Experience> experiences = await db.Experiences.OrderBy(e => e.Order).ToListAsync();
+        List<Education> educations = await db.Educations.OrderBy(e => e.Order).ToListAsync();
+        List<Project> projects = await db.Projects.OrderBy(p => p.Order).ToListAsync();
 
-        Dictionary<string, string> settings = await settingsTask;
         CvData data = new(
             Name: settings.GetValueOrDefault("Name", ""),
             Title: settings.GetValueOrDefault("Title", ""),
@@ -110,10 +98,10 @@ public class CvCacheService(
             LinkedIn: settings.GetValueOrDefault("LinkedIn", ""),
             Bio: settings.GetValueOrDefault("BioEn", settings.GetValueOrDefault("Bio", "")),
             AvatarUrl: settings.GetValueOrDefault("AvatarUrl", ""),
-            Skills: await skillsTask,
-            Experiences: await expTask,
-            Educations: await eduTask,
-            Projects: await projTask
+            Skills: skills,
+            Experiences: experiences,
+            Educations: educations,
+            Projects: projects
         );
 
         byte[]? avatarBytes = null;
