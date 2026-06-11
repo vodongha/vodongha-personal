@@ -3,6 +3,7 @@ namespace VodonghaPersonal.Shared.Models;
 public class PushSubscription
 {
     public int Id { get; set; }
+    public Guid Rid { get; set; }
 
     /// <summary>Browser-assigned push endpoint URL (unique per browser/device).</summary>
     public string Endpoint { get; set; } = "";
