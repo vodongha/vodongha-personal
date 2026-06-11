@@ -3370,7 +3370,7 @@ tr.admin-row--dragover td {
     &--active {
         background: var(--admin-accent);
         border-color: var(--admin-accent);
-        color: #fff;
+        color: var(--admin-accent-text);
     }
 
     &--outdated {
