@@ -6,13 +6,13 @@ WORKDIR /repo
 COPY Directory.Build.props .
 
 # Copy project files for restore layer caching
-COPY src/VodonghaPersonal.Shared/VodonghaPersonal.Shared.csproj src/VodonghaPersonal.Shared/
-COPY src/VodonghaPersonal.Client/VodonghaPersonal.Client.csproj src/VodonghaPersonal.Client/
-COPY src/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj src/VodonghaPersonal.Server/
-RUN dotnet restore src/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj
+COPY Source/VodonghaPersonal.Shared/VodonghaPersonal.Shared.csproj Source/VodonghaPersonal.Shared/
+COPY Source/VodonghaPersonal.Client/VodonghaPersonal.Client.csproj Source/VodonghaPersonal.Client/
+COPY Source/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj Source/VodonghaPersonal.Server/
+RUN dotnet restore Source/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj
 
 COPY . .
-RUN dotnet publish src/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj -c Release -o /app/publish
+RUN dotnet publish Source/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj -c Release -o /app/publish
 
 # ── Stage 2: Runtime ──────────────────────────────────────────
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final

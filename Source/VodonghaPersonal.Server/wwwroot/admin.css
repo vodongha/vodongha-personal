@@ -10,6 +10,8 @@
   --admin-table-odd: #0d0d0d;
   --admin-table-even: #121212;
   --admin-table-hover: #1e2a24;
+  --admin-accent: #6ee7b7;
+  --admin-accent-text: #0d0d0d;
   --skel-admin-base: #1e1e1e;
   --skel-admin-shimmer: #2d2d2d;
   --color-bg: #0d0d0d;
@@ -61,6 +63,8 @@
   --admin-table-odd: #fff;
   --admin-table-even: #f8fafc;
   --admin-table-hover: #f0fdf4;
+  --admin-accent: #059669;
+  --admin-accent-text: #fff;
   --skel-admin-base: #e2e8f0;
   --skel-admin-shimmer: #cbd5e1;
 }
@@ -678,7 +682,7 @@
 }
 .admin-form__input {
   width: 100%;
-  background: var(--admin-bg);
+  background: var(--admin-surface);
   border: 1px solid var(--admin-border);
   border-radius: 8px;
   padding: 0.6rem 0.75rem;
@@ -696,7 +700,7 @@
   border-color: var(--color-primary);
 }
 .admin-form__input:-webkit-autofill, .admin-form__input:-webkit-autofill:hover, .admin-form__input:-webkit-autofill:focus {
-  box-shadow: 0 0 0 1000px var(--admin-bg) inset;
+  box-shadow: 0 0 0 1000px var(--admin-surface) inset;
   -webkit-text-fill-color: var(--color-text);
   caret-color: var(--color-text);
   transition: background-color 5000s ease-in-out 0s;
@@ -4107,7 +4111,7 @@ tr.admin-row--dragover td {
 .dep-filter--active {
   background: var(--admin-accent);
   border-color: var(--admin-accent);
-  color: #fff;
+  color: var(--admin-accent-text);
 }
 .dep-filter--outdated {
   border-color: rgba(239, 68, 68, 0.35);
