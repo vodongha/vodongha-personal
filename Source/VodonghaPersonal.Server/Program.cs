@@ -404,6 +404,11 @@ app.MapAdminDependenciesApi();
 app.MapAdminChatApi();
 app.MapAdminMenuApi();
 
+app.MapPublicBlogApi();
+app.MapPublicChatApi();
+app.MapPublicAiApi();
+app.MapPublicSiteApi();
+
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

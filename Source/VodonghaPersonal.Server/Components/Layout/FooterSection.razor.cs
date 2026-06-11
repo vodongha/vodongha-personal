@@ -1,6 +1,6 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Components;
-using VodonghaPersonal.Services;
+using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Shared.Services;
 
 namespace VodonghaPersonal.Components.Layout;
@@ -8,8 +8,7 @@ namespace VodonghaPersonal.Components.Layout;
 public partial class FooterSection : ComponentBase, IDisposable
 {
     [Inject] private LanguageService Lang { get; set; } = default!;
-    [Inject] private VisitorService VisitorSvc { get; set; } = default!;
-    [Inject] private SiteSettingService SettingSvc { get; set; } = default!;
+    [Inject] private PublicSiteApiClient SiteClient { get; set; } = default!;
 
     private int _visitorCount;
     private Dictionary<string, string> _settings = new();
@@ -20,8 +19,8 @@ public partial class FooterSection : ComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         Lang.OnChange += StateHasChanged;
-        _visitorCount = await VisitorSvc.GetCountAsync();
-        _settings = await SettingSvc.GetAllAsync();
+        _visitorCount = await SiteClient.GetVisitorCountAsync();
+        _settings = await SiteClient.GetSettingsAsync();
         _appVersion = ResolveAppVersion();
     }
 

@@ -24,6 +24,10 @@ builder.Services.AddScoped<ApiKeyApiClient>();
 builder.Services.AddScoped<DependencyApiClient>();
 builder.Services.AddScoped<HealthApiClient>();
 builder.Services.AddScoped<CostApiClient>();
+builder.Services.AddScoped<PublicBlogApiClient>();
+builder.Services.AddScoped<PublicChatApiClient>();
+builder.Services.AddScoped<PublicAiApiClient>();
+builder.Services.AddScoped<PublicSiteApiClient>();
 
 // Client-only services (no DB, no server resources)
 builder.Services.AddScoped<ToastService>();
