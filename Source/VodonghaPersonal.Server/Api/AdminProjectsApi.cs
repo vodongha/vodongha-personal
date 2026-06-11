@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using VodonghaPersonal.Data;
 using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.DTOs;
@@ -30,10 +30,13 @@ public static class AdminProjectsApi
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, Project item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
+        group.MapPut("/{rid:guid}", async (Guid rid, Project item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            item.Id = id;
+            Project? existing = await db.Projects.FirstOrDefaultAsync(p => p.Rid == rid);
+            if (existing is null) { return Results.NotFound(); }
+            item.Id = existing.Id;
+            item.Rid = rid;
             db.Projects.Update(item);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
@@ -41,10 +44,10 @@ public static class AdminProjectsApi
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
+        group.MapDelete("/{rid:guid}", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            Project? p = await db.Projects.FindAsync(id);
+            Project? p = await db.Projects.FirstOrDefaultAsync(x => x.Rid == rid);
             if (p != null)
             {
                 db.Projects.Remove(p);
@@ -58,10 +61,10 @@ public static class AdminProjectsApi
         group.MapPut("/order", async (OrderUpdateRequest req, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            for (int i = 0; i < req.Ids.Count; i++)
+            for (int i = 0; i < req.Rids.Count; i++)
             {
-                int id = req.Ids[i];
-                await db.Projects.Where(x => x.Id == id).ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, i + 1));
+                Guid rid = req.Rids[i];
+                await db.Projects.Where(x => x.Rid == rid).ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, i + 1));
             }
             cvCache.InvalidateAndRegenerate();
             projectSvc.InvalidateCache();

@@ -14,10 +14,10 @@ public partial class AdminEducation : ComponentBase, IDisposable
     [Inject] private AdminLocalizationService Loc { get; set; } = default!;
 
     private int _unreadChatCount;
-    private int _deleteId;
+    private Guid _deleteId;
     private bool _confirmShow;
 
-    private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
+    private void ConfirmDelete(Guid rid) { _deleteId = rid; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
 
     private async Task SetPageSize(ChangeEventArgs e)
@@ -56,7 +56,7 @@ public partial class AdminEducation : ComponentBase, IDisposable
     }
 
     private void OpenAdd() { Editing = new Education(); ShowForm = true; }
-    private void OpenEdit(Education e) { Editing = new Education { Id = e.Id, School = e.School, Degree = e.Degree, Field = e.Field, WebsiteUrl = e.WebsiteUrl, StartYear = e.StartYear, EndYear = e.EndYear, Description = e.Description, DescriptionEn = e.DescriptionEn, Order = e.Order }; ShowForm = true; }
+    private void OpenEdit(Education e) { Editing = new Education { Id = e.Id, Rid = e.Rid, School = e.School, Degree = e.Degree, Field = e.Field, WebsiteUrl = e.WebsiteUrl, StartYear = e.StartYear, EndYear = e.EndYear, Description = e.Description, DescriptionEn = e.DescriptionEn, Order = e.Order }; ShowForm = true; }
     private void CloseForm() { ShowForm = false; }
 
     private async Task Save()
@@ -67,9 +67,9 @@ public partial class AdminEducation : ComponentBase, IDisposable
         Toast.Show("Đã lưu thành công");
     }
 
-    private async Task Delete(int id)
+    private async Task Delete(Guid rid)
     {
-        await EduClient.DeleteAsync(id);
+        await EduClient.DeleteAsync(rid);
         Toast.Show("Đã xoá");
         await LoadAsync();
     }

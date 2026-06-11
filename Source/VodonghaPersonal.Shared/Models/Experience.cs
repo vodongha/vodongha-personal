@@ -1,8 +1,9 @@
-namespace VodonghaPersonal.Shared.Models;
+﻿namespace VodonghaPersonal.Shared.Models;
 
 public class Experience
 {
     public int Id { get; set; }
+    public Guid Rid { get; set; } = Guid.NewGuid();
     public string Company { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
     public string? Location { get; set; }

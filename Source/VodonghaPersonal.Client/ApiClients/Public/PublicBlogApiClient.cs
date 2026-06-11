@@ -1,4 +1,4 @@
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Client.ApiClients;
@@ -11,14 +11,14 @@ public class PublicBlogApiClient(HttpClient http)
     public async Task<BlogPost?> GetBySlugAsync(string slug)
         => await http.GetFromJsonAsync<BlogPost>($"/api/blog/{slug}");
 
-    public async Task<List<BlogPost>> GetRelatedAsync(int postId, string tags)
-        => await http.GetFromJsonAsync<List<BlogPost>>($"/api/blog/{postId}/related?tags={Uri.EscapeDataString(tags)}") ?? [];
+    public async Task<List<BlogPost>> GetRelatedAsync(Guid rid, string tags)
+        => await http.GetFromJsonAsync<List<BlogPost>>($"/api/blog/{rid}/related?tags={Uri.EscapeDataString(tags)}") ?? [];
 
-    public async Task IncrementViewAsync(int id)
+    public async Task IncrementViewAsync(Guid rid)
     {
         try
         {
-            await http.PostAsync($"/api/blog/{id}/view", null);
+            await http.PostAsync($"/api/blog/{rid}/view", null);
         }
         catch
         {

@@ -14,10 +14,10 @@ public partial class AdminExperience : ComponentBase, IDisposable
     [Inject] private AdminLocalizationService Loc { get; set; } = default!;
 
     private int _unreadChatCount;
-    private int _deleteId;
+    private Guid _deleteId;
     private bool _confirmShow;
 
-    private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
+    private void ConfirmDelete(Guid rid) { _deleteId = rid; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
 
     private async Task SetPageSize(ChangeEventArgs e)
@@ -56,7 +56,7 @@ public partial class AdminExperience : ComponentBase, IDisposable
     }
 
     private void OpenAdd() { Editing = new Experience { StartMonth = 1, StartYear = DateTime.Now.Year, IsCurrent = true }; ShowForm = true; }
-    private void OpenEdit(Experience e) { Editing = new Experience { Id = e.Id, Company = e.Company, Role = e.Role, Location = e.Location, WebsiteUrl = e.WebsiteUrl, StartYear = e.StartYear, StartMonth = e.StartMonth, EndYear = e.EndYear, EndMonth = e.EndMonth, IsCurrent = e.IsCurrent, Description = e.Description, DescriptionEn = e.DescriptionEn, Order = e.Order }; ShowForm = true; }
+    private void OpenEdit(Experience e) { Editing = new Experience { Id = e.Id, Rid = e.Rid, Company = e.Company, Role = e.Role, Location = e.Location, WebsiteUrl = e.WebsiteUrl, StartYear = e.StartYear, StartMonth = e.StartMonth, EndYear = e.EndYear, EndMonth = e.EndMonth, IsCurrent = e.IsCurrent, Description = e.Description, DescriptionEn = e.DescriptionEn, Order = e.Order }; ShowForm = true; }
     private void CloseForm() { ShowForm = false; }
 
     private async Task Save()
@@ -68,9 +68,9 @@ public partial class AdminExperience : ComponentBase, IDisposable
         Toast.Show("Đã lưu thành công");
     }
 
-    private async Task Delete(int id)
+    private async Task Delete(Guid rid)
     {
-        await ExpClient.DeleteAsync(id);
+        await ExpClient.DeleteAsync(rid);
         Toast.Show("Đã xoá");
         await LoadAsync();
     }

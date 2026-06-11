@@ -85,7 +85,7 @@
                         <td>
                             <div class="admin-table__actions">
                                 <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(p)"><i class="bi bi-pencil"></i></button>
-                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(p.Id)"><i class="bi bi-trash"></i></button>
+                                <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(p.Rid)"><i class="bi bi-trash"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -110,7 +110,7 @@
         {
             <div class="admin-modal-overlay" @onclick="CloseForm">
                 <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
-                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? Loc.T("Add project") : Loc.T("Edit project"))</h2>
+                    <h2 class="admin-modal__title">@(Editing.Rid == Guid.Empty ? Loc.T("Add project") : Loc.T("Edit project"))</h2>
                     <div class="admin-form__group">
                         <label class="admin-form__label">@Loc.T("Title") 🇻🇳</label>
                         <input class="admin-form__input" @bind="Editing.Title" />

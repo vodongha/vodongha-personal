@@ -98,7 +98,7 @@ else
                     @((MarkupString)DisplayContent)
                 </div>
                 <BlogShareButtons Slug="@_post.Slug" Title="@DisplayTitle" />
-                <RelatedPosts PostId="@_post.Id" Tags="@_post.Tags" />
+                <RelatedPosts PostId="@_post.Rid" Tags="@_post.Tags" />
             </div>
             <aside class="blog-post__sidebar">
                 <TableOfContents Content="@DisplayContent" />

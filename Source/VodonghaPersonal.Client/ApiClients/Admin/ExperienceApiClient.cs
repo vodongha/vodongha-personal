@@ -4,5 +4,5 @@ namespace VodonghaPersonal.Client.ApiClients;
 
 public class ExperienceApiClient(HttpClient http) : BaseCrudApiClient<Experience>(http, "/api/admin/experience")
 {
-    public Task<Experience?> SaveAsync(Experience item) => SaveAsync(item, item.Id);
+    public Task<Experience?> SaveAsync(Experience item) => SaveAsync(item, item.Rid);
 }

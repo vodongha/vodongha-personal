@@ -1,6 +1,8 @@
-using VodonghaPersonal.Services;
+﻿using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.DTOs;
 using VodonghaPersonal.Shared.Models;
+using Microsoft.EntityFrameworkCore;
+using VodonghaPersonal.Data;
 
 namespace VodonghaPersonal.Api;
 
@@ -16,21 +18,28 @@ public static class PublicChatApi
             return Results.Ok(session);
         }).DisableAntiforgery();
 
-        group.MapGet("/sessions/{id:int}", async (int id, ChatService svc) =>
+        group.MapGet("/sessions/{rid:guid}", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory, ChatService svc) =>
         {
-            ChatSession? session = await svc.GetSessionAsync(id);
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            ChatSession? session = await db.ChatSessions.FirstOrDefaultAsync(s => s.Rid == rid);
             return session is null ? Results.NotFound() : Results.Ok(session);
         });
 
-        group.MapGet("/sessions/{id:int}/messages", async (int id, ChatService svc) =>
+        group.MapGet("/sessions/{rid:guid}/messages", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory, ChatService svc) =>
         {
-            List<ChatMessage> messages = await svc.GetMessagesAsync(id);
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            ChatSession? session = await db.ChatSessions.FirstOrDefaultAsync(s => s.Rid == rid);
+            if (session is null) { return Results.NotFound(); }
+            List<ChatMessage> messages = await svc.GetMessagesAsync(session.Id);
             return Results.Ok(messages);
         });
 
-        group.MapPost("/sessions/{id:int}/message", async (int id, ChatMessageRequest req, ChatService svc) =>
+        group.MapPost("/sessions/{rid:guid}/message", async (Guid rid, ChatMessageRequest req, IDbContextFactory<AppDbContext> dbFactory, ChatService svc) =>
         {
-            ChatMessage message = await svc.SendUserMessageAsync(id, req.Content);
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            ChatSession? session = await db.ChatSessions.FirstOrDefaultAsync(s => s.Rid == rid);
+            if (session is null) { return Results.NotFound(); }
+            ChatMessage message = await svc.SendUserMessageAsync(session.Id, req.Content);
             return Results.Ok(message);
         }).DisableAntiforgery();
     }

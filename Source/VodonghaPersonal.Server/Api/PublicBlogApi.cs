@@ -1,4 +1,4 @@
-using VodonghaPersonal.Services;
+﻿using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Api;
@@ -18,22 +18,19 @@ public static class PublicBlogApi
         group.MapGet("/{slug}", async (string slug, BlogService svc) =>
         {
             BlogPost? post = await svc.GetBySlugAsync(slug);
-            if (post is null)
-            {
-                return Results.NotFound();
-            }
+            if (post is null) { return Results.NotFound(); }
             return Results.Ok(post);
         });
 
-        group.MapGet("/{id:int}/related", async (int id, string? tags, BlogService svc) =>
+        group.MapGet("/{rid:guid}/related", async (Guid rid, string? tags, BlogService svc) =>
         {
-            List<BlogPost> related = await svc.GetRelatedAsync(id, tags ?? string.Empty);
+            List<BlogPost> related = await svc.GetRelatedAsync(rid, tags ?? string.Empty);
             return Results.Ok(related);
         });
 
-        group.MapPost("/{id:int}/view", async (int id, BlogService svc) =>
+        group.MapPost("/{rid:guid}/view", async (Guid rid, BlogService svc) =>
         {
-            _ = svc.IncrementViewCountAsync(id);
+            _ = svc.IncrementViewCountAsync(rid);
             return Results.Ok();
         });
     }

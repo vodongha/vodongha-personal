@@ -1,6 +1,8 @@
-using VodonghaPersonal.Services;
+﻿using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.DTOs;
 using VodonghaPersonal.Shared.Models;
+using Microsoft.EntityFrameworkCore;
+using VodonghaPersonal.Data;
 
 namespace VodonghaPersonal.Api;
 
@@ -16,33 +18,47 @@ public static class AdminChatApi
             return Results.Ok(sessions);
         });
 
-        group.MapGet("/sessions/{id:int}", async (int id, ChatService svc) =>
+        group.MapGet("/sessions/{rid:guid}", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory, ChatService svc) =>
         {
-            ChatSession? session = await svc.GetSessionAsync(id);
-            return session is null ? Results.NotFound() : Results.Ok(session);
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            ChatSession? session = await db.ChatSessions.FirstOrDefaultAsync(s => s.Rid == rid);
+            if (session is null) { return Results.NotFound(); }
+            return Results.Ok(session);
         });
 
-        group.MapGet("/sessions/{id:int}/messages", async (int id, ChatService svc) =>
+        group.MapGet("/sessions/{rid:guid}/messages", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory, ChatService svc) =>
         {
-            List<ChatMessage> messages = await svc.GetMessagesAsync(id);
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            ChatSession? session = await db.ChatSessions.FirstOrDefaultAsync(s => s.Rid == rid);
+            if (session is null) { return Results.NotFound(); }
+            List<ChatMessage> messages = await svc.GetMessagesAsync(session.Id);
             return Results.Ok(messages);
         });
 
-        group.MapPost("/sessions/{id:int}/reply", async (int id, ChatReplyRequest req, ChatService svc) =>
+        group.MapPost("/sessions/{rid:guid}/reply", async (Guid rid, ChatReplyRequest req, IDbContextFactory<AppDbContext> dbFactory, ChatService svc) =>
         {
-            ChatMessage msg = await svc.SendAdminReplyAsync(id, req.Content);
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            ChatSession? session = await db.ChatSessions.FirstOrDefaultAsync(s => s.Rid == rid);
+            if (session is null) { return Results.NotFound(); }
+            ChatMessage msg = await svc.SendAdminReplyAsync(session.Id, req.Content);
             return Results.Ok(msg);
         }).DisableAntiforgery();
 
-        group.MapPut("/sessions/{id:int}/read", async (int id, ChatService svc) =>
+        group.MapPut("/sessions/{rid:guid}/read", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory, ChatService svc) =>
         {
-            await svc.MarkSessionReadAsync(id);
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            ChatSession? session = await db.ChatSessions.FirstOrDefaultAsync(s => s.Rid == rid);
+            if (session is null) { return Results.NotFound(); }
+            await svc.MarkSessionReadAsync(session.Id);
             return Results.Ok();
         }).DisableAntiforgery();
 
-        group.MapDelete("/sessions/{id:int}", async (int id, ChatService svc) =>
+        group.MapDelete("/sessions/{rid:guid}", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory, ChatService svc) =>
         {
-            await svc.DeleteSessionAsync(id);
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            ChatSession? session = await db.ChatSessions.FirstOrDefaultAsync(s => s.Rid == rid);
+            if (session is null) { return Results.NotFound(); }
+            await svc.DeleteSessionAsync(session.Id);
             return Results.Ok();
         }).DisableAntiforgery();
 

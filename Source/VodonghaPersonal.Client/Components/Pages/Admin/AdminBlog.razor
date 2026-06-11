@@ -68,7 +68,7 @@
             <TemplateColumn Title="@Loc.T("Actions")">
                 <div class="admin-table__actions">
                     <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(context)"><i class="bi bi-pencil"></i></button>
-                    <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(context.Id)"><i class="bi bi-trash"></i></button>
+                    <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(context.Rid)"><i class="bi bi-trash"></i></button>
                 </div>
             </TemplateColumn>
         </QuickGrid>
@@ -79,7 +79,7 @@
         {
             <div class="admin-modal-overlay" @onclick="CloseForm">
                 <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
-                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? Loc.T("Add post") : Loc.T("Edit post"))</h2>
+                    <h2 class="admin-modal__title">@(Editing.Rid == Guid.Empty ? Loc.T("Add post") : Loc.T("Edit post"))</h2>
                     <div class="admin-form__group">
                         <label class="admin-form__label">@Loc.T("Title") 🇻🇳</label>
                         <input class="admin-form__input" value="@Editing.Title" @oninput="OnTitleInput" />

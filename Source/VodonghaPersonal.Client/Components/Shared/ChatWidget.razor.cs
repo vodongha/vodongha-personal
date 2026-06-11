@@ -133,6 +133,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     private bool _sending;
     private bool _otherIsTyping;
     private int? _sessionId;
+    private Guid? _sessionRid;
     private List<ChatMessageDto> _messages = [];
     private HubConnection? _hubConnection;
     private CancellationTokenSource? _typingCts;
@@ -187,14 +188,15 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
         try
         {
-            string? sessionIdStr = await JS.InvokeAsync<string?>("localStorage.getItem", "chatSessionId");
-            if (int.TryParse(sessionIdStr, out int savedSessionId) && savedSessionId > 0)
+            string? sessionRidStr = await JS.InvokeAsync<string?>("localStorage.getItem", "chatSessionRid");
+            if (Guid.TryParse(sessionRidStr, out Guid savedSessionRid) && savedSessionRid != Guid.Empty)
             {
-                _sessionId = savedSessionId;
-                ChatSession? session = await ChatClient.GetSessionAsync(_sessionId.Value);
+                ChatSession? session = await ChatClient.GetSessionAsync(savedSessionRid);
                 if (session != null)
                 {
-                    _messages = (await ChatClient.GetMessagesAsync(_sessionId.Value))
+                    _sessionId = session.Id;
+                    _sessionRid = session.Rid;
+                    _messages = (await ChatClient.GetMessagesAsync(_sessionRid.Value))
                         .Select(m => new ChatMessageDto(m.Id, m.Content, m.IsFromUser, m.SentAt))
                         .ToList();
 
@@ -229,7 +231,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                     // Re-subscribe push for returning visitors — only if already granted
                     // (avoids showing permission dialog unexpectedly on return visit).
                     // This refreshes a stale/cleared subscription silently.
-                    _ = ResubscribeIfGrantedAsync(_sessionId.Value);
+                    _ = ResubscribeIfGrantedAsync(session.Id);
 
                     StateHasChanged();
                 }
@@ -238,6 +240,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
                     // Session was deleted by admin — clear stale localStorage and show form
                     await ClearSessionStorageAsync();
                     _sessionId = null;
+                    _sessionRid = null;
                     _state = ChatState.Closed;
                 }
             }
@@ -329,7 +332,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
     {
         try
         {
-            await JS.InvokeVoidAsync("localStorage.removeItem", "chatSessionId");
+            await JS.InvokeVoidAsync("localStorage.removeItem", "chatSessionRid");
             await JS.InvokeVoidAsync("localStorage.removeItem", "chatLastReadId");
             await JS.InvokeVoidAsync("localStorage.removeItem", "chatAdminReadId");
         }
@@ -351,12 +354,13 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         {
             ChatSession session = (await ChatClient.CreateSessionAsync(_name.Trim(), FullPhone.Trim(), _email.Trim()))!;
             _sessionId = session.Id;
-            await JS.InvokeVoidAsync("localStorage.setItem", "chatSessionId", session.Id.ToString());
+            _sessionRid = session.Rid;
+            await JS.InvokeVoidAsync("localStorage.setItem", "chatSessionRid", session.Rid.ToString());
             _state = ChatState.Chat;
             _unreadCount = 0;
             await ConnectHubAsync();
             // Load messages from DB so the auto welcome message is visible immediately
-            _messages = (await ChatClient.GetMessagesAsync(session.Id))
+            _messages = (await ChatClient.GetMessagesAsync(session.Rid))
                 .Select(m => new ChatMessageDto(m.Id, m.Content, m.IsFromUser, m.SentAt))
                 .ToList();
             // Ask for push permission — fire-and-forget, non-critical
@@ -445,7 +449,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
         try
         {
-            ChatMessage msg = (await ChatClient.SendMessageAsync(_sessionId.Value, content))!;
+            ChatMessage msg = (await ChatClient.SendMessageAsync(_sessionRid!.Value, content))!;
             // Replace optimistic placeholder with real message (gets its DB Id for read receipts)
             int idx = _messages.FindIndex(m => m.Id == 0 && m.Content == content && m.IsFromUser);
             if (idx >= 0)

@@ -1,4 +1,4 @@
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using VodonghaPersonal.Shared.DTOs;
 using VodonghaPersonal.Shared.Models;
 
@@ -13,15 +13,15 @@ public class PublicChatApiClient(HttpClient http)
         return await resp.Content.ReadFromJsonAsync<ChatSession>();
     }
 
-    public async Task<ChatSession?> GetSessionAsync(int id)
-        => await http.GetFromJsonAsync<ChatSession>($"/api/chat/sessions/{id}");
+    public async Task<ChatSession?> GetSessionAsync(Guid rid)
+        => await http.GetFromJsonAsync<ChatSession>($"/api/chat/sessions/{rid}");
 
-    public async Task<List<ChatMessage>> GetMessagesAsync(int id)
-        => await http.GetFromJsonAsync<List<ChatMessage>>($"/api/chat/sessions/{id}/messages") ?? [];
+    public async Task<List<ChatMessage>> GetMessagesAsync(Guid rid)
+        => await http.GetFromJsonAsync<List<ChatMessage>>($"/api/chat/sessions/{rid}/messages") ?? [];
 
-    public async Task<ChatMessage?> SendMessageAsync(int sessionId, string content)
+    public async Task<ChatMessage?> SendMessageAsync(Guid rid, string content)
     {
-        HttpResponseMessage resp = await http.PostAsJsonAsync($"/api/chat/sessions/{sessionId}/message", new ChatMessageRequest(content));
+        HttpResponseMessage resp = await http.PostAsJsonAsync($"/api/chat/sessions/{rid}/message", new ChatMessageRequest(content));
         resp.EnsureSuccessStatusCode();
         return await resp.Content.ReadFromJsonAsync<ChatMessage>();
     }

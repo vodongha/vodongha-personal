@@ -1,8 +1,9 @@
-namespace VodonghaPersonal.Shared.Models;
+﻿namespace VodonghaPersonal.Shared.Models;
 
 public class BlogPost
 {
     public int Id { get; set; }
+    public Guid Rid { get; set; } = Guid.NewGuid();
     public string Title { get; set; } = string.Empty;
     public string? TitleEn { get; set; }
     public string Slug { get; set; } = string.Empty;

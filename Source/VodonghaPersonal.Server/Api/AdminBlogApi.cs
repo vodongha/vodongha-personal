@@ -1,3 +1,5 @@
+﻿using Microsoft.EntityFrameworkCore;
+using VodonghaPersonal.Data;
 using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Models;
 
@@ -21,16 +23,20 @@ public static class AdminBlogApi
             return Results.Ok(post);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, BlogPost post, BlogService svc) =>
+        group.MapPut("/{rid:guid}", async (Guid rid, BlogPost post, IDbContextFactory<AppDbContext> dbFactory, BlogService svc) =>
         {
-            post.Id = id;
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            BlogPost? existing = await db.BlogPosts.FirstOrDefaultAsync(b => b.Rid == rid);
+            if (existing is null) { return Results.NotFound(); }
+            post.Id = existing.Id;
+            post.Rid = rid;
             await svc.SaveAsync(post);
             return Results.Ok(post);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, BlogService svc) =>
+        group.MapDelete("/{rid:guid}", async (Guid rid, BlogService svc) =>
         {
-            await svc.DeleteAsync(id);
+            await svc.DeleteAsync(rid);
             return Results.Ok();
         }).DisableAntiforgery();
     }

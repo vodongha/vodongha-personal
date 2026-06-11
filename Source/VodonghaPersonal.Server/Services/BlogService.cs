@@ -55,10 +55,10 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory, IMemoryCache
         InvalidateCache();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(Guid rid)
     {
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-        BlogPost? post = await db.BlogPosts.FindAsync(id);
+        BlogPost? post = await db.BlogPosts.FirstOrDefaultAsync(b => b.Rid == rid);
         if (post is not null)
         {
             db.BlogPosts.Remove(post);
@@ -67,15 +67,15 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory, IMemoryCache
         }
     }
 
-    public async Task IncrementViewCountAsync(int id)
+    public async Task IncrementViewCountAsync(Guid rid)
     {
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
         await db.BlogPosts
-            .Where(b => b.Id == id)
+            .Where(b => b.Rid == rid)
             .ExecuteUpdateAsync(s => s.SetProperty(b => b.ViewCount, b => b.ViewCount + 1));
     }
 
-    public async Task<List<BlogPost>> GetRelatedAsync(int postId, string tags, int count = 3)
+    public async Task<List<BlogPost>> GetRelatedAsync(Guid rid, string tags, int count = 3)
     {
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
         string[] tagList = tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
@@ -84,7 +84,7 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory, IMemoryCache
         if (tagList.Length == 0)
         {
             return await db.BlogPosts
-                .Where(b => b.IsPublished && b.Id != postId)
+                .Where(b => b.IsPublished && b.Rid != rid)
                 .OrderByDescending(b => b.CreatedAt)
                 .Take(count)
                 .Select(b => new BlogPost
@@ -105,7 +105,7 @@ public class BlogService(IDbContextFactory<AppDbContext> dbFactory, IMemoryCache
 
         // Project only the fields needed for scoring — avoids loading full Content HTML into memory
         List<BlogPost> all = await db.BlogPosts
-            .Where(b => b.IsPublished && b.Id != postId)
+            .Where(b => b.IsPublished && b.Rid != rid)
             .Select(b => new BlogPost
             {
                 Id = b.Id,

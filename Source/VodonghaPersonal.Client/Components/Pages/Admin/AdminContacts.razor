@@ -82,7 +82,7 @@
                 <TemplateColumn Title="@Loc.T("Actions")">
                     <div class="admin-table__actions">
                         <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenMessage(context)" title="@Loc.T("View")"><i class="bi bi-eye"></i></button>
-                        <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(context.Id)" title="@Loc.T("Delete")"><i class="bi bi-trash"></i></button>
+                        <button class="admin-btn admin-btn--sm admin-btn--danger" @onclick="() => ConfirmDelete(context.Rid)" title="@Loc.T("Delete")"><i class="bi bi-trash"></i></button>
                     </div>
                 </TemplateColumn>
             </QuickGrid>

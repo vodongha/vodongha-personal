@@ -13,10 +13,10 @@ public partial class AdminProjects : ComponentBase, IDisposable
     [Inject] private AdminLocalizationService Loc { get; set; } = default!;
 
     private int _unreadChatCount;
-    private int _deleteId;
+    private Guid _deleteId;
     private bool _confirmShow;
 
-    private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
+    private void ConfirmDelete(Guid rid) { _deleteId = rid; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
 
     private bool _loading = true;
@@ -77,7 +77,7 @@ public partial class AdminProjects : ComponentBase, IDisposable
         Projects.Insert(targetIndex, dragged);
         for (int i = 0; i < Projects.Count; i++) { Projects[i].Order = i + 1; }
         _dragIndex = -1; _dropIndex = -1;
-        await ProjectClient.SaveOrderAsync(Projects.Select(p => p.Id).ToList());
+        await ProjectClient.SaveOrderAsync(Projects.Select(p => p.Rid).ToList());
         Toast.Show(Loc.T("Order saved"));
     }
 
@@ -88,6 +88,7 @@ public partial class AdminProjects : ComponentBase, IDisposable
         Editing = new Project
         {
             Id = p.Id,
+            Rid = p.Rid,
             Title = p.Title,
             Description = p.Description,
             DescriptionEn = p.DescriptionEn,
@@ -112,9 +113,9 @@ public partial class AdminProjects : ComponentBase, IDisposable
         Toast.Show(Loc.T("Saved successfully"));
     }
 
-    private async Task Delete(int id)
+    private async Task Delete(Guid rid)
     {
-        await ProjectClient.DeleteAsync(id);
+        await ProjectClient.DeleteAsync(rid);
         Toast.Show(Loc.T("Deleted"));
         await LoadAsync();
     }

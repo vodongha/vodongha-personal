@@ -100,7 +100,11 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             await CloseChat();
         }
 
-        await ChatClient.DeleteSessionAsync(sessionId);
+        ChatSession? session = _sessions.FirstOrDefault(s => s.Id == sessionId);
+        if (session != null)
+        {
+            await ChatClient.DeleteSessionAsync(session.Rid);
+        }
         _sessions.RemoveAll(s => s.Id == sessionId);
         _sessionLastSeenId.Remove(sessionId);
         _unreadChatCount = await ChatClient.GetUnreadCountAsync();
@@ -160,7 +164,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             if (isFromUser)
             {
                 _sessionLastReadId = id;
-                await ChatClient.MarkReadAsync(_selectedSessionId.Value);
+                await ChatClient.MarkReadAsync(_selectedSession!.Rid);
                 // Update in-memory session state to reflect the new message
                 ChatSession? liveSession = _sessions.FirstOrDefault(s => s.Id == _selectedSessionId.Value);
                 if (liveSession != null)
@@ -217,7 +221,8 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         // Fetch only the affected session instead of reloading all sessions (avoids N+1 per message).
         _hubConnection.On<int>("SessionUpdated", async updatedSessionId =>
         {
-            ChatSession? updated = await ChatClient.GetSessionAsync(updatedSessionId);
+            ChatSession? existing = _sessions.FirstOrDefault(s => s.Id == updatedSessionId);
+            ChatSession? updated = existing != null ? await ChatClient.GetSessionAsync(existing.Rid) : null;
             if (updated != null)
             {
                 int idx = _sessions.FindIndex(s => s.Id == updatedSessionId);
@@ -262,7 +267,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         StateHasChanged();
 
         bool sessionHasUnread = _selectedSession?.HasUnread ?? false;
-        _messages = await ChatClient.GetMessagesAsync(sessionId);
+        _messages = _selectedSession != null ? await ChatClient.GetMessagesAsync(_selectedSession.Rid) : [];
 
         // Determine the divider boundary
         if (_sessionLastSeenId.TryGetValue(sessionId, out int storedLastSeen))
@@ -301,7 +306,10 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         }
 
         // Mark session as read in DB and notify widget
-        await ChatClient.MarkReadAsync(sessionId);
+        if (_selectedSession != null)
+        {
+            await ChatClient.MarkReadAsync(_selectedSession.Rid);
+        }
         if (_selectedSession != null)
         {
             _selectedSession.HasUnread = false;
@@ -361,7 +369,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
 
         try
         {
-            ChatMessage? msg = await ChatClient.SendReplyAsync(_selectedSessionId.Value, content);
+            ChatMessage? msg = _selectedSession != null ? await ChatClient.SendReplyAsync(_selectedSession.Rid, content) : null;
             // Replace optimistic placeholder with real message
             int idx = _messages.FindIndex(m => m.Id == 0 && m.Content == content && !m.IsFromUser);
             if (idx >= 0 && msg is not null)

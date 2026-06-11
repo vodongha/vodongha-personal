@@ -1,6 +1,5 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using VodonghaPersonal.Data;
-using VodonghaPersonal.Shared.DTOs;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Api;
@@ -18,10 +17,10 @@ public static class AdminContactsApi
             return Results.Ok(messages);
         });
 
-        group.MapPut("/{id:int}/read", async (int id, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapPut("/{rid:guid}/read", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            ContactMessage? entity = await db.ContactMessages.FindAsync(id);
+            ContactMessage? entity = await db.ContactMessages.FirstOrDefaultAsync(m => m.Rid == rid);
             if (entity != null)
             {
                 entity.IsRead = true;
@@ -37,10 +36,10 @@ public static class AdminContactsApi
             return Results.Ok();
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapDelete("/{rid:guid}", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            await db.ContactMessages.Where(m => m.Id == id).ExecuteDeleteAsync();
+            await db.ContactMessages.Where(m => m.Rid == rid).ExecuteDeleteAsync();
             return Results.Ok();
         }).DisableAntiforgery();
     }

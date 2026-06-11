@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using VodonghaPersonal.Data;
 using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Models;
@@ -30,10 +30,13 @@ public static class AdminExperienceApi
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
+        group.MapPut("/{rid:guid}", async (Guid rid, Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            item.Id = id;
+            Experience? existing = await db.Experiences.FirstOrDefaultAsync(e => e.Rid == rid);
+            if (existing is null) { return Results.NotFound(); }
+            item.Id = existing.Id;
+            item.Rid = rid;
             if (item.IsCurrent) { item.EndYear = null; item.EndMonth = null; }
             db.Experiences.Update(item);
             await db.SaveChangesAsync();
@@ -42,10 +45,10 @@ public static class AdminExperienceApi
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
+        group.MapDelete("/{rid:guid}", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            Experience? e = await db.Experiences.FindAsync(id);
+            Experience? e = await db.Experiences.FirstOrDefaultAsync(x => x.Rid == rid);
             if (e != null)
             {
                 db.Experiences.Remove(e);

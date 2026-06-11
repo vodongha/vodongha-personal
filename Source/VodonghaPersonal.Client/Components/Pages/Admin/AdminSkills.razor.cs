@@ -14,10 +14,10 @@ public partial class AdminSkills : ComponentBase, IDisposable
     [Inject] private AdminLocalizationService Loc { get; set; } = default!;
 
     private int _unreadChatCount;
-    private int _deleteId;
+    private Guid _deleteId;
     private bool _confirmShow;
 
-    private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
+    private void ConfirmDelete(Guid rid) { _deleteId = rid; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
 
     private async Task SetPageSize(ChangeEventArgs e)
@@ -56,7 +56,7 @@ public partial class AdminSkills : ComponentBase, IDisposable
     }
 
     private void OpenAdd() { Editing = new Skill(); ShowForm = true; }
-    private void OpenEdit(Skill s) { Editing = new Skill { Id = s.Id, Name = s.Name, Category = s.Category, Icon = s.Icon, Proficiency = s.Proficiency, Order = s.Order }; ShowForm = true; }
+    private void OpenEdit(Skill s) { Editing = new Skill { Id = s.Id, Rid = s.Rid, Name = s.Name, Category = s.Category, Icon = s.Icon, Proficiency = s.Proficiency, Order = s.Order }; ShowForm = true; }
     private void CloseForm() { ShowForm = false; }
 
     private async Task Save()
@@ -67,9 +67,9 @@ public partial class AdminSkills : ComponentBase, IDisposable
         Toast.Show(Loc.T("Saved successfully"));
     }
 
-    private async Task Delete(int id)
+    private async Task Delete(Guid rid)
     {
-        await SkillClient.DeleteAsync(id);
+        await SkillClient.DeleteAsync(rid);
         Toast.Show(Loc.T("Deleted"));
         await LoadAsync();
     }

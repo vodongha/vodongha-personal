@@ -22,9 +22,9 @@ public partial class AdminContacts : ComponentBase, IDisposable
 
     private int UnreadCount => Messages.Count(m => !m.IsRead);
 
-    private int _deleteId;
+    private Guid _deleteId;
     private bool _confirmShow;
-    private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
+    private void ConfirmDelete(Guid rid) { _deleteId = rid; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
 
     private async Task SetPageSize(ChangeEventArgs e)
@@ -61,7 +61,7 @@ public partial class AdminContacts : ComponentBase, IDisposable
         Selected = msg;
         if (!msg.IsRead)
         {
-            await ContactClient.MarkReadAsync(msg.Id);
+            await ContactClient.MarkReadAsync(msg.Rid);
             msg.IsRead = true;
         }
     }
@@ -75,11 +75,11 @@ public partial class AdminContacts : ComponentBase, IDisposable
         Toast.Show(Loc.T("Marked all as read"));
     }
 
-    private async Task Delete(int id)
+    private async Task Delete(Guid rid)
     {
-        await ContactClient.DeleteAsync(id);
-        Messages.RemoveAll(m => m.Id == id);
-        if (Selected?.Id == id) { Selected = null; }
+        await ContactClient.DeleteAsync(rid);
+        Messages.RemoveAll(m => m.Rid == rid);
+        if (Selected?.Rid == rid) { Selected = null; }
         Toast.Show(Loc.T("Deleted"));
     }
 

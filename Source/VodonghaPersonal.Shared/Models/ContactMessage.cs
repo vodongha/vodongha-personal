@@ -1,10 +1,11 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace VodonghaPersonal.Shared.Models;
 
 public class ContactMessage
 {
     public int Id { get; set; }
+    public Guid Rid { get; set; } = Guid.NewGuid();
 
     [Required]
     public string Name { get; set; } = string.Empty;

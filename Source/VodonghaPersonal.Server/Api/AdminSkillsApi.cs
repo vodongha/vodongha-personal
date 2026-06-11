@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using VodonghaPersonal.Data;
 using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Models;
@@ -29,10 +29,13 @@ public static class AdminSkillsApi
             return Results.Ok(skill);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, Skill skill, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, SkillService skillSvc) =>
+        group.MapPut("/{rid:guid}", async (Guid rid, Skill skill, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, SkillService skillSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            skill.Id = id;
+            Skill? existing = await db.Skills.FirstOrDefaultAsync(s => s.Rid == rid);
+            if (existing is null) { return Results.NotFound(); }
+            skill.Id = existing.Id;
+            skill.Rid = rid;
             db.Skills.Update(skill);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
@@ -40,10 +43,10 @@ public static class AdminSkillsApi
             return Results.Ok(skill);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, SkillService skillSvc) =>
+        group.MapDelete("/{rid:guid}", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, SkillService skillSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            Skill? skill = await db.Skills.FindAsync(id);
+            Skill? skill = await db.Skills.FirstOrDefaultAsync(s => s.Rid == rid);
             if (skill != null)
             {
                 db.Skills.Remove(skill);
