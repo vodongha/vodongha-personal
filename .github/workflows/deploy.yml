@@ -59,7 +59,25 @@ jobs:
     needs: [build, test, dotnet-format, js-scss-lint]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-tags: true
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --app vodongha
+      - name: Resolve app version from git tag
+        id: version
+        run: |
+          TAG=$(git tag --points-at HEAD | grep '^v[0-9]' | head -1)
+          if [ -n "$TAG" ]; then
+            echo "version=${TAG#v}" >> $GITHUB_OUTPUT
+            echo "has_tag=true" >> $GITHUB_OUTPUT
+          else
+            echo "version=0.0.0" >> $GITHUB_OUTPUT
+            echo "has_tag=false" >> $GITHUB_OUTPUT
+          fi
+      - run: flyctl deploy --remote-only --app vodongha --build-arg APP_VERSION=${{ steps.version.outputs.version }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Persist version as Fly.io secret
+        if: steps.version.outputs.has_tag == 'true'
+        run: flyctl secrets set APP_VERSION=${{ steps.version.outputs.version }} --app vodongha
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

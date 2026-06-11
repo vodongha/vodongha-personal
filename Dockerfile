@@ -11,8 +11,10 @@ COPY Source/VodonghaPersonal.Client/VodonghaPersonal.Client.csproj Source/Vodong
 COPY Source/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj Source/VodonghaPersonal.Server/
 RUN dotnet restore Source/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj
 
+ARG APP_VERSION=0.0.0
+
 COPY . .
-RUN dotnet publish Source/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj -c Release -o /app/publish
+RUN dotnet publish Source/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj -c Release -o /app/publish -p:Version=${APP_VERSION}
 
 # ── Stage 2: Runtime ──────────────────────────────────────────
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final

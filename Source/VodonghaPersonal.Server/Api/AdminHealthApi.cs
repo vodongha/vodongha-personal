@@ -1,3 +1,4 @@
+using System.Reflection;
 using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.DTOs;
 
@@ -22,10 +23,21 @@ public static class AdminHealthApi
                 Snapshots: snapshots,
                 Latest: latestDto,
                 UptimeSeconds: (long)monitor.Uptime.TotalSeconds,
-                StartedAt: monitor.StartedAt
+                StartedAt: monitor.StartedAt,
+                AppVersion: ResolveAppVersion()
             );
 
             return Results.Ok(dto);
         }).RequireAuthorization();
+    }
+
+    private static string ResolveAppVersion()
+    {
+        string? assemblyVersion = Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3);
+        if (assemblyVersion is not null && assemblyVersion != "0.0.0" && assemblyVersion != "1.0.0")
+        {
+            return assemblyVersion;
+        }
+        return Environment.GetEnvironmentVariable("APP_VERSION") ?? "unknown";
     }
 }
