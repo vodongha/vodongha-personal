@@ -11,6 +11,7 @@
 
     <main class="admin-main">
         <header class="admin-header">
+            <AdminBreadcrumb />
             <h1 class="admin-header__title">@Loc.T("Messages") @if (UnreadCount > 0) { <span class="admin-badge" style="background:rgba(99,102,241,.15);color:#818cf8">@UnreadCount @Loc.T("unread")</span> }</h1>
             @if (Messages.Count > 0)
             {

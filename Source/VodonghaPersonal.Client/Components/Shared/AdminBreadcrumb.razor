@@ -1,0 +1,22 @@
+@using VodonghaPersonal.Client.Services
+@inject NavigationManager Nav
+@inject AdminLocalizationService Loc
+
+@if (_group is not null)
+{
+    <nav class="admin-breadcrumb" aria-label="breadcrumb">
+        <a class="admin-breadcrumb__item" href="/admin">Admin</a>
+        <span class="admin-breadcrumb__sep">›</span>
+        <span class="admin-breadcrumb__item admin-breadcrumb__item--group">@Loc.T(_group!)</span>
+        <span class="admin-breadcrumb__sep">›</span>
+        <span class="admin-breadcrumb__item admin-breadcrumb__item--current" aria-current="page">@Loc.T(_page)</span>
+    </nav>
+}
+else if (_page is not null)
+{
+    <nav class="admin-breadcrumb" aria-label="breadcrumb">
+        <a class="admin-breadcrumb__item" href="/admin">Admin</a>
+        <span class="admin-breadcrumb__sep">›</span>
+        <span class="admin-breadcrumb__item admin-breadcrumb__item--current" aria-current="page">@Loc.T(_page)</span>
+    </nav>
+}
