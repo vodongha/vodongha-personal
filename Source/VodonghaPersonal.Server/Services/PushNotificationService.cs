@@ -38,7 +38,7 @@ public class PushNotificationService
     // ── Subscription management ───────────────────────────────────────────────
 
     public async Task SaveSubscriptionAsync(string endpoint, string p256dh, string auth,
-        Guid? chatSessionId, bool isAdmin)
+        int? chatSessionId, bool isAdmin)
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
 
@@ -89,7 +89,7 @@ public class PushNotificationService
     }
 
     /// <summary>Send push to the visitor subscription linked to a chat session.</summary>
-    public async Task SendToSessionAsync(Guid sessionId, string title, string body, string url)
+    public async Task SendToSessionAsync(int sessionId, string title, string body, string url)
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
         List<PushSubscriptionModel> subs = await db.PushSubscriptions

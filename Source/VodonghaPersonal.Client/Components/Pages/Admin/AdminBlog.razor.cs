@@ -14,10 +14,10 @@ public partial class AdminBlog : ComponentBase, IDisposable
     [Inject] private AdminLocalizationService Loc { get; set; } = default!;
 
     private int _unreadChatCount;
-    private Guid _deleteId;
+    private int _deleteId;
     private bool _confirmShow;
 
-    private void ConfirmDelete(Guid id) { _deleteId = id; _confirmShow = true; }
+    private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
 
     private async Task SetPageSize(ChangeEventArgs e)
@@ -104,7 +104,7 @@ public partial class AdminBlog : ComponentBase, IDisposable
     }
 
     private async Task Save() { await BlogClient.SaveAsync(Editing); ShowForm = false; await LoadAsync(); Toast.Show(Loc.T("Saved successfully")); }
-    private async Task Delete(Guid id) { await BlogClient.DeleteAsync(id); await LoadAsync(); Toast.Show(Loc.T("Deleted")); }
+    private async Task Delete(int id) { await BlogClient.DeleteAsync(id); await LoadAsync(); Toast.Show(Loc.T("Deleted")); }
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
     public void Dispose() { Loc.OnChanged -= OnLangChanged; }

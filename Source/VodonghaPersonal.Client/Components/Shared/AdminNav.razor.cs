@@ -134,7 +134,7 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
             string p256dh = doc.RootElement.GetProperty("keys").GetProperty("p256dh").GetString() ?? "";
             string auth = doc.RootElement.GetProperty("keys").GetProperty("auth").GetString() ?? "";
 
-            await Http.PostAsJsonAsync("/api/push/subscribe", new { endpoint, p256dh, auth, chatSessionId = (Guid?)null });
+            await Http.PostAsJsonAsync("/api/push/subscribe", new { endpoint, p256dh, auth, chatSessionId = (int?)null });
         }
         catch { }
     }

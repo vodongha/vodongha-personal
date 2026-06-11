@@ -2,7 +2,7 @@ namespace VodonghaPersonal.Shared.Models;
 
 public class AppSecret
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public string Key { get; set; } = "";   // e.g. "Fly:ApiToken"
     public string Value { get; set; } = "";   // AES-encrypted via IDataProtector
     public string DisplayName { get; set; } = "";   // e.g. "Fly.io API Token"

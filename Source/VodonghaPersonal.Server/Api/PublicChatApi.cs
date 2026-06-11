@@ -16,19 +16,19 @@ public static class PublicChatApi
             return Results.Ok(session);
         }).DisableAntiforgery();
 
-        group.MapGet("/sessions/{id:guid}", async (Guid id, ChatService svc) =>
+        group.MapGet("/sessions/{id:int}", async (int id, ChatService svc) =>
         {
             ChatSession? session = await svc.GetSessionAsync(id);
             return session is null ? Results.NotFound() : Results.Ok(session);
         });
 
-        group.MapGet("/sessions/{id:guid}/messages", async (Guid id, ChatService svc) =>
+        group.MapGet("/sessions/{id:int}/messages", async (int id, ChatService svc) =>
         {
             List<ChatMessage> messages = await svc.GetMessagesAsync(id);
             return Results.Ok(messages);
         });
 
-        group.MapPost("/sessions/{id:guid}/message", async (Guid id, ChatMessageRequest req, ChatService svc) =>
+        group.MapPost("/sessions/{id:int}/message", async (int id, ChatMessageRequest req, ChatService svc) =>
         {
             ChatMessage message = await svc.SendUserMessageAsync(id, req.Content);
             return Results.Ok(message);

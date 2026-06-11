@@ -21,22 +21,22 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
 
     // Auto-open a specific session when navigated from a push notification (?session=ID)
     [SupplyParameterFromQuery(Name = "session")]
-    [Parameter] public Guid? SessionParam { get; set; }
+    [Parameter] public int? SessionParam { get; set; }
 
     private bool _loading = true;
     private List<ChatSession> _sessions = [];
     private List<ChatMessage> _messages = [];
-    private Guid? _selectedSessionId;
+    private int? _selectedSessionId;
     private ChatSession? _selectedSession;
     private string _replyText = "";
     private bool _sending;
     private bool _otherIsTyping;
     private int _unreadChatCount;
-    private Guid _deleteSessionId;
+    private int _deleteSessionId;
     private bool _confirmShow;
-    private DateTime _sessionLastReadAt;   // SentAt boundary: user messages after this are "new to admin"
-    private DateTime _userReadUpToAt;      // SentAt of the last admin message the user has read (for ✓✓)
-    private Dictionary<Guid, DateTime> _sessionLastSeenAt = new();  // sessionId → lastReadAt, persists across re-opens
+    private int _sessionLastReadId;   // user-message ID boundary: messages with Id > this are "new to admin"
+    private int _userReadUpToId;      // max admin-message ID the user has read (for ✓✓ on admin's outgoing)
+    private Dictionary<int, int> _sessionLastSeenId = new();  // sessionId → lastReadId, persists across re-opens
     private bool _pendingScrollToUnread;
     private HubConnection? _hubConnection;
     private CancellationTokenSource? _typingCts;
@@ -80,7 +80,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         }
     }
 
-    private void ConfirmDeleteSession(Guid sessionId)
+    private void ConfirmDeleteSession(int sessionId)
     {
         _deleteSessionId = sessionId;
         _confirmShow = true;
@@ -92,7 +92,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         await DeleteSessionAsync(_deleteSessionId);
     }
 
-    private async Task DeleteSessionAsync(Guid sessionId)
+    private async Task DeleteSessionAsync(int sessionId)
     {
         // If the deleted session is currently open, close it first
         if (_selectedSessionId == sessionId)
@@ -102,7 +102,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
 
         await ChatClient.DeleteSessionAsync(sessionId);
         _sessions.RemoveAll(s => s.Id == sessionId);
-        _sessionLastSeenAt.Remove(sessionId);
+        _sessionLastSeenId.Remove(sessionId);
         _unreadChatCount = await ChatClient.GetUnreadCountAsync();
         Toast.Show("Đã xoá cuộc trò chuyện");
     }
@@ -143,7 +143,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             }
 
             ChatHubParser.HubMessage parsed = ChatHubParser.Parse(msg);
-            Guid id = parsed.Id;
+            int id = parsed.Id;
             string content = parsed.Content;
             bool isFromUser = parsed.IsFromUser;
             DateTime sentAt = parsed.SentAt;
@@ -159,7 +159,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             // Admin is watching this session live — auto-mark as read
             if (isFromUser)
             {
-                _sessionLastReadAt = sentAt;
+                _sessionLastReadId = id;
                 await ChatClient.MarkReadAsync(_selectedSessionId.Value);
                 // Update in-memory session state to reflect the new message
                 ChatSession? liveSession = _sessions.FirstOrDefault(s => s.Id == _selectedSessionId.Value);
@@ -190,36 +190,32 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         });
 
         // User read receipt — update ✓ → ✓✓ on admin's outgoing messages
-        _hubConnection.On<Guid>("MessagesRead", async lastReadMsgId =>
+        _hubConnection.On<int>("MessagesRead", async lastReadId =>
         {
-            ChatMessage? msg = _messages.FirstOrDefault(m => m.Id == lastReadMsgId);
-            if (msg != null)
-            {
-                _userReadUpToAt = msg.SentAt;
-            }
+            _userReadUpToId = Math.Max(_userReadUpToId, lastReadId);
             await InvokeAsync(StateHasChanged);
         });
 
         // Session deleted by another admin tab — remove it from the list
-        _hubConnection.On<Guid>("SessionDeleted", async deletedSessionId =>
+        _hubConnection.On<int>("SessionDeleted", async deletedSessionId =>
         {
             if (_selectedSessionId == deletedSessionId)
             {
                 _selectedSessionId = null;
                 _selectedSession = null;
                 _messages = [];
-                _sessionLastReadAt = DateTime.MinValue;
-                _userReadUpToAt = DateTime.MinValue;
+                _sessionLastReadId = 0;
+                _userReadUpToId = 0;
             }
             _sessions.RemoveAll(s => s.Id == deletedSessionId);
-            _sessionLastSeenAt.Remove(deletedSessionId);
+            _sessionLastSeenId.Remove(deletedSessionId);
             _unreadChatCount = await ChatClient.GetUnreadCountAsync();
             await InvokeAsync(StateHasChanged);
         });
 
         // Refresh session list when any session gets a new message.
         // Fetch only the affected session instead of reloading all sessions (avoids N+1 per message).
-        _hubConnection.On<Guid>("SessionUpdated", async updatedSessionId =>
+        _hubConnection.On<int>("SessionUpdated", async updatedSessionId =>
         {
             ChatSession? updated = await ChatClient.GetSessionAsync(updatedSessionId);
             if (updated != null)
@@ -240,12 +236,12 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         await _hubConnection.InvokeAsync("JoinAdminGroup");
     }
 
-    private async Task SelectSession(Guid sessionId)
+    private async Task SelectSession(int sessionId)
     {
         // Save last-seen pointer for the session being left
         if (_selectedSessionId.HasValue && _messages.Count > 0)
         {
-            _sessionLastSeenAt[_selectedSessionId.Value] = _messages.Max(m => m.SentAt);
+            _sessionLastSeenId[_selectedSessionId.Value] = _messages.Max(m => m.Id);
         }
 
         // Leave old session group — swallow hub errors (may not be connected yet)
@@ -260,7 +256,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         _messages = [];
         _replyText = "";
         _otherIsTyping = false;
-        _userReadUpToAt = DateTime.MinValue;
+        _userReadUpToId = 0;
 
         // Show the chat panel immediately — don't wait for messages to load
         StateHasChanged();
@@ -269,15 +265,15 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         _messages = await ChatClient.GetMessagesAsync(sessionId);
 
         // Determine the divider boundary
-        if (_sessionLastSeenAt.TryGetValue(sessionId, out DateTime storedLastSeen))
+        if (_sessionLastSeenId.TryGetValue(sessionId, out int storedLastSeen))
         {
             // Re-opening a session: new messages = those after last time admin viewed it
-            _sessionLastReadAt = storedLastSeen;
+            _sessionLastReadId = storedLastSeen;
         }
         else if (sessionHasUnread)
         {
             // First open with unread: new messages = user messages after admin's last reply
-            // Find the last admin message; user messages after it are "new"
+            // Find the last admin message index; user messages after it are "new"
             int lastAdminIdx = -1;
             for (int i = _messages.Count - 1; i >= 0; i--)
             {
@@ -287,23 +283,21 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
             if (lastAdminIdx < 0)
             {
                 // Admin has never replied — all user messages are new
-                _sessionLastReadAt = DateTime.MinValue;
+                _sessionLastReadId = 0;
             }
             else
             {
                 // User messages before lastAdminIdx are "seen"; after = new
-                _sessionLastReadAt = _messages.Take(lastAdminIdx)
+                _sessionLastReadId = _messages.Take(lastAdminIdx)
                     .Where(m => m.IsFromUser)
-                    .Select(m => (DateTime?)m.SentAt)
-                    .Max() ?? DateTime.MinValue;
+                    .Select(m => (int?)m.Id)
+                    .Max() ?? 0;
             }
         }
         else
         {
             // No unread — mark everything as read, no divider
-            _sessionLastReadAt = _messages.Where(m => m.IsFromUser)
-                .Select(m => (DateTime?)m.SentAt)
-                .Max() ?? DateTime.MinValue;
+            _sessionLastReadId = _messages.Where(m => m.IsFromUser).Select(m => (int?)m.Id).Max() ?? 0;
         }
 
         // Mark session as read in DB and notify widget
@@ -331,7 +325,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         // Save last-seen pointer so re-opens show a divider for new messages
         if (_selectedSessionId.HasValue && _messages.Count > 0)
         {
-            _sessionLastSeenAt[_selectedSessionId.Value] = _messages.Max(m => m.SentAt);
+            _sessionLastSeenId[_selectedSessionId.Value] = _messages.Max(m => m.Id);
         }
 
         if (_selectedSessionId.HasValue && _hubConnection != null)
@@ -343,8 +337,8 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         _selectedSession = null;
         _messages = [];
         _otherIsTyping = false;
-        _sessionLastReadAt = DateTime.MinValue;
-        _userReadUpToAt = DateTime.MinValue;
+        _sessionLastReadId = 0;
+        _userReadUpToId = 0;
     }
 
     private async Task SendReply()
@@ -360,7 +354,7 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         _ = StopTypingAsync(); // fire-and-forget, don't block optimistic display
 
         // Optimistic: show message instantly
-        ChatMessage optimistic = new() { Id = Guid.Empty, Content = content, IsFromUser = false, SentAt = DateTime.UtcNow, ChatSessionId = _selectedSessionId.Value };
+        ChatMessage optimistic = new() { Id = 0, Content = content, IsFromUser = false, SentAt = DateTime.UtcNow, ChatSessionId = _selectedSessionId.Value };
         _messages.Add(optimistic);
         StateHasChanged();
         await JS.InvokeVoidAsync("chatUtils.scrollToBottom", "adminChatMessages");
@@ -369,15 +363,13 @@ public partial class AdminChats : ComponentBase, IAsyncDisposable
         {
             ChatMessage? msg = await ChatClient.SendReplyAsync(_selectedSessionId.Value, content);
             // Replace optimistic placeholder with real message
-            int idx = _messages.FindIndex(m => m.Id == Guid.Empty && m.Content == content && !m.IsFromUser);
+            int idx = _messages.FindIndex(m => m.Id == 0 && m.Content == content && !m.IsFromUser);
             if (idx >= 0 && msg is not null)
             {
                 _messages[idx] = msg;
             }
             // Admin just sent — they've seen all messages; reset unread pointer
-            _sessionLastReadAt = _messages.Where(m => m.IsFromUser)
-                .Select(m => (DateTime?)m.SentAt)
-                .Max() ?? _sessionLastReadAt;
+            _sessionLastReadId = _messages.Where(m => m.IsFromUser).Select(m => (int?)m.Id).Max() ?? _sessionLastReadId;
             _sessions = await ChatClient.GetSessionsAsync();
         }
         catch

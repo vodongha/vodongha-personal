@@ -97,10 +97,10 @@ public record ApiKeyDefinitionDto(string Key, string DisplayName, string Descrip
 public record ApiKeysPageDto(List<ApiKeyDefinitionDto> Definitions, Dictionary<string, string> DbValues, Dictionary<string, string> EnvValues);
 
 // Orders
-public record OrderUpdateRequest(List<Guid> Ids);
+public record OrderUpdateRequest(List<int> Ids);
 
 // Contacts
-public record MarkReadRequest(Guid Id);
+public record MarkReadRequest(int Id);
 
 // Chat
 public record ChatReplyRequest(string Content);

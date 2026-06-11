@@ -14,10 +14,10 @@ public partial class AdminExperience : ComponentBase, IDisposable
     [Inject] private AdminLocalizationService Loc { get; set; } = default!;
 
     private int _unreadChatCount;
-    private Guid _deleteId;
+    private int _deleteId;
     private bool _confirmShow;
 
-    private void ConfirmDelete(Guid id) { _deleteId = id; _confirmShow = true; }
+    private void ConfirmDelete(int id) { _deleteId = id; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
 
     private async Task SetPageSize(ChangeEventArgs e)
@@ -68,7 +68,7 @@ public partial class AdminExperience : ComponentBase, IDisposable
         Toast.Show("Đã lưu thành công");
     }
 
-    private async Task Delete(Guid id)
+    private async Task Delete(int id)
     {
         await ExpClient.DeleteAsync(id);
         Toast.Show("Đã xoá");

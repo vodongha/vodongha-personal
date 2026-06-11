@@ -186,7 +186,7 @@ vodongha-personal/
 │   │   └── Program.cs                        # WASM entry — registers HttpClient, auth services,
 │   │                                         #   CookieAuthStateProvider, all API clients
 │   └── VodonghaPersonal.Shared/              # Shared between Server and Client
-│       ├── Models/                           # All entity models + CvData record (all PKs: Guid Id)
+│       ├── Models/                           # All entity models + CvData record
 │       └── DTOs/
 │           └── AdminDtos.cs                  # All API request/response records
 ├── Directory.Build.props                 # Shared: TargetFramework net10.0, Nullable enable, ImplicitUsings enable
@@ -353,7 +353,7 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 
 ### Session persistence
 
-`localStorage` stores `chatSessionId` (Guid), `chatLastReadAt` (ISO 8601 DateTime), `chatAdminReadAt` (ISO 8601 DateTime). On reload the widget restores the session, reconnects SignalR, and recomputes unread count using `SentAt` DateTime comparisons (not ID comparisons, since IDs are UUID).
+`ProtectedLocalStorage` stores `chatSessionId`, `chatLastReadId`, `chatAdminReadId` in the browser. On reload the widget restores the session, reconnects SignalR, and recomputes unread count.
 
 ### Chat features
 
@@ -629,19 +629,13 @@ dotnet ef migrations add <MigrationName>
 
 Migrations apply automatically on startup. **There is no `HasData()` seed in `AppDbContext`** — all content (skills, projects, experience, education, blog posts, settings) is managed at runtime through the Admin UI and stored in the database.
 
-## Admin authentication
-
-Admin credentials are stored in the `AdminUsers` table (not in config files). On startup, `AdminAuthService.SeedFromConfigAsync` checks if the table is empty — if so, it creates the first user from `Admin__Username` / `Admin__Password` Fly.io secrets. After the first admin user exists, credentials are managed via the Admin UI (`/admin/profile` → Change Password).
-
-Password storage: `Microsoft.AspNetCore.Identity.PasswordHasher<AdminUser>` (PBKDF2).
-
 ## Fly.io secrets
 
 | Secret | Purpose |
 |---|---|
 | `ConnectionStrings__DefaultConnection` | Neon PostgreSQL |
-| `Admin__Username` | Initial admin username (seed only — used once if `AdminUsers` table is empty) |
-| `Admin__Password` | Initial admin password (seed only) |
+| `Admin__Username` | Admin panel login |
+| `Admin__Password` | Admin panel login |
 | `Email__ResendApiKey` | Resend API key for contact form |
 
 Set with: `flyctl secrets set KEY=VALUE`
@@ -673,7 +667,7 @@ else { <real content> }
 
 | Version | Changes |
 |---|---|
-| v3.0.3 | **Islands architecture** — Home page converted to static SSR (no Blazor circuit, zero flickering); NavBar, FooterSection, ChatWidget, AiWidget, BlogListPage, BlogPostPage, BlogCard, BlogShareButtons, TableOfContents, RelatedPosts moved to VodonghaPersonal.Client (InteractiveWebAssembly); public API expanded: GET /api/blog/{id}/related, GET /api/auth/state; CookieAuthStateProvider added (WASM reads auth state via API); APP_VERSION injected from Server assembly into /api/site/settings (not env var); section expand/collapse via window.sectionToggle() JS (static SSR has no Blazor runtime); CI: actions/checkout@v5, FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true, git describe fallback to v0.0.0. **UUID migration** — all table PKs changed from `int` to `Guid` (`uuid` in PostgreSQL); route constraints `{id:int}` → `{id:guid}`; `id == 0` checks → `id == Guid.Empty`; `BaseCrudApiClient.SaveAsync(item, Guid id)` replaces int version; chat read tracking changed from int ID comparison to DateTime/SentAt comparison; localStorage keys `chatLastReadAt`/`chatAdminReadAt` store ISO 8601 DateTime strings; SignalR `AdminRead`/`MessagesRead`/`SessionDeleted`/`SessionUpdated` hub events changed from `On<int>` to `On<Guid>`; **DB-based admin auth** — `AdminUsers` table replaces file-based credentials; `AdminAuthService` seeds from `Admin__Username`/`Admin__Password` on first startup; migrations reset to single `InitialCreate` |
+| v3.0.3 | **Islands architecture** — Home page converted to static SSR (no Blazor circuit, zero flickering); NavBar, FooterSection, ChatWidget, AiWidget, BlogListPage, BlogPostPage, BlogCard, BlogShareButtons, TableOfContents, RelatedPosts moved to VodonghaPersonal.Client (InteractiveWebAssembly); public API expanded: GET /api/blog/{id}/related, GET /api/auth/state; CookieAuthStateProvider added (WASM reads auth state via API); APP_VERSION injected from Server assembly into /api/site/settings (not env var); section expand/collapse via window.sectionToggle() JS (static SSR has no Blazor runtime); CI: actions/checkout@v5, FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true, git describe fallback to v0.0.0 |
 | v3.0.1 | InteractiveWebAssembly admin panel: new VodonghaPersonal.Client WASM project; 15 REST API endpoint groups under /api/admin/*; all 16 admin pages migrated to @rendermode InteractiveWebAssembly; 14 HttpClient API clients; CvData moved to Shared; solution restructured into Source/Test layout; test split into Server/Client/Shared test projects (58 tests total: 12 Server + 34 Client + 12 Shared); Directory.Build.props and NuGet.Config moved to root; lint.yml workflow cleaned up. **Perf patch:** IMemoryCache (1h TTL) in all 6 public services; DependencyCheckService SemaphoreSlim thundering-herd fix; HealthMonitorService Interlocked overlap prevention; AnalyticsService geo-cache eviction; CvCacheService sequential await; all async event handlers converted to async void + await; PageViews indexes (Path, Country, Referrer); auto app version from git tag in footer + health page |
 | v2.0.6 | i18n all 8 admin pages; Lint CI (dotnet format + ESLint + Stylelint); CI & Deploy flow; ES2026 JS (Uint8Array.fromBase64, ecmaVersion 2026); Dependencies tracker page (/admin/dependencies — NuGet/npm/CDN version checks, filter chips, search); unit tests (VodonghaPersonal.Tests, 12 NUnit + Shouldly tests); dep updates (Microsoft 10.0.8→10.0.9, SkiaSharp 3.116.1→3.119.4, eslint 9→10, stylelint 16→17, SortableJS 1.15.3→1.15.7, Devicon latest→2.17.0); menu renamed "Thông tin"→"Hồ sơ" (bi-person-vcard, first in Portfolio group); SCSS Stylelint fixes; analytics nav label fix; cost banner light-mode fix; Chart.js version mismatch fix (4.4.4→4.5.1) |
 | v2.0.5 | Self-hosted analytics dashboard (page views, geo country, daily chart, top pages/countries/referrers); Admin sidebar collapsible groups (Portfolio/Communication/Insights/System); sidebar independent scroll; i18n for analytics; mobile bottom bar equal-width + dividers; Website button + Menu (mobile-only); SCSS refactor (_admin-mobile.scss, _client-mobile.scss); AI floating widget (Google Gemini); scroll-to-top position fix; collapsible sidebar (icon-only collapsed mode, localStorage); icon-only top controls with tooltips; mobile bottom bar 4-item; Dashboard → /admin/analytics |

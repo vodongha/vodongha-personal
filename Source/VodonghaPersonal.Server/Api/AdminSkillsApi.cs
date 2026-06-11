@@ -21,7 +21,7 @@ public static class AdminSkillsApi
         group.MapPost("/", async (Skill skill, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, SkillService skillSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            skill.Id = Guid.NewGuid();
+            skill.Id = 0;
             db.Skills.Add(skill);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
@@ -29,7 +29,7 @@ public static class AdminSkillsApi
             return Results.Ok(skill);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:guid}", async (Guid id, Skill skill, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, SkillService skillSvc) =>
+        group.MapPut("/{id:int}", async (int id, Skill skill, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, SkillService skillSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             skill.Id = id;
@@ -40,7 +40,7 @@ public static class AdminSkillsApi
             return Results.Ok(skill);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:guid}", async (Guid id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, SkillService skillSvc) =>
+        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, SkillService skillSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             Skill? skill = await db.Skills.FindAsync(id);

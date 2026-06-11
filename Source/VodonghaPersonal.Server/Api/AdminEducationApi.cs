@@ -21,7 +21,7 @@ public static class AdminEducationApi
         group.MapPost("/", async (Education item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, EducationService eduSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-            item.Id = Guid.NewGuid();
+            item.Id = 0;
             db.Educations.Add(item);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
@@ -29,7 +29,7 @@ public static class AdminEducationApi
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:guid}", async (Guid id, Education item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, EducationService eduSvc) =>
+        group.MapPut("/{id:int}", async (int id, Education item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, EducationService eduSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             item.Id = id;
@@ -40,7 +40,7 @@ public static class AdminEducationApi
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:guid}", async (Guid id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, EducationService eduSvc) =>
+        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, EducationService eduSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             Education? e = await db.Educations.FindAsync(id);

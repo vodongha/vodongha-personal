@@ -478,5 +478,5 @@ app.Run();
 
 // ── DTOs ──────────────────────────────────────────────────────────────────────
 // IsAdmin is intentionally removed from this DTO — it is always determined server-side from auth state.
-record PushSubscribeRequest(string Endpoint, string P256DH, string Auth, Guid? ChatSessionId);
+record PushSubscribeRequest(string Endpoint, string P256DH, string Auth, int? ChatSessionId);
 record PushUnsubscribeRequest(string Endpoint);

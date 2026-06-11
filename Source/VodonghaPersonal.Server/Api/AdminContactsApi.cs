@@ -18,7 +18,7 @@ public static class AdminContactsApi
             return Results.Ok(messages);
         });
 
-        group.MapPut("/{id:guid}/read", async (Guid id, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapPut("/{id:int}/read", async (int id, IDbContextFactory<AppDbContext> dbFactory) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             ContactMessage? entity = await db.ContactMessages.FindAsync(id);
@@ -37,7 +37,7 @@ public static class AdminContactsApi
             return Results.Ok();
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:guid}", async (Guid id, IDbContextFactory<AppDbContext> dbFactory) =>
+        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             await db.ContactMessages.Where(m => m.Id == id).ExecuteDeleteAsync();

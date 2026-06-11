@@ -58,7 +58,7 @@ public class AdminAuthService(IDbContextFactory<AppDbContext> dbFactory)
             return;
         }
 
-        AdminUser user = new() { Id = Guid.NewGuid(), Username = username, CreatedAt = DateTime.UtcNow };
+        AdminUser user = new() { Username = username, CreatedAt = DateTime.UtcNow };
         user.PasswordHash = _hasher.HashPassword(user, password);
         db.AdminUsers.Add(user);
         await db.SaveChangesAsync();

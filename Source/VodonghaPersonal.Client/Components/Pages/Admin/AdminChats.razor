@@ -81,9 +81,9 @@
 
                         <div class="chat-admin-messages" id="adminChatMessages">
                             @{
-                                // Show divider at first user message with SentAt > _sessionLastReadAt
-                                // When _sessionLastReadAt is default, all user messages are "new"
-                                int firstUnreadIdx = _messages.FindIndex(m => m.IsFromUser && m.SentAt > _sessionLastReadAt);
+                                // Show divider at first user message with Id > _sessionLastReadId
+                                // When _sessionLastReadId = 0, all user messages are "new"
+                                int firstUnreadIdx = _messages.FindIndex(m => m.IsFromUser && m.Id > _sessionLastReadId);
                             }
                             @for (int i = 0; i < _messages.Count; i++)
                             {
@@ -97,13 +97,13 @@
                                     </div>
                                 }
 
-                                <div class="chat-msg @(msg.IsFromUser ? "chat-msg--admin" : "chat-msg--user") @(isUnread ? "chat-msg--unread" : "") @(msg.Id == Guid.Empty ? "chat-msg--pending" : "")">
+                                <div class="chat-msg @(msg.IsFromUser ? "chat-msg--admin" : "chat-msg--user") @(isUnread ? "chat-msg--unread" : "") @(msg.Id == 0 ? "chat-msg--pending" : "")">
                                     <div class="chat-msg__bubble">@msg.Content</div>
                                     <div class="chat-msg__time">
                                         @(msg.IsFromUser ? Loc.T("User") : Loc.T("Admin")) · @Tz.ToUserTime(msg.SentAt).ToString("HH:mm")
                                         @if (!msg.IsFromUser)
                                         {
-                                            if (_userReadUpToAt != default && msg.SentAt <= _userReadUpToAt)
+                                            if (_userReadUpToId > 0 && msg.Id <= _userReadUpToId)
                                             {
                                                 <i class="bi bi-check-all chat-msg__ticks chat-msg__ticks--read" title="@Loc.T("Read")"></i>
                                             }

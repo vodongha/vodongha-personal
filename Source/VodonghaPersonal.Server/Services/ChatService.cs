@@ -19,7 +19,7 @@ public class ChatService
     // Short-lived cache: sessionId → TelegramTopicId, avoids a DB query on every typing event.
     // ChatService is scoped, so this cache lives for the duration of a single SignalR hub invocation.
     // A static dictionary is intentional: typing events come from different scopes; we want to share the cache.
-    private static readonly ConcurrentDictionary<Guid, long?> s_topicIdCache = new();
+    private static readonly ConcurrentDictionary<int, long?> s_topicIdCache = new();
 
     public ChatService(IDbContextFactory<AppDbContext> dbFactory, TelegramService telegram,
         IHubContext<ChatHub> hub, PushNotificationService push, SiteSettingService settings,
@@ -76,7 +76,7 @@ public class ChatService
         return session;
     }
 
-    public async Task<ChatMessage> SendUserMessageAsync(Guid sessionId, string content)
+    public async Task<ChatMessage> SendUserMessageAsync(int sessionId, string content)
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
 
@@ -129,7 +129,7 @@ public class ChatService
         return message;
     }
 
-    public async Task<ChatMessage> SendAdminReplyAsync(Guid sessionId, string content)
+    public async Task<ChatMessage> SendAdminReplyAsync(int sessionId, string content)
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
 
@@ -282,7 +282,7 @@ public class ChatService
         await _telegram.SendMessageAsync($"💬 {content}", newTopicId.Value);
     }
 
-    public async Task<List<ChatMessage>> GetMessagesAsync(Guid sessionId)
+    public async Task<List<ChatMessage>> GetMessagesAsync(int sessionId)
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
         return await db.ChatMessages
@@ -299,13 +299,13 @@ public class ChatService
             .ToListAsync();
     }
 
-    public async Task<ChatSession?> GetSessionAsync(Guid sessionId)
+    public async Task<ChatSession?> GetSessionAsync(int sessionId)
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
         return await db.ChatSessions.FindAsync(sessionId);
     }
 
-    public async Task MarkSessionReadAsync(Guid sessionId)
+    public async Task MarkSessionReadAsync(int sessionId)
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
         ChatSession? session = await db.ChatSessions.FindAsync(sessionId);
@@ -315,20 +315,19 @@ public class ChatService
             await db.SaveChangesAsync();
         }
 
-        // Broadcast read receipt to widget: admin has read all user messages up to this Guid
-        Guid? lastUserMsgId = await db.ChatMessages
+        // Broadcast read receipt to widget: admin has read all user messages up to this ID
+        int lastUserMsgId = await db.ChatMessages
             .Where(m => m.ChatSessionId == sessionId && m.IsFromUser)
-            .OrderByDescending(m => m.SentAt)
-            .Select(m => (Guid?)m.Id)
-            .FirstOrDefaultAsync();
+            .Select(m => (int?)m.Id)
+            .MaxAsync() ?? 0;
 
-        if (lastUserMsgId.HasValue)
+        if (lastUserMsgId > 0)
         {
-            await _hub.Clients.Group($"session_{sessionId}").SendAsync("AdminRead", lastUserMsgId.Value);
+            await _hub.Clients.Group($"session_{sessionId}").SendAsync("AdminRead", lastUserMsgId);
         }
     }
 
-    public async Task SendTypingToTelegramAsync(Guid sessionId)
+    public async Task SendTypingToTelegramAsync(int sessionId)
     {
         // Use the static cache to avoid a DB query on every keystroke.
         // Cache is invalidated when the topic is recreated in ForwardUserMessageToTelegramAsync.
@@ -345,7 +344,7 @@ public class ChatService
         }
     }
 
-    public async Task DeleteSessionAsync(Guid sessionId)
+    public async Task DeleteSessionAsync(int sessionId)
     {
         await using AppDbContext db = await _dbFactory.CreateDbContextAsync();
 
