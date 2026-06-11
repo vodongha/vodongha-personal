@@ -1,15 +1,25 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using VodonghaPersonal.Data;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Services;
 
-public class SiteSettingService(IDbContextFactory<AppDbContext> dbFactory)
+public class SiteSettingService(IDbContextFactory<AppDbContext> dbFactory, IMemoryCache cache)
 {
+    private const string AllCacheKey = "sitesettings_all";
+    private static readonly TimeSpan CacheTtl = TimeSpan.FromHours(1);
+
     public async Task<Dictionary<string, string>> GetAllAsync()
     {
+        if (cache.TryGetValue(AllCacheKey, out Dictionary<string, string>? cached) && cached is not null)
+        {
+            return cached;
+        }
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-        return await db.SiteSettings.ToDictionaryAsync(s => s.Key, s => s.Value);
+        Dictionary<string, string> result = await db.SiteSettings.ToDictionaryAsync(s => s.Key, s => s.Value);
+        cache.Set(AllCacheKey, result, CacheTtl);
+        return result;
     }
 
     public string Get(Dictionary<string, string> settings, string key, string fallback = "")
@@ -17,9 +27,8 @@ public class SiteSettingService(IDbContextFactory<AppDbContext> dbFactory)
 
     public async Task<string?> GetAsync(string key)
     {
-        await using AppDbContext db = await dbFactory.CreateDbContextAsync();
-        SiteSetting? setting = await db.SiteSettings.FirstOrDefaultAsync(s => s.Key == key);
-        return setting?.Value;
+        Dictionary<string, string> all = await GetAllAsync();
+        return all.TryGetValue(key, out string? val) ? val : null;
     }
 
     public async Task SetAsync(string key, string value)
@@ -35,16 +44,17 @@ public class SiteSettingService(IDbContextFactory<AppDbContext> dbFactory)
             setting.Value = value;
         }
         await db.SaveChangesAsync();
+        InvalidateCache();
     }
 
-    /// <summary>Upserts multiple settings in a single DB round-trip.</summary>
     public async Task SaveAllAsync(Dictionary<string, string> values)
     {
         await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+        List<SiteSetting> existing = await db.SiteSettings.ToListAsync();
+        Dictionary<string, SiteSetting> byKey = existing.ToDictionary(s => s.Key);
         foreach (KeyValuePair<string, string> kvp in values)
         {
-            SiteSetting? setting = await db.SiteSettings.FirstOrDefaultAsync(s => s.Key == kvp.Key);
-            if (setting != null)
+            if (byKey.TryGetValue(kvp.Key, out SiteSetting? setting))
             {
                 setting.Value = kvp.Value;
             }
@@ -54,5 +64,8 @@ public class SiteSettingService(IDbContextFactory<AppDbContext> dbFactory)
             }
         }
         await db.SaveChangesAsync();
+        InvalidateCache();
     }
+
+    public void InvalidateCache() => cache.Remove(AllCacheKey);
 }

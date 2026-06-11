@@ -188,8 +188,11 @@ app.Use(async (context, next) =>
         string? referrer = context.Request.Headers.Referer.FirstOrDefault();
         VisitorService visitorSvc = context.RequestServices.GetRequiredService<VisitorService>();
         AnalyticsService analyticsSvc = context.RequestServices.GetRequiredService<AnalyticsService>();
+        ILogger<Program> mwLogger = context.RequestServices.GetRequiredService<ILogger<Program>>();
         await visitorSvc.LogAsync(ip, ua);
-        _ = analyticsSvc.TrackAsync(path, referrer, ip);
+        _ = analyticsSvc.TrackAsync(path, referrer, ip)
+            .ContinueWith(t => mwLogger.LogError(t.Exception, "Analytics tracking failed for {Path}", path),
+                TaskContinuationOptions.OnlyOnFaulted);
     }
 
     await next(context);
