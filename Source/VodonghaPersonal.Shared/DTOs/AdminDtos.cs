@@ -49,7 +49,8 @@ public record HealthDataDto(
     List<HealthSnapshotDto> Snapshots,
     HealthSnapshotDto? Latest,
     long UptimeSeconds,
-    DateTime StartedAt
+    DateTime StartedAt,
+    string AppVersion
 );
 
 // Dependencies

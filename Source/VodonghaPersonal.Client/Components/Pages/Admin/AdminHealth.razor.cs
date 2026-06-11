@@ -19,6 +19,7 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
     private HealthSnapshotDto? _latest;
     private long _uptimeSeconds;
     private DateTime _startedAt;
+    private string _appVersion = "";
     private bool _isRefreshing;
     private int _countdown = 30;
 
@@ -97,6 +98,7 @@ public partial class AdminHealth : ComponentBase, IAsyncDisposable
             _latest = data.Latest;
             _uptimeSeconds = data.UptimeSeconds;
             _startedAt = data.StartedAt;
+            _appVersion = data.AppVersion;
         }
     }
 

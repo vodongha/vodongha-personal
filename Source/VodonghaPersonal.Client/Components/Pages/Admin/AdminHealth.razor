@@ -53,6 +53,15 @@
                 <div class="health-card__dot health-card__dot--@(_latest?.DbHealthy == true ? "ok" : "error")"></div>
             </div>
 
+            <div class="health-card" data-card-id="stat-version">
+                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
+                <div class="health-card__icon"><i class="bi bi-tag"></i></div>
+                <div class="health-card__body">
+                    <div class="health-card__label">Version</div>
+                    <div class="health-card__value">@(string.IsNullOrEmpty(_appVersion) ? "—" : $"v{_appVersion}")</div>
+                </div>
+            </div>
+
             <div class="health-card" data-card-id="stat-uptime">
                 <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                 <div class="health-card__icon"><i class="bi bi-clock-history"></i></div>
