@@ -638,7 +638,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             _ = InvokeAsync(StateHasChanged);
         }
     }
-    private void OnLangChanged() => InvokeAsync(StateHasChanged);
+    private async void OnLangChanged() => await InvokeAsync(StateHasChanged);
 
     // Map IANA timezone → ISO country code
     private static readonly Dictionary<string, string> TimezoneToCountry = new()

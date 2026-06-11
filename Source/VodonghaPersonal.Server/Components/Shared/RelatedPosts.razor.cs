@@ -30,8 +30,8 @@ public partial class RelatedPosts : ComponentBase, IDisposable
         Tz.OnTimezoneSet += OnTimezoneUpdated;
     }
 
-    private void OnLangChange() => InvokeAsync(StateHasChanged);
-    private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
+    private async void OnLangChange() => await InvokeAsync(StateHasChanged);
+    private async void OnTimezoneUpdated() => await InvokeAsync(StateHasChanged);
 
     public void Dispose()
     {

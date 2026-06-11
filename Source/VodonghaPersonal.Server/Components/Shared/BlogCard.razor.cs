@@ -34,7 +34,7 @@ public partial class BlogCard : ComponentBase, IDisposable
         Tz.OnTimezoneSet += OnTimezoneUpdated;
     }
 
-    private void OnTimezoneUpdated() => InvokeAsync(StateHasChanged);
+    private async void OnTimezoneUpdated() => await InvokeAsync(StateHasChanged);
 
     public void Dispose() => Tz.OnTimezoneSet -= OnTimezoneUpdated;
 }
