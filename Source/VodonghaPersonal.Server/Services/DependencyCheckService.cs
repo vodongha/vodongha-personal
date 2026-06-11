@@ -29,6 +29,7 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
 {
     private static readonly TimeSpan CacheTtl = TimeSpan.FromHours(1);
     private const string CacheKey = "dep_check_result";
+    private static readonly SemaphoreSlim _lock = new(1, 1);
 
     // Hardcoded — .csproj / package.json are not in Docker published output (/app contains only DLLs).
     // When adding a new NuGet package: add a row to NuGetPackages below.
@@ -73,33 +74,47 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
             return cached;
         }
 
-        using var http = httpFactory.CreateClient("deps");
-        var tasks = new List<Task<DependencyInfo?>>();
-
-        foreach (var (name, version) in NuGetPackages)
+        await _lock.WaitAsync();
+        try
         {
-            tasks.Add(CheckNuGetAsync(http, name, version));
-        }
+            // Re-check after acquiring lock — another caller may have populated cache while we waited
+            if (cache.TryGetValue(CacheKey, out cached) && cached is not null)
+            {
+                return cached;
+            }
 
-        foreach (var (name, version) in NpmPackages)
+            using var http = httpFactory.CreateClient("deps");
+            var tasks = new List<Task<DependencyInfo?>>();
+
+            foreach (var (name, version) in NuGetPackages)
+            {
+                tasks.Add(CheckNuGetAsync(http, name, version));
+            }
+
+            foreach (var (name, version) in NpmPackages)
+            {
+                tasks.Add(CheckNpmAsync(http, name, version));
+            }
+
+            foreach (var (name, current, npmPackage, notes) in CdnLibraries)
+            {
+                tasks.Add(CheckCdnAsync(http, name, current, npmPackage, notes));
+            }
+
+            var results = await Task.WhenAll(tasks);
+            var list = results.OfType<DependencyInfo>()
+                .OrderBy(d => d.Type)
+                .ThenBy(d => d.Status == DependencyStatus.Outdated ? 0 : d.Status == DependencyStatus.Unknown ? 1 : 2)
+                .ThenBy(d => d.Name)
+                .ToList();
+
+            cache.Set(CacheKey, (IReadOnlyList<DependencyInfo>)list, CacheTtl);
+            return list;
+        }
+        finally
         {
-            tasks.Add(CheckNpmAsync(http, name, version));
+            _lock.Release();
         }
-
-        foreach (var (name, current, npmPackage, notes) in CdnLibraries)
-        {
-            tasks.Add(CheckCdnAsync(http, name, current, npmPackage, notes));
-        }
-
-        var results = await Task.WhenAll(tasks);
-        var list = results.OfType<DependencyInfo>()
-            .OrderBy(d => d.Type)
-            .ThenBy(d => d.Status == DependencyStatus.Outdated ? 0 : d.Status == DependencyStatus.Unknown ? 1 : 2)
-            .ThenBy(d => d.Name)
-            .ToList();
-
-        cache.Set(CacheKey, (IReadOnlyList<DependencyInfo>)list, CacheTtl);
-        return list;
     }
 
     public void InvalidateCache() => cache.Remove(CacheKey);
