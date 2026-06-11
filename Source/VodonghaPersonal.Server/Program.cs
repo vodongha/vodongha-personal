@@ -10,6 +10,7 @@ using VodonghaPersonal.Api;
 using VodonghaPersonal.Components;
 using VodonghaPersonal.Data;
 using VodonghaPersonal.Hubs;
+using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Models;
 using VodonghaPersonal.Shared.Services;
@@ -84,6 +85,20 @@ builder.Services.AddSingleton<DependencyCheckService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AnalyticsService>();
+
+// Public API clients — registered in Server DI for SSR prerendering.
+// HttpClient calls back to the server itself using the current request's base URL.
+builder.Services.AddScoped(sp =>
+{
+    IHttpContextAccessor ctx = sp.GetRequiredService<IHttpContextAccessor>();
+    HttpRequest req = ctx.HttpContext!.Request;
+    string baseAddress = $"{req.Scheme}://{req.Host}";
+    return new HttpClient { BaseAddress = new Uri(baseAddress) };
+});
+builder.Services.AddScoped<PublicBlogApiClient>();
+builder.Services.AddScoped<PublicChatApiClient>();
+builder.Services.AddScoped<PublicAiApiClient>();
+builder.Services.AddScoped<PublicSiteApiClient>();
 
 // Rate limiter — 10 login attempts per 5 minutes per IP to prevent brute-force
 builder.Services.AddRateLimiter(options =>
