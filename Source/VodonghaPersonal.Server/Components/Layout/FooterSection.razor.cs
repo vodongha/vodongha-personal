@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Components;
 using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.Services;
@@ -12,6 +13,7 @@ public partial class FooterSection : ComponentBase, IDisposable
 
     private int _visitorCount;
     private Dictionary<string, string> _settings = new();
+    private string _appVersion = "";
 
     private string S(string key) => _settings.TryGetValue(key, out string? v) ? v : "";
 
@@ -20,6 +22,17 @@ public partial class FooterSection : ComponentBase, IDisposable
         Lang.OnChange += StateHasChanged;
         _visitorCount = await VisitorSvc.GetCountAsync();
         _settings = await SettingSvc.GetAllAsync();
+        _appVersion = ResolveAppVersion();
+    }
+
+    private static string ResolveAppVersion()
+    {
+        string? assemblyVersion = Assembly.GetEntryAssembly()?.GetName().Version?.ToString(3);
+        if (assemblyVersion is not null && assemblyVersion != "0.0.0" && assemblyVersion != "1.0.0")
+        {
+            return assemblyVersion;
+        }
+        return Environment.GetEnvironmentVariable("APP_VERSION") ?? "";
     }
 
     public void Dispose() => Lang.OnChange -= StateHasChanged;
