@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using VodonghaPersonal.Data;
 using VodonghaPersonal.Services;
 using VodonghaPersonal.Shared.DTOs;

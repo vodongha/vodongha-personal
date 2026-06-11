@@ -131,7 +131,7 @@ public class BlogServiceTests
         seed.BlogPosts.Add(post);
         await seed.SaveChangesAsync();
 
-        await CreateService().DeleteAsync(post.Id);
+        await CreateService().DeleteAsync(post.Rid);
 
         await using AppDbContext db = await _factory.CreateDbContextAsync();
         (await db.BlogPosts.CountAsync()).ShouldBe(0);
@@ -140,7 +140,7 @@ public class BlogServiceTests
     [Test]
     public async Task DeleteAsync_NonExistentId_DoesNotThrow()
     {
-        Should.NotThrow(() => CreateService().DeleteAsync(9999).GetAwaiter().GetResult());
+        Should.NotThrow(() => CreateService().DeleteAsync(Guid.NewGuid()).GetAwaiter().GetResult());
     }
 
     // ── GetRelatedAsync ────────────────────────────────────────────────────
@@ -149,14 +149,15 @@ public class BlogServiceTests
     public async Task GetRelatedAsync_WithTags_ReturnsByTagScore()
     {
         await using AppDbContext seed = await _factory.CreateDbContextAsync();
+        Guid targetRid = Guid.NewGuid();
         seed.BlogPosts.AddRange(
-            new BlogPost { Id = 1, Title = "Target", Slug = "t", IsPublished = true, Tags = "dotnet,blazor" },
-            new BlogPost { Id = 2, Title = "Both tags", Slug = "b", IsPublished = true, Tags = "dotnet,blazor" },
-            new BlogPost { Id = 3, Title = "One tag", Slug = "o", IsPublished = true, Tags = "dotnet" },
-            new BlogPost { Id = 4, Title = "No tags", Slug = "n", IsPublished = true, Tags = "" });
+            new BlogPost { Id = 1, Rid = targetRid, Title = "Target", Slug = "t", IsPublished = true, Tags = "dotnet,blazor" },
+            new BlogPost { Id = 2, Rid = Guid.NewGuid(), Title = "Both tags", Slug = "b", IsPublished = true, Tags = "dotnet,blazor" },
+            new BlogPost { Id = 3, Rid = Guid.NewGuid(), Title = "One tag", Slug = "o", IsPublished = true, Tags = "dotnet" },
+            new BlogPost { Id = 4, Rid = Guid.NewGuid(), Title = "No tags", Slug = "n", IsPublished = true, Tags = "" });
         await seed.SaveChangesAsync();
 
-        List<BlogPost> related = await CreateService().GetRelatedAsync(1, "dotnet,blazor", count: 3);
+        List<BlogPost> related = await CreateService().GetRelatedAsync(targetRid, "dotnet,blazor", count: 3);
 
         related.ShouldNotBeEmpty();
         related[0].Slug.ShouldBe("b");
@@ -166,13 +167,14 @@ public class BlogServiceTests
     public async Task GetRelatedAsync_NoTags_ReturnsMostRecentByDate()
     {
         await using AppDbContext seed = await _factory.CreateDbContextAsync();
+        Guid targetRid = Guid.NewGuid();
         seed.BlogPosts.AddRange(
-            new BlogPost { Id = 1, Title = "Target", Slug = "t", IsPublished = true, Tags = "", CreatedAt = DateTime.UtcNow },
-            new BlogPost { Id = 2, Title = "Newer", Slug = "newer", IsPublished = true, Tags = "", CreatedAt = DateTime.UtcNow.AddMinutes(1) },
-            new BlogPost { Id = 3, Title = "Older", Slug = "older", IsPublished = true, Tags = "", CreatedAt = DateTime.UtcNow.AddDays(-1) });
+            new BlogPost { Id = 1, Rid = targetRid, Title = "Target", Slug = "t", IsPublished = true, Tags = "", CreatedAt = DateTime.UtcNow },
+            new BlogPost { Id = 2, Rid = Guid.NewGuid(), Title = "Newer", Slug = "newer", IsPublished = true, Tags = "", CreatedAt = DateTime.UtcNow.AddMinutes(1) },
+            new BlogPost { Id = 3, Rid = Guid.NewGuid(), Title = "Older", Slug = "older", IsPublished = true, Tags = "", CreatedAt = DateTime.UtcNow.AddDays(-1) });
         await seed.SaveChangesAsync();
 
-        List<BlogPost> related = await CreateService().GetRelatedAsync(1, "", count: 2);
+        List<BlogPost> related = await CreateService().GetRelatedAsync(targetRid, "", count: 2);
 
         related.Count.ShouldBe(2);
         related[0].Slug.ShouldBe("newer");

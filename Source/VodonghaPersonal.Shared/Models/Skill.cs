@@ -1,4 +1,4 @@
-﻿namespace VodonghaPersonal.Shared.Models;
+namespace VodonghaPersonal.Shared.Models;
 
 public class Skill
 {

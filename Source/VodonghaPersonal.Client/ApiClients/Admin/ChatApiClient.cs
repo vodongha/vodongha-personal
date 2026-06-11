@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+using System.Net.Http.Json;
 using VodonghaPersonal.Shared.DTOs;
 using VodonghaPersonal.Shared.Models;
 
