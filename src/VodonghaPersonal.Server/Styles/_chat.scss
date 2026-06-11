@@ -78,9 +78,11 @@
     }
 }
 
-// Hide FAB when panel is open — close via header X button instead
-.chat-fab--panel-open {
-    display: none;
+// Hide FAB on mobile when panel is open — close via header X button instead
+@media (max-width: 480px) {
+    .chat-fab--panel-open {
+        display: none;
+    }
 }
 
 @keyframes chat-slide-in {
