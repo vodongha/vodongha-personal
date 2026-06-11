@@ -93,29 +93,13 @@ window.removeDesktopResizeRedirect = () => {
         catch { return true; }
     };
 
-    // Show on internal link clicks — left-click only (button 0)
-    document.addEventListener('mousedown', (e) => {
-        if (e.button !== 0) return;
-        const a = e.target.closest('a[href]');
-        if (a && isInternal(a.getAttribute('href')) && !a.getAttribute('download') && !a.getAttribute('target')) {
-            start();
-        }
-    });
+    // Start only when Blazor actually begins a navigation request
+    document.addEventListener('blazor:navigating', start);
+    document.addEventListener('enhancednavigationstart', start);
 
-    // Show on button/submit clicks (forms, admin actions) — left-click only
-    document.addEventListener('mousedown', (e) => {
-        if (e.button !== 0) return;
-        const btn = e.target.closest('button:not([type="button"]):not(.admin-btn--ghost):not(.admin-btn--danger)');
-        if (btn && !btn.closest('form[method="get"]')) {
-            start();
-            // Auto-hide after 4s in case nothing navigates
-            setTimeout(done, 4000);
-        }
-    });
-
-    // Hide when Blazor enhanced navigation completes
+    // Stop when navigation completes or page loads
     document.addEventListener('blazor:navigated', done);
-    if (window.Blazor) { try { window.Blazor.addEventListener('enhancedload', done); } catch { /* API may not exist in all versions */ } }
+    document.addEventListener('enhancedload', done);
     window.addEventListener('load', done);
 
     // Expose for manual control
