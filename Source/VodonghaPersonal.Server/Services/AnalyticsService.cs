@@ -115,6 +115,17 @@ public class AnalyticsService(IDbContextFactory<AppDbContext> dbFactory, IHttpCl
     {
         try
         {
+            // Evict expired entries periodically to prevent unbounded memory growth
+            if (_geoCache.Count > 5000)
+            {
+                DateTime now = DateTime.UtcNow;
+                foreach (System.Collections.Generic.KeyValuePair<string, (string Country, DateTime ExpiresAt)> kvp
+                    in _geoCache.Where(x => x.Value.ExpiresAt <= now).ToList())
+                {
+                    _geoCache.TryRemove(kvp.Key, out _);
+                }
+            }
+
             using HttpClient http = httpClientFactory.CreateClient();
             http.Timeout = TimeSpan.FromSeconds(3);
             GeoResponse? response = await http.GetFromJsonAsync<GeoResponse>($"http://ip-api.com/json/{ip}?fields=country");

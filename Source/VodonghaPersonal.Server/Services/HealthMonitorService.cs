@@ -18,6 +18,7 @@ public class HealthMonitorService : IHostedService, IDisposable
     private readonly LinkedList<HealthMetricSnapshot> _snapshots = new();
     private readonly object _lock = new();
     private Timer? _timer;
+    private int _running = 0; // prevents overlapping timer executions
     private readonly IDbContextFactory<AppDbContext> _dbFactory;
 
     public DateTime StartedAt { get; } = DateTime.UtcNow;
@@ -36,6 +37,11 @@ public class HealthMonitorService : IHostedService, IDisposable
 
     private async void CollectMetrics(object? state)
     {
+        if (Interlocked.CompareExchange(ref _running, 1, 0) != 0)
+        {
+            return;
+        }
+
         try
         {
             Process process = Process.GetCurrentProcess();
@@ -83,6 +89,7 @@ public class HealthMonitorService : IHostedService, IDisposable
             }
         }
         catch { /* never crash the timer */ }
+        finally { Interlocked.Exchange(ref _running, 0); }
     }
 
     public IReadOnlyList<HealthMetricSnapshot> GetSnapshots()

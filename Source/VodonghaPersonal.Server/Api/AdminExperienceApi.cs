@@ -18,7 +18,7 @@ public static class AdminExperienceApi
             return Results.Ok(items);
         });
 
-        group.MapPost("/", async (Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
+        group.MapPost("/", async (Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             item.Id = 0;
@@ -26,10 +26,11 @@ public static class AdminExperienceApi
             db.Experiences.Add(item);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
+            expSvc.InvalidateCache();
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapPut("/{id:int}", async (int id, Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
+        group.MapPut("/{id:int}", async (int id, Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             item.Id = id;
@@ -37,10 +38,11 @@ public static class AdminExperienceApi
             db.Experiences.Update(item);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
+            expSvc.InvalidateCache();
             return Results.Ok(item);
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache) =>
+        group.MapDelete("/{id:int}", async (int id, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
             Experience? e = await db.Experiences.FindAsync(id);
@@ -49,6 +51,7 @@ public static class AdminExperienceApi
                 db.Experiences.Remove(e);
                 await db.SaveChangesAsync();
                 cvCache.InvalidateAndRegenerate();
+                expSvc.InvalidateCache();
             }
             return Results.Ok();
         }).DisableAntiforgery();
