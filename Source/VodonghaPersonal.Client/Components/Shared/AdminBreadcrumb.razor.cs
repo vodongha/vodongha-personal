@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Components;
+using VodonghaPersonal.Client.Services;
 
 namespace VodonghaPersonal.Client.Components.Shared;
 
-public partial class AdminBreadcrumb : ComponentBase
+public partial class AdminBreadcrumb : ComponentBase, IDisposable
 {
     [Inject] private NavigationManager Nav { get; set; } = default!;
+    [Inject] private AdminLocalizationService Loc { get; set; } = default!;
 
     private static readonly Dictionary<string, (string? Group, string Page)> _map = new()
     {
@@ -28,6 +30,11 @@ public partial class AdminBreadcrumb : ComponentBase
     private string? _group;
     private string? _page;
 
+    protected override void OnInitialized()
+    {
+        Loc.OnChanged += OnLangChanged;
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -41,5 +48,12 @@ public partial class AdminBreadcrumb : ComponentBase
                 await InvokeAsync(StateHasChanged);
             }
         }
+    }
+
+    private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Loc.OnChanged -= OnLangChanged;
     }
 }
