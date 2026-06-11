@@ -89,7 +89,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 vodongha-personal/
 ├── .github/
 │   └── workflows/             # ci.yml, deploy.yml, lint.yml, pr-setup.yml, sync-develop.yml
-├── src/
+├── Source/
 │   ├── VodonghaPersonal.Server/      # ASP.NET Core host — public site + API
 │   │   ├── Components/               # Public pages, layouts, sections, shared widgets
 │   │   │   ├── App.razor             # HTML root, SEO meta, scripts
@@ -138,7 +138,7 @@ vodongha-personal/
 │           └── AdminDtos.cs          # API request/response types (DashboardStatsDto, ...)
 ├── Directory.Build.props             # Shared build properties (TargetFramework, Nullable, ImplicitUsings)
 ├── NuGet.Config                      # NuGet package source (api.nuget.org)
-└── test/
+└── Test/
     ├── VodonghaPersonal.Client.Tests/    # NUnit + Shouldly — Client (WASM) unit tests
     ├── VodonghaPersonal.Server.Tests/    # NUnit + Shouldly — Server unit tests (12 tests)
     └── VodonghaPersonal.Shared.Tests/    # NUnit + Shouldly — Shared unit tests
@@ -157,7 +157,7 @@ git checkout develop
 dotnet build   # builds Server + Client + Shared
 ```
 
-Create `src/VodonghaPersonal.Server/appsettings.Development.json`:
+Create `Source/VodonghaPersonal.Server/appsettings.Development.json`:
 
 ```json
 {
@@ -171,7 +171,7 @@ Create `src/VodonghaPersonal.Server/appsettings.Development.json`:
 ```
 
 ```bash
-dotnet run --project src/VodonghaPersonal.Server
+dotnet run --project Source/VodonghaPersonal.Server
 ```
 
 EF Core migrations apply automatically on startup.
