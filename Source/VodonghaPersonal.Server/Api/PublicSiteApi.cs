@@ -17,6 +17,12 @@ public static class PublicSiteApi
         group.MapGet("/settings", async (SiteSettingService svc) =>
         {
             Dictionary<string, string> settings = await svc.GetAllAsync();
+            string? version = typeof(PublicSiteApi).Assembly.GetName().Version?.ToString(3);
+            if (!string.IsNullOrEmpty(version) && version != "0.0.0" && version != "1.0.0")
+            {
+                settings["APP_VERSION"] = version;
+            }
+
             return Results.Ok(settings);
         });
     }
