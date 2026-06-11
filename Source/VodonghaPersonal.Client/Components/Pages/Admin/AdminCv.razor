@@ -9,10 +9,10 @@
 
     <main class="admin-main">
         <header class="admin-header">
-            <AdminBreadcrumb />
             <h1 class="admin-header__title">
                 <i class="bi bi-file-earmark-person"></i> @Loc.T("CV / Resume")
             </h1>
+            <AdminBreadcrumb />
             <button class="admin-btn admin-btn--primary" @onclick="Download" disabled="@_loading">
                 <i class="bi bi-download"></i> @Loc.T("Download PDF")
             </button>
