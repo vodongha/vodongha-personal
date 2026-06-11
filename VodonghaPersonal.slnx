@@ -1,12 +1,12 @@
 <Solution>
-  <Folder Name="/src/">
-    <Project Path="src/VodonghaPersonal.Client/VodonghaPersonal.Client.csproj" />
-    <Project Path="src/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj" />
-    <Project Path="src/VodonghaPersonal.Shared/VodonghaPersonal.Shared.csproj" />
+  <Folder Name="/Source/">
+    <Project Path="Source/VodonghaPersonal.Client/VodonghaPersonal.Client.csproj" />
+    <Project Path="Source/VodonghaPersonal.Server/VodonghaPersonal.Server.csproj" />
+    <Project Path="Source/VodonghaPersonal.Shared/VodonghaPersonal.Shared.csproj" />
   </Folder>
-  <Folder Name="/test/">
-    <Project Path="test/VodonghaPersonal.Client.Tests/VodonghaPersonal.Client.Tests.csproj" />
-    <Project Path="test/VodonghaPersonal.Server.Tests/VodonghaPersonal.Server.Tests.csproj" />
-    <Project Path="test/VodonghaPersonal.Shared.Tests/VodonghaPersonal.Shared.Tests.csproj" />
+  <Folder Name="/Test/">
+    <Project Path="Test/VodonghaPersonal.Client.Tests/VodonghaPersonal.Client.Tests.csproj" />
+    <Project Path="Test/VodonghaPersonal.Server.Tests/VodonghaPersonal.Server.Tests.csproj" />
+    <Project Path="Test/VodonghaPersonal.Shared.Tests/VodonghaPersonal.Shared.Tests.csproj" />
   </Folder>
 </Solution>
