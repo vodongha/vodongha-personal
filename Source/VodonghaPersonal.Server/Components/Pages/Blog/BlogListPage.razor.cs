@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using VodonghaPersonal.Services;
+using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Shared.Models;
 using VodonghaPersonal.Shared.Services;
 
@@ -7,7 +7,7 @@ namespace VodonghaPersonal.Components.Pages.Blog;
 
 public partial class BlogListPage : ComponentBase, IDisposable
 {
-    [Inject] private BlogService BlogSvc { get; set; } = default!;
+    [Inject] private PublicBlogApiClient BlogClient { get; set; } = default!;
     [Inject] private LanguageService Lang { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
 
@@ -65,7 +65,7 @@ public partial class BlogListPage : ComponentBase, IDisposable
 
     protected override async Task OnInitializedAsync()
     {
-        _posts = await BlogSvc.GetPublishedAsync();
+        _posts = await BlogClient.GetPublishedAsync();
         _allTags = _posts
             .SelectMany(p => (p.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries))
             .Select(t => t.Trim())

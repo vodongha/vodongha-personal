@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using PhoneNumbers;
-using VodonghaPersonal.Services;
+using System.Net.Http.Json;
+using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Shared.Models;
 using VodonghaPersonal.Shared.Services;
 
@@ -11,13 +12,13 @@ namespace VodonghaPersonal.Components.Shared;
 
 public partial class ChatWidget : ComponentBase, IAsyncDisposable
 {
-    [Inject] private ChatService ChatSvc { get; set; } = default!;
+    [Inject] private PublicChatApiClient ChatClient { get; set; } = default!;
+    [Inject] private HttpClient Http { get; set; } = default!;
     [Inject] private LanguageService Lang { get; set; } = default!;
     [Inject] private ProtectedLocalStorage LocalStorage { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
-    [Inject] private PushNotificationService PushSvc { get; set; } = default!;
 
     private enum ChatState { Closed, Form, Chat }
 
@@ -192,10 +193,10 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             if (sessionResult.Success && sessionResult.Value > 0)
             {
                 _sessionId = sessionResult.Value;
-                ChatSession? session = await ChatSvc.GetSessionAsync(_sessionId.Value);
+                ChatSession? session = await ChatClient.GetSessionAsync(_sessionId.Value);
                 if (session != null)
                 {
-                    _messages = (await ChatSvc.GetMessagesAsync(_sessionId.Value))
+                    _messages = (await ChatClient.GetMessagesAsync(_sessionId.Value))
                         .Select(m => new ChatMessageDto(m.Id, m.Content, m.IsFromUser, m.SentAt))
                         .ToList();
 
@@ -350,14 +351,14 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
         _loading = true;
         try
         {
-            ChatSession session = await ChatSvc.CreateSessionAsync(_name.Trim(), FullPhone.Trim(), _email.Trim());
+            ChatSession session = (await ChatClient.CreateSessionAsync(_name.Trim(), FullPhone.Trim(), _email.Trim()))!;
             _sessionId = session.Id;
             await LocalStorage.SetAsync("chatSessionId", session.Id);
             _state = ChatState.Chat;
             _unreadCount = 0;
             await ConnectHubAsync();
             // Load messages from DB so the auto welcome message is visible immediately
-            _messages = (await ChatSvc.GetMessagesAsync(session.Id))
+            _messages = (await ChatClient.GetMessagesAsync(session.Id))
                 .Select(m => new ChatMessageDto(m.Id, m.Content, m.IsFromUser, m.SentAt))
                 .ToList();
             // Ask for push permission — fire-and-forget, non-critical
@@ -401,7 +402,14 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
             string p256dh = doc.RootElement.GetProperty("keys").GetProperty("p256dh").GetString() ?? "";
             string auth = doc.RootElement.GetProperty("keys").GetProperty("auth").GetString() ?? "";
 
-            await PushSvc.SaveSubscriptionAsync(endpoint, p256dh, auth, chatSessionId, isAdmin);
+            await Http.PostAsJsonAsync("/api/push/subscribe", new
+            {
+                endpoint,
+                p256dh,
+                auth,
+                chatSessionId,
+                isAdmin
+            });
         }
         catch
         {
@@ -439,7 +447,7 @@ public partial class ChatWidget : ComponentBase, IAsyncDisposable
 
         try
         {
-            ChatMessage msg = await ChatSvc.SendUserMessageAsync(_sessionId.Value, content);
+            ChatMessage msg = (await ChatClient.SendMessageAsync(_sessionId.Value, content))!;
             // Replace optimistic placeholder with real message (gets its DB Id for read receipts)
             int idx = _messages.FindIndex(m => m.Id == 0 && m.Content == content && m.IsFromUser);
             if (idx >= 0)

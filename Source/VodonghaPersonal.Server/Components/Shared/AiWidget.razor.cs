@@ -1,45 +1,27 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using VodonghaPersonal.Services;
+using VodonghaPersonal.Client.ApiClients;
+using VodonghaPersonal.Shared.DTOs;
 using VodonghaPersonal.Shared.Services;
 
 namespace VodonghaPersonal.Components.Shared;
 
 public partial class AiWidget : ComponentBase, IDisposable
 {
-    [Inject] private AiService AiSvc { get; set; } = default!;
+    [Inject] private PublicAiApiClient AiClient { get; set; } = default!;
     [Inject] private LanguageService Lang { get; set; } = default!;
-    [Inject] private AppSecretsService Secrets { get; set; } = default!;
 
     private readonly record struct AiDisplayMessage(string Text, bool IsUser);
 
     private readonly List<AiDisplayMessage> _messages = [];
-    private readonly List<AiService.AiMessage> _history = [];
+    private readonly List<AiMessage> _history = [];
 
     private string _input = "";
     private bool _open = false;
     private bool _thinking = false;
     private int _questionCount = 0;
-    private string _modelDisplay = "Gemini";
 
     protected override void OnInitialized() => Lang.OnChange += OnLangChanged;
-
-    protected override async Task OnInitializedAsync()
-    {
-        string? model = await Secrets.GetValueAsync("Gemini:Model");
-        _modelDisplay = FormatModelName(model ?? "gemini-2.0-flash");
-    }
-
-    private static string FormatModelName(string model) => model switch
-    {
-        "gemini-2.5-flash" => "Gemini 2.5 Flash",
-        "gemini-2.5-pro" => "Gemini 2.5 Pro",
-        "gemini-2.0-flash" => "Gemini 2.0 Flash",
-        "gemini-2.0-flash-lite" => "Gemini 2.0 Flash Lite",
-        "gemini-1.5-flash" => "Gemini 1.5 Flash",
-        "gemini-1.5-pro" => "Gemini 1.5 Pro",
-        _ => model
-    };
 
     private void ToggleOpen() => _open = !_open;
     private void Close() => _open = false;
@@ -56,17 +38,17 @@ public partial class AiWidget : ComponentBase, IDisposable
         _thinking = true;
         _questionCount++;
         _messages.Add(new AiDisplayMessage(question, IsUser: true));
-        _history.Add(new AiService.AiMessage("user", question));
+        _history.Add(new AiMessage("user", question));
         await InvokeAsync(StateHasChanged);
 
-        string? answer = await AiSvc.AskAsync(_history);
+        string? answer = await AiClient.AskAsync(_history);
 
         _thinking = false;
 
         if (answer != null)
         {
             _messages.Add(new AiDisplayMessage(answer, IsUser: false));
-            _history.Add(new AiService.AiMessage("model", answer));
+            _history.Add(new AiMessage("model", answer));
         }
         else
         {

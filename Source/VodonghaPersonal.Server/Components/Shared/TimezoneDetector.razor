@@ -1,6 +1,6 @@
 @* Renders nothing — detects the browser's IANA timezone via JS and stores it in the
    scoped TimezoneService so all components can convert UTC datetimes to the user's local time. *@
-@rendermode InteractiveServer
+@rendermode InteractiveWebAssembly
 @inject TimezoneService TzService
 @inject IJSRuntime JS
 
