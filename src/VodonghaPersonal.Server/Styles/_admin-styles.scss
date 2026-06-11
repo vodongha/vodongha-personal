@@ -478,7 +478,7 @@
     &__label { display: block; font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 0.4rem; font-weight: 500; }
     &__input {
         width: 100%;
-        background: var(--admin-bg);
+        background: var(--admin-surface);
         border: 1px solid var(--admin-border);
         border-radius: 8px;
         padding: 0.6rem 0.75rem;
@@ -496,7 +496,7 @@
         &:-webkit-autofill,
         &:-webkit-autofill:hover,
         &:-webkit-autofill:focus {
-            box-shadow: 0 0 0 1000px var(--admin-bg) inset;
+            box-shadow: 0 0 0 1000px var(--admin-surface) inset;
             -webkit-text-fill-color: var(--color-text);
             caret-color: var(--color-text);
             transition: background-color 5000s ease-in-out 0s;
