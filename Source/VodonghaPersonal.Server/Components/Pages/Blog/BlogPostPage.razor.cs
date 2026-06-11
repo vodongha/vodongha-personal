@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using VodonghaPersonal.Services;
+using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Shared.Models;
 using VodonghaPersonal.Shared.Services;
 
@@ -8,7 +8,7 @@ namespace VodonghaPersonal.Components.Pages.Blog;
 
 public partial class BlogPostPage : ComponentBase, IDisposable
 {
-    [Inject] private BlogService BlogSvc { get; set; } = default!;
+    [Inject] private PublicBlogApiClient BlogClient { get; set; } = default!;
     [Inject] private LanguageService Lang { get; set; } = default!;
     [Inject] private TimezoneService Tz { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
@@ -42,14 +42,14 @@ public partial class BlogPostPage : ComponentBase, IDisposable
     {
         Lang.OnChange -= StateHasChanged;
         _loading = true;
-        _post = await BlogSvc.GetBySlugAsync(Slug);
+        _post = await BlogClient.GetBySlugAsync(Slug);
         _loading = false;
         Lang.OnChange += StateHasChanged;
 
         // Increment view count — fire and forget, don't block render
         if (_post is not null)
         {
-            _ = BlogSvc.IncrementViewCountAsync(_post.Id);
+            _ = BlogClient.IncrementViewAsync(_post.Id);
         }
     }
 
