@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace VodonghaPersonal.Services;
@@ -45,7 +44,7 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
         ("Microsoft.EntityFrameworkCore.Design",                                 "10.0.9"),
         ("Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore",   "10.0.9"),
         ("Npgsql.EntityFrameworkCore.PostgreSQL",                                "10.0.2"),
-        ("QuestPDF",                                                             "2026.5.0"),
+        ("QuestPDF",                                                             "2026.6.0"),
         ("Resend",                                                               "0.5.1"),
         ("SkiaSharp",                                                            "3.119.4"),
         ("WebPush",                                                              "1.0.13"),
@@ -111,14 +110,16 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
     {
         try
         {
-            var url = $"https://api.nuget.org/v3-flatcontainer/{name.ToLowerInvariant()}/index.json";
+            // NuGet Search API returns the canonical "latest stable" version shown on nuget.org,
+            // avoiding edge cases where flat-container LastOrDefault() picks an anomalous version
+            // (e.g. QuestPDF published 2202.8.2 which sorts after 2026.x.x by SemVer).
+            var url = $"https://azuresearch-usnc.nuget.org/query?q=packageid:{Uri.EscapeDataString(name)}&prerelease=false&take=1";
             var response = await http.GetStringAsync(url);
             using var doc = JsonDocument.Parse(response);
-            var latest = doc.RootElement.GetProperty("versions")
-                .EnumerateArray()
-                .Select(v => v.GetString() ?? "")
-                .Where(v => !Regex.IsMatch(v, @"-"))
-                .LastOrDefault();
+            var data = doc.RootElement.GetProperty("data");
+            var latest = data.GetArrayLength() > 0
+                ? data[0].GetProperty("version").GetString()
+                : null;
             return new DependencyInfo(name, version, latest, DependencyType.NuGet,
                 $"https://www.nuget.org/packages/{name}");
         }
