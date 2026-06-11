@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using NUnit.Framework;
 using Shouldly;
 using VodonghaPersonal.Data;
@@ -11,6 +12,7 @@ namespace VodonghaPersonal.Server.Tests;
 public class BlogServiceTests
 {
     private IDbContextFactory<AppDbContext> _factory = null!;
+    private IMemoryCache _cache = null!;
 
     [SetUp]
     public async Task SetUp()
@@ -21,11 +23,15 @@ public class BlogServiceTests
 
         // SQLite in-memory requires a single persistent connection; use the pool factory
         _factory = new SingletonDbContextFactory(options);
+        _cache = new MemoryCache(new MemoryCacheOptions());
         await using AppDbContext db = await _factory.CreateDbContextAsync();
         await db.Database.EnsureCreatedAsync();
     }
 
-    private BlogService CreateService() => new(_factory);
+    [TearDown]
+    public void TearDown() => _cache.Dispose();
+
+    private BlogService CreateService() => new(_factory, _cache);
 
     // ── GetPublishedAsync ──────────────────────────────────────────────────
 
