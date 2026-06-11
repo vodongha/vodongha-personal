@@ -4,6 +4,10 @@
     <div class="footer__inner">
         <p class="footer__copy">
             &copy; @DateTime.Now.Year <span>@S("Name")</span>. @Lang.T("footer.built")
+            @if (!string.IsNullOrEmpty(_appVersion))
+            {
+                <span class="footer__version"> - @Lang.T("footer.version"): v@_appVersion</span>
+            }
         </p>
         <div class="footer__right">
             <ul class="footer__links">
