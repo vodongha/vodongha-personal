@@ -7,7 +7,7 @@
         <span class="admin-breadcrumb__sep">›</span>
         <span class="admin-breadcrumb__item admin-breadcrumb__item--group">@Loc.T(_group!)</span>
         <span class="admin-breadcrumb__sep">›</span>
-        <span class="admin-breadcrumb__item admin-breadcrumb__item--current" aria-current="page">@Loc.T(_page)</span>
+        <span class="admin-breadcrumb__item admin-breadcrumb__item--current" aria-current="page">@Loc.T(_page ?? "")</span>
     </nav>
 }
 else if (_page is not null)
