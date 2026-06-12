@@ -3,17 +3,27 @@
 // ── Bottom navigation bar ──
 @media (max-width: 768px) {
 
-    // Prevent horizontal scroll at page level.
-    // overflow-x:hidden on body does NOT clip position:fixed children (unlike on other elements).
-    body { overflow-x: hidden; }
+    // Reset any margin/padding that app.css might inherit onto admin pages.
+    // overflow-x:hidden on body does NOT clip position:fixed children.
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow-x: hidden;
+        width: 100% !important;
+    }
 
-    // Shell → block, kills flex layout entirely so sidebar can't reserve column space
+    // Shell → block, kills flex layout entirely so sidebar can't reserve column space.
+    // Use 100dvh (dynamic viewport height) so the shell fills the VISIBLE area on mobile,
+    // not the full vh which includes the browser address bar.
     .admin-shell {
         display: block !important;
         flex-direction: unset !important;
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        min-height: 100dvh !important;
+        height: auto !important;
         box-sizing: border-box !important;
+        overflow: visible !important;
     }
 
     // Sidebar → fixed bottom navigation bar
@@ -130,11 +140,14 @@
     // Main content — full width, space for bottom nav
     .admin-main {
         flex: unset !important;
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
         min-width: 0 !important;
+        min-height: 100dvh !important;
+        height: auto !important;
         box-sizing: border-box !important;
         padding: 1rem 0.75rem 5rem !important;
+        overflow-y: visible !important;
     }
 
     // Header — not sticky on mobile, scrolls with content
