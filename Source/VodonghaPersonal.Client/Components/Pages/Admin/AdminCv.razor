@@ -66,7 +66,7 @@
                     }
                     else if (_selectedTemplate == 1)
                     {
-                        <!-- Template 1: Minimal â€” header + two-column body -->
+                        <!-- Template 1: Minimal — header + two-column body -->
                         <div class="cv-minimal-preview">
                             <!-- Header -->
                             <div class="cv-minimal-preview__header">
@@ -99,7 +99,7 @@
                     }
                     else if (_selectedTemplate == 2)
                     {
-                        <!-- Template 2: Professional â€” navy header + two-column body -->
+                        <!-- Template 2: Professional — navy header + two-column body -->
                         <div class="cv-pro-preview">
                             <!-- Navy header -->
                             <div class="cv-pro-preview__header">
@@ -301,7 +301,7 @@
                             <span class="@roleCls">@exp.Role</span>
                             <span class="@dateCls">@DateRange(exp)</span>
                         </div>
-                        <div class="@subCls">@exp.Company @(string.IsNullOrEmpty(exp.Location) ? "" : $"Â· {exp.Location}")</div>
+                        <div class="@subCls">@exp.Company @(string.IsNullOrEmpty(exp.Location) ? "" : $"· {exp.Location}")</div>
                         @if (!string.IsNullOrWhiteSpace(exp.DescriptionEn ?? exp.Description))
                         {
                             <p class="@descCls">@(exp.DescriptionEn ?? exp.Description)</p>
@@ -318,8 +318,8 @@
                 {
                     <div class="@entryCls">
                         <div class="cv-preview__entry-header">
-                            <span class="@roleCls">@edu.Degree â€” @edu.Field</span>
-                            <span class="@dateCls">@edu.StartYear â€“ @(edu.EndYear?.ToString() ?? Loc.T("Present"))</span>
+                            <span class="@roleCls">@edu.Degree — @edu.Field</span>
+                            <span class="@dateCls">@edu.StartYear – @(edu.EndYear?.ToString() ?? Loc.T("Present"))</span>
                         </div>
                         <div class="@subCls">@edu.School</div>
                     </div>

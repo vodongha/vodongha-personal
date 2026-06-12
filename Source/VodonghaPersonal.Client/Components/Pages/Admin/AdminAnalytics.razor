@@ -73,7 +73,7 @@
 
             <!-- Daily views line chart -->
             <div class="analytics-panel">
-                <h2 class="analytics-panel__title">@Loc.T("Daily views") â€” @_days @Loc.T("days")</h2>
+                <h2 class="analytics-panel__title">@Loc.T("Daily views") — @_days @Loc.T("days")</h2>
                 <div class="analytics-chart-box">
                     <canvas id="chart-daily"></canvas>
                 </div>
@@ -114,7 +114,7 @@
                     <h2 class="analytics-panel__title">@Loc.T("Top countries")</h2>
                     @if (_topCountries.Count == 0)
                     {
-                        <p class="analytics-empty">@Loc.T("No geo data yet â€” refreshes as visitors arrive")</p>
+                        <p class="analytics-empty">@Loc.T("No geo data yet — refreshes as visitors arrive")</p>
                     }
                     else
                     {

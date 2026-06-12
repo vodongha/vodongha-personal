@@ -25,7 +25,7 @@
 
         @if (_loading)
         {
-            <!-- Skeleton loading â€” mirrors the real page structure -->
+            <!-- Skeleton loading — mirrors the real page structure -->
             <div class="cost-skeleton">
                 <!-- Summary banner skeleton -->
                 <div class="cost-skeleton__banner">
@@ -98,7 +98,7 @@
         }
         else
         {
-            <!-- Summary banner â€” 2 columns: actual MTD + estimated max -->
+            <!-- Summary banner — 2 columns: actual MTD + estimated max -->
             <div class="cost-summary-banner">
                 <div class="cost-summary-banner__cols">
                     <!-- Estimated MTD -->
@@ -111,7 +111,7 @@
                             <div class="cost-summary-banner__col-value cost-summary-banner__col-value--actual">
                                 @(_summary.Fly.EstimatedMtdDollars == 0 ? "FREE" : FormatUsd(_summary.Fly.EstimatedMtdDollars))
                             </div>
-                            <div class="cost-summary-banner__col-sub">@Loc.T("Day 1â€“@day est. (24/7)").Replace("@day", DateTime.UtcNow.Day.ToString())</div>
+                            <div class="cost-summary-banner__col-sub">@Loc.T("Day 1–@day est. (24/7)").Replace("@day", DateTime.UtcNow.Day.ToString())</div>
                         }
                         else
                         {
@@ -181,7 +181,7 @@
                                 <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
                                 <div class="health-card__icon"><i class="bi @MachineIcon(m.State)"></i></div>
                                 <div class="health-card__body">
-                                    <div class="health-card__label">@m.Size Â· @m.MemoryMb MB Â· @m.Region</div>
+                                    <div class="health-card__label">@m.Size · @m.MemoryMb MB · @m.Region</div>
                                     <div class="health-card__value health-card__value--wrap">@MachinStateLabel(m.State)</div>
                                 </div>
                                 <div class="health-card__dot health-card__dot--@(m.State == "started" ? "ok" : "warn")"></div>
@@ -244,7 +244,7 @@
                                 <div class="health-card__value health-card__value--wrap @(_summary.Fly.EstimatedMtdDollars == 0 ? "cost-green" : "cost-blue")">
                                     @(_summary.Fly.EstimatedMtdDollars == 0 ? "FREE" : FormatUsd(_summary.Fly.EstimatedMtdDollars))
                                 </div>
-                                <div class="cost-sub">@Loc.T("Day 1â€“") @DateTime.UtcNow.Day @Loc.T("(24/7 est.)")</div>
+                                <div class="cost-sub">@Loc.T("Day 1–") @DateTime.UtcNow.Day @Loc.T("(24/7 est.)")</div>
                             </div>
                         </div>
                     </div>
