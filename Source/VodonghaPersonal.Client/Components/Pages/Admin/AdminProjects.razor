@@ -81,7 +81,7 @@
                         </td>
                         <td>@p.Title</td>
                         <td><small style="opacity:.7">@p.Technologies</small></td>
-                        <td>@(p.IsFeatured ? "✓" : "")</td>
+                        <td>@(p.IsFeatured ? "âœ“" : "")</td>
                         <td>
                             <div class="admin-table__actions">
                                 <button class="admin-btn admin-btn--sm admin-btn--ghost" @onclick="() => OpenEdit(p)"><i class="bi bi-pencil"></i></button>
@@ -97,11 +97,11 @@
         <div class="paginator">
             <span class="paginator-summary">@Filtered.Count @Loc.T("items")</span>
             <nav>
-                <button type="button" @onclick="() => GoPage(0)" disabled="@(_page == 0)">«</button>
-                <button type="button" @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">‹</button>
+                <button type="button" @onclick="() => GoPage(0)" disabled="@(_page == 0)">Â«</button>
+                <button type="button" @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">â€¹</button>
                 <span>@Loc.T("Page") @(_page + 1) / @TotalPages</span>
-                <button type="button" @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">›</button>
-                <button type="button" @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">»</button>
+                <button type="button" @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">â€º</button>
+                <button type="button" @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">Â»</button>
             </nav>
         </div>
         } @* end else (not loading) *@
@@ -112,7 +112,7 @@
                 <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
                     <h2 class="admin-modal__title">@(Editing.Rid == Guid.Empty ? Loc.T("Add project") : Loc.T("Edit project"))</h2>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">@Loc.T("Title") 🇻🇳</label>
+                        <label class="admin-form__label">@Loc.T("Title") ðŸ‡»ðŸ‡³</label>
                         <input class="admin-form__input" @bind="Editing.Title" />
                     </div>
                     <div class="admin-form__group">
@@ -156,5 +156,6 @@
             </div>
         }
         <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
+        <AdminFooter />
     </main>
 </div>

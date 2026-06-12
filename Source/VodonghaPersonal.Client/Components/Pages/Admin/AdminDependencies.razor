@@ -113,7 +113,7 @@
             {
                 <div class="dep-empty">
                     <i class="bi bi-search"></i>
-                    <span>Không tìm thấy thư viện phù hợp</span>
+                    <span>KhÃ´ng tÃ¬m tháº¥y thÆ° viá»‡n phÃ¹ há»£p</span>
                 </div>
             }
             else
@@ -153,7 +153,7 @@
                                         <div class="dep-card__ver">
                                             <span class="dep-card__ver-label">@Loc.T("Latest")</span>
                                             <code class="dep-card__ver-val dep-card__ver-val--latest">
-                                                @(dep.LatestVersion ?? "—")
+                                                @(dep.LatestVersion ?? "â€”")
                                             </code>
                                         </div>
                                     </div>
@@ -169,5 +169,6 @@
                 }
             }
         }
+        <AdminFooter />
     </main>
 </div>

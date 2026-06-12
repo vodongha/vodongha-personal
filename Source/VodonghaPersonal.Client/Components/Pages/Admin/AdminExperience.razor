@@ -27,7 +27,7 @@
             </div>
             <div class="admin-search-wrap">
                 <i class="bi bi-search admin-search-wrap__icon"></i>
-                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="Tìm kiếm công ty, vai trò..." />
+                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="TÃ¬m kiáº¿m cÃ´ng ty, vai trÃ²..." />
             </div>
         </div>
 
@@ -60,7 +60,7 @@
             <PropertyColumn Property="e => e.Role" Title="@Loc.T("Role")" Sortable="true" />
             <PropertyColumn Property="e => e.Location" Title="@Loc.T("Location")" Sortable="true" />
             <TemplateColumn Title="@Loc.T("Duration")" Sortable="false">
-                @context.StartMonth/@context.StartYear – @(context.IsCurrent ? Loc.T("Present") : $"{context.EndMonth}/{context.EndYear}")
+                @context.StartMonth/@context.StartYear â€“ @(context.IsCurrent ? Loc.T("Present") : $"{context.EndMonth}/{context.EndYear}")
             </TemplateColumn>
             <TemplateColumn Title="@Loc.T("Actions")">
                 <div class="admin-table__actions">
@@ -139,6 +139,7 @@
             </div>
         }
         <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
+        <AdminFooter />
     </main>
 </div>
 

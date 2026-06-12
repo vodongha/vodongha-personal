@@ -28,7 +28,7 @@
                 </div>
                 <div class="health-card__body">
                     <div class="health-card__label">@Loc.T("Server")</div>
-                    <div class="health-card__value">@(_latest != null ? Loc.T("Online") : "—")</div>
+                    <div class="health-card__value">@(_latest != null ? Loc.T("Online") : "â€”")</div>
                 </div>
                 <div class="health-card__dot health-card__dot--@(_latest?.DbHealthy == true ? "ok" : "error")"></div>
             </div>
@@ -59,7 +59,7 @@
                 <div class="health-card__icon"><i class="bi bi-tag"></i></div>
                 <div class="health-card__body">
                     <div class="health-card__label">Version</div>
-                    <div class="health-card__value">@(string.IsNullOrEmpty(_appVersion) ? "—" : $"v{_appVersion}")</div>
+                    <div class="health-card__value">@(string.IsNullOrEmpty(_appVersion) ? "â€”" : $"v{_appVersion}")</div>
                 </div>
             </div>
 
@@ -77,7 +77,7 @@
                 <div class="health-card__icon"><i class="bi bi-memory"></i></div>
                 <div class="health-card__body">
                     <div class="health-card__label">@Loc.T("Memory")</div>
-                    <div class="health-card__value">@(_latest != null ? $"{_latest.MemoryMb} MB" : "—")</div>
+                    <div class="health-card__value">@(_latest != null ? $"{_latest.MemoryMb} MB" : "â€”")</div>
                 </div>
             </div>
 
@@ -86,7 +86,7 @@
                 <div class="health-card__icon"><i class="bi bi-cpu"></i></div>
                 <div class="health-card__body">
                     <div class="health-card__label">@Loc.T("Threads")</div>
-                    <div class="health-card__value">@(_latest?.ThreadCount.ToString() ?? "—")</div>
+                    <div class="health-card__value">@(_latest?.ThreadCount.ToString() ?? "â€”")</div>
                 </div>
             </div>
 
@@ -169,7 +169,7 @@
                         <tr>
                             <td style="color:#6b7280;font-size:.8rem;font-variant-numeric:tabular-nums">@Tz.ToUserTime(snap.Timestamp).ToString("HH:mm:ss")</td>
                             <td>@snap.MemoryMb MB</td>
-                            <td>@(snap.DbHealthy ? $"{snap.DbPingMs} ms" : "—")</td>
+                            <td>@(snap.DbHealthy ? $"{snap.DbPingMs} ms" : "â€”")</td>
                             <td>@snap.ThreadCount</td>
                             <td>
                                 @if (snap.DbHealthy)
@@ -189,13 +189,14 @@
             <div class="paginator">
                 <span class="paginator-summary">@_snapshots.Count @Loc.T("items")</span>
                 <nav>
-                    <button type="button" @onclick="() => GoPage(0)" disabled="@(_page == 0)">«</button>
-                    <button type="button" @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">‹</button>
+                    <button type="button" @onclick="() => GoPage(0)" disabled="@(_page == 0)">Â«</button>
+                    <button type="button" @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">â€¹</button>
                     <span>@Loc.T("Page") @(_page + 1) / @TotalPages</span>
-                    <button type="button" @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">›</button>
-                    <button type="button" @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">»</button>
+                    <button type="button" @onclick="() => GoPage(_page + 1)" disabled="@(_page >= TotalPages - 1)">â€º</button>
+                    <button type="button" @onclick="() => GoPage(TotalPages - 1)" disabled="@(_page >= TotalPages - 1)">Â»</button>
                 </nav>
             </div>
         </div>
+        <AdminFooter />
     </main>
 </div>

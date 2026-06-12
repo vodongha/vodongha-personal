@@ -62,7 +62,7 @@
             <PropertyColumn Property="p => p.Slug" Title="@Loc.T("Slug")" Sortable="true" />
             <PropertyColumn Property="p => p.Tags" Title="@Loc.T("Tags")" Sortable="false" />
             <TemplateColumn Title="@Loc.T("Published")" Sortable="false">
-                @(context.IsPublished ? "✓" : "")
+                @(context.IsPublished ? "âœ“" : "")
             </TemplateColumn>
             <PropertyColumn Property="p => p.CreatedAt" Title="@Loc.T("Created date")" Format="yyyy-MM-dd" Sortable="true" />
             <TemplateColumn Title="@Loc.T("Actions")">
@@ -81,7 +81,7 @@
                 <div class="admin-modal admin-modal--lg" @onclick:stopPropagation>
                     <h2 class="admin-modal__title">@(Editing.Rid == Guid.Empty ? Loc.T("Add post") : Loc.T("Edit post"))</h2>
                     <div class="admin-form__group">
-                        <label class="admin-form__label">@Loc.T("Title") 🇻🇳</label>
+                        <label class="admin-form__label">@Loc.T("Title") ðŸ‡»ðŸ‡³</label>
                         <input class="admin-form__input" value="@Editing.Title" @oninput="OnTitleInput" />
                     </div>
                     <div class="admin-form__group">
@@ -127,6 +127,7 @@
             </div>
         }
         <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
+        <AdminFooter />
     </main>
 </div>
 

@@ -60,7 +60,7 @@
             <PropertyColumn Property="e => e.Degree" Title="@Loc.T("Degree")" Sortable="true" />
             <PropertyColumn Property="e => e.Field" Title="@Loc.T("Field")" Sortable="true" />
             <TemplateColumn Title="@Loc.T("Year")" Sortable="false">
-                @context.StartYear – @(context.EndYear?.ToString() ?? Loc.T("Present"))
+                @context.StartYear â€“ @(context.EndYear?.ToString() ?? Loc.T("Present"))
             </TemplateColumn>
             <TemplateColumn Title="@Loc.T("Actions")">
                 <div class="admin-table__actions">
@@ -123,6 +123,7 @@
             </div>
         }
         <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
+        <AdminFooter />
     </main>
 </div>
 

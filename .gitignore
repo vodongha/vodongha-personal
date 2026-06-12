@@ -27,4 +27,9 @@ msbuild.binlog
 ## OS
 .DS_Store
 Thumbs.db
-wallet/
+
+## Oracle Wallet — contains mTLS certs, never commit
+[Ww]allet/
+
+## IDE
+.idea/
