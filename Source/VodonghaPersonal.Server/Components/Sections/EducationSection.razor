@@ -44,7 +44,7 @@
                             <span class="timeline__period">@item.StartYear — @(item.EndYear?.ToString() ?? "Present")</span>
                         </div>
                         <p class="timeline__company">
-                            <i class="bi bi-mortarboard"></i> @item.Degree · @item.Field
+                            <i class="bi bi-mortarboard"></i> @item.Degree@(string.IsNullOrEmpty(item.Field) ? "" : $" · {item.Field}")
                         </p>
                         @{
                             string? desc = Lang.IsVi ? item.Description : (item.DescriptionEn ?? item.Description);

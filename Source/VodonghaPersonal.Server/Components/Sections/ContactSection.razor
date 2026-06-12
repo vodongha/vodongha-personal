@@ -73,6 +73,7 @@
                     <label class="contact__label">@Lang.T("contact.name")<span class="required">*</span></label>
                     <input class="contact__input @(NameError != null ? "invalid" : "")"
                            type="text"
+                           maxlength="100"
                            value="@_model.Name"
                            @oninput="e => _model.Name = e.Value?.ToString() ?? string.Empty"
                            @onblur="ValidateName" />
@@ -86,6 +87,7 @@
                     <label class="contact__label">@Lang.T("contact.email")<span class="required">*</span></label>
                     <input class="contact__input @(EmailError != null ? "invalid" : "")"
                            type="email"
+                           maxlength="254"
                            value="@_model.Email"
                            @oninput="e => _model.Email = e.Value?.ToString() ?? string.Empty"
                            @onblur="ValidateEmail" />
@@ -99,6 +101,7 @@
                     <label class="contact__label">@(Lang.IsVi ? "Tiêu đề" : "Subject")<span class="required">*</span></label>
                     <input class="contact__input @(SubjectError != null ? "invalid" : "")"
                            type="text"
+                           maxlength="200"
                            value="@_model.Subject"
                            @oninput="e => _model.Subject = e.Value?.ToString() ?? string.Empty"
                            @onblur="ValidateSubject" />
@@ -111,6 +114,7 @@
                 <div class="contact__field">
                     <label class="contact__label">@Lang.T("contact.message")<span class="required">*</span></label>
                     <textarea class="contact__textarea @(MessageError != null ? "invalid" : "")"
+                              maxlength="5000"
                               @oninput="e => _model.Message = e.Value?.ToString() ?? string.Empty"
                               @onblur="ValidateMessage">@_model.Message</textarea>
                     @if (MessageError != null)

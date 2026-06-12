@@ -20,6 +20,9 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
+    // Default 32KB kills the circuit when a large paste lands in a bound input —
+    // the whole interactive UI dies and entered form data is lost.
+    .AddHubOptions(options => options.MaximumReceiveMessageSize = 256 * 1024)
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddSignalR();
