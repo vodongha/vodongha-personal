@@ -1,4 +1,4 @@
-@page "/admin/blog"
+﻿@page "/admin/blog"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode @(new InteractiveAutoRenderMode(prerender: false))
@@ -15,6 +15,7 @@
             <AdminBreadcrumb />
             <button type="button" class="admin-btn admin-btn--primary" @onclick="OpenAdd"><i class="bi bi-plus-lg"></i> @Loc.T("Add new")</button>
         </header>
+        <div class="admin-content">
 
         <div class="admin-toolbar">
             <div class="admin-select-wrap">
@@ -127,6 +128,7 @@
             </div>
         }
         <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
+        </div>
         <AdminFooter />
     </main>
 </div>

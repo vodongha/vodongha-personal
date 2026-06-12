@@ -1,4 +1,4 @@
-@page "/admin/chats"
+﻿@page "/admin/chats"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode @(new InteractiveAutoRenderMode(prerender: false))
@@ -13,6 +13,7 @@
             <h1 class="admin-header__title">@Loc.T("Live Chats")</h1>
             <AdminBreadcrumb />
         </header>
+        <div class="admin-content">
 
         @if (_loading)
         {
@@ -161,6 +162,7 @@
                 }
             </div>
         }
+        </div>
         <AdminFooter />
     </main>
 </div>
