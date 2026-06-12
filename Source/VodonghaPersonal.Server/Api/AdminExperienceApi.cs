@@ -38,7 +38,7 @@ public static class AdminExperienceApi
             item.Id = existing.Id;
             item.Rid = rid;
             if (item.IsCurrent) { item.EndYear = null; item.EndMonth = null; }
-            db.Experiences.Update(item);
+            db.Entry(existing).CurrentValues.SetValues(item);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
             expSvc.InvalidateCache();
