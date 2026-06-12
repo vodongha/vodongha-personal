@@ -33,11 +33,11 @@ public partial class AdminSettings : ComponentBase, IDisposable
             await using Stream stream = file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024);
             string? url = await SettingsClient.UploadAvatarAsync(stream, file.Name, file.ContentType);
             if (url != null) { Val["AvatarUrl"] = url; }
-            Toast.Show("Đã tải ảnh lên thành công");
+            Toast.Show(Loc.T("Avatar uploaded successfully"));
         }
         catch (Exception ex)
         {
-            Toast.Show($"Lỗi: {ex.Message}", success: false);
+            Toast.Show($"{Loc.T("Error")}: {ex.Message}", success: false);
         }
         finally
         {
@@ -72,7 +72,7 @@ public partial class AdminSettings : ComponentBase, IDisposable
     private async Task SaveAll()
     {
         await SettingsClient.SaveAllAsync(Val);
-        Toast.Show("Đã lưu cài đặt thành công");
+        Toast.Show(Loc.T("Profile saved successfully"));
     }
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
