@@ -1,4 +1,4 @@
-@page "/admin/profile"
+﻿@page "/admin/profile"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode @(new InteractiveAutoRenderMode(prerender: false))
@@ -13,6 +13,7 @@
             <h1 class="admin-header__title">@Loc.T("Personal information")</h1>
             <AdminBreadcrumb />
         </header>
+        <div class="admin-content">
 
         <div class="admin-settings-grid">
             <div class="admin-settings-section">
@@ -102,6 +103,7 @@
             <button class="admin-btn admin-btn--primary" @onclick="SaveAll">
                 <i class="bi bi-check-lg"></i> @Loc.T("Save all")
             </button>
+        </div>
         </div>
         <AdminFooter />
     </main>

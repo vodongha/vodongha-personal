@@ -1,4 +1,4 @@
-@page "/admin/menu-mobile"
+﻿@page "/admin/menu-mobile"
 @layout AdminLayout
 @rendermode @(new InteractiveAutoRenderMode(prerender: false))
 @attribute [Authorize]
@@ -26,6 +26,7 @@
                 }
             </div>
         </header>
+        <div class="admin-content">
 
         <div id="admin-dash-cards" class="admin-cards" data-saved-order="@_menuOrder">
             @foreach (MenuItem item in FilteredItems)
@@ -50,6 +51,7 @@
             {
                 <p class="menu-search__empty">No results for "@_search"</p>
             }
+        </div>
         </div>
         <AdminFooter />
     </main>

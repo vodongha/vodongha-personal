@@ -1,4 +1,4 @@
-@page "/admin/api-keys"
+﻿@page "/admin/api-keys"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode @(new InteractiveAutoRenderMode(prerender: false))
@@ -20,6 +20,7 @@
                 </button>
             </div>
         </header>
+        <div class="admin-content">
 
         <div class="ak-search-wrap">
             <i class="bi bi-search ak-search-wrap__icon"></i>
@@ -188,6 +189,7 @@
                 </div>
             }
         }
+        </div>
         <AdminFooter />
     </main>
 </div>

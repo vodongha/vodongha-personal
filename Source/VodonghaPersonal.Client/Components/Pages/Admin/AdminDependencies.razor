@@ -1,4 +1,4 @@
-@page "/admin/dependencies"
+﻿@page "/admin/dependencies"
 @layout AdminLayout
 @attribute [Authorize]
 @rendermode @(new InteractiveAutoRenderMode(prerender: false))
@@ -21,6 +21,7 @@
                 </button>
             </div>
         </header>
+        <div class="admin-content">
 
         @if (_loading)
         {
@@ -169,6 +170,7 @@
                 }
             }
         }
+        </div>
         <AdminFooter />
     </main>
 </div>

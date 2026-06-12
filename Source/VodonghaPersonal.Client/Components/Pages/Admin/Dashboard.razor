@@ -1,4 +1,4 @@
-@page "/admin"
+﻿@page "/admin"
 @layout AdminLayout
 @rendermode @(new InteractiveAutoRenderMode(prerender: false))
 @attribute [Authorize]
@@ -12,6 +12,7 @@
             <h1 class="admin-header__title">@Loc.T("Dashboard")</h1>
             <AdminBreadcrumb />
         </header>
+        <div class="admin-content">
 
         @if (_loading)
         {
@@ -139,6 +140,7 @@
                 </div>
             </div>
         }
+        </div>
         <AdminFooter />
     </main>
 </div>
