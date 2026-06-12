@@ -8,25 +8,26 @@
     <AdminNav />
 
     <main class="admin-main">
-        <header class="admin-header admin-header--menu">
+        <header class="admin-header">
             <h1 class="admin-header__title">@Loc.T("Menu")</h1>
-            <div class="menu-search">
-                <i class="bi bi-search menu-search__icon"></i>
-                <input class="menu-search__input"
-                       type="search"
-                       placeholder="Search..."
-                       @bind="_search"
-                       @bind:event="oninput"
-                       autocomplete="off" />
-                @if (!string.IsNullOrEmpty(_search))
-                {
-                    <button class="menu-search__clear" @onclick='() => _search = ""' type="button">
-                        <i class="bi bi-x"></i>
-                    </button>
-                }
-            </div>
         </header>
         <div class="admin-content">
+
+        <div class="menu-search">
+            <i class="bi bi-search menu-search__icon"></i>
+            <input class="menu-search__input"
+                   type="search"
+                   placeholder="Search..."
+                   @bind="_search"
+                   @bind:event="oninput"
+                   autocomplete="off" />
+            @if (!string.IsNullOrEmpty(_search))
+            {
+                <button class="menu-search__clear" @onclick='() => _search = ""' type="button">
+                    <i class="bi bi-x"></i>
+                </button>
+            }
+        </div>
 
         <div id="admin-dash-cards" class="admin-cards" data-saved-order="@_menuOrder">
             @foreach (MenuItem item in FilteredItems)
