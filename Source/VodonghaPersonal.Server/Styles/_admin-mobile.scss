@@ -137,12 +137,18 @@
         padding: 1rem 0.75rem 5rem !important;
     }
 
-    // Header
+    // Header — not sticky on mobile, scrolls with content
     .admin-header {
+        position: static !important;
         margin-bottom: 1rem;
         flex-wrap: wrap;
         gap: 0.5rem;
         &__title { font-size: 1.2rem; }
+    }
+
+    // Footer — not sticky on mobile, scrolls with content
+    .admin-footer {
+        position: static !important;
     }
 
     // Toolbar wraps and expands
