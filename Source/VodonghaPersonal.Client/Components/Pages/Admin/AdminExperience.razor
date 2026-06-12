@@ -61,7 +61,7 @@
             <PropertyColumn Property="e => e.Role" Title="@Loc.T("Role")" Sortable="true" />
             <PropertyColumn Property="e => e.Location" Title="@Loc.T("Location")" Sortable="true" />
             <TemplateColumn Title="@Loc.T("Duration")" Sortable="false">
-                @context.StartMonth/@context.StartYear - @(context.IsCurrent ? Loc.T(“Present”) : $”{context.EndMonth}/{context.EndYear}”)
+                @context.StartMonth/@context.StartYear - @(context.IsCurrent ? Loc.T("Present") : $"{context.EndMonth}/{context.EndYear}")
             </TemplateColumn>
             <TemplateColumn Title="@Loc.T("Actions")">
                 <div class="admin-table__actions">
