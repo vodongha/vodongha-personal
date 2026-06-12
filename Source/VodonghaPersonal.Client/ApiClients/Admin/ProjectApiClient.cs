@@ -6,7 +6,7 @@ namespace VodonghaPersonal.Client.ApiClients;
 
 public class ProjectApiClient(HttpClient http) : BaseCrudApiClient<Project>(http, "/api/admin/projects")
 {
-    public Task<Project?> SaveAsync(Project item) => SaveAsync(item, item.Rid);
+    public Task<Project?> SaveAsync(Project item) => SaveAsync(item, item.Id == 0 ? Guid.Empty : item.Rid);
 
     public async Task SaveOrderAsync(List<Guid> rids)
     {
