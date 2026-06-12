@@ -36,7 +36,7 @@ public static class AdminEducationApi
             if (existing is null) { return Results.NotFound(); }
             item.Id = existing.Id;
             item.Rid = rid;
-            db.Educations.Update(item);
+            db.Entry(existing).CurrentValues.SetValues(item);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
             eduSvc.InvalidateCache();

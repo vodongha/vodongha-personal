@@ -36,7 +36,7 @@ public static class AdminSkillsApi
             if (existing is null) { return Results.NotFound(); }
             skill.Id = existing.Id;
             skill.Rid = rid;
-            db.Skills.Update(skill);
+            db.Entry(existing).CurrentValues.SetValues(skill);
             await db.SaveChangesAsync();
             cvCache.InvalidateAndRegenerate();
             skillSvc.InvalidateCache();
