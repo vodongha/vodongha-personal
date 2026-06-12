@@ -1,15 +1,21 @@
+using Microsoft.AspNetCore.Components;
+using VodonghaPersonal.Client.ApiClients;
+using VodonghaPersonal.Client.Services;
+
 namespace VodonghaPersonal.Client.Components.Shared;
 
-public partial class AdminFooter
+public partial class AdminFooter : ComponentBase
 {
-    private string _version = "v3.0.3";
+    [Inject] private SettingsApiClient SettingsApi { get; set; } = default!;
+    [Inject] private GitHubVersionService GithubVersion { get; set; } = default!;
 
-    protected override void OnInitialized()
+    private string _name = "";
+    private string _version = "—";
+
+    protected override async Task OnInitializedAsync()
     {
-        Version? ver = typeof(AdminFooter).Assembly.GetName().Version;
-        if (ver != null && ver.Major > 0)
-        {
-            _version = $"v{ver.Major}.{ver.Minor}.{ver.Build}";
-        }
+        Dictionary<string, string> settings = await SettingsApi.GetAllAsync();
+        _name = settings.GetValueOrDefault("Name", "");
+        _version = await GithubVersion.GetLatestVersionAsync();
     }
 }
