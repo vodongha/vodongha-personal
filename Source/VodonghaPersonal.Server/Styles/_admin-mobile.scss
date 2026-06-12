@@ -18,12 +18,13 @@
     .admin-shell {
         display: block !important;
         flex-direction: unset !important;
-        width: 100vw !important;
-        max-width: 100vw !important;
+        width: 100% !important;
+        max-width: 100% !important;
         min-height: 100dvh !important;
         height: auto !important;
         box-sizing: border-box !important;
-        overflow: visible !important;
+        overflow-x: hidden !important;
+        overflow-y: visible !important;
     }
 
     // Sidebar → fixed bottom navigation bar
@@ -140,8 +141,8 @@
     // Main content — full width, space for bottom nav
     .admin-main {
         flex: unset !important;
-        width: 100vw !important;
-        max-width: 100vw !important;
+        width: 100% !important;
+        max-width: 100% !important;
         min-width: 0 !important;
         min-height: 100dvh !important;
         height: auto !important;
@@ -180,6 +181,12 @@
         white-space: nowrap;
 
         tbody tr:not(:has(> td:not(:empty))) { display: none !important; }
+    }
+
+    // Dashboard cards — never wider than viewport (Chart.js canvas can push width)
+    .dash-card {
+        max-width: 100%;
+        overflow-x: hidden;
     }
 
     // Form grid collapses to 1 column
