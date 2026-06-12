@@ -11,6 +11,7 @@ public partial class AdminBreadcrumb : ComponentBase, IDisposable
     private static readonly Dictionary<string, (string? Group, string Page)> _map = new()
     {
         ["/admin"] = (null, "Dashboard"),
+        ["/admin/menu-mobile"] = (null, "Menu"),
         ["/admin/skills"] = ("Portfolio", "Skills"),
         ["/admin/projects"] = ("Portfolio", "Projects"),
         ["/admin/education"] = ("Portfolio", "Education"),
