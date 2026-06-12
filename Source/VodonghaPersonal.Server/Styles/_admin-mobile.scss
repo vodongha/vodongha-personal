@@ -190,38 +190,16 @@
     }
 
     // ── Menu page (mobile) ──
-    // No header/footer; search pinned at top, compact cards 3 per row
+    // No header/footer; search pinned at top. Cards keep their default look,
+    // grid auto-fits — up to 4 per row when there is room.
     .admin-content--menu {
         padding: 0;
 
         .menu-search { margin-bottom: 0.75rem; }
 
         .admin-cards {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.6rem;
-
-            @media (max-width: 360px) {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .admin-card {
-            padding: 0.85rem 0.4rem;
-            gap: 0.45rem;
-            border-radius: 10px;
-
-            &__icon { font-size: 1.4rem; }
-            &__label {
-                font-size: 0.72rem;
-                text-align: center;
-                line-height: 1.2;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                max-width: 100%;
-            }
-
-            .cost-card-drag-handle { display: none; }
+            grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+            gap: 0.75rem;
         }
     }
 
