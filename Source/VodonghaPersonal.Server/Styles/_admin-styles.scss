@@ -255,6 +255,20 @@
     padding: 2rem;
 }
 
+// Menu page — no header/footer; search pinned at top while cards scroll
+.admin-content--menu {
+    padding: 1rem 0.75rem 5.5rem;
+
+    .menu-search {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding: 0.5rem 0;
+        margin-bottom: 0.75rem;
+        background: var(--admin-bg);
+    }
+}
+
 .admin-breadcrumb {
     display: flex;
     align-items: center;
