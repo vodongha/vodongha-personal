@@ -77,7 +77,7 @@
         {
             <div class="admin-modal-overlay" @onclick="CloseForm">
                 <div class="admin-modal" @onclick:stopPropagation>
-                    <h2 class="admin-modal__title">@(Editing.Rid == Guid.Empty ? Loc.T("Add skill") : Loc.T("Edit skill"))</h2>
+                    <h2 class="admin-modal__title">@(Editing.Id == 0 ? Loc.T("Add skill") : Loc.T("Edit skill"))</h2>
                     <div class="admin-form__group">
                         <label class="admin-form__label">@Loc.T("Skill name")</label>
                         <input class="admin-form__input" @bind="Editing.Name" />
