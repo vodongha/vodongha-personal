@@ -36,6 +36,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, CookieAuthStateProvider>();
 
 // Client-only services (no DB, no server resources)
+builder.Services.AddSingleton<GitHubVersionService>();
 builder.Services.AddScoped<ToastService>();
 builder.Services.AddScoped<AdminLocalizationService>();
 builder.Services.AddScoped<LanguageService>();
