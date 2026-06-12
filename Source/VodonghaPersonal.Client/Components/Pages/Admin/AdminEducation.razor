@@ -20,10 +20,10 @@
         <div class="admin-toolbar">
             <div class="admin-select-wrap">
                 <select class="admin-page-size" @onchange="SetPageSize">
-                    <option value="5">5 / trang</option>
-                    <option value="10" selected>10 / trang</option>
-                    <option value="20">20 / trang</option>
-                    <option value="50">50 / trang</option>
+                    <option value="5">5 / @Loc.T("page")</option>
+                    <option value="10" selected>10 / @Loc.T("page")</option>
+                    <option value="20">20 / @Loc.T("page")</option>
+                    <option value="50">50 / @Loc.T("page")</option>
                 </select>
             </div>
             <div class="admin-search-wrap">
@@ -61,7 +61,7 @@
             <PropertyColumn Property="e => e.Degree" Title="@Loc.T("Degree")" Sortable="true" />
             <PropertyColumn Property="e => e.Field" Title="@Loc.T("Field")" Sortable="true" />
             <TemplateColumn Title="@Loc.T("Year")" Sortable="false">
-                @context.StartYear â€“ @(context.EndYear?.ToString() ?? Loc.T("Present"))
+                @context.StartYear - @(context.EndYear?.ToString() ?? Loc.T(“Present”))
             </TemplateColumn>
             <TemplateColumn Title="@Loc.T("Actions")">
                 <div class="admin-table__actions">

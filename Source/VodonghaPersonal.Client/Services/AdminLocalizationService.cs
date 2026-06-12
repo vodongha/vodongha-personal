@@ -108,6 +108,7 @@ public class AdminLocalizationService
         ["Currently working"] = "Đang làm việc",
         ["Add experience"] = "Thêm kinh nghiệm",
         ["Edit experience"] = "Sửa kinh nghiệm",
+        ["Search company, role..."] = "Tìm kiếm công ty, vai trò...",
 
         // Blog
         ["Slug"] = "Slug",
