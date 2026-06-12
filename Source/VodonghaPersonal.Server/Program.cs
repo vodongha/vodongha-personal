@@ -87,6 +87,11 @@ builder.Services.AddScoped<AiService>();
 builder.Services.AddSingleton<CostMonitorService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient("deps").ConfigureHttpClient(c => c.Timeout = TimeSpan.FromSeconds(10));
+builder.Services.AddHttpClient("github").ConfigureHttpClient(c =>
+{
+    c.Timeout = TimeSpan.FromSeconds(5);
+    c.DefaultRequestHeaders.Add("User-Agent", "vodongha-personal");
+});
 builder.Services.AddSingleton<DependencyCheckService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
 builder.Services.AddHttpContextAccessor();
