@@ -96,7 +96,7 @@
                 <div class="admin-modal" @onclick:stopPropagation>
                     <h2 class="admin-modal__title">@Selected.Subject</h2>
                     <p style="margin-bottom:.25rem"><strong>@Loc.T("From:")</strong> @Selected.Name &lt;<a href="mailto:@Selected.Email">@Selected.Email</a>&gt;</p>
-                    <p class=”admin-contact-meta”><small>@Selected.SentAt.ToString(“dddd, MMMM d yyyy — HH:mm UTC”)</small></p>
+                    <p class=”admin-contact-meta”><small>@Selected.SentAt.ToString(“dddd, MMMM d yyyy - HH:mm UTC”)</small></p>
                     <div class="admin-message-body">@((MarkupString)System.Web.HttpUtility.HtmlEncode(Selected.Message).Replace("\n", "<br/>"))</div>
                     <div class="admin-modal__footer">
                         <a class="admin-btn admin-btn--ghost" href="mailto:@Selected.Email?subject=Re: @Uri.EscapeDataString(Selected.Subject)"><i class="bi bi-reply"></i> @Loc.T("Reply")</a>
