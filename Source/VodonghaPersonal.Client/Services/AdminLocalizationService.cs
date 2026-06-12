@@ -40,7 +40,7 @@ public class AdminLocalizationService
         ["CV"] = "CV",
         ["Messages"] = "Tin nhắn",
         ["Chats"] = "Chat",
-        ["Settings"] = "Hồ sơ",
+        ["Settings"] = "Cài đặt",
         ["Logout"] = "Đăng xuất",
         ["View website"] = "Website",
 
@@ -315,5 +315,8 @@ public class AdminLocalizationService
         ["Preview shows data that will be included in the PDF. Edit content in Settings, Skills, Experience, Education and Projects pages."] = "Xem trước dữ liệu sẽ được đưa vào PDF. Chỉnh sửa trong trang Settings, Skills, Experience, Education và Projects.",
         ["Profile"] = "Hồ sơ",
         ["Featured Projects"] = "Dự án nổi bật",
+        ["Profile saved successfully"] = "Đã lưu hồ sơ thành công",
+        ["Avatar uploaded successfully"] = "Đã tải ảnh lên thành công",
+        ["Error"] = "Lỗi",
     };
 }
