@@ -252,6 +252,12 @@ gh pr create --title "Fix: description" --base master --head hotfix/urgent-fix
 
 ---
 
+## License
+
+[MIT](LICENSE)
+
+---
+
 ## Built with
 
 [Claude Code](https://claude.ai/code) by Anthropic. 🤖
