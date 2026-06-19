@@ -74,7 +74,7 @@ public partial class AdminDependencies : ComponentBase, IDisposable
     private void SetStatusFilter(string status) { _statusFilter = _statusFilter == status ? null : status; _typeFilter = null; }
     private void ClearFilters() { _typeFilter = null; _statusFilter = null; _search = ""; }
 
-    private static string GroupIcon(string type) => type switch { "NuGet" => "bi-box-seam", "Npm" => "bi-npm", "Cdn" => "bi-cloud-download", _ => "bi-box" };
+    private static string GroupIcon(string type) => type switch { "NuGet" => "bi-box-seam", "Npm" => "bi-npm", "Cdn" => "bi-cloud-download", "GitHubActions" => "bi-github", _ => "bi-box" };
     private static string StatusIcon(string status) => status switch { "UpToDate" => "bi-check-circle-fill", "Outdated" => "bi-exclamation-triangle-fill", _ => "bi-question-circle-fill" };
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);

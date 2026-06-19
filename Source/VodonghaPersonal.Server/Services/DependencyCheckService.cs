@@ -3,7 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace VodonghaPersonal.Services;
 
-public enum DependencyType { NuGet, Npm, Cdn }
+public enum DependencyType { NuGet, Npm, Cdn, GitHubActions }
 
 public enum DependencyStatus { UpToDate, Outdated, Unknown }
 
@@ -67,6 +67,19 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
         ("Devicon",         "2.17.0", "devicon",         null),
     ];
 
+    // GitHub Actions pinned by major tag in .github/workflows — kept in sync with
+    // what Dependabot (github-actions ecosystem) watches. Versions are compared by
+    // major tag (e.g. "v5"), since that's how the workflows pin them.
+    // superfly/flyctl-actions/setup-flyctl is intentionally omitted — it's pinned to
+    // @master, so there is no version to track.
+    private static readonly (string Repo, string CurrentMajor)[] GitHubActions =
+    [
+        ("actions/checkout",      "v5"),
+        ("actions/setup-dotnet",  "v4"),
+        ("actions/setup-node",    "v4"),
+        ("actions/github-script", "v8"),
+    ];
+
     public async Task<IReadOnlyList<DependencyInfo>> GetAllAsync()
     {
         if (cache.TryGetValue(CacheKey, out IReadOnlyList<DependencyInfo>? cached) && cached is not null)
@@ -99,6 +112,11 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
             foreach (var (name, current, npmPackage, notes) in CdnLibraries)
             {
                 tasks.Add(CheckCdnAsync(http, name, current, npmPackage, notes));
+            }
+
+            foreach (var (repo, currentMajor) in GitHubActions)
+            {
+                tasks.Add(CheckGitHubActionAsync(http, repo, currentMajor));
             }
 
             var results = await Task.WhenAll(tasks);
@@ -187,6 +205,39 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
         {
             return new DependencyInfo(displayName, currentVersion, null, DependencyType.Cdn,
                 $"https://www.npmjs.com/package/{npmPackage}", notes);
+        }
+    }
+
+    private static async Task<DependencyInfo?> CheckGitHubActionAsync(HttpClient http, string repo, string currentMajor)
+    {
+        var registryUrl = $"https://github.com/{repo}";
+        try
+        {
+            // Compare by major tag: the latest release's major (e.g. "v5.2.0" -> "v5")
+            // against the major the workflows pin (e.g. "v5").
+            var request = new HttpRequestMessage(HttpMethod.Get,
+                $"https://api.github.com/repos/{repo}/releases/latest");
+            request.Headers.Add("User-Agent", "vodongha-personal-dep-check");
+            request.Headers.Add("Accept", "application/vnd.github+json");
+
+            using var response = await http.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var body = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(body);
+            var tag = doc.RootElement.GetProperty("tag_name").GetString();
+
+            string? latestMajor = null;
+            if (!string.IsNullOrEmpty(tag))
+            {
+                var major = tag.TrimStart('v').Split('.')[0];
+                latestMajor = string.IsNullOrEmpty(major) ? null : $"v{major}";
+            }
+
+            return new DependencyInfo(repo, currentMajor, latestMajor, DependencyType.GitHubActions, registryUrl);
+        }
+        catch
+        {
+            return new DependencyInfo(repo, currentMajor, null, DependencyType.GitHubActions, registryUrl);
         }
     }
 }
