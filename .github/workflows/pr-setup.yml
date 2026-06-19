@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Auto-assign, label & milestone
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         with:
@@ -69,7 +69,7 @@ jobs:
             }
 
       - name: Request reviewers
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const { owner, repo } = context.repo;
