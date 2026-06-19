@@ -107,6 +107,11 @@
                             @onclick='() => SetTypeFilter("Cdn")'>
                         CDN
                     </button>
+                    <button type="button"
+                            class="dep-filter @(_typeFilter == "GitHubActions" ? "dep-filter--active" : "")"
+                            @onclick='() => SetTypeFilter("GitHubActions")'>
+                        <i class="bi bi-github"></i> GitHub Actions
+                    </button>
                 </div>
             </div>
 

@@ -1,0 +1,65 @@
+name: Dependabot auto-merge
+
+# Auto-merge Dependabot PRs once every required CI workflow is green.
+#
+# It triggers whenever one of the PR build/test/lint workflows finishes, then
+# only merges after ALL of them have succeeded for that exact commit — so a PR
+# is never merged before build + tests + lint pass. (It deliberately ignores
+# "PR Auto Setup", which fails on Dependabot PRs because dependabot[bot] can't
+# be assigned — that must not block the merge.)
+#
+# The merge uses GH_PAT, not the default GITHUB_TOKEN: a push made with
+# GITHUB_TOKEN does NOT trigger further workflows, which would skip the Deploy
+# and Sync-develop workflows. With a PAT the merge to master fires Deploy
+# (build -> test -> format -> lint -> Fly.io) last, exactly as a normal merge.
+on:
+  workflow_run:
+    workflows: ["CI — Build", "Tests", "Lint & Format"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    # Only when this run was a Dependabot PR build that itself succeeded.
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.actor.login == 'dependabot[bot]' &&
+      startsWith(github.event.workflow_run.head_branch, 'dependabot/')
+    steps:
+      - name: Merge once all required workflows are green
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_TOKEN: ${{ secrets.GH_PAT }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+
+          number=$(gh pr list --repo "$REPO" --head "$BRANCH" --state open \
+            --json number --jq '.[0].number')
+          if [ -z "$number" ]; then
+            echo "No open PR for $BRANCH — nothing to merge."
+            exit 0
+          fi
+
+          # Every PR-gating workflow must have a successful run for THIS commit.
+          required=("CI — Build" "Tests" "Lint & Format")
+          for wf in "${required[@]}"; do
+            concl=$(gh run list --repo "$REPO" --workflow "$wf" --branch "$BRANCH" \
+              --json headSha,conclusion \
+              --jq "[.[] | select(.headSha==\"$SHA\")][0].conclusion")
+            echo "  $wf: ${concl:-<no run yet>}"
+            if [ "$concl" != "success" ]; then
+              echo "Not all required workflows are green for $SHA yet — will retry on the next completion."
+              exit 0
+            fi
+          done
+
+          echo "All required workflows green for $SHA — merging PR #$number."
+          GH_TOKEN="$MERGE_TOKEN" gh pr merge "$number" --repo "$REPO" --merge --delete-branch
