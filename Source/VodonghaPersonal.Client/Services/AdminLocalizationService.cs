@@ -232,6 +232,7 @@ public class AdminLocalizationService
         ["NuGet"] = "NuGet",
         ["Npm"] = "npm",
         ["Cdn"] = "CDN",
+        ["GitHubActions"] = "GitHub Actions",
         ["hour"] = "giờ",
         ["Costs"] = "Chi phí",
         ["Changes apply immediately"] = "Thay đổi có hiệu lực ngay",
