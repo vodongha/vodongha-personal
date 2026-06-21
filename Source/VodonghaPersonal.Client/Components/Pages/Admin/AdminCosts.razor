@@ -203,7 +203,7 @@
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Max compute / month")</div>
                                 <div class="health-card__value health-card__value--wrap">@FormatUsd(_summary.Fly.ComputePerMonth24h)</div>
-                                <div class="cost-sub">24/7 Ã— 30d</div>
+                                <div class="cost-sub">24/7 &times; 30d</div>
                             </div>
                         </div>
 
@@ -221,7 +221,7 @@
                             <div class="health-card__icon"><i class="bi bi-gift"></i></div>
                             <div class="health-card__body">
                                 <div class="health-card__label">@Loc.T("Free allowance")</div>
-                                <div class="health-card__value health-card__value--wrap cost-green">âˆ’@FormatUsd(_summary.Fly.FreeAllowance)</div>
+                                <div class="health-card__value health-card__value--wrap cost-green">&minus;@FormatUsd(_summary.Fly.FreeAllowance)</div>
                             </div>
                         </div>
 
