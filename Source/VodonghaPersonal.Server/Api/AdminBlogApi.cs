@@ -17,6 +17,28 @@ public static class AdminBlogApi
             return Results.Ok(posts);
         });
 
+        group.MapGet("/paged", async (int? page, int? pageSize, string? search, string? sortBy, string? sortDir, IDbContextFactory<AppDbContext> dbFactory) =>
+        {
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            IQueryable<BlogPost> q = db.BlogPosts;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string s = $"%{search.Trim()}%";
+                q = q.Where(x => EF.Functions.ILike(x.Title, s) || EF.Functions.ILike(x.Slug, s) || EF.Functions.ILike(x.Tags, s));
+            }
+            bool desc = sortDir == "desc";
+            q = sortBy switch
+            {
+                "Title" => desc ? q.OrderByDescending(x => x.Title) : q.OrderBy(x => x.Title),
+                "Slug" => desc ? q.OrderByDescending(x => x.Slug) : q.OrderBy(x => x.Slug),
+                "ViewCount" => desc ? q.OrderByDescending(x => x.ViewCount) : q.OrderBy(x => x.ViewCount),
+                "IsPublished" => desc ? q.OrderByDescending(x => x.IsPublished) : q.OrderBy(x => x.IsPublished),
+                "CreatedAt" => desc ? q.OrderByDescending(x => x.CreatedAt) : q.OrderBy(x => x.CreatedAt),
+                _ => q.OrderByDescending(x => x.CreatedAt).ThenByDescending(x => x.Id)
+            };
+            return Results.Ok(await q.ToPagedResultAsync(page ?? 0, pageSize ?? 10));
+        });
+
         group.MapPost("/", async (BlogPost post, BlogService svc) =>
         {
             await svc.SaveAsync(post);

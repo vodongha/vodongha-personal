@@ -255,6 +255,15 @@ document.addEventListener('mousedown', function (e) {
 - Admin pages in `VodonghaPersonal.Client` communicate with the Server via HTTP API clients (`XxxApiClient`). Server-side API handlers in `Api/AdminXxxApi.cs` access the DB directly via `IDbContextFactory<AppDbContext>`.
 - All admin pages follow the `.razor` + `.razor.cs` code-behind pattern
 
+### Server-side table processing
+
+All admin entity tables (Skills, Education, Experience, Blog, Contacts, Projects) fetch **one page at a time** from the DB — search, sort, and pagination happen in SQL, not the browser.
+
+- **Server:** each `Api/AdminXxxApi.cs` exposes `GET /api/admin/{entity}/paged?page=&pageSize=&search=&sortBy=&sortDir=` returning `PagedResult<T>(List<T> Items, int Total)` (DTO in `Shared/DTOs/AdminDtos.cs`). Built with EF Core: `EF.Functions.ILike` for case-insensitive search, a `switch` on `sortBy` for sorting, then `IQueryable<T>.ToPagedResultAsync(page, pageSize)` (`Api/PagingExtensions.cs`). The original non-paged `GET /` list endpoints are kept.
+- **Client:** `BaseCrudApiClient<T>.GetPagedAsync(...)` (and `ContactApiClient.GetPagedAsync`) call them.
+- **QuickGrid pages** (Skills/Education/Experience/Blog/Contacts) use `ItemsProvider` (not `Items=`) with an explicit `TGridItem` and an `@ref` so `RefreshDataAsync()` reloads after search/save/delete. `AdminGrid.MapSort` / `AdminGrid.PageOf` (`Components/Pages/Admin/AdminGrid.cs`) translate the `GridItemsProviderRequest` into `sortBy/sortDir/page`. The grid is always rendered (hidden via inline style while `_loading`) so its provider can run; the first-load skeleton clears inside the provider.
+- **AdminContacts** reads its unread badge from `GET /api/admin/contacts/unread-count` (it no longer holds the full list); the empty-state shows when the page total is 0.
+
 ### Auth state in WASM
 
 WASM cannot read HttpOnly cookies. `CookieAuthStateProvider` (registered in `Client/Program.cs`) calls `GET /api/auth/state` on the server to check if the current session cookie is valid, then returns an `AuthenticationState` for `<AuthorizeView>` in NavBar. The `/api/auth/state` endpoint calls `ctx.AuthenticateAsync()` server-side and returns `{ isAuthenticated: bool }`.
@@ -287,17 +296,11 @@ The `.razor` file contains only markup — no `@code { }` block, no `@inject` di
 
 ### AdminProjects — manual pagination + drag-to-reorder
 
-AdminProjects uses a hand-rolled `<table>` (not QuickGrid) because it needs HTML5 drag-and-drop for ordering.
-
-Drag indices must be translated to global list indices when pagination is active:
-
-```csharp
-// Local index = position on current page (0..pageSize-1)
-// Global index = position in full list
-int globalIndex = _page * _pageSize + localIndex;
-```
+AdminProjects uses a hand-rolled `<table>` (not QuickGrid) because it needs HTML5 drag-and-drop for ordering. It is server-side paged like the others (`GetPagedAsync` → `_pageItems`), so drag-reorder operates **within the current page** (cross-page drag isn't possible in a table UI anyway). On drop, the page's existing `Order` values are permuted among the reordered rows and persisted via `PUT /api/admin/projects/reorder` (rid→order pairs), leaving the global ordering of other pages untouched. Drag indices are local to the page.
 
 ### AdminSkills / AdminBlog / AdminEducation / AdminExperience — QuickGrid
+
+These use QuickGrid in **server-side `ItemsProvider` mode** (see *Server-side table processing* above).
 
 QuickGrid renders empty filler rows as `<tr><td></td>...</tr>`. They are hidden in `_admin-styles.scss`:
 

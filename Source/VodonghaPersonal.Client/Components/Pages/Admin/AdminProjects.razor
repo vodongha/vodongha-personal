@@ -27,7 +27,7 @@
             </div>
             <div class="admin-search-wrap">
                 <i class="bi bi-search admin-search-wrap__icon"></i>
-                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" @bind:after="ResetPage" placeholder="@Loc.T("Search projects...")" />
+                <input class="admin-form__input admin-search" value="@_search" @oninput="OnSearch" placeholder="@Loc.T("Search projects...")" />
             </div>
         </div>
 
@@ -66,10 +66,10 @@
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 0; i < Paged.Count; i++)
+                @for (int i = 0; i < _pageItems.Count; i++)
                 {
                     int idx = i;
-                    Project p = Paged[i];
+                    Project p = _pageItems[i];
                     <tr draggable="true"
                         @ondragstart="() => DragStart(idx)"
                         @ondragover:preventDefault="true"
@@ -96,7 +96,7 @@
         </table>
 
         <div class="paginator">
-            <span class="paginator-summary">@Filtered.Count @Loc.T("items")</span>
+            <span class="paginator-summary">@_total @Loc.T("items")</span>
             <nav>
                 <button type="button" @onclick="() => GoPage(0)" disabled="@(_page == 0)">«</button>
                 <button type="button" @onclick="() => GoPage(_page - 1)" disabled="@(_page == 0)">‹</button>
