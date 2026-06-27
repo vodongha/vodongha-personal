@@ -56,6 +56,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **CV / Resume PDF** — generate a polished PDF CV; 3 templates (Dark Sidebar, Minimal, Professional); template picker colors work in light mode
 - **Dependencies tracker** — `/admin/dependencies` checks all NuGet packages, npm devDependencies, and CDN libraries against their registries; filter chips (All/Outdated/Mới nhất/NuGet/npm/CDN) + search box; 1-hour cache with manual refresh; `SemaphoreSlim` prevents thundering herd on cache miss
 - **App version** — current release version displayed in footer and health page; injected automatically from git tag at build time
+- **Server-side tables** — every admin entity table (Skills, Education, Experience, Blog, Messages, Projects) fetches one page at a time from the database; search, sort, and pagination run in SQL (`EF.Functions.ILike` + dynamic `OrderBy`) via `GET /api/admin/{entity}/paged`, so the browser never loads the full list. QuickGrid runs in `ItemsProvider` mode; Projects keeps drag-to-reorder within the current page
 - **Shimmer skeleton loading** — all admin pages and all public sections show animated placeholders while data loads
 - **Mobile responsive** — collapsible sidebar on desktop (64 px icon-only ↔ 220 px expanded, state persisted in localStorage); 4-item fixed bottom bar on screens ≤ 768 px (Menu / Dark / VI|EN / Logout); admin chat is full-screen on mobile with back button
 - **Dark / Light mode** — complete coverage across public site, chat widget, admin panel, and Chart.js charts

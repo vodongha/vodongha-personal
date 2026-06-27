@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Client.Services;
+using VodonghaPersonal.Shared.DTOs;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Client.Components.Pages.Admin;
@@ -20,39 +21,44 @@ public partial class AdminSkills : ComponentBase, IDisposable
     private void ConfirmDelete(Guid rid) { _deleteId = rid; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
 
+    private bool _loading = true;
+    private Skill Editing = new();
+    private bool ShowForm;
+    private string _search = "";
+    private PaginationState _pagination = new() { ItemsPerPage = 10 };
+    private QuickGrid<Skill> _grid = default!;
+
+    // Server-side: QuickGrid asks for one page; the DB does search/sort/paginate.
+    private async ValueTask<GridItemsProviderResult<Skill>> LoadGrid(GridItemsProviderRequest<Skill> req)
+    {
+        int size = req.Count ?? _pagination.ItemsPerPage;
+        (string? sortBy, string sortDir) = AdminGrid.MapSort(req);
+        PagedResult<Skill> res = await SkillClient.GetPagedAsync(AdminGrid.PageOf(req, _pagination.ItemsPerPage), size, _search, sortBy, sortDir);
+        if (_loading) { _loading = false; _ = InvokeAsync(StateHasChanged); }
+        return GridItemsProviderResult.From(res.Items, res.Total);
+    }
+
+    private async Task OnSearch(ChangeEventArgs e)
+    {
+        _search = e.Value?.ToString() ?? "";
+        await _pagination.SetCurrentPageIndexAsync(0);
+        if (_grid is not null) { await _grid.RefreshDataAsync(); }
+    }
+
     private async Task SetPageSize(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value?.ToString(), out int size))
         {
             _pagination.ItemsPerPage = size;
             await _pagination.SetCurrentPageIndexAsync(0);
+            if (_grid is not null) { await _grid.RefreshDataAsync(); }
         }
     }
-
-    private bool _loading = true;
-    private List<Skill> _skills = [];
-    private Skill Editing = new();
-    private bool ShowForm;
-    private string _search = "";
-    private PaginationState _pagination = new() { ItemsPerPage = 10 };
-
-    private IQueryable<Skill> Filtered => _skills.AsQueryable()
-        .Where(s => string.IsNullOrEmpty(_search) ||
-                    s.Name.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
-                    s.Category.Contains(_search, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
         Loc.OnChanged += OnLangChanged;
         _unreadChatCount = await ChatClient.GetUnreadCountAsync();
-        await LoadAsync();
-    }
-
-    private async Task LoadAsync()
-    {
-        _loading = true;
-        _skills = await SkillClient.GetAllAsync();
-        _loading = false;
     }
 
     private void OpenAdd() { Editing = new Skill(); ShowForm = true; }
@@ -63,7 +69,7 @@ public partial class AdminSkills : ComponentBase, IDisposable
     {
         await SkillClient.SaveAsync(Editing);
         ShowForm = false;
-        await LoadAsync();
+        await _grid.RefreshDataAsync();
         Toast.Show(Loc.T("Saved successfully"));
     }
 
@@ -71,7 +77,7 @@ public partial class AdminSkills : ComponentBase, IDisposable
     {
         await SkillClient.DeleteAsync(rid);
         Toast.Show(Loc.T("Deleted"));
-        await LoadAsync();
+        await _grid.RefreshDataAsync();
     }
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);

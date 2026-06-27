@@ -18,6 +18,26 @@ public static class AdminSkillsApi
             return Results.Ok(skills);
         });
 
+        group.MapGet("/paged", async (int? page, int? pageSize, string? search, string? sortBy, string? sortDir, IDbContextFactory<AppDbContext> dbFactory) =>
+        {
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            IQueryable<Skill> q = db.Skills;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string s = $"%{search.Trim()}%";
+                q = q.Where(x => EF.Functions.ILike(x.Name, s) || EF.Functions.ILike(x.Category, s));
+            }
+            bool desc = sortDir == "desc";
+            q = sortBy switch
+            {
+                "Name" => desc ? q.OrderByDescending(x => x.Name) : q.OrderBy(x => x.Name),
+                "Proficiency" => desc ? q.OrderByDescending(x => x.Proficiency) : q.OrderBy(x => x.Proficiency),
+                "Order" => desc ? q.OrderByDescending(x => x.Order) : q.OrderBy(x => x.Order),
+                _ => q.OrderBy(x => x.Order).ThenBy(x => x.Id)
+            };
+            return Results.Ok(await q.ToPagedResultAsync(page ?? 0, pageSize ?? 10));
+        });
+
         group.MapPost("/", async (Skill skill, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, SkillService skillSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();

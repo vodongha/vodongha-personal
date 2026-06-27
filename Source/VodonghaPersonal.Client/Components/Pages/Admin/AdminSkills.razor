@@ -28,7 +28,7 @@
             </div>
             <div class="admin-search-wrap">
                 <i class="bi bi-search admin-search-wrap__icon"></i>
-                <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="@Loc.T("Search skills...")" />
+                <input class="admin-form__input admin-search" value="@_search" @oninput="OnSearch" placeholder="@Loc.T("Search skills...")" />
             </div>
         </div>
 
@@ -54,10 +54,8 @@
                 }
             </div>
         }
-        else
-        {
-
-        <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
+        <div style="@(_loading ? "display:none" : null)">
+        <QuickGrid TGridItem="Skill" @ref="_grid" ItemsProvider="LoadGrid" Pagination="_pagination" class="quickgrid">
             <PropertyColumn Property="s => s.Name" Title="@Loc.T("Skill name")" Sortable="true" />
             <TemplateColumn Title="@Loc.T("Category")" Sortable="false">
                 <span class="admin-badge">@context.Category</span>
@@ -72,6 +70,7 @@
             </TemplateColumn>
         </QuickGrid>
         <Paginator State="_pagination" />
+        </div>
 
         @if (ShowForm)
         {
@@ -111,7 +110,6 @@
                 </div>
             </div>
         }
-        } @* end else (not loading) *@
         <ConfirmDialog Show="_confirmShow" OnConfirm="ExecuteDelete" OnCancel="() => _confirmShow = false" />
         </div>
         <AdminFooter />

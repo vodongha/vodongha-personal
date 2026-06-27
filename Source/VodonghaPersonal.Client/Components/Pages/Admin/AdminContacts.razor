@@ -11,9 +11,9 @@
 
     <main class="admin-main">
         <header class="admin-header">
-            <h1 class="admin-header__title">@Loc.T("Messages") @if (UnreadCount > 0) { <span class="admin-badge" style="background:rgba(99,102,241,.15);color:#818cf8">@UnreadCount @Loc.T("unread")</span> }</h1>
+            <h1 class="admin-header__title">@Loc.T("Messages") @if (_unreadContacts > 0) { <span class="admin-badge" style="background:rgba(99,102,241,.15);color:#818cf8">@_unreadContacts @Loc.T("unread")</span> }</h1>
             <AdminBreadcrumb />
-            @if (Messages.Count > 0)
+            @if (_unreadContacts > 0)
             {
                 <button class="admin-btn admin-btn--ghost" @onclick="MarkAllRead"><i class="bi bi-check2-all"></i> @Loc.T("Mark all read")</button>
             }
@@ -44,15 +44,7 @@
                 }
             </div>
         }
-        else if (Messages.Count == 0)
-        {
-            <div class="admin-empty">
-                <i class="bi bi-inbox" style="font-size:3rem;opacity:.3"></i>
-                <p style="margin-top:.75rem;opacity:.5">@Loc.T("No messages yet.")</p>
-            </div>
-        }
-        else
-        {
+        <div style="@(_loading ? "display:none" : null)">
             <div class="admin-toolbar">
                 <div class="admin-select-wrap">
                     <select class="admin-page-size" @onchange="SetPageSize">
@@ -64,11 +56,11 @@
                 </div>
                 <div class="admin-search-wrap">
                     <i class="bi bi-search admin-search-wrap__icon"></i>
-                    <input class="admin-form__input admin-search" @bind="_search" @bind:event="oninput" placeholder="@Loc.T("Search name, email, subject...")" />
+                    <input class="admin-form__input admin-search" value="@_search" @oninput="OnSearch" placeholder="@Loc.T("Search name, email, subject...")" />
                 </div>
             </div>
 
-            <QuickGrid Items="Filtered" Pagination="_pagination" class="quickgrid">
+            <QuickGrid TGridItem="ContactMessage" @ref="_grid" ItemsProvider="LoadGrid" Pagination="_pagination" class="quickgrid">
                 <TemplateColumn Title="" Sortable="false">
                     @if (!context.IsRead) { <span class="admin-unread-dot" title="Unread"></span> }
                 </TemplateColumn>
@@ -88,7 +80,15 @@
                 </TemplateColumn>
             </QuickGrid>
             <Paginator State="_pagination" />
-        }
+
+            @if (!_loading && _total == 0)
+            {
+                <div class="admin-empty">
+                    <i class="bi bi-inbox" style="font-size:3rem;opacity:.3"></i>
+                    <p style="margin-top:.75rem;opacity:.5">@(string.IsNullOrEmpty(_search) ? Loc.T("No messages yet.") : Loc.T("No results found."))</p>
+                </div>
+            }
+        </div>
 
         @if (Selected is not null)
         {

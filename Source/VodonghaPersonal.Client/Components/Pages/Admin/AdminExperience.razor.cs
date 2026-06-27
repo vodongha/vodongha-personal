@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Client.Services;
+using VodonghaPersonal.Shared.DTOs;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Client.Components.Pages.Admin;
@@ -20,39 +21,43 @@ public partial class AdminExperience : ComponentBase, IDisposable
     private void ConfirmDelete(Guid rid) { _deleteId = rid; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
 
+    private bool _loading = true;
+    private Experience Editing = new();
+    private bool ShowForm;
+    private string _search = "";
+    private PaginationState _pagination = new() { ItemsPerPage = 10 };
+    private QuickGrid<Experience> _grid = default!;
+
+    private async ValueTask<GridItemsProviderResult<Experience>> LoadGrid(GridItemsProviderRequest<Experience> req)
+    {
+        int size = req.Count ?? _pagination.ItemsPerPage;
+        (string? sortBy, string sortDir) = AdminGrid.MapSort(req);
+        PagedResult<Experience> res = await ExpClient.GetPagedAsync(AdminGrid.PageOf(req, _pagination.ItemsPerPage), size, _search, sortBy, sortDir);
+        if (_loading) { _loading = false; _ = InvokeAsync(StateHasChanged); }
+        return GridItemsProviderResult.From(res.Items, res.Total);
+    }
+
+    private async Task OnSearch(ChangeEventArgs e)
+    {
+        _search = e.Value?.ToString() ?? "";
+        await _pagination.SetCurrentPageIndexAsync(0);
+        if (_grid is not null) { await _grid.RefreshDataAsync(); }
+    }
+
     private async Task SetPageSize(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value?.ToString(), out int size))
         {
             _pagination.ItemsPerPage = size;
             await _pagination.SetCurrentPageIndexAsync(0);
+            if (_grid is not null) { await _grid.RefreshDataAsync(); }
         }
     }
-
-    private bool _loading = true;
-    private List<Experience> _items = [];
-    private Experience Editing = new();
-    private bool ShowForm;
-    private string _search = "";
-    private PaginationState _pagination = new() { ItemsPerPage = 10 };
-
-    private IQueryable<Experience> Filtered => _items.AsQueryable()
-        .Where(e => string.IsNullOrEmpty(_search) ||
-                    e.Company.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
-                    e.Role.Contains(_search, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
         Loc.OnChanged += OnLangChanged;
         _unreadChatCount = await ChatClient.GetUnreadCountAsync();
-        await LoadAsync();
-    }
-
-    private async Task LoadAsync()
-    {
-        _loading = true;
-        _items = await ExpClient.GetAllAsync();
-        _loading = false;
     }
 
     private void OpenAdd() { Editing = new Experience { StartMonth = 1, StartYear = DateTime.Now.Year, IsCurrent = true }; ShowForm = true; }
@@ -64,15 +69,15 @@ public partial class AdminExperience : ComponentBase, IDisposable
         if (Editing.IsCurrent) { Editing.EndYear = null; Editing.EndMonth = null; }
         await ExpClient.SaveAsync(Editing);
         ShowForm = false;
-        await LoadAsync();
-        Toast.Show("Đã lưu thành công");
+        await _grid.RefreshDataAsync();
+        Toast.Show(Loc.T("Saved successfully"));
     }
 
     private async Task Delete(Guid rid)
     {
         await ExpClient.DeleteAsync(rid);
-        Toast.Show("Đã xoá");
-        await LoadAsync();
+        Toast.Show(Loc.T("Deleted"));
+        await _grid.RefreshDataAsync();
     }
 
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);

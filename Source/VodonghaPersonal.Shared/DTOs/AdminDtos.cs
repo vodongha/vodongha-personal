@@ -96,8 +96,12 @@ public record ApiKeyDto(string Key, string Value);
 public record ApiKeyDefinitionDto(string Key, string DisplayName, string Description, string Category, bool Sensitive);
 public record ApiKeysPageDto(List<ApiKeyDefinitionDto> Definitions, Dictionary<string, string> DbValues, Dictionary<string, string> EnvValues);
 
+// Paging (server-side table processing)
+public record PagedResult<T>(List<T> Items, int Total);
+
 // Orders
 public record OrderUpdateRequest(List<Guid> Rids);
+public record ProjectOrderItem(Guid Rid, int Order);
 
 // Contacts
 public record MarkReadRequest(int Id);

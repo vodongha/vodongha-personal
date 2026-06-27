@@ -17,6 +17,32 @@ public static class AdminContactsApi
             return Results.Ok(messages);
         });
 
+        group.MapGet("/paged", async (int? page, int? pageSize, string? search, string? sortBy, string? sortDir, IDbContextFactory<AppDbContext> dbFactory) =>
+        {
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            IQueryable<ContactMessage> q = db.ContactMessages;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string s = $"%{search.Trim()}%";
+                q = q.Where(x => EF.Functions.ILike(x.Name, s) || EF.Functions.ILike(x.Email, s) || EF.Functions.ILike(x.Subject, s));
+            }
+            bool desc = sortDir == "desc";
+            q = sortBy switch
+            {
+                "Subject" => desc ? q.OrderByDescending(x => x.Subject) : q.OrderBy(x => x.Subject),
+                "SentAt" => desc ? q.OrderByDescending(x => x.SentAt) : q.OrderBy(x => x.SentAt),
+                _ => q.OrderByDescending(x => x.SentAt).ThenByDescending(x => x.Id)
+            };
+            return Results.Ok(await q.ToPagedResultAsync(page ?? 0, pageSize ?? 10));
+        });
+
+        group.MapGet("/unread-count", async (IDbContextFactory<AppDbContext> dbFactory) =>
+        {
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            int count = await db.ContactMessages.CountAsync(m => !m.IsRead);
+            return Results.Ok(count);
+        });
+
         group.MapPut("/{rid:guid}/read", async (Guid rid, IDbContextFactory<AppDbContext> dbFactory) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();

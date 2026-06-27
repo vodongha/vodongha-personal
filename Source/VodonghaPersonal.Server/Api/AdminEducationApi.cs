@@ -18,6 +18,26 @@ public static class AdminEducationApi
             return Results.Ok(items);
         });
 
+        group.MapGet("/paged", async (int? page, int? pageSize, string? search, string? sortBy, string? sortDir, IDbContextFactory<AppDbContext> dbFactory) =>
+        {
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            IQueryable<Education> q = db.Educations;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string s = $"%{search.Trim()}%";
+                q = q.Where(x => EF.Functions.ILike(x.School, s) || EF.Functions.ILike(x.Degree, s) || EF.Functions.ILike(x.Field, s));
+            }
+            bool desc = sortDir == "desc";
+            q = sortBy switch
+            {
+                "School" => desc ? q.OrderByDescending(x => x.School) : q.OrderBy(x => x.School),
+                "Degree" => desc ? q.OrderByDescending(x => x.Degree) : q.OrderBy(x => x.Degree),
+                "Field" => desc ? q.OrderByDescending(x => x.Field) : q.OrderBy(x => x.Field),
+                _ => q.OrderBy(x => x.Order).ThenBy(x => x.Id)
+            };
+            return Results.Ok(await q.ToPagedResultAsync(page ?? 0, pageSize ?? 10));
+        });
+
         group.MapPost("/", async (Education item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, EducationService eduSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
