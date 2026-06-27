@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Client.Services;
+using VodonghaPersonal.Shared.DTOs;
 using VodonghaPersonal.Shared.Models;
 
 namespace VodonghaPersonal.Client.Components.Pages.Admin;
@@ -15,17 +16,35 @@ public partial class AdminContacts : ComponentBase, IDisposable
 
     private int _unreadChatCount;
     private bool _loading = true;
-    private List<ContactMessage> Messages = [];
+    private int _total;
+    private int _unreadContacts;
     private ContactMessage? Selected;
     private string _search = "";
     private PaginationState _pagination = new() { ItemsPerPage = 10 };
-
-    private int UnreadCount => Messages.Count(m => !m.IsRead);
+    private QuickGrid<ContactMessage> _grid = default!;
 
     private Guid _deleteId;
     private bool _confirmShow;
     private void ConfirmDelete(Guid rid) { _deleteId = rid; _confirmShow = true; }
     private async Task ExecuteDelete() { _confirmShow = false; await Delete(_deleteId); }
+
+    private async ValueTask<GridItemsProviderResult<ContactMessage>> LoadGrid(GridItemsProviderRequest<ContactMessage> req)
+    {
+        int size = req.Count ?? _pagination.ItemsPerPage;
+        (string? sortBy, string sortDir) = AdminGrid.MapSort(req);
+        PagedResult<ContactMessage> res = await ContactClient.GetPagedAsync(AdminGrid.PageOf(req, _pagination.ItemsPerPage), size, _search, sortBy, sortDir);
+        _total = res.Total;
+        if (_loading) { _loading = false; }
+        _ = InvokeAsync(StateHasChanged);
+        return GridItemsProviderResult.From(res.Items, res.Total);
+    }
+
+    private async Task OnSearch(ChangeEventArgs e)
+    {
+        _search = e.Value?.ToString() ?? "";
+        await _pagination.SetCurrentPageIndexAsync(0);
+        if (_grid is not null) { await _grid.RefreshDataAsync(); }
+    }
 
     private async Task SetPageSize(ChangeEventArgs e)
     {
@@ -33,27 +52,15 @@ public partial class AdminContacts : ComponentBase, IDisposable
         {
             _pagination.ItemsPerPage = size;
             await _pagination.SetCurrentPageIndexAsync(0);
+            if (_grid is not null) { await _grid.RefreshDataAsync(); }
         }
     }
-
-    private IQueryable<ContactMessage> Filtered => Messages.AsQueryable()
-        .Where(m => string.IsNullOrEmpty(_search) ||
-                    m.Name.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
-                    m.Email.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
-                    m.Subject.Contains(_search, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
         Loc.OnChanged += OnLangChanged;
         _unreadChatCount = await ChatClient.GetUnreadCountAsync();
-        await LoadAsync();
-    }
-
-    private async Task LoadAsync()
-    {
-        _loading = true;
-        Messages = await ContactClient.GetAllAsync();
-        _loading = false;
+        _unreadContacts = await ContactClient.GetUnreadCountAsync();
     }
 
     private async Task OpenMessage(ContactMessage msg)
@@ -63,6 +70,8 @@ public partial class AdminContacts : ComponentBase, IDisposable
         {
             await ContactClient.MarkReadAsync(msg.Rid);
             msg.IsRead = true;
+            _unreadContacts = await ContactClient.GetUnreadCountAsync();
+            if (_grid is not null) { await _grid.RefreshDataAsync(); }
         }
     }
 
@@ -71,15 +80,17 @@ public partial class AdminContacts : ComponentBase, IDisposable
     private async Task MarkAllRead()
     {
         await ContactClient.MarkAllReadAsync();
-        foreach (ContactMessage msg in Messages) { msg.IsRead = true; }
+        _unreadContacts = 0;
+        if (_grid is not null) { await _grid.RefreshDataAsync(); }
         Toast.Show(Loc.T("Marked all as read"));
     }
 
     private async Task Delete(Guid rid)
     {
         await ContactClient.DeleteAsync(rid);
-        Messages.RemoveAll(m => m.Rid == rid);
         if (Selected?.Rid == rid) { Selected = null; }
+        _unreadContacts = await ContactClient.GetUnreadCountAsync();
+        if (_grid is not null) { await _grid.RefreshDataAsync(); }
         Toast.Show(Loc.T("Deleted"));
     }
 

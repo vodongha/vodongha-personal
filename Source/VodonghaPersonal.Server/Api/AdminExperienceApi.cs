@@ -18,6 +18,26 @@ public static class AdminExperienceApi
             return Results.Ok(items);
         });
 
+        group.MapGet("/paged", async (int? page, int? pageSize, string? search, string? sortBy, string? sortDir, IDbContextFactory<AppDbContext> dbFactory) =>
+        {
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            IQueryable<Experience> q = db.Experiences;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string s = $"%{search.Trim()}%";
+                q = q.Where(x => EF.Functions.ILike(x.Company, s) || EF.Functions.ILike(x.Role, s) || (x.Location != null && EF.Functions.ILike(x.Location, s)));
+            }
+            bool desc = sortDir == "desc";
+            q = sortBy switch
+            {
+                "Company" => desc ? q.OrderByDescending(x => x.Company) : q.OrderBy(x => x.Company),
+                "Role" => desc ? q.OrderByDescending(x => x.Role) : q.OrderBy(x => x.Role),
+                "Location" => desc ? q.OrderByDescending(x => x.Location) : q.OrderBy(x => x.Location),
+                _ => q.OrderBy(x => x.Order).ThenBy(x => x.Id)
+            };
+            return Results.Ok(await q.ToPagedResultAsync(page ?? 0, pageSize ?? 10));
+        });
+
         group.MapPost("/", async (Experience item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ExperienceService expSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();

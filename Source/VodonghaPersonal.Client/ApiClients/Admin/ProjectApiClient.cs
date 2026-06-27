@@ -13,4 +13,10 @@ public class ProjectApiClient(HttpClient http) : BaseCrudApiClient<Project>(http
         HttpResponseMessage resp = await Http.PutAsJsonAsync("/api/admin/projects/order", new OrderUpdateRequest(rids));
         resp.EnsureSuccessStatusCode();
     }
+
+    public async Task SaveReorderAsync(List<ProjectOrderItem> items)
+    {
+        HttpResponseMessage resp = await Http.PutAsJsonAsync("/api/admin/projects/reorder", items);
+        resp.EnsureSuccessStatusCode();
+    }
 }

@@ -19,6 +19,24 @@ public static class AdminProjectsApi
             return Results.Ok(items);
         });
 
+        group.MapGet("/paged", async (int? page, int? pageSize, string? search, string? sortBy, string? sortDir, IDbContextFactory<AppDbContext> dbFactory) =>
+        {
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            IQueryable<Project> q = db.Projects;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                string s = $"%{search.Trim()}%";
+                q = q.Where(x => EF.Functions.ILike(x.Title, s) || EF.Functions.ILike(x.Technologies, s));
+            }
+            bool desc = sortDir == "desc";
+            q = sortBy switch
+            {
+                "Title" => desc ? q.OrderByDescending(x => x.Title) : q.OrderBy(x => x.Title),
+                _ => q.OrderBy(x => x.Order).ThenBy(x => x.Id)
+            };
+            return Results.Ok(await q.ToPagedResultAsync(page ?? 0, pageSize ?? 10));
+        });
+
         group.MapPost("/", async (Project item, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
         {
             await using AppDbContext db = await dbFactory.CreateDbContextAsync();
@@ -65,6 +83,20 @@ public static class AdminProjectsApi
             {
                 Guid rid = req.Rids[i];
                 await db.Projects.Where(x => x.Rid == rid).ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, i + 1));
+            }
+            cvCache.InvalidateAndRegenerate();
+            projectSvc.InvalidateCache();
+            return Results.Ok();
+        }).DisableAntiforgery();
+
+        // Within-page reorder for the server-side table: apply explicit (rid, order) pairs
+        // so only the dragged page's Order slots are permuted (global order stays intact).
+        group.MapPut("/reorder", async (List<ProjectOrderItem> items, IDbContextFactory<AppDbContext> dbFactory, CvCacheService cvCache, ProjectService projectSvc) =>
+        {
+            await using AppDbContext db = await dbFactory.CreateDbContextAsync();
+            foreach (ProjectOrderItem it in items)
+            {
+                await db.Projects.Where(x => x.Rid == it.Rid).ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, it.Order));
             }
             cvCache.InvalidateAndRegenerate();
             projectSvc.InvalidateCache();
