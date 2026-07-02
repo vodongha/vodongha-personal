@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.JSInterop;
 using VodonghaPersonal.Client;
 using VodonghaPersonal.Client.ApiClients;
 using VodonghaPersonal.Client.Services;
@@ -42,4 +43,21 @@ builder.Services.AddScoped<AdminLocalizationService>();
 builder.Services.AddScoped<LanguageService>();
 builder.Services.AddScoped<TimezoneService>();
 
-await builder.Build().RunAsync();
+WebAssemblyHost host = builder.Build();
+
+// The SSR sections are rendered in the cookie's language by the server, but the WASM
+// LanguageService starts fresh (defaults to "en"). Sync it from the same `lang` cookie so
+// interactive components (NavBar, Footer, Chat/AI widgets, Blog) match — and so the toggle
+// computes the correct opposite language instead of always switching to Vietnamese.
+try
+{
+    IJSRuntime js = host.Services.GetRequiredService<IJSRuntime>();
+    string lang = await js.InvokeAsync<string>("getLangCookie");
+    if (lang is "vi" or "en")
+    {
+        host.Services.GetRequiredService<LanguageService>().Set(lang);
+    }
+}
+catch { /* non-critical — fall back to default language */ }
+
+await host.RunAsync();

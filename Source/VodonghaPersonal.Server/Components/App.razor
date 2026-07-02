@@ -99,6 +99,10 @@
             document.cookie = 'lang=' + lang + ';path=/;max-age=31536000;samesite=lax';
             location.reload();
         };
+        window.getLangCookie = function() {
+            var m = document.cookie.match(/(?:^|; )lang=([^;]+)/);
+            return m ? m[1] : '';
+        };
         window.sectionToggle = function(btn) {
             var section = btn.closest('section');
             var overflow = section.querySelectorAll('.section__overflow');
