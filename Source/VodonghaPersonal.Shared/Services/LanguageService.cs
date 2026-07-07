@@ -117,6 +117,8 @@ public class LanguageService
         ["chat.push.denied"] = "Thông báo bị chặn. Bật lại để nhận tin nhắn khi có phản hồi.",
         ["chat.push.howto"] = "Hướng dẫn",
         ["chat.fab.title"] = "Chat với mình",
+        ["chat.fab.open"] = "Mở khung chat",
+        ["chat.fab.close"] = "Đóng khung chat",
         // AI widget
         ["ai.label"] = "AI",
         ["ai.title"] = "Chat với AI",
@@ -229,6 +231,8 @@ public class LanguageService
         ["chat.push.denied"] = "Notifications blocked. Enable them to get replies.",
         ["chat.push.howto"] = "How to enable",
         ["chat.fab.title"] = "Chat with me",
+        ["chat.fab.open"] = "Open chat",
+        ["chat.fab.close"] = "Close chat",
         // AI widget
         ["ai.label"] = "AI",
         ["ai.title"] = "Chat with AI",
