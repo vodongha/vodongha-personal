@@ -32,30 +32,33 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
     private static readonly SemaphoreSlim _lock = new(1, 1);
 
     // Hardcoded — .csproj / package.json are not in Docker published output (/app contains only DLLs).
+    // IMPORTANT: these are the *current* versions shown on the Dependencies page. Keep them in sync
+    // with the real versions whenever a package is bumped — updating the .csproj/package.json/workflow
+    // alone does NOT update this page.
     // When adding a new NuGet package: add a row to NuGetPackages below.
     // When adding a new npm devDependency: add a row to NpmPackages below.
     // When adding a new CDN library: add a row to CdnLibraries below AND update the CDN URL in App.razor / AdminLayout.razor.
     private static readonly (string Name, string Version)[] NuGetPackages =
     [
-        ("AspNetCore.SassCompiler",                                              "1.100.0"),
-        ("libphonenumber-csharp",                                                "9.0.32"),
+        ("AspNetCore.SassCompiler",                                              "1.101.0"),
+        ("libphonenumber-csharp",                                                "9.0.34"),
         ("Microsoft.AspNetCore.Components.QuickGrid",                            "10.0.9"),
         ("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore",              "10.0.9"),
         ("Microsoft.AspNetCore.SignalR.Client",                                  "10.0.9"),
         ("Microsoft.EntityFrameworkCore.Design",                                 "10.0.9"),
         ("Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore",   "10.0.9"),
         ("Npgsql.EntityFrameworkCore.PostgreSQL",                                "10.0.2"),
-        ("QuestPDF",                                                             "2026.6.0"),
+        ("QuestPDF",                                                             "2026.7.0"),
         ("Resend",                                                               "0.5.1"),
-        ("SkiaSharp",                                                            "3.119.4"),
+        ("SkiaSharp",                                                            "4.148.0"),
         ("WebPush",                                                              "1.0.13"),
     ];
 
     private static readonly (string Name, string Version)[] NpmPackages =
     [
         ("@eslint/js",                    "10.0.1"),
-        ("eslint",                        "10.4.1"),
-        ("stylelint",                     "17.13.0"),
+        ("eslint",                        "10.6.0"),
+        ("stylelint",                     "17.14.0"),
         ("stylelint-config-standard-scss","17.0.0"),
     ];
 
@@ -74,10 +77,10 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
     // @master, so there is no version to track.
     private static readonly (string Repo, string CurrentMajor)[] GitHubActions =
     [
-        ("actions/checkout",      "v5"),
-        ("actions/setup-dotnet",  "v4"),
-        ("actions/setup-node",    "v4"),
-        ("actions/github-script", "v8"),
+        ("actions/checkout",      "v7"),
+        ("actions/setup-dotnet",  "v5"),
+        ("actions/setup-node",    "v6"),
+        ("actions/github-script", "v9"),
     ];
 
     public async Task<IReadOnlyList<DependencyInfo>> GetAllAsync()
