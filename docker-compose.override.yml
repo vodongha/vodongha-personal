@@ -1,0 +1,8 @@
+# Local self-hosting override. The base compose healthcheck shells out to `curl`,
+# which the .NET aspnet runtime image does not ship, so the container is flagged
+# "unhealthy" even though /health returns 200. Disable that check here — the app's
+# health is monitored externally by the Caddy reverse proxy instead.
+services:
+  app:
+    healthcheck:
+      disable: true
