@@ -2,7 +2,7 @@
 
 ## Project overview
 
-Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + PostgreSQL (Neon, Singapore) + SCSS dark theme, deployed on Fly.io.
+Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + PostgreSQL (Neon, Singapore) + SCSS dark theme, **self-hosted with Docker on a home server behind a Cloudflare Tunnel** (DB stays on Neon).
 
 - **Live:** https://vodongha.id.vn
 - **Repo:** https://github.com/vodongha/vodongha-personal
@@ -15,7 +15,7 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 |---|---|
 | Runtime | .NET 10 |
 | Frontend | Blazor Web App — **Home page: static SSR** (no render mode, no circuit, zero flicker); **Blog pages, NavBar, FooterSection, ChatWidget, AiWidget**: `@rendermode InteractiveWebAssembly` (in `VodonghaPersonal.Client`); **Admin panel**: `@rendermode InteractiveWebAssembly` (in `VodonghaPersonal.Client`) |
-| Database | PostgreSQL via Neon (Singapore). Fly.io secret: `ConnectionStrings__DefaultConnection` |
+| Database | PostgreSQL via Neon (Singapore, cloud — unchanged). Env var: `ConnectionStrings__DefaultConnection` |
 | ORM | Entity Framework Core — hybrid `int Id` (internal PK) + `Guid Rid` (external API identifier) on all 14 entities; no raw SQL in application code |
 | SCSS | Two entry points compiled by `AspNetCore.SassCompiler` on `dotnet build`: `Styles/app.scss` → `wwwroot/app.css` (public), `Styles/admin.scss` → `wwwroot/admin.css` (admin). Compiled CSS is **gitignored** — never commit `wwwroot/app.css` or `wwwroot/admin.css`. |
 | Email | Resend API (`Email__ResendApiKey`). Sender: `no-reply@vodongha.id.vn`, recipient: `REDACTED_EMAIL` |
@@ -26,15 +26,15 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 | Image processing | SkiaSharp 4.148.0 — `CropSquareTop(byte[])` crops image to square (center-horizontal, top-vertical) before QuestPDF so `FitArea()` fills the circle without letterboxing |
 | Phone validation | `libphonenumber-csharp` — validates per country's numbering plan (`IsValidNumberForRegion`) |
 | Geo IP | ipinfo.io — called from browser JS (`chatUtils.detectCountry`) for country code detection |
-| Deploy | Fly.io, app `vodongha`, region `sin`, `auto_stop_machines = "suspend"`. Merge PR to `master` → auto-deploy (~2 min) |
-| CI | GitHub Actions — `ci.yml`: `dotnet build` on push to `develop` and PRs to `master`; `test.yml`: `dotnet test VodonghaPersonal.slnx` on push to `develop` and PRs to `master`; `lint.yml`: `dotnet format --verify-no-changes` + ESLint + Stylelint on PRs to `master`; `deploy.yml`: build + test + format + lint all pass before Fly.io deploy |
+| Deploy | **Self-hosted** (Docker) on a home server, public via **Cloudflare Tunnel**. Merge PR to `master` → `deploy.yml` POSTs to the home-server webhook → `git pull` + `docker compose up -d --build` (~2 min). See *Self-hosting & deployment* below. |
+| CI | GitHub Actions — `ci.yml`: `dotnet build` on push to `develop` and PRs to `master`; `test.yml`: `dotnet test VodonghaPersonal.slnx` on push to `develop` and PRs to `master`; `lint.yml`: `dotnet format --verify-no-changes` + ESLint + Stylelint on PRs to `master`; `deploy.yml`: build + test + format + lint must pass, then the `deploy` job POSTs to the home-server webhook (`hooks.vodongha.id.vn`) instead of deploying to Fly |
 | Migrations | EF Core, applied automatically on startup via `MigrateAsync()` in `Program.cs` |
 
 ## Git workflow
 
 ```
 feature/* ──┐
-bug/*    ──→  develop  →  PR → develop (merged)  →  PR → master  →  Fly.io auto-deploy
+bug/*    ──→  develop  →  PR → develop (merged)  →  PR → master  →  home-server auto-deploy
                                                                           ↓
 hotfix/* ──────────────────────────────────────────────→  PR → master    ↓
                                                                     develop ← auto-synced by sync-develop.yml
@@ -68,7 +68,7 @@ gh pr create --title "Add my feature" --base develop --head feature/my-feature
 # 4. After PR merged into develop → immediately open PR: develop → master
 gh pr create --title "v2.x.x — description" --base master --head develop
 
-# 5. Merge develop → master → Fly.io auto-deploys
+# 5. Merge develop → master → home-server auto-deploys
 # 6. sync-develop.yml auto-syncs develop ← master (no action needed)
 ```
 
@@ -87,7 +87,7 @@ git push origin hotfix/urgent-fix
 # 3. PR: hotfix → master (bypasses develop)
 gh pr create --title "Fix: urgent description" --base master --head hotfix/urgent-fix
 
-# 4. Merge → Fly.io auto-deploys
+# 4. Merge → home-server auto-deploys
 # 5. sync-develop.yml auto-syncs develop ← master (hotfix lands in develop automatically)
 ```
 
@@ -636,16 +636,25 @@ dotnet ef migrations add <MigrationName>
 
 Migrations apply automatically on startup. **There is no `HasData()` seed in `AppDbContext`** — all content (skills, projects, experience, education, blog posts, settings) is managed at runtime through the Admin UI and stored in the database.
 
-## Fly.io secrets
+## Self-hosting & deployment
 
-| Secret | Purpose |
+The app is **self-hosted with Docker on a home server** (not Fly.io). The database is unchanged — still Neon PostgreSQL in the cloud.
+
+- **Runtime:** `docker compose up -d --build` from the repo dir. `docker-compose.yml` publishes port 8080; `docker-compose.override.yml` disables the compose `curl` healthcheck (the .NET runtime image has no `curl`).
+- **Public access:** a **Cloudflare Tunnel** (`cloudflared`) on the server routes `https://vodongha.id.vn` → `localhost:8080`. No inbound ports are opened (the residential ISP blocks 80/443), and TLS is terminated at Cloudflare's edge.
+- **Auto-deploy:** on push to `master`, `deploy.yml` runs CI, then the `deploy` job `POST`s to `https://hooks.vodongha.id.vn/deploy/vodongha-personal` with `Authorization: Bearer ${{ secrets.DEPLOY_TOKEN }}`. A small webhook receiver on the server verifies the token, `git reset --hard origin/master`, and re-runs `docker compose up -d --build`.
+
+### Secrets & configuration
+
+Runtime config lives in `.env` on the home server (git-ignored), read by the container via `env_file`. (Previously Fly.io secrets.)
+
+| Key | Purpose |
 |---|---|
 | `ConnectionStrings__DefaultConnection` | Neon PostgreSQL |
 | `Admin__Username` | Admin panel login |
 | `Admin__Password` | Admin panel login |
 | `Email__ResendApiKey` | Resend API key for contact form |
-
-Set with: `flyctl secrets set KEY=VALUE`
+| `DEPLOY_TOKEN` *(GitHub Actions secret)* | Auth for the home-server deploy webhook |
 
 ## Skeleton loading
 

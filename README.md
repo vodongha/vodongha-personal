@@ -80,8 +80,8 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | Image processing | SkiaSharp — avatar square-crop before PDF rendering |
 | Phone validation | Google libphonenumber (`libphonenumber-csharp`) |
 | Geo IP | [ipinfo.io](https://ipinfo.io) (browser-side, free tier) |
-| Deploy | [Fly.io](https://fly.io), region Singapore (`suspend` mode) |
-| CI/CD | GitHub Actions — CI (build) + Tests (58 unit tests) on `develop`/PRs; Lint (dotnet format + ESLint + Stylelint) on PRs to `master`; deploy (requires all checks to pass) on merge to `master`; sync `develop` ← `master` after each merge |
+| Host | **Self-hosted** with Docker on a home server, exposed publicly via **Cloudflare Tunnel** (`https://vodongha.id.vn`). Database stays on Neon (cloud) — unchanged. |
+| CI/CD | GitHub Actions — CI (build) + Tests (58 unit tests) on `develop`/PRs; Lint (dotnet format + ESLint + Stylelint) on PRs to `master`. On push to `master`, after all checks pass, the `deploy` job calls the home-server webhook (`hooks.vodongha.id.vn`) which `git pull`s + rebuilds the container. `sync-develop.yml` syncs `develop` ← `master` after each merge. |
 
 ---
 
@@ -197,7 +197,7 @@ Compiled CSS is **not committed**. `dotnet build` compiles automatically via `As
 
 ```
 feature/* ──┐
-bug/*    ──→  develop  →  PR → develop  →  PR → master  →  Fly.io auto-deploy (~2 min)
+bug/*    ──→  develop  →  PR → develop  →  PR → master  →  home-server auto-deploy (~2 min)
                                                                  ↓
 hotfix/* ───────────────────────────────────→  PR → master       ↓
                                                            develop ← auto-synced
@@ -239,9 +239,11 @@ gh pr create --title "Fix: description" --base master --head hotfix/urgent-fix
 
 ---
 
-## Fly.io secrets
+## Secrets & configuration
 
-| Secret | Purpose |
+Runtime config lives in `.env` on the home server (git-ignored); the container reads it via `env_file`. (Previously these were Fly.io secrets.)
+
+| Key | Purpose |
 |---|---|
 | `ConnectionStrings__DefaultConnection` | Neon PostgreSQL |
 | `Admin__Username` / `Admin__Password` | Admin panel credentials |
@@ -249,7 +251,7 @@ gh pr create --title "Fix: description" --base master --head hotfix/urgent-fix
 | `Telegram__BotToken` | Telegram bot token |
 | `Telegram__ChatId` | Telegram group chat ID |
 | `Telegram__WebhookSecret` | Webhook verification token |
-| `FLY_API_TOKEN` | GitHub Actions deploy secret |
+| `DEPLOY_TOKEN` *(GitHub Actions secret)* | Auth for the home-server deploy webhook |
 
 ---
 
