@@ -3,6 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # Real version stamped into the assembly (footer/health read it). The deploy
+        # webhook sets APP_VERSION from `git describe`; falls back to 0.0.0 locally.
+        APP_VERSION: "${APP_VERSION:-0.0.0}"
     container_name: vodongha-app
     restart: unless-stopped
     ports:
