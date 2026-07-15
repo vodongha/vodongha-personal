@@ -48,26 +48,6 @@
                     </div>
                 </div>
 
-                <!-- Fly.io section skeleton -->
-                <div class="cost-skeleton__section">
-                    <div class="cost-skeleton__section-header">
-                        <div class="skel skel--section-title"></div>
-                        <div class="skel skel--btn"></div>
-                    </div>
-                    <div class="cost-skeleton__cards">
-                        @for (int i = 0; i < 6; i++)
-                        {
-                            <div class="cost-skeleton__card">
-                                <div class="skel skel--icon"></div>
-                                <div class="cost-skeleton__card-body">
-                                    <div class="skel skel--card-label"></div>
-                                    <div class="skel skel--card-value"></div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-
                 <!-- Neon section skeleton -->
                 <div class="cost-skeleton__section">
                     <div class="cost-skeleton__section-header">
@@ -93,7 +73,7 @@
         {
             <div class="cost-empty">
                 <i class="bi bi-exclamation-circle"></i>
-                @Loc.T("No data. Configure Fly:ApiToken, Neon:ApiKey and Neon:ProjectId in secrets.")
+                @Loc.T("No data. Configure Neon:ApiKey and Neon:ProjectId in secrets.")
             </div>
         }
         else
@@ -101,36 +81,13 @@
             <!-- Summary banner — 2 columns: actual MTD + estimated max -->
             <div class="cost-summary-banner">
                 <div class="cost-summary-banner__cols">
-                    <!-- Estimated MTD -->
                     <div class="cost-summary-banner__col">
                         <div class="cost-summary-banner__col-label">
-                            <i class="bi bi-receipt"></i> @Loc.T("Est. this month")
-                        </div>
-                        @if (_summary.Fly != null)
-                        {
-                            <div class="cost-summary-banner__col-value cost-summary-banner__col-value--actual">
-                                @(_summary.Fly.EstimatedMtdDollars == 0 ? "FREE" : FormatUsd(_summary.Fly.EstimatedMtdDollars))
-                            </div>
-                            <div class="cost-summary-banner__col-sub">@Loc.T("Day 1–@day est. (24/7)").Replace("@day", DateTime.UtcNow.Day.ToString())</div>
-                        }
-                        else
-                        {
-                            <div class="cost-summary-banner__col-value cost-summary-banner__col-value--na">N/A</div>
-                            <div class="cost-summary-banner__col-sub">@Loc.T("No Fly.io data")</div>
-                        }
-                    </div>
-
-                    <div class="cost-summary-banner__divider"></div>
-
-                    <!-- Estimated max -->
-                    <div class="cost-summary-banner__col">
-                        <div class="cost-summary-banner__col-label">
-                            <i class="bi bi-calculator"></i> @Loc.T("Estimated max / month")
+                            <i class="bi bi-calculator"></i> @Loc.T("Est. cost / month")
                         </div>
                         <div class="cost-summary-banner__col-value">
                             @FormatUsd(TotalEstimated)
                         </div>
-                        <div class="cost-summary-banner__col-sub">@Loc.T("Theoretical 24/7 max")</div>
                     </div>
                 </div>
 
@@ -143,117 +100,6 @@
                         @Loc.T("Updated"): @_summary.FetchedAt.ToString("HH:mm:ss") UTC
                     </span>
                 </div>
-            </div>
-
-            <!-- Fly.io section -->
-            <div class="cost-section">
-                <div class="cost-section__header">
-                    <span class="cost-section__title">
-                        <i class="bi bi-airplane"></i> Fly.io
-                    </span>
-                    <a href="https://fly.io/dashboard" target="_blank" rel="noopener"
-                       class="admin-btn admin-btn--ghost admin-btn--sm">
-                        <i class="bi bi-box-arrow-up-right"></i> @Loc.T("Dashboard")
-                    </a>
-                </div>
-
-                @if (_summary.Fly == null)
-                {
-                    <div class="cost-empty cost-empty--sm">
-                        <i class="bi bi-plug-fill"></i> @Loc.T("Add Fly:ApiToken to secrets to enable")
-                    </div>
-                }
-                else
-                {
-                    <div id="fly-cards-grid" class="health-cards cost-cards" data-saved-order="@_flyOrder">
-                        <div class="health-card health-card--ok" data-card-id="fly-app">
-                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                            <div class="health-card__icon"><i class="bi bi-airplane-fill"></i></div>
-                            <div class="health-card__body">
-                                <div class="health-card__label">App</div>
-                                <div class="health-card__value health-card__value--wrap">@_summary.Fly.AppName</div>
-                            </div>
-                        </div>
-
-                        @foreach (FlyMachineDto m in _summary.Fly.Machines)
-                        {
-                            <div class="health-card @MachineCardClass(m.State)" data-card-id="fly-machine-@m.Id">
-                                <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                                <div class="health-card__icon"><i class="bi @MachineIcon(m.State)"></i></div>
-                                <div class="health-card__body">
-                                    <div class="health-card__label">@m.Size · @m.MemoryMb MB · @m.Region</div>
-                                    <div class="health-card__value health-card__value--wrap">@MachinStateLabel(m.State)</div>
-                                </div>
-                                <div class="health-card__dot health-card__dot--@(m.State == "started" ? "ok" : "warn")"></div>
-                            </div>
-                        }
-
-                        <div class="health-card" data-card-id="fly-compute">
-                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                            <div class="health-card__icon"><i class="bi bi-cpu"></i></div>
-                            <div class="health-card__body">
-                                <div class="health-card__label">@Loc.T("Compute rate")</div>
-                                <div class="health-card__value health-card__value--wrap">@FormatUsd(_summary.Fly.ComputePerHour) / h</div>
-                            </div>
-                        </div>
-
-                        <div class="health-card" data-card-id="fly-maxcompute">
-                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                            <div class="health-card__icon"><i class="bi bi-calculator"></i></div>
-                            <div class="health-card__body">
-                                <div class="health-card__label">@Loc.T("Max compute / month")</div>
-                                <div class="health-card__value health-card__value--wrap">@FormatUsd(_summary.Fly.ComputePerMonth24h)</div>
-                                <div class="cost-sub">24/7 &times; 30d</div>
-                            </div>
-                        </div>
-
-                        <div class="health-card" data-card-id="fly-ipv4">
-                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                            <div class="health-card__icon"><i class="bi bi-diagram-3"></i></div>
-                            <div class="health-card__body">
-                                <div class="health-card__label">IPv4 @Loc.T("(dedicated)")</div>
-                                <div class="health-card__value health-card__value--wrap">@FormatUsd(_summary.Fly.Ipv4PerMonth)</div>
-                            </div>
-                        </div>
-
-                        <div class="health-card" data-card-id="fly-free">
-                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                            <div class="health-card__icon"><i class="bi bi-gift"></i></div>
-                            <div class="health-card__body">
-                                <div class="health-card__label">@Loc.T("Free allowance")</div>
-                                <div class="health-card__value health-card__value--wrap cost-green">&minus;@FormatUsd(_summary.Fly.FreeAllowance)</div>
-                            </div>
-                        </div>
-
-                        <div class="health-card @(_summary.Fly.EstimatedBillable == 0 ? "health-card--ok" : "")" data-card-id="fly-maxbill">
-                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                            <div class="health-card__icon"><i class="bi bi-receipt"></i></div>
-                            <div class="health-card__body">
-                                <div class="health-card__label">@Loc.T("Est. max billable")</div>
-                                <div class="health-card__value health-card__value--wrap @(_summary.Fly.EstimatedBillable == 0 ? "cost-green" : "cost-yellow")">
-                                    @(_summary.Fly.EstimatedBillable == 0 ? "FREE" : FormatUsd(_summary.Fly.EstimatedBillable))
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="health-card @(_summary.Fly.EstimatedMtdDollars == 0 ? "health-card--ok" : "")" data-card-id="fly-mtd">
-                            <i class="bi bi-grip-vertical cost-card-drag-handle"></i>
-                            <div class="health-card__icon"><i class="bi bi-cash-stack"></i></div>
-                            <div class="health-card__body">
-                                <div class="health-card__label">@Loc.T("Est. this month")</div>
-                                <div class="health-card__value health-card__value--wrap @(_summary.Fly.EstimatedMtdDollars == 0 ? "cost-green" : "cost-blue")">
-                                    @(_summary.Fly.EstimatedMtdDollars == 0 ? "FREE" : FormatUsd(_summary.Fly.EstimatedMtdDollars))
-                                </div>
-                                <div class="cost-sub">@Loc.T("Day 1–") @DateTime.UtcNow.Day @Loc.T("(24/7 est.)")</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <p class="cost-note">
-                        <i class="bi bi-info-circle"></i>
-                        @((MarkupString)Loc.T("Estimated max is theoretical (24/7). With <code>auto_stop_machines = &quot;suspend&quot;</code> actual cost is significantly lower."))
-                    </p>
-                }
             </div>
 
             <!-- Neon section -->
