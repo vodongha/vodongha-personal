@@ -38,7 +38,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Web Push notifications** — admin receives a browser push when a new message arrives; click notification jumps directly to that session
 - Notification permission denied → amber banner with browser-specific "How to enable" link
 - Messages forwarded to Telegram — one forum topic per session; topic auto-recreated if deleted
-- SignalR reconnect with exponential backoff (handles Fly.io cold-start EAGAIN errors)
+- SignalR reconnect with exponential backoff (handles cold-start reconnect after idle)
 - Full light / dark mode support
 
 ### Admin panel
@@ -49,7 +49,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 - **Education / Experience** — manage timeline entries
 - **Messages** — contact form submissions with unread badge, mark read, delete, reply
 - **Chats** — live chat sessions; clicking a session opens it instantly; sessions auto-reorder by latest message; real-time typing indicator and read receipts; hub group rejoined automatically after SignalR reconnect; push notification URL includes `?session=ID` so clicking it auto-opens the right conversation
-- **API Keys** — manage secrets (VAPID, Telegram, Resend…) stored encrypted in DB; synced from Fly.io ENV on first startup
+- **API Keys** — manage secrets (VAPID, Telegram, Resend…) stored encrypted in DB; synced from `.env` on first startup
 - **Server Health** — live memory + DB response time charts (Chart.js), auto-refresh every 30 s; chart colors adapt to light/dark theme on toggle
 - **Analytics** — self-hosted page view dashboard: daily views chart, top pages, top countries (geo IP via ip-api.com), top referrers; 7/30/90 day period selector; GDPR-safe (no IP stored)
 - **Hồ sơ (Settings)** — bio (VI/EN), social links, avatar upload

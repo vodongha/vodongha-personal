@@ -16,16 +16,13 @@ public partial class AdminCosts : ComponentBase, IDisposable
     private CostSummaryDto? _summary;
     private bool _loading = true;
 
-    private string _flyOrder = "[]";
     private string _neonOrder = "[]";
 
     private DotNetObjectReference<AdminCosts>? _dotNetRef;
 
-    private const string FlyPrefKey = "_pref.costs.fly";
     private const string NeonPrefKey = "_pref.costs.neon";
 
-    private double TotalEstimated =>
-        (_summary?.Fly?.EstimatedBillable ?? 0) + (_summary?.Neon?.EstimatedMonthlyCost ?? 0);
+    private double TotalEstimated => _summary?.Neon?.EstimatedMonthlyCost ?? 0;
 
     protected override void OnInitialized()
     {
@@ -38,7 +35,6 @@ public partial class AdminCosts : ComponentBase, IDisposable
         if (!firstRender) { return; }
         try
         {
-            _flyOrder = await ApiKeyClient.GetValueAsync(FlyPrefKey) ?? "[]";
             _neonOrder = await ApiKeyClient.GetValueAsync(NeonPrefKey) ?? "[]";
             await LoadAsync();
         }
@@ -56,7 +52,6 @@ public partial class AdminCosts : ComponentBase, IDisposable
         await InvokeAsync(StateHasChanged);
         try
         {
-            await JS.InvokeVoidAsync("initSortableCards", "fly-cards-grid", _dotNetRef, FlyPrefKey);
             await JS.InvokeVoidAsync("initSortableCards", "neon-cards-grid", _dotNetRef, NeonPrefKey);
         }
         catch (JSDisconnectedException) { }
@@ -79,9 +74,6 @@ public partial class AdminCosts : ComponentBase, IDisposable
     private async Task OnLangChanged() => await InvokeAsync(StateHasChanged);
 
     private static string FormatUsd(double value) => $"${value:F2}";
-    private static string MachineCardClass(string state) => state switch { "started" => "health-card--ok", "suspended" => "", _ => "health-card--error" };
-    private static string MachineIcon(string state) => state switch { "started" => "bi-play-circle-fill", "suspended" => "bi-pause-circle", _ => "bi-stop-circle" };
-    private string MachinStateLabel(string state) => state switch { "started" => Loc.T("Running"), "suspended" => Loc.T("Suspended"), "stopped" => Loc.T("Stopped"), _ => state };
 
     public void Dispose() { Loc.OnChanged -= OnLangChanged; _dotNetRef?.Dispose(); }
 }

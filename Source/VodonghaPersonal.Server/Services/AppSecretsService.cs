@@ -9,7 +9,7 @@ namespace VodonghaPersonal.Services;
 /// Manages application API keys/secrets stored in the database.
 /// Values are encrypted with ASP.NET Data Protection before persisting.
 /// At runtime, services call GetValue(key) which returns the DB override first,
-/// then falls back to IConfiguration (environment variables / Fly secrets).
+/// then falls back to IConfiguration (environment variables / .env on the host).
 /// </summary>
 public class AppSecretsService
 {
@@ -17,8 +17,6 @@ public class AppSecretsService
 
     public static readonly IReadOnlyList<AppSecretDefinition> Definitions =
     [
-        new("Fly:ApiToken",       "Fly.io API Token",     "Token for Fly.io Machines API and billing GraphQL", "Fly.io",   Sensitive: true),
-        new("Fly:AppName",        "Fly.io App Name",      "The Fly.io application name (e.g. vodongha)",       "Fly.io",   Sensitive: false),
         new("Neon:ApiKey",        "Neon API Key",         "API key for Neon PostgreSQL management API",        "Neon",     Sensitive: true),
         new("Neon:ProjectId",     "Neon Project ID",      "Project ID from Neon console (e.g. red-fire-...)", "Neon",     Sensitive: false),
         new("Telegram:BotToken",  "Telegram Bot Token",   "Bot token from @BotFather for chat notifications",  "Telegram", Sensitive: true),

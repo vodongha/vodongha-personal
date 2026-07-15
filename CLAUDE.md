@@ -22,8 +22,8 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 | Chat | Telegram Bot API + SignalR (`Microsoft.AspNetCore.SignalR.Client`). Secrets: `Telegram__BotToken`, `Telegram__ChatId`, `Telegram__WebhookSecret` |
 | Real-time | ASP.NET Core SignalR (`ChatHub`) — session groups, admin group, typing events |
 | Charts | Chart.js 4.5.1 via CDN — wrapped in `wwwroot/js/healthChart.js` |
-| PDF generation | QuestPDF 2026.7.0 Community — `CvPdfService.Generate(cv, template, avatarBytes)` dispatches to 3 template methods; `QuestPDF.Settings.License = LicenseType.Community` set at call site |
-| Image processing | SkiaSharp 4.148.0 — `CropSquareTop(byte[])` crops image to square (center-horizontal, top-vertical) before QuestPDF so `FitArea()` fills the circle without letterboxing |
+| PDF generation | QuestPDF 2026.7.1 Community — `CvPdfService.Generate(cv, template, avatarBytes)` dispatches to 3 template methods; `QuestPDF.Settings.License = LicenseType.Community` set at call site |
+| Image processing | SkiaSharp 4.150.1 — `CropSquareTop(byte[])` crops image to square (center-horizontal, top-vertical) before QuestPDF so `FitArea()` fills the circle without letterboxing |
 | Phone validation | `libphonenumber-csharp` — validates per country's numbering plan (`IsValidNumberForRegion`) |
 | Geo IP | ipinfo.io — called from browser JS (`chatUtils.detectCountry`) for country code detection |
 | Deploy | **Self-hosted** (Docker) on a home server, public via **Cloudflare Tunnel**. Merge PR to `master` → `deploy.yml` POSTs to the home-server webhook → `git pull` + `docker compose up -d --build` (~2 min). See *Self-hosting & deployment* below. |
@@ -230,7 +230,7 @@ The project uses `stylelint-config-standard-scss`. Two rules are disabled in `.s
 
 **Scripts only execute from `App.razor`** — not from `.razor` layout or page components. All `<script>` tags must be placed in `App.razor` (before `</body>`). Currently: `<script src="js/admin.js"></script>`.
 
-**Blazor circuit reconnect config** — `App.razor` uses `autostart="false"` on `blazor.web.js` and calls `Blazor.start({ circuit: { reconnectionOptions: { maxRetries: 10, retryIntervalMilliseconds: (n) => n < 3 ? 1000 : n < 6 ? 3000 : 6000 } } })`. This handles Fly.io `suspend` mode wakeup (~3-5s cold start) without showing a reconnect error to the user.
+**Blazor circuit reconnect config** — `App.razor` uses `autostart="false"` on `blazor.web.js` and calls `Blazor.start({ circuit: { reconnectionOptions: { maxRetries: 10, retryIntervalMilliseconds: (n) => n < 3 ? 1000 : n < 6 ? 3000 : 6000 } } })`. This handles a cold-start reconnect after idle (~3-5s) without showing a reconnect error to the user.
 
 **Static SSR expand/collapse** — Home page sections (Skills, Projects, Experience, Education, Blog) use `window.sectionToggle(btn)` defined in `App.razor`. Overflow items get `class="section__overflow"` + `hidden` attribute. The JS function toggles `hidden`, `aria-expanded`, the chevron icon class, and the show/hide span visibility. No Blazor `@onclick` — static SSR has no Blazor runtime on the page.
 
@@ -376,11 +376,11 @@ Admin can also reply from `/admin/chats` → `ChatService.SendAdminReplyAsync()`
 ### Telegram setup
 
 - Bot: `@vodongha_personal_bot` (Forum group: `vodongha-personal Chat`)
-- Webhook registered at: `https://vodongha.fly.dev/api/telegram/webhook`
+- Webhook registered at: `https://vodongha.id.vn/api/telegram/webhook`
 - Each chat session = one forum topic in the group (title: `Name | Email`)
-- Fly.io secrets: `Telegram__BotToken`, `Telegram__ChatId`, `Telegram__WebhookSecret`
+- `.env` keys: `Telegram__BotToken`, `Telegram__ChatId`, `Telegram__WebhookSecret`
 
-**Note:** `vodongha.id.vn` may fail DNS resolution from Telegram servers — use `vodongha.fly.dev` for the webhook URL.
+**Note:** the Telegram webhook points at `https://vodongha.id.vn/api/telegram/webhook` (self-hosted via Cloudflare Tunnel).
 
 ## Server health monitor
 
@@ -450,7 +450,7 @@ Blog posts are managed at runtime via `/admin/blog`. No seed data in code — al
 
 ### Endpoint
 
-`GET /api/cv/download?template={0|1|2}` — requires auth (`.RequireAuthorization()`). Loads `SiteSettings` + all Skills/Experiences/Educations/Projects, reads avatar bytes directly from `env.WebRootPath` filesystem (not via HTTP self-request which fails on Fly.io), calls `CvPdfService.Generate()`, returns `application/pdf`.
+`GET /api/cv/download?template={0|1|2}` — requires auth (`.RequireAuthorization()`). Loads `SiteSettings` + all Skills/Experiences/Educations/Projects, reads avatar bytes directly from `env.WebRootPath` filesystem (not via HTTP self-request, which is unreliable behind a reverse proxy), calls `CvPdfService.Generate()`, returns `application/pdf`.
 
 ### Templates
 
@@ -533,7 +533,7 @@ After `Set()`, the service fires `OnTimezoneSet` — all components that display
 
 - Personal data lives in the **database only** (managed via Admin UI at runtime).
 - `AppDbContext.OnModelCreating` must NOT contain `HasData()` calls with personal information. It defines schema/indexes only.
-- Configuration values (API keys, secrets, connection strings) must use environment variables / Fly.io secrets — never hardcoded values, not even in `.env.example` (use placeholder values like `your-value-here`).
+- Configuration values (API keys, secrets, connection strings) must use environment variables / the host `.env` — never hardcoded values, not even in `.env.example` (use placeholder values like `your-value-here`).
 - If you spot hardcoded PII anywhere in the codebase, remove it and record the change.
 
 ### Git history hygiene
@@ -610,7 +610,7 @@ When adding a new admin page or component, go through **all three** before commi
 
 `VisitorService` deduplicates by IP — each unique IP stored once in `VisitorLogs`.
 
-Middleware in `Program.cs` fires on GET requests to non-static, non-admin, non-framework paths. Reads real IP from `X-Forwarded-For` (Fly.io proxy). Localhost (`::1`, `127.x`, `10.x`) excluded.
+Middleware in `Program.cs` fires on GET requests to non-static, non-admin, non-framework paths. Reads real IP from `X-Forwarded-For` (Cloudflare Tunnel). Localhost (`::1`, `127.x`, `10.x`) excluded.
 
 ## Sections — expand/collapse
 

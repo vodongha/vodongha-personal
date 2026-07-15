@@ -65,17 +65,6 @@ public record DependencyDto(
 );
 
 // Costs
-public record FlyMachineDto(string Id, string State, string Region, string Size, int CpuCount, int MemoryMb);
-public record FlyAppDto(
-    string AppName,
-    List<FlyMachineDto> Machines,
-    double ComputePerHour,
-    double ComputePerMonth24h,
-    double Ipv4PerMonth,
-    double FreeAllowance,
-    double EstimatedBillable,
-    double EstimatedMtdDollars
-);
 public record NeonProjectDto(
     string Name,
     string Plan,
@@ -86,7 +75,7 @@ public record NeonProjectDto(
     int PgVersion,
     double EstimatedMonthlyCost
 );
-public record CostSummaryDto(FlyAppDto? Fly, NeonProjectDto? Neon, DateTime FetchedAt);
+public record CostSummaryDto(NeonProjectDto? Neon, DateTime FetchedAt);
 
 // Settings
 public record SettingsSaveRequest(Dictionary<string, string> Values);

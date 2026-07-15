@@ -11,7 +11,7 @@ name: Dependabot auto-merge
 # The merge uses GH_PAT, not the default GITHUB_TOKEN: a push made with
 # GITHUB_TOKEN does NOT trigger further workflows, which would skip the Deploy
 # and Sync-develop workflows. With a PAT the merge to master fires Deploy
-# (build -> test -> format -> lint -> Fly.io) last, exactly as a normal merge.
+# (build -> test -> format -> lint -> home-server deploy) last, exactly as a normal merge.
 on:
   workflow_run:
     workflows: ["CI — Build", "Tests", "Lint & Format"]
