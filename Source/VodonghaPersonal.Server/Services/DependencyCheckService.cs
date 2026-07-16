@@ -42,22 +42,22 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
     [
         ("AspNetCore.SassCompiler",                                              "1.101.0"),
         ("libphonenumber-csharp",                                                "9.0.34"),
-        ("Microsoft.AspNetCore.Components.QuickGrid",                            "10.0.9"),
-        ("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore",              "10.0.9"),
-        ("Microsoft.AspNetCore.SignalR.Client",                                  "10.0.9"),
-        ("Microsoft.EntityFrameworkCore.Design",                                 "10.0.9"),
-        ("Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore",   "10.0.9"),
-        ("Npgsql.EntityFrameworkCore.PostgreSQL",                                "10.0.2"),
-        ("QuestPDF",                                                             "2026.7.0"),
-        ("Resend",                                                               "0.5.1"),
-        ("SkiaSharp",                                                            "4.148.0"),
+        ("Microsoft.AspNetCore.Components.QuickGrid",                            "10.0.10"),
+        ("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore",              "10.0.10"),
+        ("Microsoft.AspNetCore.SignalR.Client",                                  "10.0.10"),
+        ("Microsoft.EntityFrameworkCore.Design",                                 "10.0.10"),
+        ("Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore",   "10.0.10"),
+        ("Npgsql.EntityFrameworkCore.PostgreSQL",                                "10.0.3"),
+        ("QuestPDF",                                                             "2026.7.1"),
+        ("Resend",                                                               "0.6.0"),
+        ("SkiaSharp",                                                            "4.150.1"),
         ("WebPush",                                                              "1.0.13"),
     ];
 
     private static readonly (string Name, string Version)[] NpmPackages =
     [
         ("@eslint/js",                    "10.0.1"),
-        ("eslint",                        "10.6.0"),
+        ("eslint",                        "10.7.0"),
         ("stylelint",                     "17.14.0"),
         ("stylelint-config-standard-scss","17.0.0"),
     ];
@@ -78,8 +78,8 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
     private static readonly (string Repo, string CurrentMajor)[] GitHubActions =
     [
         ("actions/checkout",      "v7"),
-        ("actions/setup-dotnet",  "v5"),
-        ("actions/setup-node",    "v6"),
+        ("actions/setup-dotnet",  "v6"),
+        ("actions/setup-node",    "v7"),
         ("actions/github-script", "v9"),
     ];
 
