@@ -189,8 +189,6 @@ public class AdminLocalizationService
         ["Storage usage"] = "Mức sử dụng bộ nhớ",
         ["free"] = "miễn phí",
         ["Est. cost / month"] = "Ước tính chi phí / tháng",
-        ["Add Neon:ApiKey and Neon:ProjectId to secrets to enable"] = "Thêm Neon:ApiKey và Neon:ProjectId vào API Keys để bật",
-        ["No data. Configure Neon:ApiKey and Neon:ProjectId in secrets."] = "Không có dữ liệu. Cấu hình Neon:ApiKey và Neon:ProjectId trong API Keys.",
         ["Estimated max is theoretical (24/7). With <code>auto_stop_machines = &quot;suspend&quot;</code> actual cost is significantly lower."] = "Ước tính tối đa là lý thuyết (24/7). Với <code>auto_stop_machines = &quot;suspend&quot;</code> chi phí thực tế thấp hơn đáng kể.",
         ["Console"] = "Console",
 

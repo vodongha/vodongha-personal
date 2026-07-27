@@ -2,7 +2,7 @@
 
 ## Project overview
 
-Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + PostgreSQL (Neon, Singapore) + SCSS dark theme, **self-hosted with Docker on a home server behind a Cloudflare Tunnel** (DB stays on Neon).
+Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Oracle Autonomous Database (19c, shared ADB, schema `VODONGHA_PERSONAL`) + SCSS dark theme, **self-hosted with Docker on a home server behind a Cloudflare Tunnel**.
 
 - **Live:** https://vodongha.id.vn
 - **Repo:** https://github.com/vodongha/vodongha-personal
@@ -15,7 +15,7 @@ Personal portfolio website of Võ Đông Hà. Blazor Web App (.NET 10) + Postgre
 |---|---|
 | Runtime | .NET 10 |
 | Frontend | Blazor Web App — **Home page: static SSR** (no render mode, no circuit, zero flicker); **Blog pages, NavBar, FooterSection, ChatWidget, AiWidget**: `@rendermode InteractiveWebAssembly` (in `VodonghaPersonal.Client`); **Admin panel**: `@rendermode InteractiveWebAssembly` (in `VodonghaPersonal.Client`) |
-| Database | PostgreSQL via Neon (Singapore, cloud — unchanged). Env var: `ConnectionStrings__DefaultConnection` |
+| Database | Oracle Autonomous Database 19c (shared ADB, schema `VODONGHA_PERSONAL`), ODP.NET via wallet mTLS. Env var: `ConnectionStrings__DefaultConnection` (Oracle format), wallet at `./wallet` → `/app/wallet` |
 | ORM | Entity Framework Core — hybrid `int Id` (internal PK) + `Guid Rid` (external API identifier) on all 14 entities; no raw SQL in application code |
 | SCSS | Two entry points compiled by `AspNetCore.SassCompiler` on `dotnet build`: `Styles/app.scss` → `wwwroot/app.css` (public), `Styles/admin.scss` → `wwwroot/admin.css` (admin). Compiled CSS is **gitignored** — never commit `wwwroot/app.css` or `wwwroot/admin.css`. |
 | Email | Resend API (`Email__ResendApiKey`). Sender: `no-reply@vodongha.id.vn`, recipient: `REDACTED_EMAIL` |
@@ -638,7 +638,7 @@ Migrations apply automatically on startup. **There is no `HasData()` seed in `Ap
 
 ## Self-hosting & deployment
 
-The app is **self-hosted with Docker on a home server** (not Fly.io). The database is unchanged — still Neon PostgreSQL in the cloud.
+The app is **self-hosted with Docker on a home server** (not Fly.io). The database is **Oracle Autonomous Database** (19c, shared ADB, schema `VODONGHA_PERSONAL`) — the same ADB that hosts family-budget and travel-mate. Connect via ODP.NET (`Oracle.EntityFrameworkCore`) using the wallet mounted at `/app/wallet` (git-ignored `./wallet`), `TNS_ADMIN=/app/wallet`.
 
 - **Runtime:** `docker compose up -d --build` from the repo dir. `docker-compose.yml` publishes port 8080; `docker-compose.override.yml` disables the compose `curl` healthcheck (the .NET runtime image has no `curl`).
 - **Public access:** a **Cloudflare Tunnel** (`cloudflared`) on the server routes `https://vodongha.id.vn` → `localhost:8080`. No inbound ports are opened (the residential ISP blocks 80/443), and TLS is terminated at Cloudflare's edge.
@@ -650,7 +650,7 @@ Runtime config lives in `.env` on the home server (git-ignored), read by the con
 
 | Key | Purpose |
 |---|---|
-| `ConnectionStrings__DefaultConnection` | Neon PostgreSQL |
+| `ConnectionStrings__DefaultConnection` | Oracle ADB (`User Id=VODONGHA_PERSONAL;Password=...;Data Source=vodongha_tp;`) |
 | `Admin__Username` | Admin panel login |
 | `Admin__Password` | Admin panel login |
 | `Email__ResendApiKey` | Resend API key for contact form |

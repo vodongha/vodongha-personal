@@ -22,7 +22,6 @@ public partial class AdminBreadcrumb : ComponentBase, IDisposable
         ["/admin/chats"] = ("Communication", "Chats"),
         ["/admin/analytics"] = ("Insights", "Analytics"),
         ["/admin/health"] = ("Insights", "Health"),
-        ["/admin/costs"] = ("Insights", "Costs"),
         ["/admin/api-keys"] = ("System", "API Keys"),
         ["/admin/profile"] = ("System", "Profile"),
         ["/admin/dependencies"] = ("System", "Dependencies"),

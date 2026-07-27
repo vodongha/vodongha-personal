@@ -33,3 +33,5 @@ Thumbs.db
 
 ## IDE
 .idea/
+wallet/
+.env.*

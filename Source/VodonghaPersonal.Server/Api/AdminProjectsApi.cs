@@ -26,7 +26,7 @@ public static class AdminProjectsApi
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string s = $"%{search.Trim()}%";
-                q = q.Where(x => EF.Functions.ILike(x.Title, s) || EF.Functions.ILike(x.Technologies, s));
+                q = q.Where(x => EF.Functions.Like(x.Title.ToUpper(), s.ToUpper()) || EF.Functions.Like(x.Technologies.ToUpper(), s.ToUpper()));
             }
             bool desc = sortDir == "desc";
             q = sortBy switch

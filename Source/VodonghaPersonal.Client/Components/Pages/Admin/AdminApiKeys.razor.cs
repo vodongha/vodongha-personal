@@ -105,7 +105,6 @@ public partial class AdminApiKeys : ComponentBase, IDisposable
 
     private static string CategoryIcon(string category) => category switch
     {
-        "Neon" => "bi-database",
         "Telegram" => "bi-telegram",
         "Email" => "bi-envelope",
         "Web Push" => "bi-bell",

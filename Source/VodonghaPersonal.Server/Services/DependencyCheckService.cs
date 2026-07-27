@@ -47,7 +47,7 @@ public class DependencyCheckService(IMemoryCache cache, IHttpClientFactory httpF
         ("Microsoft.AspNetCore.SignalR.Client",                                  "10.0.10"),
         ("Microsoft.EntityFrameworkCore.Design",                                 "10.0.10"),
         ("Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore",   "10.0.10"),
-        ("Npgsql.EntityFrameworkCore.PostgreSQL",                                "10.0.3"),
+        ("Oracle.EntityFrameworkCore",                                           "10.23.26300"),
         ("QuestPDF",                                                             "2026.7.1"),
         ("Resend",                                                               "0.6.0"),
         ("SkiaSharp",                                                            "4.150.1"),

@@ -26,7 +26,7 @@ public partial class AdminNav : ComponentBase, IAsyncDisposable
     {
         ["Portfolio"] = ["/admin/skills", "/admin/projects", "/admin/education", "/admin/experience", "/admin/blog", "/admin/cv"],
         ["Communication"] = ["/admin/contacts", "/admin/chats"],
-        ["Insights"] = ["/admin/analytics", "/admin/health", "/admin/costs"],
+        ["Insights"] = ["/admin/analytics", "/admin/health"],
         ["System"] = ["/admin/api-keys", "/admin/profile", "/admin/dependencies"],
     };
     private HashSet<string> _openGroups = [];

@@ -25,7 +25,7 @@ public static class AdminEducationApi
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string s = $"%{search.Trim()}%";
-                q = q.Where(x => EF.Functions.ILike(x.School, s) || EF.Functions.ILike(x.Degree, s) || EF.Functions.ILike(x.Field, s));
+                q = q.Where(x => EF.Functions.Like(x.School.ToUpper(), s.ToUpper()) || EF.Functions.Like(x.Degree.ToUpper(), s.ToUpper()) || EF.Functions.Like(x.Field.ToUpper(), s.ToUpper()));
             }
             bool desc = sortDir == "desc";
             q = sortBy switch

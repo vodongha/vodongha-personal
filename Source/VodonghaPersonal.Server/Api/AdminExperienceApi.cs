@@ -25,7 +25,7 @@ public static class AdminExperienceApi
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string s = $"%{search.Trim()}%";
-                q = q.Where(x => EF.Functions.ILike(x.Company, s) || EF.Functions.ILike(x.Role, s) || (x.Location != null && EF.Functions.ILike(x.Location, s)));
+                q = q.Where(x => EF.Functions.Like(x.Company.ToUpper(), s.ToUpper()) || EF.Functions.Like(x.Role.ToUpper(), s.ToUpper()) || (x.Location != null && EF.Functions.Like(x.Location.ToUpper(), s.ToUpper())));
             }
             bool desc = sortDir == "desc";
             q = sortBy switch

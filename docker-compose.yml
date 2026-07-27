@@ -14,8 +14,13 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
+      # Oracle ADB wallet (mTLS). sqlnet.ora inside points WALLET_LOCATION at /app/wallet.
+      - TNS_ADMIN=/app/wallet
     env_file:
       - .env
+    volumes:
+      # Unzipped ADB wallet (git-ignored, present on the host). Read-only.
+      - ./wallet:/app/wallet:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s

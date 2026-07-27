@@ -36,7 +36,6 @@ public partial class MenuMobile : ComponentBase, IAsyncDisposable
         new("dash-chats",        "/admin/chats",        "bi bi-chat-dots",         Loc.T("Chats"), _unreadChatCount, _unreadChatCount > 0 ? "admin-card--unread" : ""),
         new("dash-cv",           "/admin/cv",           "bi bi-file-earmark-person", Loc.T("CV")),
         new("dash-health",       "/admin/health",       "bi bi-activity",          Loc.T("Health")),
-        new("dash-costs",        "/admin/costs",        "bi bi-currency-dollar",   Loc.T("Costs")),
         new("dash-api-keys",     "/admin/api-keys",     "bi bi-key",               Loc.T("API Keys")),
         new("dash-dependencies", "/admin/dependencies", "bi bi-box-seam",          Loc.T("Dependencies")),
     ];

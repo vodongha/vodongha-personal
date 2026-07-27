@@ -7,7 +7,7 @@ public class AppSecret
     public string Key { get; set; } = "";
     public string Value { get; set; } = "";
     public string DisplayName { get; set; } = "";
-    public string Description { get; set; } = "";
+    public string? Description { get; set; }
     public string Category { get; set; } = "";
     public bool IsSensitive { get; set; } = true;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
