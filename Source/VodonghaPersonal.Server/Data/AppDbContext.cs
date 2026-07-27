@@ -42,5 +42,34 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<AdminUser>()
             .HasIndex(a => a.Username).IsUnique();
+
+        // Long free-text columns -> NCLOB on Oracle (default NVARCHAR2(2000) would truncate).
+        modelBuilder.Entity<BlogPost>(e =>
+        {
+            e.Property(b => b.Summary).HasColumnType("NCLOB");
+            e.Property(b => b.SummaryEn).HasColumnType("NCLOB");
+            e.Property(b => b.Content).HasColumnType("NCLOB");
+            e.Property(b => b.ContentEn).HasColumnType("NCLOB");
+        });
+        modelBuilder.Entity<Project>(e =>
+        {
+            e.Property(p => p.Description).HasColumnType("NCLOB");
+            e.Property(p => p.DescriptionEn).HasColumnType("NCLOB");
+        });
+        modelBuilder.Entity<Experience>(e =>
+        {
+            e.Property(x => x.Description).HasColumnType("NCLOB");
+            e.Property(x => x.DescriptionEn).HasColumnType("NCLOB");
+        });
+        modelBuilder.Entity<Education>(e =>
+        {
+            e.Property(x => x.Description).HasColumnType("NCLOB");
+            e.Property(x => x.DescriptionEn).HasColumnType("NCLOB");
+        });
+        modelBuilder.Entity<ContactMessage>().Property(c => c.Message).HasColumnType("NCLOB");
+        modelBuilder.Entity<ChatMessage>().Property(c => c.Content).HasColumnType("NCLOB");
+        modelBuilder.Entity<SiteSetting>().Property(s => s.Value).HasColumnType("NCLOB");
+        modelBuilder.Entity<AppSecret>().Property(a => a.Value).HasColumnType("NCLOB");
+        modelBuilder.Entity<DataProtectionKey>().Property(d => d.Xml).HasColumnType("NCLOB");
     }
 }

@@ -64,18 +64,6 @@ public record DependencyDto(
     string Status
 );
 
-// Costs
-public record NeonProjectDto(
-    string Name,
-    string Plan,
-    string Region,
-    long StorageBytes,
-    double StorageMb,
-    double StorageGb,
-    int PgVersion,
-    double EstimatedMonthlyCost
-);
-public record CostSummaryDto(NeonProjectDto? Neon, DateTime FetchedAt);
 
 // Settings
 public record SettingsSaveRequest(Dictionary<string, string> Values);

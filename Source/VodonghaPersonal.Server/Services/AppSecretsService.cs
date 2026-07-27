@@ -17,8 +17,6 @@ public class AppSecretsService
 
     public static readonly IReadOnlyList<AppSecretDefinition> Definitions =
     [
-        new("Neon:ApiKey",        "Neon API Key",         "API key for Neon PostgreSQL management API",        "Neon",     Sensitive: true),
-        new("Neon:ProjectId",     "Neon Project ID",      "Project ID from Neon console (e.g. red-fire-...)", "Neon",     Sensitive: false),
         new("Telegram:BotToken",  "Telegram Bot Token",   "Bot token from @BotFather for chat notifications",  "Telegram", Sensitive: true),
         new("Telegram:ChatId",    "Telegram Chat ID",     "Chat / channel ID where notifications are sent",    "Telegram", Sensitive: false),
         new("Email:ResendApiKey",   "Resend API Key",        "API key for Resend transactional email service",                          "Email",    Sensitive: true),

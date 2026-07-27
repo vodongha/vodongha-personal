@@ -69,7 +69,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 |---|---|
 | Framework | Blazor Web App (.NET 10) — Home page: static SSR; Blog pages, NavBar, Footer, ChatWidget: `InteractiveWebAssembly` (WASM); Admin: `InteractiveWebAssembly` |
 | API layer | ASP.NET Core Minimal APIs — 15 admin endpoint groups under `/api/admin/*` + 4 public groups (`/api/site`, `/api/blog`, `/api/ai`, `/api/auth`) |
-| Database | PostgreSQL via [Neon](https://neon.tech) (Singapore) |
+| Database | Oracle Autonomous Database 19c (shared ADB, schema `VODONGHA_PERSONAL`) via ODP.NET wallet mTLS |
 | ORM | Entity Framework Core — hybrid `int Id` (internal PK) + `Guid Rid` (external API identifier) on all 14 entities |
 | Styling | SCSS — `Styles/app.scss` → public, `Styles/admin.scss` → admin |
 | Real-time | ASP.NET Core SignalR |
@@ -80,7 +80,7 @@ Personal portfolio website of **Võ Đông Hà** — Full-Stack Developer.
 | Image processing | SkiaSharp — avatar square-crop before PDF rendering |
 | Phone validation | Google libphonenumber (`libphonenumber-csharp`) |
 | Geo IP | [ipinfo.io](https://ipinfo.io) (browser-side, free tier) |
-| Host | **Self-hosted** with Docker on a home server, exposed publicly via **Cloudflare Tunnel** (`https://vodongha.id.vn`). Database stays on Neon (cloud) — unchanged. |
+| Host | **Self-hosted** with Docker on a home server, exposed publicly via **Cloudflare Tunnel** (`https://vodongha.id.vn`). Database is Oracle Autonomous Database (cloud, shared ADB). |
 | CI/CD | GitHub Actions — CI (build) + Tests (58 unit tests) on `develop`/PRs; Lint (dotnet format + ESLint + Stylelint) on PRs to `master`. On push to `master`, after all checks pass, the `deploy` job calls the home-server webhook (`hooks.vodongha.id.vn`) which `git pull`s + rebuilds the container. `sync-develop.yml` syncs `develop` ← `master` after each merge. |
 
 ---
@@ -154,7 +154,7 @@ vodongha-personal/
 
 ## Local development
 
-**Prerequisites:** .NET 10 SDK, PostgreSQL instance
+**Prerequisites:** .NET 10 SDK, Oracle Database (or Autonomous Database wallet)
 
 ```bash
 git clone https://github.com/vodongha/vodongha-personal.git
@@ -245,7 +245,7 @@ Runtime config lives in `.env` on the home server (git-ignored); the container r
 
 | Key | Purpose |
 |---|---|
-| `ConnectionStrings__DefaultConnection` | Neon PostgreSQL |
+| `ConnectionStrings__DefaultConnection` | Oracle ADB (ODP.NET, wallet at `./wallet`) |
 | `Admin__Username` / `Admin__Password` | Admin panel credentials |
 | `Email__ResendApiKey` | Resend API key |
 | `Telegram__BotToken` | Telegram bot token |

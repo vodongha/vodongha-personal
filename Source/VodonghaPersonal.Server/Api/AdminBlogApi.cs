@@ -24,7 +24,7 @@ public static class AdminBlogApi
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string s = $"%{search.Trim()}%";
-                q = q.Where(x => EF.Functions.ILike(x.Title, s) || EF.Functions.ILike(x.Slug, s) || EF.Functions.ILike(x.Tags, s));
+                q = q.Where(x => EF.Functions.Like(x.Title.ToUpper(), s.ToUpper()) || EF.Functions.Like(x.Slug.ToUpper(), s.ToUpper()) || EF.Functions.Like(x.Tags.ToUpper(), s.ToUpper()));
             }
             bool desc = sortDir == "desc";
             q = sortBy switch

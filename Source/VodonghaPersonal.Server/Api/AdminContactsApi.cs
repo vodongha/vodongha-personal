@@ -24,7 +24,7 @@ public static class AdminContactsApi
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string s = $"%{search.Trim()}%";
-                q = q.Where(x => EF.Functions.ILike(x.Name, s) || EF.Functions.ILike(x.Email, s) || EF.Functions.ILike(x.Subject, s));
+                q = q.Where(x => EF.Functions.Like(x.Name.ToUpper(), s.ToUpper()) || EF.Functions.Like(x.Email.ToUpper(), s.ToUpper()) || EF.Functions.Like(x.Subject.ToUpper(), s.ToUpper()));
             }
             bool desc = sortDir == "desc";
             q = sortBy switch

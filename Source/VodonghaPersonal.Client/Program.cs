@@ -25,7 +25,6 @@ builder.Services.AddScoped<ChatApiClient>();
 builder.Services.AddScoped<ApiKeyApiClient>();
 builder.Services.AddScoped<DependencyApiClient>();
 builder.Services.AddScoped<HealthApiClient>();
-builder.Services.AddScoped<CostApiClient>();
 builder.Services.AddScoped<PublicBlogApiClient>();
 builder.Services.AddScoped<PublicChatApiClient>();
 builder.Services.AddScoped<PublicAiApiClient>();
