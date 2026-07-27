@@ -168,7 +168,7 @@ Create `Source/VodonghaPersonal.Server/appsettings.Development.json`:
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Host=...;Database=...;Username=...;Password=..."
+    "DefaultConnection": "User Id=VODONGHA_PERSONAL;Password=...;Data Source=vodongha_tp;"
   },
   "Admin": { "Username": "admin", "Password": "changeme" },
   "Email": { "ResendApiKey": "" },
@@ -176,11 +176,14 @@ Create `Source/VodonghaPersonal.Server/appsettings.Development.json`:
 }
 ```
 
+Place the unzipped Oracle ADB wallet in `Source/VodonghaPersonal.Server/wallet/` (or set `TNS_ADMIN` to the wallet folder), with its `sqlnet.ora` `WALLET_LOCATION` pointing at that folder. `Data Source` is a net-service alias from the wallet's `tnsnames.ora`.
+
 ```bash
+export TNS_ADMIN=$(pwd)/Source/VodonghaPersonal.Server/wallet
 dotnet run --project Source/VodonghaPersonal.Server
 ```
 
-EF Core migrations apply automatically on startup.
+EF Core migrations apply automatically on startup. The provider is `Oracle.EntityFrameworkCore` (ODP.NET) with `UseOracleSQLCompatibility(DatabaseVersion19)`; see the DB notes in `CLAUDE.md` for Oracle-specific gotchas (empty string = NULL, `bool`→`NUMBER(1)`, `Guid`→`RAW(16)`, long text→`NCLOB`).
 
 ### SCSS
 
